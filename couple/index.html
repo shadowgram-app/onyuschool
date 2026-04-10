@@ -1082,21 +1082,21 @@ function renderDomainCards(typeA, typeB){
       aLabel: '원칙 중심', bLabel: '감성 중심',
       getScoreA: ()=>getParentingScore('A'),
       getScoreB: ()=>getParentingScore('B'),
-      insights: getParentingInsight(typeA, typeB),
+      insights: getParentingInsight(typeA, typeB, nameA, nameB),
     },
     {
       icon:'🏠', label:'HOUSEHOLD', title:'가사분담 분석',
       aLabel: '계획·구조적', bLabel: '유연·즉흥적',
       getScoreA: ()=>getHouseScore('A'),
       getScoreB: ()=>getHouseScore('B'),
-      insights: getHouseInsight(typeA, typeB),
+      insights: getHouseInsight(typeA, typeB, nameA, nameB),
     },
     {
       icon:'⛪', label:'CHURCH LIFE', title:'교회생활 분석',
       aLabel: '적극 헌신형', bLabel: '균형 분리형',
       getScoreA: ()=>getChurchScore('A'),
       getScoreB: ()=>getChurchScore('B'),
-      insights: getChurchInsight(typeA, typeB),
+      insights: getChurchInsight(typeA, typeB, nameA, nameB),
     },
   ];
 
@@ -1149,70 +1149,73 @@ function getParentingScore(who){ return domainScore(who, 6, 9); }
 function getHouseScore(who){ return domainScore(who, 10, 13); }
 function getChurchScore(who){ return domainScore(who, 14, 17); }
 
-function getParentingInsight(tA, tB){
+function getParentingInsight(tA, tB, nameA, nameB){
   const ruleTypes = ['LOGIC','LEADER','STEADY','VISION'];
-  const warmTypes = ['HARMONY','SOUL','SPARK','PLAYER'];
   const aRule = ruleTypes.includes(tA);
   const bRule = ruleTypes.includes(tB);
 
   if(aRule && bRule) return [
-    {icon:'📐', text:`두 분 모두 <b>일관된 원칙</b>을 중시하는 편이에요. 자녀에게 명확한 기준을 줄 수 있어요.`},
+    {icon:'📐', text:`남편분과 아내분 모두 <b>일관된 원칙</b>을 중시하는 편이에요. 자녀에게 명확한 기준을 줄 수 있어요.`},
     {icon:'💡', text:`단, 아이가 감정적으로 힘들 때 규칙보다 먼저 <b>공감</b>이 필요한 순간을 함께 연습해보세요.`},
-    {icon:'🌿', text:`${nameA}와 ${nameB}가 훈육 방식을 미리 대화로 맞춰두면 아이가 혼란을 덜 느껴요.`},
+    {icon:'🌿', text:`남편분(${nameA})과 아내분(${nameB})이 훈육 방식을 미리 대화로 맞춰두면 아이가 혼란을 덜 느껴요.`},
   ];
   if(!aRule && !bRule) return [
-    {icon:'🤗', text:`두 분 모두 <b>아이의 감정과 자율</b>을 중시하는 편이에요. 따뜻한 분위기를 만들어요.`},
+    {icon:'🤗', text:`남편분과 아내분 모두 <b>아이의 감정과 자율</b>을 중시하는 편이에요. 따뜻한 분위기를 만들어요.`},
     {icon:'💡', text:`훈육이 필요한 상황에서 <b>일관된 원칙</b>도 함께 세워두면 아이가 더 안정감을 느껴요.`},
     {icon:'🌿', text:`두 분이 감성적으로 잘 맞는 만큼, 역할 분담을 명확히 해두면 서로 지치지 않아요.`},
   ];
+  const ruleName = aRule ? `남편분(${nameA})` : `아내분(${nameB})`;
+  const warmName = aRule ? `아내분(${nameB})` : `남편분(${nameA})`;
   return [
-    {icon:'⚖️', text:`한 분은 <b>원칙</b>을, 한 분은 <b>따뜻함</b>을 담당하는 자연스러운 균형이에요.`},
+    {icon:'⚖️', text:`${ruleName}은 <b>원칙 중심</b>, ${warmName}은 <b>따뜻한 공감 중심</b>이에요. 자연스러운 균형이 될 수 있어요.`},
     {icon:'💡', text:`아이는 두 가지를 모두 경험하며 균형 있게 자라요. 단, 서로 다른 방식 때문에 부부 갈등이 생기지 않도록 대화하세요.`},
     {icon:'🌿', text:`훈육 직후 공감, 공감 후 원칙 — 순서를 미리 맞춰두면 더 효과적이에요.`},
   ];
 }
 
-function getHouseInsight(tA, tB){
+function getHouseInsight(tA, tB, nameA, nameB){
   const planTypes = ['STEADY','LOGIC','LEADER'];
-  const flexTypes = ['SPARK','PLAYER','VISION','HARMONY','SOUL'];
   const aPlan = planTypes.includes(tA);
   const bPlan = planTypes.includes(tB);
 
   if(aPlan && bPlan) return [
-    {icon:'📋', text:`두 분 모두 <b>계획적인 가사 운영</b>을 선호해요. 역할 분담이 잘 정해지면 효율적으로 돌아가요.`},
+    {icon:'📋', text:`남편분과 아내분 모두 <b>계획적인 가사 운영</b>을 선호해요. 역할 분담이 잘 정해지면 효율적으로 돌아가요.`},
     {icon:'💡', text:`단, 예외 상황이 생겼을 때 <b>유연하게 조율</b>하는 연습도 필요해요. 원칙이 너무 강하면 작은 일로도 갈등이 커질 수 있어요.`},
     {icon:'🌿', text:`정기적으로 역할을 재점검하는 '가사 대화' 시간을 만들어보세요.`},
   ];
   if(!aPlan && !bPlan) return [
-    {icon:'🌊', text:`두 분 모두 <b>유연하게 가사를 분담</b>하는 편이에요. 자연스럽게 흘러가는 방식을 선호해요.`},
+    {icon:'🌊', text:`남편분과 아내분 모두 <b>유연하게 가사를 분담</b>하는 편이에요. 자연스럽게 흘러가는 방식을 선호해요.`},
     {icon:'💡', text:`역할이 불분명하면 서로 '당연히 상대가 하겠지'라고 생각할 수 있어요. <b>최소한의 구조</b>를 만들어두세요.`},
     {icon:'🌿', text:`'이번 주는 내가 식사, 다음 주는 네가' 같은 간단한 약속만으로도 큰 갈등을 줄일 수 있어요.`},
   ];
+  const planName = aPlan ? `남편분(${nameA})` : `아내분(${nameB})`;
+  const flexName = aPlan ? `아내분(${nameB})` : `남편분(${nameA})`;
   return [
-    {icon:'⚡', text:`한 분은 <b>계획형</b>, 한 분은 <b>유연형</b>이에요. 서로의 방식이 부딪힐 수 있어요.`},
+    {icon:'⚡', text:`${planName}은 <b>계획형</b>, ${flexName}은 <b>유연형</b>이에요. 서로의 방식이 부딪힐 수 있어요.`},
     {icon:'💡', text:`반복적인 일(청소, 설거지)은 명확히 담당을 정하고, 비반복적인 일은 유연하게 나누면 둘 다 만족해요.`},
     {icon:'🌿', text:`"왜 안 했어?"보다 "우리 어떻게 할까?" 질문이 더 효과적이에요.`},
   ];
 }
 
-function getChurchInsight(tA, tB){
+function getChurchInsight(tA, tB, nameA, nameB){
   const activeTypes = ['LEADER','SPARK','HARMONY','STEADY'];
-  const balanceTypes = ['SOUL','VISION','LOGIC','PLAYER'];
   const aAct = activeTypes.includes(tA);
   const bAct = activeTypes.includes(tB);
 
   if(aAct && bAct) return [
-    {icon:'⛪', text:`두 분 모두 <b>교회 공동체에 적극적</b>이에요. 함께 섬기는 사역을 찾으면 더 강력해져요.`},
+    {icon:'⛪', text:`남편분과 아내분 모두 <b>교회 공동체에 적극적</b>이에요. 함께 섬기는 사역을 찾으면 더 강력해져요.`},
     {icon:'💡', text:`헌신이 과해지면 가정이 소홀해질 수 있어요. <b>가정과 사역의 균형</b>을 주기적으로 점검하세요.`},
     {icon:'🌿', text:`교회에서 함께 섬기면 부부의 비전이 맞춰지는 경험을 하게 돼요.`},
   ];
   if(!aAct && !bAct) return [
-    {icon:'🏡', text:`두 분 모두 <b>가정을 먼저</b> 챙기는 균형 잡힌 신앙 스타일이에요.`},
+    {icon:'🏡', text:`남편분과 아내분 모두 <b>가정을 먼저</b> 챙기는 균형 잡힌 신앙 스타일이에요.`},
     {icon:'💡', text:`공동체와의 연결이 약해지면 신앙이 개인화될 수 있어요. <b>소그룹 하나</b>만 함께해도 연결감이 달라져요.`},
     {icon:'🌿', text:`함께 기도하거나 말씀을 나누는 작은 습관이 부부 신앙의 뿌리가 돼요.`},
   ];
+  const actName = aAct ? `남편분(${nameA})` : `아내분(${nameB})`;
+  const balName = aAct ? `아내분(${nameB})` : `남편분(${nameA})`;
   return [
-    {icon:'🤝', text:`한 분은 <b>사역 지향</b>, 한 분은 <b>가정 우선</b> 스타일이에요.`},
+    {icon:'🤝', text:`${actName}은 <b>사역 지향</b>, ${balName}은 <b>가정 균형 우선</b> 스타일이에요.`},
     {icon:'💡', text:`신앙생활에서 갈등이 생기기 쉬운 조합이에요. 서로의 방식을 판단하지 않고 <b>존중하는 대화</b>가 먼저예요.`},
     {icon:'🌿', text:`월 1회라도 부부가 함께 신앙 방향을 이야기하는 시간을 가져보세요.`},
   ];
