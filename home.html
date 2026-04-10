@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>온유스쿨 — 나를 알면 관계가 달라집니다</title>
+  <meta name="description" content="쉐도우그램 8유형으로 나와 가족을 새롭게 이해합니다. 소통스타일 무료 검사 · 부부클래스 · 자녀양육 · 목회자 도구" />
+  <meta property="og:title" content="온유스쿨 — 나를 알면 관계가 달라집니다" />
+  <meta property="og:description" content="하나님이 나를 이렇게 만드셨습니다. 8가지 소통스타일로 나와 가족을 발견하세요." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --deep:  #1A3A5C;
+      --mid:   #2D6A4F;
+      --gold:  #9A7A2E;
+      --warm:  #7B3F00;
+      --gray:  #666;
+      --dk:    #222;
+      --lt:    #F7F8FA;
+      --lt2:   #EEF3EE;
+      --line:  #DDD;
+      --white: #FFF;
+      --red:   #B33000;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
+      color: var(--dk); background: var(--white);
+      line-height: 1.8; font-size: 15px;
+    }
+
+    /* ── 네비 ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--white); border-bottom: 3px solid var(--deep);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 56px;
+    }
+    .nav-brand { font-size: 1.15rem; font-weight: 800; color: var(--deep); text-decoration: none; letter-spacing: -0.5px; }
+    .nav-brand span { color: var(--mid); font-weight: 400; font-size: 0.75rem; margin-left: 6px; }
+    .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; }
+    .nav-links a { text-decoration: none; color: var(--gray); font-size: 0.85rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--deep); }
+    .nav-cta { background: var(--deep) !important; color: var(--white) !important; padding: 6px 15px; font-weight: 700 !important; font-size: 0.83rem !important; }
+    .nav-cta:hover { background: #0f2540 !important; }
+    .ham { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--deep); }
+
+    /* ── 가정의 달 이벤트 배너 ── */
+    .event-bar {
+      background: linear-gradient(90deg, var(--mid), #1e4d38);
+      color: var(--white); text-align: center;
+      padding: 10px 5%; font-size: 0.85rem; font-weight: 600;
+    }
+    .event-bar strong { color: #B8E0C0; }
+    .event-bar a { color: #FFE08A; text-decoration: underline; margin-left: 12px; font-size: 0.8rem; }
+
+    /* ── 공통 ── */
+    section { padding: 72px 5%; }
+    .inner { max-width: 860px; margin: 0 auto; }
+    .sec-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 3px;
+      color: var(--mid); text-transform: uppercase; margin-bottom: 10px;
+    }
+    .sec-title {
+      font-size: 1.8rem; font-weight: 700; color: var(--deep);
+      line-height: 1.3; margin-bottom: 14px; letter-spacing: -0.5px;
+    }
+    .sec-sub { font-size: 0.95rem; color: #555; line-height: 1.9; max-width: 640px; }
+    .divider { border: none; border-top: 1px solid var(--line); margin: 0; }
+
+    /* ── HERO ── */
+    #hero {
+      background: linear-gradient(160deg, #0f2540 0%, var(--deep) 55%, #1e4d38 100%);
+      padding: 100px 5% 80px; color: var(--white); border-bottom: 4px solid var(--gold);
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; }
+    .hero-badge {
+      display: inline-block; border: 1px solid rgba(255,255,255,0.35);
+      padding: 5px 14px; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 2px; color: #B8E0C0; margin-bottom: 22px;
+    }
+    .hero-title { font-size: 2.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 18px; letter-spacing: -1px; }
+    .hero-title em { font-style: normal; color: #FFE08A; border-bottom: 2px solid #FFE08A; }
+    .hero-desc { font-size: 0.97rem; color: rgba(255,255,255,0.8); line-height: 1.9; margin-bottom: 32px; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-block; background: var(--gold); color: var(--white);
+      padding: 13px 28px; font-size: 0.95rem; font-weight: 700;
+      text-decoration: none; transition: background 0.2s; border: none; cursor: pointer; font-family: inherit;
+    }
+    .btn-primary:hover { background: #7a6020; }
+    .btn-ghost-w {
+      display: inline-block; border: 1.5px solid rgba(255,255,255,0.5); color: var(--white);
+      padding: 12px 24px; font-size: 0.9rem; font-weight: 600;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-ghost-w:hover { background: rgba(255,255,255,0.1); }
+    .hero-note { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-top: 14px; }
+
+    /* 히어로 우측 카드 */
+    .hero-card {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18);
+      padding: 28px 24px;
+    }
+    .hc-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: #B8E0C0; margin-bottom: 16px; }
+    .hc-types { display: flex; flex-direction: column; gap: 10px; }
+    .hc-type {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; background: rgba(255,255,255,0.06);
+      border-left: 3px solid var(--gold);
+    }
+    .hc-type .icon { font-size: 1.3rem; }
+    .hc-type .name { font-weight: 700; font-size: 0.88rem; color: var(--white); }
+    .hc-type .hook { font-size: 0.78rem; color: rgba(255,255,255,0.55); line-height: 1.4; }
+
+    /* ── 3줄 소개 ── */
+    #intro { background: var(--lt); }
+    .intro-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; margin-top: 36px; border: 1px solid var(--line); }
+    .intro-card { padding: 28px 24px; border-right: 1px solid var(--line); }
+    .intro-card:last-child { border-right: none; }
+    .ic-icon { font-size: 1.5rem; margin-bottom: 12px; }
+    .ic-title { font-size: 0.95rem; font-weight: 700; color: var(--deep); margin-bottom: 8px; }
+    .ic-desc { font-size: 0.85rem; color: #555; line-height: 1.8; }
+
+    /* ── 무료 검사 CTA ── */
+    #free-test {
+      background: var(--deep); padding: 60px 5%;
+      border-top: 4px solid var(--gold); border-bottom: 4px solid var(--gold);
+    }
+    .ft-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+    .ft-text { color: var(--white); }
+    .ft-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; color: #B8E0C0; margin-bottom: 10px; }
+    .ft-title { font-size: 1.6rem; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+    .ft-desc { font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.8; }
+    .ft-btns { display: flex; flex-direction: column; gap: 10px; min-width: 200px; }
+    .btn-gold { display: block; background: var(--gold); color: var(--white); padding: 13px 24px; font-weight: 700; font-size: 0.95rem; text-align: center; text-decoration: none; transition: background 0.2s; }
+    .btn-gold:hover { background: #7a6020; }
+    .btn-outline-w { display: block; border: 1.5px solid rgba(255,255,255,0.4); color: var(--white); padding: 11px 24px; font-size: 0.88rem; text-align: center; text-decoration: none; transition: all 0.2s; font-weight: 600; }
+    .btn-outline-w:hover { background: rgba(255,255,255,0.08); }
+
+    /* ── 8유형 ── */
+    #types { background: var(--white); }
+    .type-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 32px; }
+    .type-card { border: 1px solid var(--line); padding: 18px 16px; transition: border-color 0.2s, box-shadow 0.2s; cursor: default; }
+    .type-card:hover { border-color: var(--deep); box-shadow: 0 2px 12px rgba(26,58,92,0.08); }
+    .tc-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .tc-name { font-size: 0.97rem; font-weight: 700; color: var(--deep); margin-bottom: 3px; }
+    .tc-mbti { font-size: 0.75rem; color: var(--mid); margin-bottom: 8px; }
+    .tc-hook { font-size: 0.82rem; color: var(--gold); line-height: 1.5; font-style: italic; }
+    .types-note { font-size: 0.8rem; color: var(--gray); margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+
+    /* ── 클래스 상품 ── */
+    #classes { background: var(--lt); }
+    .class-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 32px; }
+    .class-card {
+      background: var(--white); border: 1px solid var(--line);
+      padding: 28px 22px; display: flex; flex-direction: column;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .class-card:hover { border-color: var(--deep); box-shadow: 0 4px 20px rgba(26,58,92,0.08); }
+    .class-card.highlight { border: 2px solid var(--deep); }
+    .class-card.coming { opacity: 0.6; border-style: dashed; }
+    .cc-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 1.5px; padding: 3px 10px; margin-bottom: 14px;
+      border: 1px solid var(--deep); color: var(--deep);
+    }
+    .cc-badge.free { border-color: var(--mid); color: var(--mid); }
+    .cc-badge.new { border-color: var(--red); color: var(--red); }
+    .cc-badge.coming { border-color: var(--gray); color: var(--gray); }
+    .cc-icon { font-size: 1.8rem; margin-bottom: 12px; }
+    .cc-title { font-size: 1.05rem; font-weight: 700; color: var(--deep); margin-bottom: 8px; }
+    .cc-desc { font-size: 0.87rem; color: #555; line-height: 1.8; flex: 1; margin-bottom: 20px; }
+    .cc-price { font-size: 0.82rem; color: var(--gray); margin-bottom: 14px; }
+    .cc-price strong { font-size: 1.1rem; color: var(--deep); font-weight: 700; }
+    .cc-price .original { text-decoration: line-through; color: #aaa; margin-right: 6px; }
+    .cc-price .event { color: var(--red); font-size: 0.75rem; font-weight: 700; margin-left: 6px; }
+    .btn-class {
+      display: block; text-align: center; padding: 11px;
+      background: var(--deep); color: var(--white); text-decoration: none;
+      font-size: 0.88rem; font-weight: 700; transition: background 0.2s;
+      border: none; cursor: pointer; font-family: inherit; width: 100%;
+    }
+    .btn-class:hover { background: #0f2540; }
+    .btn-class.ghost { background: none; border: 1.5px solid var(--deep); color: var(--deep); }
+    .btn-class.ghost:hover { background: var(--deep); color: var(--white); }
+    .btn-class.disabled { background: var(--line); color: var(--gray); cursor: not-allowed; }
+
+    /* ── 가정의 달 이벤트 섹션 ── */
+    #event { background: linear-gradient(135deg, #0f2540, var(--deep)); padding: 64px 5%; }
+    .event-inner { max-width: 860px; margin: 0 auto; }
+    .event-box {
+      border: 1.5px solid rgba(255,224,138,0.4); padding: 40px 36px;
+      background: rgba(255,255,255,0.04);
+    }
+    .ev-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; flex-wrap: wrap; margin-bottom: 28px; }
+    .ev-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; color: #B8E0C0; margin-bottom: 10px; }
+    .ev-title { font-size: 1.5rem; font-weight: 700; color: var(--white); line-height: 1.35; }
+    .ev-title em { font-style: normal; color: #FFE08A; }
+    .ev-desc { font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.9; margin-top: 10px; }
+    .ev-deadline { background: rgba(255,224,138,0.12); border: 1px solid rgba(255,224,138,0.3); padding: 14px 20px; text-align: center; min-width: 160px; flex-shrink: 0; }
+    .ev-deadline .dl-label { font-size: 0.7rem; color: #FFE08A; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; }
+    .ev-deadline .dl-date { font-size: 1.3rem; font-weight: 700; color: var(--white); }
+    .ev-packages { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+    .ev-pkg { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); padding: 18px 16px; }
+    .ep-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; color: #B8E0C0; margin-bottom: 8px; }
+    .ep-count { font-size: 1.05rem; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+    .ep-price { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+    .ep-price strong { color: #FFE08A; font-size: 1rem; font-weight: 700; }
+    .ev-includes { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+    .ev-tag { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); padding: 5px 13px; font-size: 0.8rem; color: rgba(255,255,255,0.8); }
+    .btn-event { display: inline-block; background: var(--gold); color: var(--white); padding: 13px 32px; font-size: 0.95rem; font-weight: 700; text-decoration: none; border: none; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+    .btn-event:hover { background: #7a6020; }
+
+    /* ── 커뮤니티 ── */
+    #community { background: var(--lt2); }
+    .comm-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: start; margin-top: 32px; }
+
+    /* 읽을거리 피드 */
+    .feed-list { display: flex; flex-direction: column; gap: 0; }
+    .feed-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 18px 0; border-bottom: 1px solid var(--line);
+    }
+    .feed-item:first-child { border-top: 1px solid var(--line); }
+    .feed-cat {
+      flex-shrink: 0; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 1px; padding: 3px 8px; border: 1px solid;
+      white-space: nowrap; margin-top: 3px;
+    }
+    .feed-cat.insight { border-color: var(--deep); color: var(--deep); }
+    .feed-cat.type { border-color: var(--mid); color: var(--mid); }
+    .feed-cat.mission { border-color: var(--gold); color: var(--gold); }
+    .feed-cat.story { border-color: var(--warm); color: var(--warm); }
+    .feed-body { flex: 1; }
+    .feed-title { font-size: 0.93rem; font-weight: 700; color: var(--dk); line-height: 1.5; margin-bottom: 4px; cursor: pointer; }
+    .feed-title:hover { color: var(--deep); }
+    .feed-meta { font-size: 0.75rem; color: var(--gray); }
+    .feed-more {
+      display: inline-block; margin-top: 18px; font-size: 0.85rem;
+      color: var(--deep); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--deep);
+    }
+
+    /* 커뮤니티 사이드 */
+    .comm-side { display: flex; flex-direction: column; gap: 20px; }
+    .comm-box { background: var(--white); border: 1px solid var(--line); padding: 24px 20px; }
+    .cb-title { font-size: 0.88rem; font-weight: 700; color: var(--deep); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+    .kakao-btn {
+      display: flex; align-items: center; gap: 10px;
+      background: #FEE500; color: #3C1E1E; padding: 12px 16px;
+      font-size: 0.88rem; font-weight: 700; text-decoration: none;
+      transition: filter 0.2s; margin-bottom: 8px;
+    }
+    .kakao-btn:hover { filter: brightness(0.92); }
+    .kakao-btn .icon { font-size: 1.1rem; }
+    .comm-note { font-size: 0.78rem; color: var(--gray); line-height: 1.7; }
+    .mission-preview { display: flex; flex-direction: column; gap: 8px; }
+    .mp-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 12px; background: var(--lt); border-left: 3px solid var(--gold);
+      font-size: 0.83rem; color: #444; line-height: 1.6;
+    }
+    .mp-type { font-weight: 700; color: var(--gold); flex-shrink: 0; }
+
+    /* ── 목회자 섹션 ── */
+    #pastor { background: var(--white); }
+    .pastor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 32px; align-items: start; }
+    .pastor-quote {
+      border-left: 5px solid var(--deep); padding: 22px 24px;
+      background: var(--lt); margin-bottom: 20px;
+    }
+    .pastor-quote p { font-size: 0.92rem; color: #444; line-height: 1.9; }
+    .pastor-quote .author { font-size: 0.8rem; color: var(--gray); margin-top: 10px; font-style: italic; }
+    .pastor-offer { border: 1.5px solid var(--deep); padding: 26px 24px; }
+    .po-title { font-size: 0.95rem; font-weight: 700; color: var(--deep); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .po-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; font-size: 0.87rem; color: #444; line-height: 1.7; }
+    .po-check { color: var(--mid); font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .pastor-cta { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .btn-pastor {
+      display: block; text-align: center; padding: 12px;
+      background: var(--deep); color: var(--white);
+      font-size: 0.9rem; font-weight: 700; text-decoration: none; transition: background 0.2s;
+    }
+    .btn-pastor:hover { background: #0f2540; }
+    .btn-pastor.ghost { background: none; border: 1.5px solid var(--deep); color: var(--deep); }
+    .btn-pastor.ghost:hover { background: var(--deep); color: var(--white); }
+
+    /* ── 신청 폼 ── */
+    #apply { background: var(--lt); border-top: 3px solid var(--deep); }
+    .apply-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 48px; margin-top: 32px; align-items: start; }
+    .apply-steps { }
+    .apply-steps h3 { font-size: 0.95rem; font-weight: 700; color: var(--deep); margin-bottom: 16px; }
+    .step-list { list-style: none; }
+    .step-list li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.87rem; color: #444; line-height: 1.7; }
+    .step-n { font-weight: 700; color: var(--deep); flex-shrink: 0; min-width: 24px; }
+    .form-box { border: 1.5px solid var(--deep); padding: 30px 26px; background: var(--white); }
+    .form-title { font-size: 1rem; font-weight: 700; color: var(--deep); margin-bottom: 4px; }
+    .form-sub { font-size: 0.82rem; color: var(--gray); margin-bottom: 22px; }
+    .f-row { margin-bottom: 14px; }
+    .f-row label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--dk); margin-bottom: 4px; }
+    .f-row label .req { color: var(--red); }
+    .f-row input, .f-row select, .f-row textarea {
+      width: 100%; border: 1px solid var(--line); padding: 9px 12px;
+      font-size: 0.9rem; font-family: inherit; color: var(--dk);
+      outline: none; transition: border-color 0.2s; background: var(--white);
+    }
+    .f-row input:focus, .f-row select:focus, .f-row textarea:focus { border-color: var(--deep); }
+    .f-row textarea { resize: vertical; min-height: 68px; }
+    .f-submit {
+      width: 100%; padding: 13px; background: var(--deep); color: var(--white);
+      border: none; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: background 0.2s; margin-top: 4px;
+    }
+    .f-submit:hover { background: #0f2540; }
+    .f-note { font-size: 0.76rem; color: var(--gray); text-align: center; margin-top: 8px; line-height: 1.6; }
+    .f-success { display: none; border: 1.5px solid var(--mid); padding: 26px; text-align: center; }
+    .f-success h3 { color: var(--mid); font-size: 1.05rem; margin-bottom: 8px; }
+    .f-success p { font-size: 0.87rem; color: #555; line-height: 1.8; }
+
+    /* ── 푸터 ── */
+    footer { background: var(--deep); color: #7A9BB5; padding: 44px 5%; font-size: 0.81rem; line-height: 1.9; }
+    .f-inner { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; }
+    .f-brand { color: var(--white); font-weight: 700; font-size: 1rem; margin-bottom: 8px; }
+    .f-desc { font-size: 0.8rem; color: #5A8BAA; line-height: 1.8; }
+    .f-col-title { color: var(--white); font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; }
+    footer ul { list-style: none; }
+    footer ul li { margin-bottom: 6px; }
+    footer a { color: #7A9BB5; text-decoration: none; }
+    footer a:hover { color: var(--white); }
+    .f-bottom { max-width: 860px; margin: 28px auto 0; padding-top: 16px; border-top: 1px solid #2A4D6E; font-size: 0.75rem; color: #456; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+    /* ── 구독 배너 ── */
+    .sub-bar {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+      background: var(--deep); border-top: 3px solid var(--gold); padding: 14px 5%;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .sub-bar.show { display: block; }
+    .sb-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .sb-text { flex: 1; color: var(--white); }
+    .sb-text strong { display: block; font-size: 0.93rem; margin-bottom: 2px; }
+    .sb-text span { font-size: 0.8rem; color: #7A9BB5; }
+    .sb-form { display: flex; gap: 8px; min-width: 280px; }
+    .sb-form input { flex: 1; padding: 9px 12px; border: none; font-family: inherit; font-size: 0.88rem; color: var(--dk); outline: none; }
+    .sb-form button { padding: 9px 16px; background: var(--gold); color: var(--white); border: none; font-family: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .sb-close { background: none; border: none; color: #7A9BB5; font-size: 1.3rem; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-card { display: none; }
+      .hero-title { font-size: 1.8rem; }
+      .intro-grid { grid-template-columns: 1fr; }
+      .intro-card { border-right: none; border-bottom: 1px solid var(--line); }
+      .type-grid { grid-template-columns: repeat(2,1fr); }
+      .class-grid { grid-template-columns: 1fr; }
+      .ev-packages { grid-template-columns: 1fr; }
+      .comm-grid { grid-template-columns: 1fr; }
+      .pastor-grid { grid-template-columns: 1fr; }
+      .apply-grid { grid-template-columns: 1fr; }
+      .f-inner { grid-template-columns: 1fr; gap: 24px; }
+      .nav-links { display: none; }
+      .ham { display: block; }
+      section { padding: 52px 5%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 가정의 달 이벤트 상단 바 -->
+<div class="event-bar">
+  🌷 <strong>5월 가정의 달 특별 이벤트</strong> — 교회 단체 패키지 1인당 3,000원 (5.31 마감)
+  <a href="#event">자세히 보기 →</a>
+</div>
+
+<!-- 네비 -->
+<nav>
+  <a href="#" class="nav-brand">온유스쿨 <span>by Shadowgram</span></a>
+  <ul class="nav-links">
+    <li><a href="#types">8유형</a></li>
+    <li><a href="#classes">클래스</a></li>
+    <li><a href="#community">커뮤니티</a></li>
+    <li><a href="#pastor">목회자</a></li>
+    <li><a href="check.html" class="nav-cta">무료 검사</a></li>
+  </ul>
+  <button class="ham" onclick="document.querySelector('.nav-links').style.display='flex'">☰</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">SHADOWGRAM × ONYUSCHOOL</div>
+      <h1 class="hero-title">나를 알면<br><em>관계가 달라집니다</em></h1>
+      <p class="hero-desc">
+        하나님이 나를 이렇게 만드셨습니다.<br>
+        8가지 소통스타일로 나를 발견하고,<br>
+        가족과 공동체 안에서 새롭게 연결되세요.
+      </p>
+      <div class="hero-btns">
+        <a href="check.html" class="btn-primary">무료 소통스타일 검사</a>
+        <a href="#classes" class="btn-ghost-w">클래스 둘러보기</a>
+      </div>
+      <p class="hero-note">* 5분 · 무료 · 이메일로 결과 전송</p>
+    </div>
+    <div class="hero-card">
+      <div class="hc-label">8가지 소통스타일</div>
+      <div class="hc-types">
+        <div class="hc-type"><span class="icon">🦜</span><div><div class="name">SPARK</div><div class="hook">시작은 100번, 끝은 3번</div></div></div>
+        <div class="hc-type"><span class="icon">🦚</span><div><div class="name">VISION</div><div class="hook">다 보이는데 왜 못 움직이지?</div></div></div>
+        <div class="hc-type"><span class="icon">🐬</span><div><div class="name">HARMONY</div><div class="hook">다 챙겨주는데 정작 나는 없다</div></div></div>
+        <div class="hc-type"><span class="icon">🦅</span><div><div class="name">LEADER</div><div class="hook">다 이뤘는데 왜 이렇게 공허하지</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 3줄 소개 -->
+<section id="intro">
+  <div class="inner">
+    <div class="sec-label">What is Onyuschool</div>
+    <h2 class="sec-title">왜 온유스쿨인가</h2>
+    <div class="intro-grid">
+      <div class="intro-card">
+        <div class="ic-icon">🤲</div>
+        <div class="ic-title">온유 = 길들여진 힘</div>
+        <p class="ic-desc">온유는 약함이 아닙니다. 강한 힘이 다스려진 상태입니다. 나의 소통스타일을 알면, 강점은 더 빛나고 약점은 다듬어집니다.</p>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">🔍</div>
+        <div class="ic-title">오른손과 왼손</div>
+        <p class="ic-desc">잘하는 것(오른손)만으로는 완성되지 않습니다. 아직 깨우지 못한 왼손을 발견할 때, 비로소 온전한 내가 됩니다.</p>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">🕊️</div>
+        <div class="ic-title">공동체 안에서 함께</div>
+        <p class="ic-desc">다름은 틀림이 아닙니다. 8가지 소통스타일이 공동체 안에서 서로를 세울 때, 하나님이 만드신 다양성이 빛납니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 무료 검사 CTA -->
+<section id="free-test">
+  <div class="ft-inner">
+    <div class="ft-text">
+      <div class="ft-label">FREE · 5 MINUTES</div>
+      <div class="ft-title">나의 소통스타일,<br>지금 바로 확인하세요</div>
+      <div class="ft-desc">이메일로 결과가 전송됩니다.<br>부부클래스·자녀양육 리포트와 연결할 수 있습니다.</div>
+    </div>
+    <div class="ft-btns">
+      <a href="check.html" class="btn-gold">🔍 무료 소통스타일 검사</a>
+      <a href="pastor.html" class="btn-outline-w">목회자 전용 검사 →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 8유형 -->
+<section id="types">
+  <div class="inner">
+    <div class="sec-label">8 Communication Styles</div>
+    <h2 class="sec-title">8가지 소통스타일</h2>
+    <p class="sec-sub">MBTI 16유형을 주기능 기준으로 압축했습니다. 더 단순하고, 관계 분석에서 더 정확합니다.</p>
+    <div class="type-grid">
+      <div class="type-card"><div class="tc-icon">🦜</div><div class="tc-name">SPARK</div><div class="tc-mbti">ENFP · ENTP</div><div class="tc-hook">"시작은 100번, 끝은 3번"</div></div>
+      <div class="type-card"><div class="tc-icon">🦚</div><div class="tc-name">VISION</div><div class="tc-mbti">INFJ · INTJ</div><div class="tc-hook">"다 보이는데 왜 못 움직이지?"</div></div>
+      <div class="type-card"><div class="tc-icon">🐢</div><div class="tc-name">STEADY</div><div class="tc-mbti">ISFJ · ISTJ</div><div class="tc-hook">"변하고 싶은데 발이 안 떨어진다"</div></div>
+      <div class="type-card"><div class="tc-icon">🐆</div><div class="tc-name">PLAYER</div><div class="tc-mbti">ESFP · ESTP</div><div class="tc-hook">"지금은 잘 사는데 미래가 불안하다"</div></div>
+      <div class="type-card"><div class="tc-icon">🐬</div><div class="tc-name">HARMONY</div><div class="tc-mbti">ESFJ · ENFJ</div><div class="tc-hook">"다 챙겨주는데 정작 나는 없다"</div></div>
+      <div class="type-card"><div class="tc-icon">🦋</div><div class="tc-name">SOUL</div><div class="tc-mbti">INFP · ISFP</div><div class="tc-hook">"느끼는 건 많은데 표현이 안 된다"</div></div>
+      <div class="type-card"><div class="tc-icon">🐦‍⬛</div><div class="tc-name">LOGIC</div><div class="tc-mbti">INTP · ISTP</div><div class="tc-hook">"다 맞는데 왜 사람들이 멀어질까"</div></div>
+      <div class="type-card"><div class="tc-icon">🦅</div><div class="tc-name">LEADER</div><div class="tc-mbti">ENTJ · ESTJ</div><div class="tc-hook">"다 이뤘는데 왜 이렇게 공허하지"</div></div>
+    </div>
+    <p class="types-note">* MBTI®는 The Myers-Briggs Foundation의 등록상표입니다. 온유스쿨은 독자적 프레임워크로 동 재단과 무관합니다.</p>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 클래스 상품 -->
+<section id="classes">
+  <div class="inner">
+    <div class="sec-label">Classes</div>
+    <h2 class="sec-title">클래스 & 리포트</h2>
+    <p class="sec-sub">무료 검사로 시작해서, 필요한 단계만 선택하세요.</p>
+    <div class="class-grid">
+
+      <div class="class-card">
+        <div class="cc-badge free">FREE</div>
+        <div class="cc-icon">🔍</div>
+        <div class="cc-title">퍼스트클래스<br><small style="font-weight:400;font-size:0.85rem">소통스타일 발견</small></div>
+        <div class="cc-desc">8가지 소통스타일 중 나의 유형을 발견합니다. 오른손(강점)과 왼손(성장 영역)을 처음으로 마주하는 시간.</div>
+        <div class="cc-price"><strong>무료</strong></div>
+        <a href="check.html" class="btn-class">무료 검사 시작</a>
+      </div>
+
+      <div class="class-card highlight">
+        <div class="cc-badge new">5월 특가</div>
+        <div class="cc-icon">💑</div>
+        <div class="cc-title">부부클래스<br><small style="font-weight:400;font-size:0.85rem">두 소통스타일의 만남</small></div>
+        <div class="cc-desc">우리 부부가 왜 그렇게 달랐는지, 어디서 부딪히는지, 어떻게 서로를 세울 수 있는지 — 64가지 조합 중 우리 부부 리포트.</div>
+        <div class="cc-price"><span class="original">49,000원</span><strong>35,000원</strong><span class="event">5.31까지</span></div>
+        <a href="#apply" class="btn-class">신청하기</a>
+      </div>
+
+      <div class="class-card">
+        <div class="cc-badge new">5월 특가</div>
+        <div class="cc-icon">👨‍👩‍👧</div>
+        <div class="cc-title">자녀양육클래스<br><small style="font-weight:400;font-size:0.85rem">아이를 이해하는 언어</small></div>
+        <div class="cc-desc">왜 우리 아이는 그렇게 반응할까요. 부모와 자녀의 소통스타일 조합으로 양육 방향을 새롭게 발견합니다.</div>
+        <div class="cc-price"><span class="original">39,000원</span><strong>29,000원</strong><span class="event">5.31까지</span></div>
+        <a href="#apply" class="btn-class">신청하기</a>
+      </div>
+
+      <div class="class-card">
+        <div class="cc-badge">개인</div>
+        <div class="cc-icon">🌱</div>
+        <div class="cc-title">왼손 심화 리포트<br><small style="font-weight:400;font-size:0.85rem">성장 영역 완전 분석</small></div>
+        <div class="cc-desc">무료 리포트보다 3배 깊은 분석. 왼손을 깨울 때 겪는 일, 단계별 실천 방향, 나만을 위한 성장 로드맵.</div>
+        <div class="cc-price"><strong>19,000원</strong><span class="event">5월 특가</span></div>
+        <a href="#apply" class="btn-class ghost">신청하기</a>
+      </div>
+
+      <div class="class-card">
+        <div class="cc-badge">가족</div>
+        <div class="cc-icon">🏡</div>
+        <div class="cc-title">가족 풀 패키지<br><small style="font-weight:400;font-size:0.85rem">부부 + 자녀 1인</small></div>
+        <div class="cc-desc">부부 리포트 + 자녀양육 리포트를 함께. 우리 가족 전체의 소통 지도를 한 번에 받아보세요.</div>
+        <div class="cc-price"><span class="original">99,000원</span><strong>69,000원</strong><span class="event">5월 특가</span></div>
+        <a href="#apply" class="btn-class ghost">신청하기</a>
+      </div>
+
+      <div class="class-card coming">
+        <div class="cc-badge coming">COMING SOON</div>
+        <div class="cc-icon">👥</div>
+        <div class="cc-title">소그룹 리더 클래스<br><small style="font-weight:400;font-size:0.85rem">셀·구역 리더 도구</small></div>
+        <div class="cc-desc">소그룹 멤버들의 소통스타일 분포를 파악하고, 더 깊은 관계와 사역으로 나아가는 리더 가이드.</div>
+        <div class="cc-price" style="color:#aaa">준비 중</div>
+        <button class="btn-class disabled" disabled>준비 중</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 가정의 달 이벤트 -->
+<section id="event">
+  <div class="event-inner">
+    <div class="sec-label" style="color:#B8E0C0">May Family Event</div>
+    <div class="event-box">
+      <div class="ev-top">
+        <div>
+          <h2 class="ev-title">교회 가정의 달 특별 패키지<br><em>성도 전원에게 드리는 선물</em></h2>
+          <p class="ev-desc">목사님이 교회 패키지를 구매하시면, 성도들은 무료로 소통스타일 리포트를 받습니다.<br>결과 리포트 안에서 부부·자녀 리포트로 자연스럽게 연결됩니다.</p>
+        </div>
+        <div class="ev-deadline">
+          <div class="dl-label">신청 마감</div>
+          <div class="dl-date">5월 31일</div>
+        </div>
+      </div>
+
+      <div class="ev-packages">
+        <div class="ev-pkg">
+          <div class="ep-name">새싹 패키지</div>
+          <div class="ep-count">30명</div>
+          <div class="ep-price">총 <strong>90,000원</strong></div>
+        </div>
+        <div class="ev-pkg">
+          <div class="ep-name">가정 패키지</div>
+          <div class="ep-count">50명 + 공동체 분석</div>
+          <div class="ep-price">총 <strong>180,000원</strong></div>
+        </div>
+        <div class="ev-pkg">
+          <div class="ep-name">축복 패키지</div>
+          <div class="ep-count">100명 + 분석 + 줌 세미나</div>
+          <div class="ep-price">총 <strong>500,000원</strong></div>
+        </div>
+      </div>
+
+      <div class="ev-includes">
+        <span class="ev-tag">✓ 성도 개인 리포트 자동 발송</span>
+        <span class="ev-tag">✓ 교회 유형 분포 분석</span>
+        <span class="ev-tag">✓ 소그룹 나눔 가이드 4주</span>
+        <span class="ev-tag">✓ 주보 안내 문구 템플릿</span>
+        <span class="ev-tag">✓ 목회자 리포트 1부 무료</span>
+      </div>
+
+      <a href="#apply" class="btn-event">교회 패키지 신청하기 →</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 커뮤니티 & 읽을거리 -->
+<section id="community">
+  <div class="inner">
+    <div class="sec-label">Community & Insights</div>
+    <h2 class="sec-title">커뮤니티 & 읽을거리</h2>
+    <p class="sec-sub">같은 유형의 사람들이 겪는 이야기, 왼손을 깨우는 과정의 기록들.</p>
+
+    <div class="comm-grid">
+      <!-- 피드 -->
+      <div>
+        <div class="feed-list">
+          <div class="feed-item">
+            <span class="feed-cat insight">인사이트</span>
+            <div class="feed-body">
+              <div class="feed-title">MBTI 16유형보다 8유형이 관계 분석에 더 정확한 이유</div>
+              <div class="feed-meta">쉐도우그램 · 2026.04.05</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-cat type">HARMONY</span>
+            <div class="feed-body">
+              <div class="feed-title">다 챙겨줬는데 왜 나는 없을까 — HARMONY 왼손을 처음 쓸 때 일어나는 일</div>
+              <div class="feed-meta">소통스타일 시리즈 · 2026.04.03</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-cat mission">이번 주 미션</span>
+            <div class="feed-body">
+              <div class="feed-title">SPARK의 왼손 미션 — 오늘 시작한 것 하나, 끝까지 해보기</div>
+              <div class="feed-meta">주간 미션 · 2026.04.07</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-cat story">적용 사례</span>
+            <div class="feed-body">
+              <div class="feed-title">부부 둘 다 LEADER였습니다 — 10년 만에 이유를 알았어요</div>
+              <div class="feed-meta">성도 후기 · 2026.04.01</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-cat insight">인사이트</span>
+            <div class="feed-body">
+              <div class="feed-title">왼손을 개발할 때 왜 처음엔 더 힘들어질까 — 개성화 과정의 3단계</div>
+              <div class="feed-meta">쉐도우그램 · 2026.03.28</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-cat type">LOGIC</span>
+            <div class="feed-body">
+              <div class="feed-title">다 맞는데 왜 사람들이 멀어질까 — LOGIC이 공동체 안에서 겪는 일</div>
+              <div class="feed-meta">소통스타일 시리즈 · 2026.03.25</div>
+            </div>
+          </div>
+        </div>
+        <a href="#" class="feed-more">전체 읽을거리 보기 →</a>
+      </div>
+
+      <!-- 사이드 -->
+      <div class="comm-side">
+        <!-- 카톡 커뮤니티 -->
+        <div class="comm-box">
+          <div class="cb-title">💬 온유스쿨 커뮤니티</div>
+          <a href="#" class="kakao-btn">
+            <span class="icon">💛</span>
+            카카오 오픈채팅 참여하기
+          </a>
+          <p class="comm-note">
+            입장 시 닉네임을 <strong>[유형_이름]</strong>으로 설정해주세요.<br>
+            예: HARMONY_지은, SPARK_민준<br>
+            <br>
+            같은 유형의 이야기, 왼손 미션 후기,<br>관계 고민을 함께 나눕니다.
+          </p>
+        </div>
+
+        <!-- 이번 주 왼손 미션 -->
+        <div class="comm-box">
+          <div class="cb-title">🌱 이번 주 왼손 미션</div>
+          <div class="mission-preview">
+            <div class="mp-item"><span class="mp-type">SPARK</span>오늘 시작한 것 하나, 끝까지 해보기</div>
+            <div class="mp-item"><span class="mp-type">HARMONY</span>오늘 하루 "No"라고 한 번 말하기</div>
+            <div class="mp-item"><span class="mp-type">LOGIC</span>오늘 대화에서 감정 단어 하나 먼저 꺼내기</div>
+            <div class="mp-item"><span class="mp-type">VISION</span>지금 이 순간에만 집중하는 30분 갖기</div>
+            <div class="mp-item"><span class="mp-type">LEADER</span>오늘 한 가지, 결과 없이 그냥 즐기기</div>
+          </div>
+        </div>
+
+        <!-- 뉴스레터 구독 -->
+        <div class="comm-box">
+          <div class="cb-title">📮 주간 인사이트 구독</div>
+          <p class="comm-note" style="margin-bottom:12px">매주 유형별 왼손 이야기와 미션을 이메일로 받아보세요.</p>
+          <form onsubmit="handleNewsletterSubmit(event)">
+            <div class="f-row" style="margin-bottom:8px">
+              <input type="email" id="nl-email" placeholder="이메일 주소" required />
+            </div>
+            <button type="submit" class="btn-class" style="margin:0">구독하기</button>
+          </form>
+          <p id="nl-done" style="display:none;font-size:0.8rem;color:var(--mid);margin-top:8px;text-align:center">✓ 구독되었습니다. 매주 월요일에 찾아갑니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 목회자 섹션 -->
+<section id="pastor">
+  <div class="inner">
+    <div class="sec-label">For Pastors</div>
+    <h2 class="sec-title">목회자를 위한 도구</h2>
+    <p class="sec-sub">성도를 더 깊이 이해하고, 상담과 설교와 소그룹 사역에 바로 활용하세요.</p>
+    <div class="pastor-grid">
+      <div>
+        <div class="pastor-quote">
+          <p>"성도가 왜 그렇게 반응하는지, 이제야 이해가 됩니다. 소통스타일 리포트 하나로 상담의 깊이가 달라졌습니다."</p>
+          <div class="author">— 온유스쿨 파트너 목회자</div>
+        </div>
+        <div class="pastor-quote">
+          <p>"HARMONY 성도들이 지쳐가는 이유를 이제 설교에서 직접 말할 수 있게 됐습니다. 성도들이 '목사님이 나를 아신다'고 했습니다."</p>
+          <div class="author">— 온유스쿨 파트너 목회자</div>
+        </div>
+      </div>
+      <div>
+        <div class="pastor-offer">
+          <div class="po-title">목회자 전용 혜택</div>
+          <div class="po-item"><span class="po-check">✓</span>목회자 소통스타일 검사 (일반과 다른 목회 맥락 문항)</div>
+          <div class="po-item"><span class="po-check">✓</span>목회자 리포트 1부 무료 제공 (교회 패키지 구매 시)</div>
+          <div class="po-item"><span class="po-check">✓</span>성도 유형 분포 대시보드</div>
+          <div class="po-item"><span class="po-check">✓</span>4주 소그룹 나눔 가이드</div>
+          <div class="po-item"><span class="po-check">✓</span>설교 활용 팁 1페이지</div>
+          <div class="po-item"><span class="po-check">✓</span>성도 배포용 카톡 문자 템플릿</div>
+        </div>
+        <div class="pastor-cta">
+          <a href="pastor.html" class="btn-pastor">목회자 전용 검사 시작</a>
+          <a href="#apply" class="btn-pastor ghost">교회 패키지 문의하기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- 신청 폼 -->
+<section id="apply">
+  <div class="inner">
+    <div class="sec-label">Apply</div>
+    <h2 class="sec-title">신청 & 문의</h2>
+    <div class="apply-grid">
+      <div class="apply-steps">
+        <h3>신청 후 진행 순서</h3>
+        <ul class="step-list">
+          <li><span class="step-n">01</span>신청서 제출 — 교회/개인 정보와 원하시는 클래스 선택</li>
+          <li><span class="step-n">02</span>확인 연락 — 24시간 내 이메일 또는 카카오톡으로 확인</li>
+          <li><span class="step-n">03</span>결제 안내 — 교회 패키지는 견적서 발송 후 세금계산서 가능</li>
+          <li><span class="step-n">04</span>코드 발급 — 결제 완료 후 즉시 코드 발송</li>
+          <li><span class="step-n">05</span>리포트 수령 — 검사 완료 즉시 이메일로 자동 발송</li>
+        </ul>
+        <div style="margin-top:20px;padding:16px;background:var(--lt2);border-left:4px solid var(--mid);font-size:0.85rem;color:#444;line-height:1.8">
+          <strong style="color:var(--mid)">교회 패키지 담당자라면</strong><br>
+          '신청 유형'에서 '교회 단체 패키지'를 선택해주세요. 인원 수에 맞는 견적서를 드립니다.
+        </div>
+      </div>
+      <div>
+        <div class="form-box">
+          <div class="form-title">신청 & 문의</div>
+          <div class="form-sub">모든 문의는 24시간 내 답변드립니다</div>
+          <form id="apply-form" onsubmit="handleApplySubmit(event)">
+            <div class="f-row">
+              <label>이름 <span class="req">*</span></label>
+              <input type="text" placeholder="홍길동" required />
+            </div>
+            <div class="f-row">
+              <label>이메일 <span class="req">*</span></label>
+              <input type="email" placeholder="example@email.com" required />
+            </div>
+            <div class="f-row">
+              <label>연락처</label>
+              <input type="tel" placeholder="010-0000-0000" />
+            </div>
+            <div class="f-row">
+              <label>신청 유형 <span class="req">*</span></label>
+              <select required>
+                <option value="">선택해주세요</option>
+                <option>부부클래스 리포트</option>
+                <option>자녀양육클래스 리포트</option>
+                <option>가족 풀 패키지</option>
+                <option>왼손 심화 리포트</option>
+                <option>교회 단체 패키지</option>
+                <option>목회자 문의</option>
+                <option>기타 문의</option>
+              </select>
+            </div>
+            <div class="f-row">
+              <label>교회명 (단체 신청 시)</label>
+              <input type="text" placeholder="○○교회" />
+            </div>
+            <div class="f-row">
+              <label>문의 내용</label>
+              <textarea placeholder="궁금한 점이나 요청 사항을 적어주세요"></textarea>
+            </div>
+            <button type="submit" class="f-submit">신청하기</button>
+            <p class="f-note">개인정보는 문의 응대 목적으로만 사용되며 외부에 제공되지 않습니다.</p>
+          </form>
+          <div class="f-success" id="apply-success">
+            <h3>신청이 접수되었습니다</h3>
+            <p>24시간 내에 이메일로 연락드리겠습니다.<br>온유스쿨과 함께하게 되어 기쁩니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer>
+  <div class="f-inner">
+    <div>
+      <div class="f-brand">온유스쿨</div>
+      <div class="f-desc">쉐도우그램 8유형 기반<br>소통스타일 발견 플랫폼<br><br>by Shadowgram</div>
+    </div>
+    <div>
+      <div class="f-col-title">클래스</div>
+      <ul>
+        <li><a href="check.html">퍼스트클래스 (무료)</a></li>
+        <li><a href="#apply">부부클래스</a></li>
+        <li><a href="#apply">자녀양육클래스</a></li>
+        <li><a href="#apply">가족 풀 패키지</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="f-col-title">안내</div>
+      <ul>
+        <li><a href="pastor.html">목회자 전용</a></li>
+        <li><a href="#event">교회 패키지</a></li>
+        <li><a href="#community">커뮤니티</a></li>
+        <li><a href="#apply">문의하기</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <span>© 2026 온유스쿨 · Shadowgram. All rights reserved.</span>
+    <span>* MBTI®는 The Myers-Briggs Foundation의 등록상표입니다. 온유스쿨은 독자적 프레임워크로 동 재단과 무관합니다.</span>
+  </div>
+</footer>
+
+<!-- 구독 배너 -->
+<div class="sub-bar" id="sub-bar">
+  <div class="sb-inner">
+    <div class="sb-text">
+      <strong>📮 주간 왼손 인사이트 받아보기</strong>
+      <span>매주 월요일, 유형별 왼손 이야기와 미션을 보내드립니다</span>
+    </div>
+    <div class="sb-form">
+      <input type="email" id="sb-email" placeholder="이메일 주소" />
+      <button onclick="handleSubSubmit()">구독</button>
+    </div>
+    <button class="sb-close" onclick="document.getElementById('sub-bar').classList.remove('show')">✕</button>
+  </div>
+</div>
+
+<script>
+  // 스크롤 구독 배너
+  let subShown = false;
+  window.addEventListener('scroll', () => {
+    if (!subShown && window.scrollY > window.innerHeight * 0.8) {
+      document.getElementById('sub-bar').classList.add('show');
+      subShown = true;
+    }
+  });
+
+  // 뉴스레터 구독
+  function handleNewsletterSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('nl-email').value;
+    if (!email) return;
+    document.getElementById('nl-done').style.display = 'block';
+    e.target.reset();
+    // TODO: 실제 연동 시 Google Apps Script or API 호출
+  }
+
+  // 구독 배너
+  function handleSubSubmit() {
+    const email = document.getElementById('sb-email').value;
+    if (!email) return;
+    document.getElementById('sub-bar').innerHTML = '<div class="sb-inner" style="justify-content:center;color:#B8E0C0;font-size:0.9rem">✓ 구독되었습니다. 매주 월요일에 찾아갑니다.</div>';
+    // TODO: 실제 연동
+  }
+
+  // 신청 폼
+  function handleApplySubmit(e) {
+    e.preventDefault();
+    document.getElementById('apply-form').style.display = 'none';
+    document.getElementById('apply-success').style.display = 'block';
+    // TODO: Google Apps Script or API 연동
+  }
+
+  // 피드 아이템 클릭 (추후 상세 페이지 연결)
+  document.querySelectorAll('.feed-title').forEach(el => {
+    el.addEventListener('click', () => {
+      // TODO: 실제 콘텐츠 페이지 연결
+      alert('콘텐츠 준비 중입니다. 커뮤니티에서 먼저 만나보세요!');
+    });
+  });
+</script>
+
+</body>
+</html>

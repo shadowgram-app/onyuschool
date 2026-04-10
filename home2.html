@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>온유스쿨 — 함께 지어져 가기 위해 온유를 배웁니다</title>
+  <meta name="description" content="함께 지어져 가기 위해 서로를 관찰하고 배려합니다. 온유스쿨 onyuschool.com" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --deep: #1A3A5C; --mid: #2D6A4F; --gold: #9A7A2E;
+      --gray: #666; --dk: #222; --lt: #F7F8FA; --line: #DDD; --white: #FFF;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',sans-serif; color: var(--dk); background: var(--white); line-height: 1.8; font-size: 15px; }
+
+    /* ── 네비 ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--white); border-bottom: 3px solid var(--deep);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 54px;
+    }
+    .nav-brand { font-size: 1.1rem; font-weight: 800; color: var(--deep); text-decoration: none; }
+    .nav-brand span { color: var(--gray); font-weight: 400; font-size: 0.75rem; margin-left: 6px; }
+    .nav-menu { display: none; }
+
+    /* ── HERO ── */
+    #hero {
+      background: linear-gradient(160deg, #0f2540, var(--deep) 60%, #1e4d38);
+      padding: 64px 5% 56px; text-align: center; border-bottom: 4px solid var(--gold);
+    }
+    .hero-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; color: #B8E0C0; margin-bottom: 16px; }
+    .hero-title { font-size: 2.2rem; font-weight: 800; color: var(--white); line-height: 1.25; margin-bottom: 14px; letter-spacing: -1px; }
+    .hero-title em { font-style: normal; color: #FFE08A; }
+    .hero-sub { font-size: 0.95rem; color: rgba(255,255,255,0.7); margin-bottom: 36px; line-height: 1.8; }
+
+    /* 시작 박스 — 두 경로 */
+    .start-wrap { max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
+
+    /* 교회 코드 경로 */
+    .path-church {
+      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.25);
+      padding: 24px 24px 20px;
+    }
+    .path-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+    .path-label.lbl-church { color: #FFE08A; }
+    .path-label.lbl-free   { color: rgba(255,255,255,0.45); }
+    .path-desc { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-bottom: 14px; line-height: 1.6; }
+
+    .code-row { display: flex; gap: 0; }
+    .code-input {
+      flex: 1; padding: 13px 16px; border: 1.5px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1); color: var(--white);
+      font-size: 0.95rem; font-family: inherit; outline: none;
+      letter-spacing: 1px; text-transform: uppercase;
+      transition: border-color 0.2s;
+    }
+    .code-input::placeholder { color: rgba(255,255,255,0.3); text-transform: none; letter-spacing: 0; }
+    .code-input:focus { border-color: var(--gold); }
+    .btn-start {
+      padding: 13px 22px; background: var(--gold); color: var(--white);
+      border: none; font-size: 0.92rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-start:hover { background: #7a6020; }
+    .path-note {
+      font-size: 0.72rem; color: rgba(255,255,255,0.3);
+      margin-top: 8px;
+    }
+
+    /* 개인 무료 경로 */
+    .path-divider {
+      display: flex; align-items: center; gap: 10px;
+      color: rgba(255,255,255,0.2); font-size: 0.75rem;
+      padding: 0 24px; height: 36px;
+      background: rgba(255,255,255,0.03); border-left: 1.5px solid rgba(255,255,255,0.25); border-right: 1.5px solid rgba(255,255,255,0.25);
+    }
+    .path-divider::before, .path-divider::after { content:''; flex:1; height:1px; background: rgba(255,255,255,0.12); }
+
+    .path-free {
+      background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.15);
+      border-top: none;
+      padding: 20px 24px 24px;
+    }
+    .btn-free-wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .btn-free {
+      display: inline-block; padding: 12px 24px;
+      border: 1.5px solid rgba(255,255,255,0.35); color: var(--white);
+      background: none; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-free:hover { background: rgba(255,255,255,0.08); }
+    .free-hint {
+      font-size: 0.78rem; color: rgba(255,255,255,0.4); line-height: 1.6;
+    }
+    .free-hint strong { color: rgba(255,255,255,0.65); }
+
+    /* ── 흐름 설명 ── */
+    #flow { background: var(--lt); padding: 48px 5%; }
+    .flow-inner { max-width: 720px; margin: 0 auto; }
+    .flow-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; color: var(--gray); text-align: center; margin-bottom: 24px; text-transform: uppercase; }
+    .flow-tracks { display: flex; flex-direction: column; gap: 16px; }
+    .flow-track {
+      display: flex; align-items: stretch; gap: 0;
+      border: 1px solid var(--line); overflow: hidden;
+    }
+    .ft-tag {
+      width: 88px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
+      writing-mode: horizontal-tb; padding: 14px 12px; text-align: center;
+    }
+    .ft-tag.church { background: var(--deep); color: #FFE08A; }
+    .ft-tag.free   { background: var(--lt); color: var(--gray); border-right: 1px solid var(--line); }
+    .ft-steps { display: flex; flex: 1; align-items: center; }
+    .ft-step {
+      flex: 1; padding: 14px 12px; text-align: center;
+      border-right: 1px solid var(--line); position: relative;
+    }
+    .ft-step:last-child { border-right: none; }
+    .ft-step::after {
+      content: '›'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+      color: var(--gold); font-size: 1.1rem; z-index: 1;
+    }
+    .ft-step:last-child::after { display: none; }
+    .fts-icon { font-size: 1.1rem; margin-bottom: 4px; }
+    .fts-name { font-size: 0.8rem; font-weight: 700; color: var(--deep); line-height: 1.3; }
+    .fts-sub  { font-size: 0.7rem; color: var(--gray); margin-top: 2px; line-height: 1.4; }
+    .fts-price {
+      display: inline-block; margin-top: 4px;
+      font-size: 0.72rem; font-weight: 700;
+      padding: 2px 8px; border: 1px solid;
+    }
+    .price-free  { border-color: var(--mid); color: var(--mid); }
+    .price-incl  { border-color: var(--deep); color: var(--deep); }
+    .price-paid  { border-color: var(--gold); color: var(--gold); }
+
+    /* ── 리포트 & 클래스 ── */
+    #classes { padding: 56px 5%; }
+    .cls-inner { max-width: 720px; margin: 0 auto; }
+    .sec-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; color: var(--mid); text-transform: uppercase; margin-bottom: 8px; }
+    .sec-title { font-size: 1.5rem; font-weight: 700; color: var(--deep); margin-bottom: 6px; letter-spacing: -0.5px; }
+    .sec-sub { font-size: 0.87rem; color: var(--gray); margin-bottom: 28px; line-height: 1.7; }
+
+    .class-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--line); }
+    .class-item {
+      display: flex; align-items: center; gap: 20px;
+      padding: 20px 24px; border-bottom: 1px solid var(--line);
+      text-decoration: none; color: var(--dk);
+      transition: background 0.15s; cursor: pointer;
+    }
+    .class-item:last-child { border-bottom: none; }
+    .class-item:hover { background: var(--lt); }
+    .ci-icon { font-size: 1.8rem; flex-shrink: 0; width: 44px; text-align: center; }
+    .ci-body { flex: 1; }
+    .ci-title { font-size: 0.97rem; font-weight: 700; color: var(--deep); margin-bottom: 3px; }
+    .ci-desc { font-size: 0.82rem; color: var(--gray); line-height: 1.5; }
+    .ci-right { text-align: right; flex-shrink: 0; }
+    .ci-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      padding: 3px 9px; border: 1px solid; margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    .ci-badge.free  { border-color: var(--mid); color: var(--mid); }
+    .ci-badge.incl  { border-color: var(--deep); color: var(--deep); }
+    .ci-badge.upsell{ border-color: var(--gold); color: var(--gold); }
+    .ci-price { font-size: 0.9rem; color: var(--dk); font-weight: 700; display: block; }
+    .ci-price-orig { font-size: 0.75rem; color: #aaa; text-decoration: line-through; display: block; }
+    .ci-arrow { font-size: 1rem; color: var(--line); margin-left: 12px; flex-shrink: 0; }
+
+    /* 클래스 구분선 */
+    .class-divider {
+      padding: 8px 24px; background: var(--lt);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--gray); text-transform: uppercase;
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* ── 쉐도우그램 소개 ── */
+    #about { padding: 64px 5%; background: var(--lt); border-top: 1px solid var(--line); }
+    .about-inner { max-width: 720px; margin: 0 auto; }
+    .about-body { margin-top: 0; }
+    .about-lead {
+      font-size: 1.05rem; color: var(--dk); line-height: 1.9;
+      margin-bottom: 32px; padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+    .ag-item {
+      padding: 22px 20px; border: 1.5px solid var(--line); background: var(--white);
+    }
+    .ag-icon { font-size: 1.6rem; margin-bottom: 8px; }
+    .ag-title { font-size: 0.93rem; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
+    .ag-desc { font-size: 0.82rem; color: #555; line-height: 1.7; }
+    .about-quote {
+      font-size: 0.95rem; color: var(--deep); line-height: 1.9;
+      padding: 18px 22px; border-left: 4px solid var(--gold);
+      background: var(--white); margin-bottom: 28px; font-style: italic;
+    }
+    .about-quote span { font-size: 0.78rem; color: var(--gray); font-style: normal; }
+    .about-types { margin-bottom: 28px; }
+    .at-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; color: var(--gray); text-transform: uppercase; margin-bottom: 10px; }
+    .at-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .at-type {
+      font-size: 0.82rem; font-weight: 700; color: var(--deep);
+      padding: 6px 14px; border: 1px solid var(--line); background: var(--white);
+    }
+    .about-diff {
+      padding: 20px 22px; border: 1.5px solid var(--deep); background: var(--white);
+    }
+    .diff-title { font-size: 0.9rem; font-weight: 700; color: var(--deep); margin-bottom: 8px; }
+    .diff-desc { font-size: 0.85rem; color: #444; line-height: 1.9; }
+    .diff-desc em { font-style: normal; font-weight: 700; color: var(--deep); }
+
+    /* ── 푸터 ── */
+    footer { background: var(--deep); color: #7A9BB5; padding: 32px 5%; font-size: 0.8rem; line-height: 1.9; }
+    .f-inner { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; }
+    .f-brand { color: var(--white); font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    footer a { color: #7A9BB5; text-decoration: none; }
+    footer a:hover { color: var(--white); }
+    .f-links { display: flex; gap: 16px; flex-wrap: wrap; }
+    .f-disclaimer { max-width: 720px; margin: 16px auto 0; padding-top: 14px; border-top: 1px solid #2A4D6E; font-size: 0.74rem; color: #456; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 640px) {
+      .hero-title { font-size: 1.7rem; }
+      .class-item { flex-wrap: wrap; }
+      .ci-arrow { display: none; }
+      .ft-tag { width: 64px; font-size: 0.65rem; }
+      .fts-name { font-size: 0.75rem; }
+      .btn-free-wrap { flex-direction: column; align-items: flex-start; }
+      .about-grid { grid-template-columns: 1fr; }
+      .at-grid { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 네비 -->
+<nav>
+  <a href="#" class="nav-brand">온유스쿨 <span>onyuschool.com</span></a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-label">ONYUSCHOOL.COM</div>
+  <h1 class="hero-title">함께 지어져 가기 위해<br><em>온유를 배웁니다</em></h1>
+  <p class="hero-sub">나를 이해하고 상대를 이해할 때<br>온유한 관계가 시작됩니다</p>
+
+  <div class="start-wrap">
+
+    <!-- 경로 1: 교회 코드 -->
+    <div class="path-church">
+      <div class="path-label lbl-church">⛪ 교회에서 코드를 받으셨나요?</div>
+      <div class="path-desc">코드를 입력하면 개인 소통스타일 리포트가 포함됩니다</div>
+      <div class="code-row">
+        <input class="code-input" type="text" id="church-code" placeholder="교회 코드 입력 (예: GRACE2026)" maxlength="20" />
+        <button class="btn-start" onclick="startWithCode()">시작 →</button>
+      </div>
+      <div class="path-note">* 결과 리포트는 본인 이메일로만 발송됩니다</div>
+    </div>
+
+    <div class="path-divider">또는</div>
+
+    <!-- 경로 2: 개인 무료 -->
+    <div class="path-free">
+      <div class="path-label lbl-free">개인으로 시작하기</div>
+      <div class="btn-free-wrap">
+        <a href="check.html" class="btn-free">무료 검사 시작 →</a>
+        <div class="free-hint">기본 유형 확인 무료<br><strong>풀 리포트 4,900원</strong>으로 이어집니다</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 경로별 흐름 설명 -->
+<section id="flow">
+  <div class="flow-inner">
+    <div class="flow-title">경로별 흐름 안내</div>
+    <div class="flow-tracks">
+
+      <!-- 교회 코드 트랙 -->
+      <div class="flow-track">
+        <div class="ft-tag church">교회<br>코드</div>
+        <div class="ft-steps">
+          <div class="ft-step">
+            <div class="fts-icon">🔑</div>
+            <div class="fts-name">코드 입력</div>
+            <div class="fts-sub">교회에서<br>받은 코드</div>
+          </div>
+          <div class="ft-step">
+            <div class="fts-icon">✅</div>
+            <div class="fts-name">검사 (5분)</div>
+            <div class="fts-sub">소통스타일<br>발견</div>
+          </div>
+          <div class="ft-step">
+            <div class="fts-icon">📄</div>
+            <div class="fts-name">개인 리포트</div>
+            <div class="fts-sub">이메일 발송</div>
+            <span class="fts-price price-incl">포함</span>
+          </div>
+          <div class="ft-step">
+            <div class="fts-icon">💑</div>
+            <div class="fts-name">부부·자녀</div>
+            <div class="fts-sub">추가 리포트</div>
+            <span class="fts-price price-paid">선택 유료</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 개인 무료 트랙 -->
+      <div class="flow-track">
+        <div class="ft-tag free">개인<br>시작</div>
+        <div class="ft-steps">
+          <div class="ft-step">
+            <div class="fts-icon">🙋</div>
+            <div class="fts-name">무료 검사</div>
+            <div class="fts-sub">소통스타일<br>발견</div>
+            <span class="fts-price price-free">무료</span>
+          </div>
+          <div class="ft-step">
+            <div class="fts-icon">🔍</div>
+            <div class="fts-name">기본 유형</div>
+            <div class="fts-sub">결과 화면<br>미리보기</div>
+          </div>
+          <div class="ft-step">
+            <div class="fts-icon">📄</div>
+            <div class="fts-name">풀 리포트</div>
+            <div class="fts-sub">심층 분석<br>이메일 발송</div>
+            <span class="fts-price price-paid">4,900원</span>
+          </div>
+          <div class="ft-step">
+            <div class="fts-icon">💑</div>
+            <div class="fts-name">부부·자녀</div>
+            <div class="fts-sub">추가 리포트</div>
+            <span class="fts-price price-paid">선택 유료</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 리포트 & 클래스 -->
+<section id="classes">
+  <div class="cls-inner">
+    <div class="sec-label">Reports</div>
+    <div class="sec-title">리포트 & 클래스</div>
+    <div class="sec-sub">검사 후 원하는 리포트를 추가하세요. 관계의 깊이가 달라집니다.</div>
+    <div class="class-list">
+
+      <div class="class-divider">개인 리포트</div>
+
+      <a href="check.html" class="class-item">
+        <div class="ci-icon">🔍</div>
+        <div class="ci-body">
+          <div class="ci-title">소통스타일 발견 검사</div>
+          <div class="ci-desc">8가지 유형 중 나의 소통스타일 확인 · 오른손과 왼손 발견 · 기본 유형 결과</div>
+        </div>
+        <div class="ci-right">
+          <span class="ci-badge free">FREE</span>
+          <span class="ci-price">무료</span>
+        </div>
+        <span class="ci-arrow">›</span>
+      </a>
+
+      <a href="#buy-report" class="class-item" onclick="buyReport('individual')">
+        <div class="ci-icon">📄</div>
+        <div class="ci-body">
+          <div class="ci-title">개인 소통스타일 풀 리포트</div>
+          <div class="ci-desc">심층 분석 · 오른손/왼손 상세 · 관계 패턴 · 성장 방향 · 이메일 발송</div>
+        </div>
+        <div class="ci-right">
+          <span class="ci-badge upsell">개인구매</span>
+          <span class="ci-price">4,900원</span>
+        </div>
+        <span class="ci-arrow">›</span>
+      </a>
+
+      <div class="class-divider">관계 리포트</div>
+
+      <a href="#buy-report" class="class-item" onclick="buyReport('couple')">
+        <div class="ci-icon">💑</div>
+        <div class="ci-body">
+          <div class="ci-title">부부클래스 리포트</div>
+          <div class="ci-desc">두 소통스타일의 끌림과 충돌 · 64가지 조합 분석 · 갈등 해소 가이드</div>
+        </div>
+        <div class="ci-right">
+          <span class="ci-badge upsell">업셀</span>
+          <span class="ci-price">4,900원</span>
+        </div>
+        <span class="ci-arrow">›</span>
+      </a>
+
+      <a href="#buy-report" class="class-item" onclick="buyReport('child')">
+        <div class="ci-icon">👨‍👩‍👧</div>
+        <div class="ci-body">
+          <div class="ci-title">자녀양육 리포트</div>
+          <div class="ci-desc">부모와 자녀 소통스타일 조합 · 양육 방향 발견 · 연령대별 접근법</div>
+        </div>
+        <div class="ci-right">
+          <span class="ci-badge upsell">업셀</span>
+          <span class="ci-price">9,900원</span>
+        </div>
+        <span class="ci-arrow">›</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- 쉐도우그램 소개 -->
+<section id="about">
+  <div class="about-inner">
+    <div class="sec-label">About Shadowgram</div>
+    <div class="sec-title">쉐도우그램이란?</div>
+    <div class="about-body">
+      <div class="about-lead">
+        사람은 누구나 <strong>잘 쓰는 손</strong>과 <strong>덜 쓰는 손</strong>이 있습니다.<br>
+        소통도 마찬가지입니다.
+      </div>
+      <div class="about-grid">
+        <div class="ag-item">
+          <div class="ag-icon">🤚</div>
+          <div class="ag-title">오른손 — 주기능</div>
+          <div class="ag-desc">자연스럽게 잘 되는 소통 방식.<br>강점이자 타인에게 보이는 나의 모습.</div>
+        </div>
+        <div class="ag-item">
+          <div class="ag-icon">🫲</div>
+          <div class="ag-title">왼손 — 열등기능</div>
+          <div class="ag-desc">평소엔 숨어 있다가 스트레스를 받으면<br>갑자기 튀어나와 관계를 흔드는 나의 그림자.</div>
+        </div>
+      </div>
+      <div class="about-quote">
+        "왼손을 개발할 때 비로소 온전한 사람이 됩니다"<br>
+        <span>— Carl Jung의 개성화(Individuation) 개념을 8유형으로 재설계</span>
+      </div>
+      <div class="about-types">
+        <div class="at-label">8가지 소통스타일</div>
+        <div class="at-grid">
+          <span class="at-type">🦜 SPARK</span>
+          <span class="at-type">🦚 VISION</span>
+          <span class="at-type">🐢 STEADY</span>
+          <span class="at-type">🐆 PLAYER</span>
+          <span class="at-type">🐬 HARMONY</span>
+          <span class="at-type">🦋 SOUL</span>
+          <span class="at-type">🐦‍⬛ LOGIC</span>
+          <span class="at-type">🦅 LEADER</span>
+        </div>
+      </div>
+      <div class="about-diff">
+        <div class="diff-title">왜 16유형이 아닌 8유형인가?</div>
+        <div class="diff-desc">
+          16유형은 <em>나 혼자</em>를 설명하는 데 집중합니다.<br>
+          쉐도우그램 8유형은 <em>관계 안에서의 나</em>를 설명합니다.<br>
+          끌림·충돌·반복되는 갈등 패턴이 8유형으로 더 선명하게 보입니다.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer>
+  <div class="f-inner">
+    <div>
+      <div class="f-brand">온유스쿨 onyuschool.com</div>
+      <div>함께 지어져 가기 위해 서로를 관찰하고 배려합니다</div>
+    </div>
+    <div class="f-links">
+      <a href="check.html">무료 검사</a>
+      <a href="#classes">리포트</a>
+      <a href="#about">쉐도우그램</a>
+      <a href="pastor-landing.html">목회자</a>
+    </div>
+  </div>
+  <div class="f-disclaimer">
+    * MBTI®는 The Myers-Briggs Foundation의 등록상표입니다. 온유스쿨은 독자적 프레임워크로 동 재단과 무관합니다.<br>
+    © 2026 온유스쿨 · Shadowgram. All rights reserved.
+  </div>
+</footer>
+
+<script>
+  // 교회 코드 입력 → 검사 시작 (리포트 포함)
+  function startWithCode() {
+    const code = document.getElementById('church-code').value.trim().toUpperCase();
+    if (!code) { alert('교회 코드를 입력해주세요.'); return; }
+    // TODO: 코드 유효성 검증 API 연동
+    window.location.href = 'check.html?code=' + encodeURIComponent(code);
+  }
+
+  // 리포트 구매 (TODO: 실제 결제 링크 연동)
+  function buyReport(type) {
+    const links = {
+      individual: '#',   // TODO: 개인 풀 리포트 결제 링크
+      couple:     '#',   // TODO: 부부클래스 결제 링크
+      child:      '#',   // TODO: 자녀양육 결제 링크
+    };
+    if (links[type] === '#') {
+      alert('준비 중입니다.\n검사 완료 후 결과 페이지에서 바로 구매하실 수 있습니다.');
+      return;
+    }
+    window.location.href = links[type];
+  }
+
+  // 엔터키
+  document.getElementById('church-code').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') startWithCode();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>부부클래스 체험판 — 64유형 부부 소통 | 온유스쿨</title>
+<meta name="description" content="나와 배우자의 소통 유형을 함께 이해합니다. 64가지 부부 조합 중 우리의 조합을 확인하세요. 온유스쿨 부부클래스 무료 체험.">
+<meta property="og:title" content="우리 부부는 어떤 조합인가요? — 온유스쿨 부부클래스 체험">
+<meta property="og:description" content="64가지 부부 소통 조합. 서로의 언어를 이해하면 갈등이 달리 보입니다.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://onyuschool.com/og-coupleclass.jpg">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --dark:#F7F5F2;
+    --pastor:#3D2B1F;
+    --gold:#7A5C1E;
+    --gold-lt:#FFF3C4;
+    --rose:#9B3043;
+    --rose-lt:#FFF0F3;
+    --green:#1E6640;
+    --green-lt:#E8F5EE;
+    --accent:#6B4EAF;
+    --light:#F4F2EF;
+    --gray:#6B6560;
+    --border:#E0D8CC;
+  }
+  html{scroll-behavior:smooth;}
+  body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#F7F5F2;color:#1A1714;line-height:1.7;}
+
+  nav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(247,245,242,0.97);
+    backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 5%;height:56px;
+    border-bottom:1px solid rgba(122,92,30,0.16);
+  }
+  .nav-logo{color:#1A1714;font-size:15px;font-weight:700;letter-spacing:.05em;text-decoration:none;}
+  .nav-badge{background:var(--rose);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+
+  .hero{
+    background:linear-gradient(135deg,#FDF8F3 0%,#F5EBE6 60%,#EDE8F5 100%);
+    padding:72px 5% 64px;text-align:center;position:relative;overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%, rgba(155,48,67,.06) 0%, transparent 60%);pointer-events:none;}
+  .hero-tag{display:inline-block;border:1px solid rgba(155,48,67,.35);color:var(--rose);font-size:12px;letter-spacing:.12em;font-weight:600;padding:4px 16px;border-radius:20px;margin-bottom:24px;}
+  .hero h1{color:#1A1714;font-size:clamp(28px,5vw,46px);font-weight:800;line-height:1.25;margin-bottom:16px;}
+  .hero h1 em{color:var(--rose);font-style:normal;}
+  .hero-sub{color:#6B6560;font-size:clamp(14px,2vw,17px);max-width:480px;margin:0 auto 36px;}
+  .btn-start{display:inline-block;background:var(--rose);color:#fff;font-size:16px;font-weight:700;padding:14px 40px;border-radius:32px;text-decoration:none;box-shadow:0 4px 24px rgba(155,48,67,.25);transition:transform .2s,box-shadow .2s;cursor:pointer;border:none;}
+  .btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(155,48,67,.35);}
+  .hero-note{color:#A09890;font-size:12px;margin-top:12px;}
+
+  section{padding:64px 5%;}
+  .section-tag{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+  h2{font-size:clamp(22px,3.5vw,32px);font-weight:800;color:var(--pastor);margin-bottom:12px;}
+  .section-sub{color:var(--gray);font-size:15px;margin-bottom:40px;}
+
+  /* SELECTOR */
+  .selector-wrap{
+    display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:start;
+    max-width:900px;margin:0 auto;
+  }
+  @media(max-width:700px){.selector-wrap{grid-template-columns:1fr;}}
+  .selector-col h3{font-size:14px;font-weight:700;color:var(--pastor);margin-bottom:12px;text-align:center;}
+  .selector-col h3 span{font-size:12px;color:var(--gray);font-weight:400;display:block;margin-top:2px;}
+  .type-list{display:flex;flex-direction:column;gap:8px;}
+  .type-btn{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);
+    background:#fff;cursor:pointer;transition:all .15s;text-align:left;
+    font-family:inherit;
+  }
+  .type-btn:hover{border-color:var(--accent);background:var(--light);}
+  .type-btn.selected-me{border-color:#B5434F;background:var(--rose-lt);}
+  .type-btn.selected-partner{border-color:var(--accent);background:#EEF2FF;}
+  .type-btn .btn-icon{font-size:20px;flex-shrink:0;}
+  .type-btn .btn-info{flex:1;}
+  .type-btn .btn-name{font-size:13px;font-weight:700;color:var(--pastor);}
+  .type-btn .btn-kw{font-size:11px;color:var(--gray);}
+  .vs-divider{
+    display:flex;align-items:center;justify-content:center;padding-top:44px;
+  }
+  .vs-circle{
+    width:48px;height:48px;border-radius:50%;
+    background:linear-gradient(135deg,var(--rose),var(--accent));
+    color:#fff;font-size:15px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 12px rgba(155,48,67,.2);
+  }
+
+  /* RESULT */
+  #couple-result{
+    display:none;
+    max-width:860px;margin:32px auto 0;
+    background:var(--light);border-radius:24px;padding:36px;
+    border:1.5px solid var(--border);
+    animation:fadeUp .3s ease;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+  .couple-banner{
+    display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;
+    background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;
+    box-shadow:0 2px 12px rgba(0,0,0,0.06);
+  }
+  @media(max-width:600px){.couple-banner{grid-template-columns:1fr;text-align:center;}}
+  .couple-type-box{text-align:center;}
+  .couple-type-box .c-icon{font-size:36px;margin-bottom:4px;}
+  .couple-type-box .c-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--gray);}
+  .couple-type-box .c-name{font-size:20px;font-weight:800;color:var(--pastor);}
+  .couple-type-box .c-kw{font-size:11px;color:var(--gray);margin-top:2px;}
+  .couple-vs{font-size:24px;color:var(--border);}
+
+  .combo-title{
+    text-align:center;font-size:22px;font-weight:800;color:var(--pastor);
+    margin-bottom:8px;
+  }
+  .combo-sub{text-align:center;font-size:14px;color:var(--gray);margin-bottom:28px;}
+
+  .result-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  @media(max-width:600px){.result-2col{grid-template-columns:1fr;}}
+
+  .combo-box{background:#fff;border-radius:12px;padding:20px;border:1.5px solid var(--border);}
+  .combo-box h4{font-size:12px;font-weight:700;letter-spacing:.08em;margin-bottom:12px;}
+  .combo-box.synergy h4{color:var(--green);}
+  .combo-box.tension h4{color:#B45309;}
+  .combo-box ul{list-style:none;padding:0;}
+  .combo-box li{font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #f5f5f5;}
+  .combo-box li:last-child{border:none;}
+  .combo-box.synergy li::before{content:'♡ ';color:var(--green);}
+  .combo-box.tension li::before{content:'△ ';color:#D97706;}
+
+  .combo-full{background:#fff;border-radius:12px;padding:20px;border:1.5px solid var(--border);margin-bottom:16px;}
+  .combo-full h4{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent);margin-bottom:12px;}
+  .combo-full ul{list-style:none;padding:0;}
+  .combo-full li{font-size:13px;color:#333;padding:6px 0 6px 20px;position:relative;border-bottom:1px solid #f5f3fc;}
+  .combo-full li:last-child{border:none;}
+  .combo-full li::before{content:'→';position:absolute;left:0;color:var(--accent);}
+
+  .caption-box{background:var(--rose-lt);border:1.5px solid rgba(155,48,67,.18);border-radius:12px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
+  .caption-box::before{content:'"';position:absolute;top:-16px;left:16px;font-size:120px;color:rgba(155,48,67,.08);font-family:Georgia,serif;line-height:1;}
+  .caption-box h4{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--rose);margin-bottom:12px;}
+  .caption-box p{font-size:14px;line-height:1.8;color:#3D2220;position:relative;}
+  .ls-line{margin-top:12px;padding-top:12px;border-top:1px solid rgba(155,48,67,.15);font-size:12px;color:rgba(155,48,67,.6);}
+
+  .mission-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+  @media(max-width:600px){.mission-2col{grid-template-columns:1fr;}}
+  .m-box{border-radius:12px;padding:16px;}
+  .m-box.me{background:var(--rose-lt);border:1.5px solid rgba(181,67,79,.2);}
+  .m-box.partner{background:#EEF2FF;border:1.5px solid rgba(124,92,191,.2);}
+  .m-box h4{font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:10px;}
+  .m-box.me h4{color:#B5434F;}
+  .m-box.partner h4{color:var(--accent);}
+  .m-box ol{padding-left:16px;}
+  .m-box li{font-size:12px;color:#333;padding:4px 0;}
+
+  .result-cta{background:linear-gradient(135deg,#FDF8F3 0%,#F0EBF8 100%);border:1.5px solid var(--border);border-radius:16px;padding:28px;text-align:center;margin-top:8px;}
+  .result-cta p{color:var(--gray);font-size:14px;margin-bottom:16px;}
+  .btn-rose{display:inline-block;background:var(--rose);color:#fff;font-size:15px;font-weight:700;padding:13px 32px;border-radius:28px;text-decoration:none;margin:0 6px 8px;transition:all .2s;cursor:pointer;border:none;box-shadow:0 4px 16px rgba(155,48,67,.22);}
+  .btn-rose:hover{opacity:.9;transform:translateY(-1px);}
+  .btn-outline{display:inline-block;background:transparent;color:var(--pastor);font-size:14px;font-weight:600;padding:12px 24px;border-radius:28px;border:1.5px solid var(--border);text-decoration:none;margin:0 6px 8px;transition:all .2s;cursor:pointer;}
+  .btn-outline:hover{border-color:var(--pastor);color:var(--pastor);}
+
+  footer{background:#EEEBE6;color:#8A857E;text-align:center;padding:40px 5%;font-size:12px;line-height:2;border-top:1px solid var(--border);}
+  footer a{color:#8A857E;text-decoration:none;}
+  footer strong{color:#5A5550;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="https://onyuschool.com">ONYUSCHOOL</a>
+  <span class="nav-badge">부부클래스 체험판</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">COUPLE CLASS · 부부 소통 이해</div>
+  <h1>우리 부부는<br><em>어떤 조합인가요?</em></h1>
+  <p class="hero-sub">64가지 부부 소통 조합 중 우리의 조합을 확인하세요.<br>갈등의 원인이 아닌, 소통 언어의 차이였습니다.</p>
+  <button class="btn-start" onclick="document.getElementById('select-section').scrollIntoView({behavior:'smooth'})">
+    우리 조합 확인하기 →
+  </button>
+  <p class="hero-note">무료 체험 · 두 사람의 유형만 선택하세요</p>
+</section>
+
+<section id="select-section" style="background:#fff;">
+  <div style="max-width:900px;margin:0 auto;">
+    <p class="section-tag">STEP 1 · 유형 선택</p>
+    <h2>두 사람의 유형을 선택하세요</h2>
+    <p class="section-sub">각자의 유형을 선택하면 64가지 조합 중 우리의 분석이 나타납니다.</p>
+
+    <div class="selector-wrap">
+      <div class="selector-col" id="col-me">
+        <h3>나의 유형 <span>왼쪽에서 선택</span></h3>
+        <div class="type-list" id="list-me"></div>
+      </div>
+      <div class="vs-divider"><div class="vs-circle">VS</div></div>
+      <div class="selector-col" id="col-partner">
+        <h3>배우자 유형 <span>오른쪽에서 선택</span></h3>
+        <div class="type-list" id="list-partner"></div>
+      </div>
+    </div>
+
+    <div id="couple-result"></div>
+  </div>
+</section>
+
+<section style="background:var(--light);">
+  <div style="max-width:900px;margin:0 auto;text-align:center;">
+    <p class="section-tag">ONYUSCHOOL · 클래스 안내</p>
+    <h2>온유스쿨 전체 과정</h2>
+    <p class="section-sub">나부터 이해하고, 배우자를 이해하고, 자녀를 이해하면 — 교회와 가정이 달라집니다</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+      <a href="firstclass.html" style="display:inline-block;background:var(--pastor);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;">🌱 퍼스트클래스 체험</a>
+      <a href="온유스쿨_목회자_체험판.html" style="display:inline-block;background:var(--gold);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;">✝ 목회자 과정 신청</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>온유스쿨 (ONYUSCHOOL)</strong><br>
+  인생나무코칭연구소 · onyuschool.com<br>
+  문의: <a href="mailto:joculsion@gmail.com">joculsion@gmail.com</a><br><br>
+  <small>64유형 부부 조합 분석은 8유형 프레임워크 기반 교육 콘텐츠입니다.</small>
+</footer>
+
+<script>
+const TYPES = [
+  { id:'steady',  icon:'🌿', name:'STEADY',  kr:'스테디',  kw:'안정 · 신뢰 · 꾸준함', func:'Si', mbti:'ISTJ·ISFJ' },
+  { id:'spark',   icon:'✨', name:'SPARK',   kr:'스파크',  kw:'열정 · 영감 · 비전',   func:'Ne', mbti:'ENFP·ENTP' },
+  { id:'player',  icon:'🎯', name:'PLAYER',  kr:'플레이어', kw:'실행 · 현장 · 즉흥',   func:'Se', mbti:'ESTP·ESFP' },
+  { id:'vision',  icon:'🔭', name:'VISION',  kr:'비전',    kw:'통찰 · 미래 · 구조',   func:'Ni', mbti:'INTJ·INFJ' },
+  { id:'logic',   icon:'🔬', name:'LOGIC',   kr:'로직',    kw:'분석 · 정확 · 원칙',   func:'Ti', mbti:'INTP·ISTP' },
+  { id:'harmony', icon:'🕊️', name:'HARMONY', kr:'하모니',  kw:'공감 · 조화 · 돌봄',   func:'Fe', mbti:'ESFJ·ENFJ' },
+  { id:'leader',  icon:'⚡', name:'LEADER',  kr:'리더',    kw:'추진 · 결단 · 목표',   func:'Te', mbti:'ENTJ·ESTJ' },
+  { id:'soul',    icon:'🌊', name:'SOUL',    kr:'소울',    kw:'깊이 · 의미 · 진정성', func:'Fi', mbti:'INFP·ISFP' }
+];
+
+// 조합별 데이터 — 대표 조합 + 유사/보완 패턴
+const COMBO_DATA = {
+  // 같은 유형
+  same: {
+    title: '쌍둥이 조합 — 서로가 서로를 가장 잘 이해하는 부부',
+    desc: '같은 소통 언어를 사용하기 때문에 이해는 빠르지만, 서로의 그림자도 함께 증폭될 수 있습니다.',
+    synergy: ['서로의 강점을 즉시 이해합니다', '같은 방식으로 사랑을 표현하고 받습니다', '공동의 가치관과 속도로 움직입니다'],
+    tension: ['서로의 그림자가 동시에 나타날 때 충돌이 커집니다', '약점을 보완해줄 다름이 부족할 수 있습니다'],
+    tip: ['서로의 그림자를 먼저 알아채고 이야기해주는 역할을 번갈아 맡기', '다른 유형의 동역자·친구와 정기적으로 교류하여 시야를 넓히기', '"우리 둘 다 지금 그림자 모드야"를 서로 신호어로 정해두기'],
+    caption: '처음엔 나를 가장 잘 이해하는 사람을 만났다는 기쁨에 빠집니다. 그러나 우리의 같은 그림자가 동시에 부딪힐 때, 거울 앞에 서 있는 것처럼 피할 곳이 없어 더 깊이 상처받기도 합니다.',
+    ls: '빛: 깊은 이해와 공명 / 그림자: 그림자의 증폭'
+  },
+
+  // 패턴별 조합
+  patterns: {
+    // 안정-보완형 (Si + Fe, Si + Ne, Te + Fe, Ni + Fe)
+    nurture: {
+      title: '돌봄과 구조의 조합 — 서로가 안정을 주는 부부',
+      synergy: ['한 사람의 따뜻함이 다른 사람의 신뢰를 채워줍니다', '실행과 감정이 균형 잡힌 가정을 만듭니다', '서로의 부족함을 자연스럽게 채워주는 관계입니다'],
+      tension: ['속도의 차이 — 한 사람은 계획적, 한 사람은 즉흥적일 수 있습니다', '"왜 내 방식대로 안 하지?"라는 갈등이 반복될 수 있습니다'],
+      tip: ['의사결정 전 서로의 접근 방식을 미리 공유하기', '한 사람이 실행, 한 사람이 감정을 담당하는 역할을 명확히 하기', '서로의 다름을 "틀림"이 아닌 "다름"으로 부르는 연습하기'],
+      caption: '처음엔 나와 다른 방식이 신기하고 든든했습니다. 그러나 그 다름이 일상에서 마찰이 될 때, 왜 저 사람은 나처럼 하지 않냐는 작은 원망이 쌓입니다.',
+      ls: '빛: 상호 보완과 균형 / 그림자: 방식의 충돌'
+    },
+
+    // 비전-실행형 (Ni + Se, Ni + Te, Ne + Si)
+    drive: {
+      title: '비전과 실행의 조합 — 함께 세상을 바꾸는 부부',
+      synergy: ['한 사람이 그림을 그리면, 다른 사람이 실현합니다', '큰 목표를 향해 함께 나아가는 강력한 팀이 됩니다', '서로의 역할이 명확하여 협력이 잘 됩니다'],
+      tension: ['관계보다 목표에 집중할 때 감정적 연결이 약해집니다', '두 사람 모두 강한 의지가 있어 방향 충돌이 올 수 있습니다'],
+      tip: ['한 달에 한 번, 목표가 아닌 감정에 대한 이야기 날을 정하기', '"우리가 원하는 것"이 아닌 "우리가 느끼는 것"을 나누는 시간 갖기', '서로의 의견 차이를 팀 회의처럼 대화로 해결하는 구조 만들기'],
+      caption: '처음엔 이 사람과 함께라면 무엇이든 이룰 수 있다는 설렘이 있었습니다. 그러나 프로젝트는 성공하는데 서로의 마음은 멀어져 있음을 어느 날 발견합니다.',
+      ls: '빛: 강력한 협력과 성취 / 그림자: 감정 연결 약화'
+    },
+
+    // 감정-논리형 (Fe + Ti, Fe + Te, Fi + Ti)
+    balance: {
+      title: '감성과 이성의 조합 — 완전히 다른 언어를 배우는 부부',
+      synergy: ['한 사람은 분위기를, 다른 사람은 논리를 — 가장 균형 잡힌 결정을 합니다', '서로에게 없는 것을 가지고 있어 성장을 자극합니다', '오래될수록 서로에게서 배운 것이 쌓여갑니다'],
+      tension: ['감정적 필요 vs 논리적 해결 — 가장 자주 오해가 일어나는 조합입니다', '"왜 그것이 문제야?"와 "왜 그게 이해가 안 돼?"가 반복될 수 있습니다'],
+      tip: ['감정 표현이 먼저 필요한 순간인지 / 해결책이 필요한 순간인지 미리 말해주기', '"지금 나는 공감이 필요해" / "지금 나는 방법이 필요해" 신호어 정하기', '한 사람의 방식이 틀린 게 아니라는 것을 반복적으로 확인해주기'],
+      caption: '처음엔 나와 완전히 다른 방식으로 세상을 보는 사람이 신기하고 매력적이었습니다. 그러나 그 다름이 일상의 언어 차이가 될 때, 이 사람은 나를 이해 못 하는 사람처럼 느껴집니다.',
+      ls: '빛: 완전한 보완과 성장 / 그림자: 언어 불일치와 오해'
+    },
+
+    // 에너지 방향 충돌형 (Ne + Si, Se + Ni, Te + Fi)
+    energy: {
+      title: '에너지와 성찰의 조합 — 세상을 다르게 보는 부부',
+      synergy: ['한 사람은 세상을 향해 나아가고, 한 사람은 깊이를 더합니다', '서로의 리듬을 배우면 가장 풍요로운 관계가 됩니다', '외향과 내향, 실행과 성찰의 균형이 가정에 생깁니다'],
+      tension: ['사회적 활동량과 회복 방식이 다를 수 있습니다', '"함께 있고 싶은데 왜 혼자 있고 싶어 하지?"라는 갈등'],
+      tip: ['혼자 있는 시간 = 사랑이 식은 것이 아님을 서로에게 이야기해두기', '에너지 충전 방식의 차이를 인정하는 약속(예: 주말 오전은 각자 시간)을 만들기', '상대의 충전 방식을 존중하는 말("충분히 쉬어")을 먼저 건네기'],
+      caption: '처음엔 서로의 리듬이 달랐지만 끌렸습니다. 그러나 그 다름이 "나를 피하는 것"처럼 느껴질 때, 작은 섭섭함이 쌓여 큰 벽이 됩니다.',
+      ls: '빛: 상호 보완과 균형 / 그림자: 리듬 불일치와 오해'
+    }
+  }
+};
+
+let myType = null;
+let partnerType = null;
+
+function buildLists() {
+  const listMe = document.getElementById('list-me');
+  const listPartner = document.getElementById('list-partner');
+
+  TYPES.forEach(t => {
+    // My list
+    const btnMe = document.createElement('button');
+    btnMe.className = 'type-btn';
+    btnMe.id = 'me-' + t.id;
+    btnMe.innerHTML = `<span class="btn-icon">${t.icon}</span><span class="btn-info"><span class="btn-name">${t.name} · ${t.kr}</span><span class="btn-kw">${t.kw}</span></span>`;
+    btnMe.addEventListener('click', () => {
+      document.querySelectorAll('#list-me .type-btn').forEach(b => b.classList.remove('selected-me'));
+      btnMe.classList.add('selected-me');
+      myType = t;
+      tryShowResult();
+    });
+    listMe.appendChild(btnMe);
+
+    // Partner list
+    const btnP = document.createElement('button');
+    btnP.className = 'type-btn';
+    btnP.id = 'partner-' + t.id;
+    btnP.innerHTML = `<span class="btn-icon">${t.icon}</span><span class="btn-info"><span class="btn-name">${t.name} · ${t.kr}</span><span class="btn-kw">${t.kw}</span></span>`;
+    btnP.addEventListener('click', () => {
+      document.querySelectorAll('#list-partner .type-btn').forEach(b => b.classList.remove('selected-partner'));
+      btnP.classList.add('selected-partner');
+      partnerType = t;
+      tryShowResult();
+    });
+    listPartner.appendChild(btnP);
+  });
+}
+
+function getComboPattern(me, partner) {
+  if (me.id === partner.id) return COMBO_DATA.same;
+
+  // 감정(Fe/Fi) + 논리(Ti/Te) 조합
+  const emotional = ['harmony', 'soul'];
+  const logical = ['logic', 'leader', 'vision'];
+  if ((emotional.includes(me.id) && logical.includes(partner.id)) ||
+      (logical.includes(me.id) && emotional.includes(partner.id))) {
+    return { ...COMBO_DATA.patterns.balance, title: getTitle(me, partner, 'balance') };
+  }
+
+  // 비전-실행 (vision/spark + player/leader)
+  const visionary = ['vision', 'spark'];
+  const executor = ['player', 'leader', 'steady'];
+  if ((visionary.includes(me.id) && executor.includes(partner.id)) ||
+      (executor.includes(me.id) && visionary.includes(partner.id))) {
+    return { ...COMBO_DATA.patterns.drive, title: getTitle(me, partner, 'drive') };
+  }
+
+  // 에너지 방향 (spark + steady, player + soul, leader + soul)
+  const outward = ['spark', 'player', 'leader'];
+  const inward = ['soul', 'logic', 'vision', 'steady'];
+  if ((outward.includes(me.id) && inward.includes(partner.id)) ||
+      (inward.includes(me.id) && outward.includes(partner.id))) {
+    return { ...COMBO_DATA.patterns.energy, title: getTitle(me, partner, 'energy') };
+  }
+
+  // 나머지는 돌봄-보완형
+  return { ...COMBO_DATA.patterns.nurture, title: getTitle(me, partner, 'nurture') };
+}
+
+function getTitle(me, partner, pattern) {
+  const titles = {
+    balance: `${me.icon} ${me.kr} + ${partner.icon} ${partner.kr} — 감성과 이성의 부부`,
+    drive: `${me.icon} ${me.kr} + ${partner.icon} ${partner.kr} — 비전과 실행의 부부`,
+    energy: `${me.icon} ${me.kr} + ${partner.icon} ${partner.kr} — 열정과 깊이의 부부`,
+    nurture: `${me.icon} ${me.kr} + ${partner.icon} ${partner.kr} — 서로를 채워주는 부부`
+  };
+  return titles[pattern] || `${me.kr} + ${partner.kr} 조합`;
+}
+
+function tryShowResult() {
+  if (!myType || !partnerType) return;
+
+  const combo = getComboPattern(myType, partnerType);
+  const panel = document.getElementById('couple-result');
+  panel.style.display = 'block';
+
+  const synHTML = combo.synergy.map(s => `<li>${s}</li>`).join('');
+  const tenHTML = combo.tension.map(t => `<li>${t}</li>`).join('');
+  const tipHTML = combo.tip.map(t => `<li>${t}</li>`).join('');
+
+  // Missions from individual type data (simplified)
+  const myMission = `${myType.kr} 유형으로서, 오늘 배우자에게 "고마워"를 한 번 더 말해보세요`;
+  const partnerMission = `${partnerType.kr} 유형인 배우자를 이해하려면, 배우자의 소통 키워드(${partnerType.kw})를 오늘 대화에서 한 번 의식해보세요`;
+
+  panel.innerHTML = `
+    <div class="couple-banner">
+      <div class="couple-type-box">
+        <div class="c-icon">${myType.icon}</div>
+        <div class="c-label">나</div>
+        <div class="c-name">${myType.name} · ${myType.kr}</div>
+        <div class="c-kw">${myType.kw}</div>
+      </div>
+      <div class="couple-vs">×</div>
+      <div class="couple-type-box">
+        <div class="c-icon">${partnerType.icon}</div>
+        <div class="c-label">배우자</div>
+        <div class="c-name">${partnerType.name} · ${partnerType.kr}</div>
+        <div class="c-kw">${partnerType.kw}</div>
+      </div>
+    </div>
+
+    <div class="combo-title">${myType.id === partnerType.id ? '우리는 같은 유형 부부입니다' : combo.title}</div>
+    <div class="combo-sub">${combo.desc || '두 소통 언어가 만나는 방식을 확인하세요'}</div>
+
+    <div class="result-2col">
+      <div class="combo-box synergy">
+        <h4>♡ 우리의 시너지</h4>
+        <ul>${synHTML}</ul>
+      </div>
+      <div class="combo-box tension">
+        <h4>△ 갈등 포인트</h4>
+        <ul>${tenHTML}</ul>
+      </div>
+    </div>
+
+    <div class="combo-full">
+      <h4>💬 관계 회복 소통 팁</h4>
+      <ul>${tipHTML}</ul>
+    </div>
+
+    <div class="caption-box">
+      <h4>🌑 쉐도우그램 캡션 — 우리 부부의 빛과 그림자</h4>
+      <p>${combo.caption}</p>
+      <div class="ls-line">${combo.ls}</div>
+    </div>
+
+    <h4 style="font-size:12px;font-weight:700;letter-spacing:.08em;color:#333;margin-bottom:12px;">🎯 오늘의 부부 미션</h4>
+    <div class="mission-2col">
+      <div class="m-box me">
+        <h4>${myType.icon} ${myType.kr} 유형 (나)</h4>
+        <ol><li>${myMission}</li><li>배우자의 소통 키워드 "${partnerType.kw}"를 오늘 한 번 이해하려 노력해보기</li></ol>
+      </div>
+      <div class="m-box partner">
+        <h4>${partnerType.icon} ${partnerType.kr} 유형 (배우자)</h4>
+        <ol><li>${partnerMission}</li><li>내 소통 키워드 "${myType.kw}"를 배우자와 공유해보기</li></ol>
+      </div>
+    </div>
+
+    <div class="result-cta">
+      <p>더 깊은 64유형 부부 분석과 소통 회복 프로그램은<br>온유스쿨 부부클래스 정규 과정에서 만나요.</p>
+      <a class="btn-rose" href="온유스쿨_목회자_체험판.html">부부클래스 신청하기</a>
+      <a class="btn-outline" href="firstclass.html">퍼스트클래스 체험하기</a>
+    </div>
+  `;
+
+  setTimeout(() => {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+buildLists();
+</script>
+</body>
+</html>

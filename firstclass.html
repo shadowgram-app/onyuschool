@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>퍼스트클래스 체험판 — 나부터 이해하기 | 온유스쿨</title>
+<meta name="description" content="나는 어떤 사람인가? 8가지 소통 유형으로 나를 이해하고, 가정과 공동체가 달라집니다. 온유스쿨 퍼스트클래스 무료 체험.">
+<meta property="og:title" content="나는 어떤 유형인가요? — 온유스쿨 퍼스트클래스 체험">
+<meta property="og:description" content="8가지 소통 언어로 나를 이해합니다. 3분이면 내 유형의 빛과 그림자를 확인할 수 있습니다.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://onyuschool.com/og-firstclass.jpg">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --dark:#F7F5F2;
+    --pastor:#3D2B1F;
+    --gold:#7A5C1E;
+    --gold-lt:#FFF8EC;
+    --green:#1E6640;
+    --green-lt:#E8F5EE;
+    --accent:#6B4EAF;
+    --light:#F4F2EF;
+    --gray:#6B6560;
+    --border:#E0D8CC;
+  }
+  html{scroll-behavior:smooth;}
+  body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#F7F5F2;color:#1A1714;line-height:1.7;}
+
+  /* NAV */
+  nav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(247,245,242,0.97);
+    backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 5%;height:56px;
+    border-bottom:1px solid rgba(122,92,30,0.16);
+  }
+  .nav-logo{color:#1A1714;font-size:15px;font-weight:700;letter-spacing:.05em;text-decoration:none;}
+  .nav-badge{
+    background:var(--gold);color:#fff;
+    font-size:11px;font-weight:700;
+    padding:3px 10px;border-radius:20px;
+    letter-spacing:.03em;
+  }
+
+  /* HERO */
+  .hero{
+    background:linear-gradient(135deg,#FDF8F3 0%,#F5EDE0 60%,#EDE8F5 100%);
+    padding:72px 5% 64px;
+    text-align:center;
+    position:relative;overflow:hidden;
+    border-bottom:1px solid var(--border);
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 70% 30%, rgba(122,92,30,.06) 0%, transparent 60%);
+    pointer-events:none;
+  }
+  .hero-tag{
+    display:inline-block;
+    border:1px solid rgba(122,92,30,.35);
+    color:var(--gold);
+    font-size:12px;letter-spacing:.12em;font-weight:600;
+    padding:4px 16px;border-radius:20px;
+    margin-bottom:24px;
+  }
+  .hero h1{
+    color:#1A1714;font-size:clamp(28px,5vw,46px);
+    font-weight:800;line-height:1.25;
+    margin-bottom:16px;
+  }
+  .hero h1 em{color:var(--gold);font-style:normal;}
+  .hero-sub{
+    color:#6B6560;
+    font-size:clamp(14px,2vw,17px);
+    max-width:480px;margin:0 auto 36px;
+  }
+  .hero-verse{
+    display:inline-block;
+    border-left:2px solid var(--gold);
+    padding:8px 16px;
+    color:rgba(26,23,20,.45);
+    font-size:13px;font-style:italic;
+    text-align:left;margin-bottom:40px;
+  }
+  .btn-start{
+    display:inline-block;
+    background:var(--gold);color:#fff;
+    font-size:16px;font-weight:700;
+    padding:14px 40px;border-radius:32px;
+    text-decoration:none;
+    box-shadow:0 4px 24px rgba(122,92,30,.25);
+    transition:transform .2s,box-shadow .2s;
+    cursor:pointer;border:none;
+  }
+  .btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(122,92,30,.35);}
+  .hero-note{color:#A09890;font-size:12px;margin-top:12px;}
+
+  /* SECTION */
+  section{padding:64px 5%;}
+  .section-tag{
+    font-size:11px;font-weight:700;letter-spacing:.12em;
+    color:var(--gold);text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  h2{font-size:clamp(22px,3.5vw,32px);font-weight:800;color:var(--pastor);margin-bottom:12px;}
+  .section-sub{color:var(--gray);font-size:15px;margin-bottom:40px;}
+
+  /* TYPE CARDS */
+  .types-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:16px;
+  }
+  .type-card{
+    background:#fff;
+    border:1.5px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    cursor:pointer;
+    transition:all .2s;
+    position:relative;overflow:hidden;
+  }
+  .type-card::before{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(135deg,rgba(124,92,191,.04) 0%, transparent 60%);
+    opacity:0;transition:opacity .2s;
+  }
+  .type-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,92,191,.12);}
+  .type-card:hover::before{opacity:1;}
+  .type-card.active{border-color:var(--gold);background:var(--gold-lt);}
+  .card-icon{font-size:28px;margin-bottom:8px;}
+  .card-name{font-size:11px;font-weight:700;color:var(--gray);letter-spacing:.1em;margin-bottom:2px;}
+  .card-kr{font-size:17px;font-weight:800;color:var(--pastor);margin-bottom:6px;}
+  .card-mbti{font-size:11px;color:var(--gray);margin-bottom:8px;}
+  .card-kw{font-size:12px;color:var(--accent);font-weight:600;}
+
+  /* RESULT PANEL */
+  #result-panel{
+    display:none;
+    background:var(--light);
+    border-radius:24px;
+    padding:36px;
+    margin-top:32px;
+    border:1.5px solid var(--border);
+    animation:fadeUp .3s ease;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  .result-header{
+    display:flex;align-items:center;gap:16px;
+    padding-bottom:20px;border-bottom:2px solid var(--border);
+    margin-bottom:24px;
+  }
+  .result-icon{font-size:48px;}
+  .result-title{font-size:24px;font-weight:800;color:var(--pastor);}
+  .result-mbti{font-size:13px;color:var(--gray);margin-top:2px;}
+  .result-kw{
+    display:inline-block;
+    background:var(--gold);color:#fff;
+    font-size:12px;font-weight:700;
+    padding:4px 14px;border-radius:20px;
+    margin-top:6px;letter-spacing:.05em;
+  }
+  .result-tagline{
+    font-size:15px;color:#444;font-style:italic;
+    border-left:3px solid var(--gold);
+    padding:10px 16px;margin-bottom:24px;
+    background:#fff;border-radius:0 8px 8px 0;
+  }
+
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+  @media(max-width:600px){.result-grid{grid-template-columns:1fr;}}
+  .result-box{background:#fff;border-radius:12px;padding:20px;border:1.5px solid var(--border);}
+  .result-box h4{font-size:12px;font-weight:700;letter-spacing:.08em;margin-bottom:12px;}
+  .result-box.light h4{color:var(--green);}
+  .result-box.shadow h4{color:#B45309;}
+  .result-box ul{list-style:none;padding:0;}
+  .result-box li{font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #f0ede8;}
+  .result-box li:last-child{border:none;}
+  .result-box li::before{margin-right:6px;}
+  .result-box.light li::before{content:'✦';color:var(--green);}
+  .result-box.shadow li::before{content:'▲';color:#D97706;}
+
+  .tips-box{background:#fff;border-radius:12px;padding:20px;border:1.5px solid var(--border);margin-bottom:16px;}
+  .tips-box h4{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent);margin-bottom:12px;}
+  .tips-box ul{list-style:none;padding:0;}
+  .tips-box li{font-size:13px;color:#333;padding:6px 0 6px 20px;position:relative;border-bottom:1px solid #f5f3fc;}
+  .tips-box li:last-child{border:none;}
+  .tips-box li::before{content:'→';position:absolute;left:0;color:var(--accent);}
+
+  .caption-box{
+    background:var(--gold-lt);
+    border:1.5px solid rgba(122,92,30,.2);
+    border-radius:12px;padding:24px;
+    margin-bottom:16px;
+    position:relative;overflow:hidden;
+  }
+  .caption-box::before{
+    content:'"';
+    position:absolute;top:-16px;left:16px;
+    font-size:120px;color:rgba(122,92,30,.10);
+    font-family:Georgia,serif;line-height:1;
+  }
+  .caption-box h4{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold);margin-bottom:12px;}
+  .caption-box p{font-size:14px;line-height:1.8;color:#3D2B1F;position:relative;}
+  .light-shadow-line{
+    margin-top:12px;padding-top:12px;border-top:1px solid rgba(122,92,30,.18);
+    font-size:12px;color:rgba(122,92,30,.65);letter-spacing:.05em;
+  }
+
+  .mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  @media(max-width:600px){.mission-grid{grid-template-columns:1fr;}}
+  .mission-box{border-radius:12px;padding:16px;}
+  .mission-box.self{background:var(--green-lt);border:1.5px solid rgba(45,106,79,.2);}
+  .mission-box.team{background:#EEF2FF;border:1.5px solid rgba(124,92,191,.2);}
+  .mission-box h4{font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:10px;}
+  .mission-box.self h4{color:var(--green);}
+  .mission-box.team h4{color:var(--accent);}
+  .mission-box ol{padding-left:16px;}
+  .mission-box li{font-size:12px;color:#333;padding:4px 0;}
+
+  .result-cta{
+    background:linear-gradient(135deg,#FDF8F3 0%,#F0EBF8 100%);
+    border:1.5px solid var(--border);
+    border-radius:16px;padding:28px;text-align:center;margin-top:24px;
+  }
+  .result-cta p{color:var(--gray);font-size:14px;margin-bottom:16px;}
+  .btn-full{
+    display:inline-block;
+    background:var(--gold);color:#fff;
+    font-size:15px;font-weight:700;
+    padding:13px 36px;border-radius:28px;
+    text-decoration:none;
+    margin:0 6px 8px;
+    box-shadow:0 4px 16px rgba(122,92,30,.22);
+    transition:all .2s;
+    cursor:pointer;border:none;
+  }
+  .btn-full:hover{opacity:.9;transform:translateY(-1px);}
+  .btn-outline{
+    display:inline-block;
+    background:transparent;color:var(--pastor);
+    font-size:14px;font-weight:600;
+    padding:12px 28px;border-radius:28px;
+    border:1.5px solid var(--border);
+    text-decoration:none;
+    margin:0 6px 8px;
+    transition:all .2s;
+    cursor:pointer;
+  }
+  .btn-outline:hover{border-color:var(--pastor);}
+
+  /* HOW SECTION */
+  .how-section{background:var(--light);}
+  .steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:24px;}
+  .step{text-align:center;padding:24px 16px;}
+  .step-num{
+    width:40px;height:40px;border-radius:50%;
+    background:var(--gold);color:#fff;
+    font-size:16px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 12px;
+  }
+  .step h3{font-size:15px;font-weight:700;color:var(--pastor);margin-bottom:6px;}
+  .step p{font-size:13px;color:var(--gray);}
+
+  /* CLASSES SECTION */
+  .classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+  .class-card{
+    border-radius:16px;padding:24px;
+    border:1.5px solid var(--border);
+    background:#fff;
+  }
+  .class-card.active-class{border-color:var(--gold);background:linear-gradient(135deg,#fffbf0 0%,#fff 100%);}
+  .class-badge{
+    display:inline-block;font-size:11px;font-weight:700;
+    padding:3px 10px;border-radius:12px;
+    margin-bottom:12px;
+  }
+  .badge-now{background:#DCFCE7;color:#15803D;}
+  .badge-ready{background:#FEF9C3;color:#854D0E;}
+  .badge-soon{background:#F1F5F9;color:#64748B;}
+  .class-icon{font-size:24px;margin-bottom:8px;}
+  .class-card h3{font-size:16px;font-weight:800;color:var(--pastor);margin-bottom:6px;}
+  .class-card p{font-size:12px;color:var(--gray);line-height:1.6;}
+
+  /* FOOTER */
+  footer{
+    background:#EEEBE6;color:#8A857E;
+    text-align:center;padding:40px 5%;font-size:12px;line-height:2;
+    border-top:1px solid var(--border);
+  }
+  footer a{color:#8A857E;text-decoration:none;}
+  footer strong{color:#5A5550;}
+
+  /* MOBILE */
+  @media(max-width:600px){
+    section{padding:48px 4%;}
+    .result-header{flex-direction:column;text-align:center;}
+    #result-panel{padding:20px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="https://onyuschool.com">ONYUSCHOOL</a>
+  <span class="nav-badge">퍼스트클래스 체험판</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">FIRST CLASS · 나부터 이해하기</div>
+  <h1>나는 어떤 사람인가요?<br><em>내 소통 유형을 확인하세요</em></h1>
+  <p class="hero-sub">8가지 소통 언어 중 하나가 당신의 언어입니다.<br>나를 이해하면, 관계가 달라집니다.</p>
+  <div class="hero-verse">
+    "그러므로 너희는 하나님이 택하사 거룩하고 사랑받는 자처럼<br>
+    긍휼과 자비와 겸손과 온유와 오래 참음을 옷 입고"<br>
+    — 골로새서 3:12
+  </div>
+  <br>
+  <button class="btn-start" onclick="document.getElementById('type-section').scrollIntoView({behavior:'smooth'})">
+    내 유형 확인하기 →
+  </button>
+  <p class="hero-note">무료 체험 · 회원가입 불필요 · 3분 소요</p>
+</section>
+
+<!-- HOW -->
+<section class="how-section">
+  <div style="max-width:800px;margin:0 auto;text-align:center;">
+    <p class="section-tag">HOW IT WORKS</p>
+    <h2>이렇게 진행됩니다</h2>
+    <p class="section-sub">아래 8가지 유형 중 가장 나다운 설명을 선택하면<br>빛과 그림자, 소통 팁, 성장 방향까지 확인할 수 있습니다.</p>
+  </div>
+  <div class="steps" style="max-width:800px;margin:0 auto;">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>유형 선택</h3>
+      <p>8가지 소통 유형 중<br>가장 나답다고 느껴지는<br>유형을 클릭합니다</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>리포트 확인</h3>
+      <p>강점 · 그림자 · 소통팁<br>쉐도우그램 캡션까지<br>한 화면에 펼쳐집니다</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>오늘의 미션</h3>
+      <p>즉시 실행할 수 있는<br>마이크로 미션을<br>받아갑니다</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>전체 과정 신청</h3>
+      <p>더 깊은 이해를 원하면<br>온유스쿨 퍼스트클래스<br>정규 과정으로 연결됩니다</p>
+    </div>
+  </div>
+</section>
+
+<!-- TYPE SELECTOR -->
+<section id="type-section" style="background:#fff;">
+  <div style="max-width:900px;margin:0 auto;">
+    <p class="section-tag">STEP 1 · 유형 선택</p>
+    <h2>가장 나다운 유형을 골라보세요</h2>
+    <p class="section-sub">소통 키워드를 읽고, 직관적으로 선택하세요. 정답은 없습니다.</p>
+
+    <div class="types-grid" id="types-grid">
+      <!-- JS로 생성 -->
+    </div>
+
+    <div id="result-panel">
+      <!-- JS로 채움 -->
+    </div>
+  </div>
+</section>
+
+<!-- CLASSES -->
+<section style="background:var(--light);">
+  <div style="max-width:900px;margin:0 auto;">
+    <p class="section-tag">ONYUSCHOOL · 클래스 안내</p>
+    <h2>온유스쿨 전체 과정</h2>
+    <p class="section-sub">나 → 배우자 → 자녀 → 공동체 순서로 깊어집니다</p>
+    <div class="classes">
+      <div class="class-card active-class">
+        <span class="class-badge badge-now">● 지금 체험 중</span>
+        <div class="class-icon">🌱</div>
+        <h3>퍼스트클래스</h3>
+        <p>나부터 이해하기.<br>8유형으로 나의 빛과 그림자를 발견합니다.</p>
+      </div>
+      <div class="class-card">
+        <span class="class-badge badge-ready">● 체험 가능</span>
+        <div class="class-icon">💑</div>
+        <h3>부부클래스</h3>
+        <p>64유형 부부 조합으로<br>서로의 소통 언어를 이해합니다.</p>
+      </div>
+      <div class="class-card">
+        <span class="class-badge badge-soon">준비중</span>
+        <div class="class-icon">🌿</div>
+        <h3>자녀양육클래스</h3>
+        <p>내 아이의 유형을 이해하고<br>맞춤 양육 방식을 찾습니다.</p>
+      </div>
+      <div class="class-card">
+        <span class="class-badge badge-soon">준비중</span>
+        <div class="class-icon">🤝</div>
+        <h3>소그룹 다이나믹스</h3>
+        <p>팀 소통 유형을 분석하고<br>건강한 공동체를 설계합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>온유스쿨 (ONYUSCHOOL)</strong><br>
+  인생나무코칭연구소 · onyuschool.com<br>
+  문의: <a href="mailto:joculsion@gmail.com">joculsion@gmail.com</a><br><br>
+  <small>이 체험판은 8유형 프레임워크 기반 교육 콘텐츠입니다. 정식 진단은 정규 과정에서 제공됩니다.</small>
+</footer>
+
+<script>
+const TYPES = [
+  {
+    id: 'steady',
+    icon: '🌿',
+    name: 'STEADY',
+    kr: '스테디',
+    mbti: 'ISTJ · ISFJ',
+    func: 'Si 주기능',
+    kw: '안정 · 신뢰 · 꾸준함 · 성실',
+    tagline: '한결같은 신뢰로 관계를 지키는 사람. 말보다 행동으로, 선언보다 일관성으로 사람을 이끕니다.',
+    strengths: [
+      '약속을 지키는 신뢰감 — "이 사람은 믿을 수 있다"는 느낌을 줍니다',
+      '디테일한 돌봄 — 이름, 생일, 어려움을 오래 기억합니다',
+      '오래 버티는 힘 — 단기 성과보다 장기 관계를 쌓습니다',
+      '안정적인 분위기 조성 — 함께 있으면 편안함을 느끼게 합니다'
+    ],
+    shadows: [
+      '변화에 대한 저항 — 새로운 시도보다 기존 방식을 고수하는 경향',
+      '자기 의견 표현의 어려움 — 갈등을 피하다 소통이 막히는 상황',
+      '번아웃의 은밀함 — 묵묵히 감당하다 갑자기 소진되는 패턴'
+    ],
+    tips: [
+      '직접적인 요청보다 시간을 두고 의논하는 방식이 효과적입니다',
+      '감사를 받을 때 "아니에요" 대신 "감사합니다"로 받아들이는 연습이 필요합니다',
+      '변화를 받아들일 때 "검증된 방식"을 함께 제시하면 수용하기 쉽습니다',
+      '꾸준한 돌봄을 받은 사람은 깊은 충성심과 신뢰로 응답합니다'
+    ],
+    caption: '처음엔 당신의 한결같은 성실함이라는 빛에 사람들이 마음 놓고 의지합니다. 그러나 당신이 "아니오"를 말하지 못한 채 모든 부탁을 감당하다 한계에 부딪쳐 무너지는 그림자를 보면서, 오히려 너무 무거운 짐을 지웠다는 죄책감에 멀어집니다.',
+    ls: '빛: 신뢰와 일관성 / 그림자: 자기 부정과 과도한 희생',
+    growth: '성장의 핵심은 "더 많이 하는 것"이 아니라 경계를 긋는 용기입니다. 나를 소진시키는 섬김과 나를 살리는 섬김을 구분하는 것이 성숙의 시작입니다.',
+    mission: ['이번 주 섬김 요청 중 정중히 거절해야 할 것 딱 1개를 골라 "Not-To-Do"에 적기', '오늘 감사 표현을 받을 때 "아니에요" 대신 "감사합니다"로만 대답해보기'],
+    guide: ['변화를 제안할 때 "전에 효과 있었던 방식"을 먼저 언급하여 안전감 제공하기', '번아웃 전에 먼저 알아채도록 주 1회 간단한 안부 체크 루틴 만들기']
+  },
+  {
+    id: 'spark',
+    icon: '✨',
+    name: 'SPARK',
+    kr: '스파크',
+    mbti: 'ENFP · ENTP',
+    func: 'Ne 주기능',
+    kw: '열정 · 영감 · 비전 · 감화',
+    tagline: '감동으로 사람을 움직이는 사람. 한 마디로 상대의 인생이 바뀌기도 합니다.',
+    strengths: [
+      '영감을 주는 말 — 사람의 마음을 건드리고 새로운 가능성을 보게 합니다',
+      '관계의 깊이 — 상대의 잠재력을 발견하고 진심으로 격려하는 능력',
+      '창의적 아이디어 — 새로운 방식, 기획에 탁월합니다',
+      '비전 제시 — 함께 나아갈 방향을 생생하게 그려줍니다'
+    ],
+    shadows: [
+      '실행 후의 공백 — 시작은 강하지만 유지·마무리가 약한 패턴',
+      '감정 소진 — 많이 주다 갑자기 에너지가 바닥나는 경험',
+      '집중력 분산 — 너무 많은 일에 관심이 분산되어 깊이가 얕아지는 위험'
+    ],
+    tips: [
+      '상대의 꿈과 가능성에 대해 이야기할 때 가장 빛납니다',
+      '행정·반복 업무는 STEADY/LOGIC 유형에게 위임하는 구조가 필요합니다',
+      '감동이 구체적인 변화로 이어지도록 후속 약속이 효과적입니다',
+      '감정이 격할 때는 24시간 여유를 두고 소통하면 관계가 더 건강해집니다'
+    ],
+    caption: '처음엔 당신의 뜨거운 열정과 영감이라는 빛에 이끌려 사람들이 모여듭니다. 그러나 당신이 에너지가 소진된 채 약속을 마무리 짓지 못하고 사라지는 그림자를 보면서, 처음의 감동이 실망과 배신감으로 역전되어 멀어집니다.',
+    ls: '빛: 영감과 열정 / 그림자: 소진과 인정 갈망',
+    growth: '성장의 핵심은 빛의 절제입니다. 모든 열정이 타버리기 전에 멈추는 법, 혼자 감당하지 않는 구조를 만드는 것이 성숙입니다.',
+    mission: ['감정이 격해지는 순간 타이머 "24시간"을 설정하고, 그 전에는 중요한 메시지·결정 보류하기', '이번 주 시작한 프로젝트 1개의 "완료 기준"을 문장 하나로 적고 가까운 사람과 공유하기'],
+    guide: ['행정 업무를 대신 처리할 구조(담당자 지정)를 선제적으로 만들기', '에너지 소진 상태를 알아챌 수 있도록 "신호어"를 미리 함께 정해두기']
+  },
+  {
+    id: 'player',
+    icon: '🎯',
+    name: 'PLAYER',
+    kr: '플레이어',
+    mbti: 'ESTP · ESFP',
+    func: 'Se 주기능',
+    kw: '실행 · 현장 · 즉흥 · 적응',
+    tagline: '현장에서 빛나는 사람. 이론보다 실제, 계획보다 지금 이 순간에 강합니다.',
+    strengths: [
+      '현장 감각 — 상대의 실제 필요를 빠르게 파악하고 즉각 행동합니다',
+      '위기 대응력 — 예상치 못한 상황에서도 당황하지 않고 해결책을 찾습니다',
+      '실용적 돌봄 — 말보다 행동으로 섬기는 사람 (이사 도움, 병원 동행 등)',
+      '유연성 — 상황에 맞게 방식을 빠르게 바꾸는 적응력'
+    ],
+    shadows: [
+      '장기 계획의 어려움 — 큰 그림보다 눈앞의 일에 집중하는 경향',
+      '감정 표현의 불편함 — 깊은 감정을 다루는 대화에서 거리를 두려는 경향',
+      '규칙·형식과의 충돌 — 정해진 절차나 반복적인 루틴에서 에너지가 떨어짐'
+    ],
+    tips: [
+      '길고 추상적인 토론보다 구체적인 행동 과제를 함께 정하는 방식이 효과적입니다',
+      '실생활 문제(취업, 이사, 건강)에 함께 뛰어드는 것이 큰 신뢰를 쌓습니다',
+      '장기 비전은 VISION 유형과 협력하면 균형이 맞습니다',
+      '틀 안에서 즉흥적인 공간을 허용하면 에너지가 살아납니다'
+    ],
+    caption: '처음엔 당신의 발 빠른 실행력과 현장감이라는 빛에 사람들이 든든함을 느낍니다. 그러나 당신이 불안을 행동으로 덮으며 충동적으로 움직이다 수습이 안 되는 혼란을 만드는 그림자를 보면서, 믿고 따르는 것이 오히려 위험하다는 생각에 발을 빼게 됩니다.',
+    ls: '빛: 실행력과 현장감 / 그림자: 깊이 회피와 내면 방치',
+    growth: '성장의 핵심은 멈추는 연습입니다. 행동 이전의 내면, 감정의 언어를 배우는 것이 성숙입니다.',
+    mission: ['돌발 상황이 터졌을 때 즉각 개입하기 전에 타이머 5분을 맞추고 내 감정 상태만 관찰하기', '"3개월 후 이루고 싶은 것" 딱 한 문장을 적고 신뢰할 수 있는 사람에게 보내기'],
+    guide: ['장기 계획 수립 시 VISION이 큰 그림을 그리고 플레이어는 현장 실행만 담당하도록 역할 분리하기', '"5분 관찰 타이머" 규칙을 팀 문화로 함께 만들기']
+  },
+  {
+    id: 'vision',
+    icon: '🔭',
+    name: 'VISION',
+    kr: '비전',
+    mbti: 'INTJ · INFJ',
+    func: 'Ni 주기능',
+    kw: '통찰 · 미래 · 구조 · 개념',
+    tagline: '큰 그림을 그리는 사람. 지금 보이지 않는 것을 보고, 10년 후를 설계합니다.',
+    strengths: [
+      '전략적 사고 — 중장기 비전과 구조를 설계하는 능력',
+      '통찰력 — 문제의 본질을 꿰뚫어 보고 핵심을 짚습니다',
+      '높은 기준 — 타협하지 않는 원칙으로 공동체를 이끕니다',
+      '독립적 판단 — 외부의 압력에 흔들리지 않는 결단력'
+    ],
+    shadows: [
+      '관계적 거리감 — 높은 기준이 타인에게 차갑게 느껴지는 상황',
+      '피드백 수용의 어려움 — 자신의 판단에 대한 도전을 위협으로 받아들이는 경향',
+      '세부 실행의 간과 — 큰 그림에 집중하다 현장의 작은 필요를 놓치는 경우'
+    ],
+    tips: [
+      '"왜"에 대한 깊은 설명을 할 때 상대가 가장 신뢰합니다',
+      '반대 의견을 받을 때 "분석해보겠다"는 여유가 관계를 지킵니다',
+      '구조적 기획·전략에 에너지를 집중하는 것이 효율적입니다',
+      'HARMONY 유형과의 협력이 관계의 부드러움을 보완합니다'
+    ],
+    caption: '처음엔 당신의 확신과 결단력이라는 빛을 믿고 사람들이 따릅니다. 그러나 당신이 타인의 연약함을 용납하지 못하며 몰아붙이는 그림자를 보면서, 자신이 도구로 전락했다고 느끼며 마음을 굳게 닫아버립니다.',
+    ls: '빛: 통찰과 전략 / 그림자: 고독한 확신과 관계 단절',
+    growth: '성장의 핵심은 통제의 내려놓음입니다. 완벽한 구조보다 불완전한 사람과 함께 걷는 법을 배우는 것이 성숙입니다.',
+    mission: ['반대 의견이 나왔을 때 즉각 방어하는 대신 "분석해보겠습니다"라고만 말하고 24시간 뒤 응답하기', '업무 지시가 아닌 "안부 묻는 대화" 5분을 먼저 시작해보기'],
+    guide: ['정서적 온도가 높은 HARMONY 유형을 의도적으로 배치하여 관계적 유연성 역할 맡기기', '결정 사항을 일방 통보하기 전에 의견 수렴 단계(10분)를 프로세스에 공식 삽입하기']
+  },
+  {
+    id: 'logic',
+    icon: '🔬',
+    name: 'LOGIC',
+    kr: '로직',
+    mbti: 'INTP · ISTP',
+    func: 'Ti 주기능',
+    kw: '분석 · 정확 · 원칙 · 체계',
+    tagline: '논리와 원칙으로 관계를 세우는 사람. 말씀과 진리를 치밀하게 연구하고, 정확성을 중요하게 여깁니다.',
+    strengths: [
+      '깊은 연구 능력 — 원리, 문맥, 배경을 꼼꼼하게 파고드는 능력',
+      '논리적 설명 — 체계적이고 설득력 있는 구조로 진리를 전달합니다',
+      '원칙 중심의 리더십 — 감정에 흔들리지 않고 일관된 기준을 유지합니다',
+      '문제 분석 능력 — 갈등 상황에서 감정을 배제하고 구조적으로 접근합니다'
+    ],
+    shadows: [
+      '감정적 연결의 어려움 — 논리보다 공감이 필요한 순간을 놓치는 경우',
+      '완벽주의적 경향 — 불완전한 것에 대한 높은 기준이 스트레스로 이어집니다',
+      '설명이 길어지는 패턴 — 핵심보다 이론이 많아 상대가 길을 잃는 경우'
+    ],
+    tips: [
+      '감정적 고백에 "그랬군요, 많이 힘드셨겠네요"를 먼저 하는 연습이 중요합니다',
+      '깊은 지식을 쉬운 언어로 풀어주는 능력이 큰 선물입니다',
+      '행정·시스템 구축에서 탁월한 역할을 발휘합니다',
+      'HARMONY 유형에게는 논리보다 안심을 먼저 제공하는 것이 효과적입니다'
+    ],
+    caption: '처음엔 당신의 치밀한 논리와 정확한 분석이라는 빛에 사람들이 신뢰를 보냅니다. 그러나 당신이 상처받은 마음을 논리로만 다루며 "그건 감정적인 반응입니다"라고 차단하는 그림자를 보면서, 이 사람에겐 내 아픔을 꺼낼 수 없다고 느끼고 멀어집니다.',
+    ls: '빛: 논리와 정확성 / 그림자: 감정 억압과 연결 회피',
+    growth: '성장의 핵심은 감정의 언어를 배우는 것입니다. 옳고 그름의 세계에서 아프고 슬프고 기쁜 세계로 내려오는 것이 성숙입니다.',
+    mission: ['어려움을 나누는 이야기를 들을 때, 해결책보다 "그랬군요, 많이 힘드셨겠네요"를 먼저 한 번 말하기', '"결론 한 문장"을 가장 먼저 말하고 설명은 그 다음에 하기'],
+    guide: ['감정 공감이 필요한 자리에 HARMONY 유형과 함께 배치하여 서로 보완하게 하기', '회의에서 설명이 길어질 때 "핵심 결론 먼저" 규칙을 팀 전체 문화로 만들기']
+  },
+  {
+    id: 'harmony',
+    icon: '🕊️',
+    name: 'HARMONY',
+    kr: '하모니',
+    mbti: 'ESFJ · ENFJ',
+    func: 'Fe 주기능',
+    kw: '공감 · 조화 · 돌봄 · 연결',
+    tagline: '사람의 마음을 읽고 공동체를 하나로 잇는 사람. 갈등 속에서 다리를 놓고, 상처받은 자 곁에 함께 앉아 줍니다.',
+    strengths: [
+      '공감 능력 — 상대의 감정을 정확하게 읽고 언어화하는 능력',
+      '관계 회복 — 갈등하는 두 사람 사이에서 연결고리를 찾아내는 능력',
+      '공동체 분위기 관리 — 모임을 따뜻하게 만드는 능력',
+      '개인 돌봄 — 한 사람 한 사람에게 진심으로 집중하는 섬세함'
+    ],
+    shadows: [
+      '경계 설정의 어려움 — 모든 사람을 기쁘게 하려다 자신을 잃는 패턴',
+      '갈등 회피 — 평화를 유지하기 위해 필요한 직면을 미루는 경향',
+      '감정 흡수 — 상대의 고통을 너무 깊이 받아들여 함께 무너지는 위험'
+    ],
+    tips: [
+      '"아니오"를 말하는 것이 관계를 지키는 방법임을 배우는 것이 핵심입니다',
+      '상대의 감정을 공감하되, 그 감정의 주인은 상대 자신임을 기억하세요',
+      '직면이 필요한 상황에서 "사랑하기 때문에 이것을 말합니다"로 시작하면 효과적입니다',
+      '정기적인 혼자만의 회복 시간이 이 유형에게는 필수입니다'
+    ],
+    caption: '처음엔 당신의 따뜻한 공감이라는 빛에 사람들이 위로받습니다. 그러나 당신이 명확한 선을 긋지 못하고 남의 감정까지 흡수하다 지쳐드는 그림자를 보면서, 오히려 무거운 짐을 지웠다는 죄책감과 부담을 느끼고 점차 멀어집니다.',
+    ls: '빛: 공감과 연결 / 그림자: 자기 소멸과 경계 붕괴',
+    growth: '성장의 핵심은 건강한 자기 표현입니다. 모두가 행복한 것이 목표가 아니라, 진실한 관계가 목표임을 배우는 것이 성숙입니다.',
+    mission: ['오늘 하루 누군가의 부탁에 "아니오"를 딱 한 번 말하고, 그 경험을 저녁에 한 문장으로 기록하기', '상담·대화 후 30분 내에 혼자만의 회복 시간(산책, 묵상 등)을 의무적으로 갖기'],
+    guide: ['모든 갈등 중재를 혼자 감당하지 않도록 "중재 담당" 역할을 팀에서 순환으로 맡기기', '"피곤하다"는 신호를 보낼 때 즉시 업무를 덜어주는 팀 약속을 미리 만들기']
+  },
+  {
+    id: 'leader',
+    icon: '⚡',
+    name: 'LEADER',
+    kr: '리더',
+    mbti: 'ENTJ · ESTJ',
+    func: 'Te 주기능',
+    kw: '추진 · 결단 · 영향력 · 목표',
+    tagline: '방향을 정하고 이끄는 사람. 결단이 필요한 순간 망설이지 않고, 사람들을 목표를 향해 움직이게 합니다.',
+    strengths: [
+      '결단력 — 필요한 순간 빠르고 명확한 결정을 내립니다',
+      '조직화 능력 — 사람과 자원을 효과적으로 배치하고 구조를 세웁니다',
+      '목표 달성 — 구체적인 성과와 결과를 만들어내는 탁월함',
+      '당당한 리더십 — 외부 압력에 흔들리지 않는 강한 중심'
+    ],
+    shadows: [
+      '사람을 수단으로 보는 위험 — 목표 달성 과정에서 관계보다 결과를 우선시',
+      '권위주의적 경향 — 의견 수렴보다 결정 집행을 선호하는 패턴',
+      '약함에 대한 낮은 인내 — 느리거나 망설이는 사람에게 답답함을 느낌'
+    ],
+    tips: [
+      '"잘했다"는 말보다 "고맙다"는 표현이 관계에 더 효과적입니다',
+      '"함께 논의해보자"는 자세가 리더십의 신뢰도를 높입니다',
+      'HARMONY 유형의 피드백을 정기적으로 듣는 구조가 필요합니다',
+      '약한 사람, 느린 사람에게 특별한 인내를 발휘하는 것이 이 유형의 성숙입니다'
+    ],
+    caption: '처음엔 당신의 추진력과 결단력이라는 빛에 사람들이 믿고 따릅니다. 그러나 당신이 결과를 위해 사람을 도구로 다루며 속도를 강요하는 그림자를 보면서, 관계는 계속되지만 마음은 이미 멀어져 있음을 느낍니다.',
+    ls: '빛: 추진력과 결단 / 그림자: 관계 소홀과 권위주의',
+    growth: '성장의 핵심은 사람에게 속도를 맞추는 여유입니다. 목표보다 사람이 먼저임을 배우는 것이 성숙입니다.',
+    mission: ['결정 사항 1개를 실행하기 전에 2명에게 "어떻게 생각해요?"를 묻고 그 대답 기록하기', '느리게 반응하는 사람에게 답답함을 느낄 때, "이 사람의 속도가 나쁜 게 아니다"를 속으로 3번 말하기'],
+    guide: ['결정을 일방 통보하기 전에 의견 수렴 단계를 공식 삽입하기', '목표 외에 관계·과정에 대한 피드백을 정기적으로 받는 구조 만들기']
+  },
+  {
+    id: 'soul',
+    icon: '🌊',
+    name: 'SOUL',
+    kr: '소울',
+    mbti: 'INFP · ISFP',
+    func: 'Fi 주기능',
+    kw: '깊이 · 의미 · 진정성 · 내면',
+    tagline: '깊은 진정성으로 사람을 대하는 사람. 표면이 아닌 본질을 보고, 의미 없는 것에는 마음을 주지 않습니다.',
+    strengths: [
+      '진정성 — 거짓 없는 자기표현으로 상대의 신뢰를 얻습니다',
+      '깊은 공감 — 상대의 내면 세계를 섬세하게 이해합니다',
+      '의미 추구 — 하는 일에 가치와 의미를 불어넣습니다',
+      '개인 돌봄 — 사람 한 명 한 명의 고유함을 귀하게 여깁니다'
+    ],
+    shadows: [
+      '조직·실행의 어려움 — 구조적인 일, 반복적인 행정에서 에너지가 떨어짐',
+      '갈등 회피 — 조화를 위해 자신의 의견을 묻어두는 경향',
+      '이상과 현실의 충돌 — 완벽한 진정성을 요구하다 지치는 패턴'
+    ],
+    tips: [
+      '무엇이 당신에게 의미 있는지를 먼저 나눌 때 관계가 깊어집니다',
+      '조직·행정 업무는 LEADER/LOGIC 유형과 협력하면 균형이 맞습니다',
+      '자신의 의견을 "나는 이렇게 느꼈어요"로 표현하는 연습이 관계를 살립니다',
+      '혼자 있는 시간이 이 유형에게는 에너지 충전의 핵심입니다'
+    ],
+    caption: '처음엔 당신의 깊은 진정성과 진실함이라는 빛에 사람들이 마음을 엽니다. 그러나 당신이 내면의 갈등을 말하지 않고 홀로 끌어안다가 갑자기 멀어지는 그림자를 보면서, 자신이 무엇을 잘못했는지 몰라 혼란스럽고 상처받습니다.',
+    ls: '빛: 진정성과 깊이 / 그림자: 고립과 감정 은폐',
+    growth: '성장의 핵심은 내면을 언어로 꺼내는 용기입니다. 나만의 세계에서 나와 연결을 선택하는 것이 성숙입니다.',
+    mission: ['오늘 하루 내면에서 느낀 감정 하나를 가까운 사람에게 말로 표현하기 (메시지도 가능)', '구체적인 마감이 있는 일 1개를 정하고 LEADER/LOGIC 유형에게 함께해달라고 요청하기'],
+    guide: ['혼자 처리하기보다 역할을 분담하는 팀 구조를 선제적으로 설계하기', '"어떻게 느끼고 있어요?"를 정기적으로 물어봐 주는 1:1 체크인 문화 만들기']
+  }
+];
+
+let selectedType = null;
+
+function buildCards() {
+  const grid = document.getElementById('types-grid');
+  TYPES.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'type-card';
+    card.id = 'card-' + t.id;
+    card.innerHTML = `
+      <div class="card-icon">${t.icon}</div>
+      <div class="card-name">${t.name}</div>
+      <div class="card-kr">${t.kr}</div>
+      <div class="card-mbti">${t.mbti}</div>
+      <div class="card-kw">${t.kw}</div>
+    `;
+    card.addEventListener('click', () => selectType(t));
+    grid.appendChild(card);
+  });
+}
+
+function selectType(t) {
+  // Update card states
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('card-' + t.id).classList.add('active');
+  selectedType = t;
+  showResult(t);
+}
+
+function showResult(t) {
+  const panel = document.getElementById('result-panel');
+  panel.style.display = 'block';
+
+  const strengthsHTML = t.strengths.map(s => `<li>${s}</li>`).join('');
+  const shadowsHTML = t.shadows.map(s => `<li>${s}</li>`).join('');
+  const tipsHTML = t.tips.map(s => `<li>${s}</li>`).join('');
+  const missionHTML = t.mission.map((m,i) => `<li>${m}</li>`).join('');
+  const guideHTML = t.guide.map((g,i) => `<li>${g}</li>`).join('');
+
+  panel.innerHTML = `
+    <div class="result-header">
+      <div class="result-icon">${t.icon}</div>
+      <div>
+        <div class="result-title">${t.name} · ${t.kr}</div>
+        <div class="result-mbti">${t.mbti} | ${t.func}</div>
+        <span class="result-kw">${t.kw}</span>
+      </div>
+    </div>
+
+    <div class="result-tagline">${t.tagline}</div>
+
+    <div class="result-grid">
+      <div class="result-box light">
+        <h4>✦ 강점 — 나의 빛</h4>
+        <ul>${strengthsHTML}</ul>
+      </div>
+      <div class="result-box shadow">
+        <h4>▲ 그림자 — 내가 조심할 것</h4>
+        <ul>${shadowsHTML}</ul>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <h4>💬 소통 팁 — 관계에서 이렇게 써보세요</h4>
+      <ul>${tipsHTML}</ul>
+    </div>
+
+    <div class="caption-box">
+      <h4>🌑 쉐도우그램 캡션 — 빛이 그림자가 될 때</h4>
+      <p>${t.caption}</p>
+      <div class="light-shadow-line">${t.ls}</div>
+    </div>
+
+    <div style="background:#fff;border-radius:12px;padding:20px;border:1.5px solid var(--border);margin-bottom:16px;">
+      <h4 style="font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--pastor);margin-bottom:8px;">🌱 성장 방향</h4>
+      <p style="font-size:13px;color:#333;line-height:1.8;">${t.growth}</p>
+    </div>
+
+    <h4 style="font-size:12px;font-weight:700;letter-spacing:.08em;color:#333;margin-bottom:12px;">🎯 오늘의 마이크로 미션</h4>
+    <div class="mission-grid">
+      <div class="mission-box self">
+        <h4>본인 미션</h4>
+        <ol>${missionHTML}</ol>
+      </div>
+      <div class="mission-box team">
+        <h4>동역자 / 가족 가이드</h4>
+        <ol>${guideHTML}</ol>
+      </div>
+    </div>
+
+    <div class="result-cta">
+      <p>이 유형을 더 깊이 이해하고 싶다면<br>온유스쿨 퍼스트클래스 정규 과정에서 만나요.</p>
+      <a class="btn-full" href="온유스쿨_목회자_체험판.html">목회자 과정 신청하기</a>
+      <a class="btn-outline" href="coupleclass.html">부부클래스 체험하기</a>
+    </div>
+  `;
+
+  setTimeout(() => {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+buildCards();
+</script>
+</body>
+</html>

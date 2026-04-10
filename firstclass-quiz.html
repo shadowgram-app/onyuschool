@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>온유스쿨 퍼스트클래스 — 나부터 이해하기</title>
+  <meta name="description" content="나는 어떤 사람인가? 8가지 소통 은사로 나를 이해하고, 빛과 그림자를 발견합니다. 온유스쿨 퍼스트클래스 무료 진단. 28문항 · 즉시 결과."/>
+  <link rel="canonical" href="https://onyuschool.com/firstclass/"/>
+  <meta property="og:url" content="https://onyuschool.com/firstclass/"/>
+  <meta property="og:title" content="온유스쿨 — 나의 소통 은사를 발견하세요"/>
+  <meta property="og:description" content="나는 어떤 유형인가요? 8가지 소통 언어 중 내 언어를 발견합니다. 무료 · 28문항 · 즉시 결과."/>
+  <meta property="og:image" content="https://onyuschool.com/og-firstclass.png"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="robots" content="index, follow"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:    #F7F5F2;
+      --bg2:   #EEEBE6;
+      --card:  #FFFFFF;
+      --text:  #1A1714;
+      --gold:  #7A5C1E;
+      --goldL: #9A7A2E;
+      --white: #FFFFFF;
+      --silver:#6B6560;
+      --border:rgba(122,92,30,0.16);
+      --shadow:0 2px 16px rgba(0,0,0,0.07);
+      --red:   #C0392B;
+      --green: #1E6640;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans KR', sans-serif;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ── QUIZ ── */
+    #quiz-section {
+      max-width: 680px; margin: 0 auto;
+      padding: 20px 20px 80px;
+    }
+    .back-btn-wrap {
+      max-width: 680px; margin: 0 auto;
+      padding: 10px 20px 0;
+    }
+    .btn-prev {
+      background: none; border: none;
+      color: var(--silver); font-size: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer; padding: 8px 0;
+      display: flex; align-items: center; gap: 6px;
+      transition: color .2s;
+    }
+    .btn-prev:active { color: var(--gold); }
+    .btn-prev.hidden { visibility: hidden; pointer-events: none; }
+
+    .progress-wrap {
+      max-width: 680px; margin: 0 auto;
+      padding: 12px 20px 0;
+    }
+    .progress-bar-bg {
+      height: 3px; background: var(--border);
+      border-radius: 2px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--gold);
+      border-radius: 2px; transition: width .4s ease; width: 0%;
+    }
+    .progress-text {
+      display: flex; justify-content: space-between;
+      margin-top: 12px;
+      font-size: 13px; color: var(--silver);
+    }
+    .dimension-label {
+      font-size: 12px; letter-spacing: 1px; color: var(--gold);
+      margin-top: 8px; font-weight: 600;
+    }
+
+    .question-block { display: none; }
+    .question-block.active { display: block; animation: fadeIn .3s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .q-num {
+      font-size: 12px; letter-spacing: 2px; color: var(--gold);
+      font-weight: 700; margin-bottom: 16px;
+    }
+    .q-text {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(18px, 4.5vw, 24px);
+      font-weight: 600; line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .ab-options { display: flex; flex-direction: column; gap: 14px; }
+    .ab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 20px;
+      text-align: left; cursor: pointer;
+      border-radius: 8px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; line-height: 1.7;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+      display: flex; align-items: flex-start; gap: 16px; width: 100%;
+      box-shadow: var(--shadow);
+    }
+    .ab-btn:hover {
+      border-color: rgba(154,122,46,0.4);
+      box-shadow: 0 4px 20px rgba(154,122,46,0.12);
+    }
+    .ab-btn.selected {
+      border-color: var(--gold);
+      background: rgba(154,122,46,0.06);
+    }
+    .ab-label {
+      flex-shrink: 0; width: 36px; height: 36px;
+      border: 1px solid var(--border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 800; color: var(--gold);
+      margin-top: 2px;
+    }
+    .ab-btn.selected .ab-label {
+      background: var(--gold); color: #FFFFFF; border-color: var(--gold);
+    }
+    .ab-text { font-size: 15px; }
+
+    /* ── RESULT ── */
+    #result-section {
+      display: none;
+      max-width: 700px; margin: 0 auto;
+      padding: 40px 20px 80px;
+      animation: fadeIn .5s ease;
+    }
+    .result-label {
+      text-align: center;
+      font-size: 11px; letter-spacing: 3px; color: var(--gold);
+      font-weight: 700; margin-bottom: 16px;
+    }
+    .result-type-name {
+      text-align: center;
+      font-size: clamp(52px, 15vw, 88px);
+      font-weight: 900; letter-spacing: 4px;
+      line-height: 1; margin-bottom: 10px;
+    }
+    .result-function {
+      text-align: center;
+      font-size: 14px; letter-spacing: 0.5px; color: var(--silver);
+      margin-bottom: 8px; line-height: 1.6;
+    }
+    .result-code {
+      text-align: center;
+      font-size: 12px; letter-spacing: 2px; color: rgba(154,122,46,0.4);
+      margin-bottom: 32px;
+    }
+    .result-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden; margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .result-card-header {
+      padding: 16px 20px;
+      font-size: 12px; letter-spacing: 2px; font-weight: 700;
+      background: var(--bg2);
+    }
+    .result-card-body {
+      padding: 18px 20px 22px;
+      font-family: 'Noto Serif KR', serif;
+      font-size: 17px; line-height: 2.0; color: var(--text);
+    }
+    .result-shadow-body {
+      padding: 18px 20px 22px;
+      font-family: 'Noto Serif KR', serif;
+      font-size: 17px; line-height: 2.0; color: #7A7570;
+    }
+
+    /* ── SHADOWGRAM CAPTION CARD ── */
+    .caption-card {
+      background: rgba(154,122,46,0.05);
+      border: 1px solid rgba(154,122,46,0.25);
+      border-radius: 8px; padding: 22px 20px;
+      margin-bottom: 16px;
+      position: relative; overflow: hidden;
+    }
+    .caption-card::before {
+      content: '"';
+      position: absolute; top: -20px; left: 12px;
+      font-size: 110px; color: rgba(154,122,46,0.1);
+      font-family: Georgia, serif; line-height: 1;
+      pointer-events: none;
+    }
+    .caption-card-header {
+      font-size: 12px; letter-spacing: 2px; font-weight: 700;
+      color: var(--gold); margin-bottom: 14px; position: relative;
+    }
+    .caption-card-body {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 16px; line-height: 2.0; color: var(--text);
+      position: relative;
+    }
+    .caption-ls {
+      margin-top: 14px; padding-top: 12px;
+      border-top: 1px solid rgba(154,122,46,0.2);
+      font-size: 12px; color: rgba(154,122,46,0.7);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Score bars ── */
+    .score-bars {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 22px 20px; margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .score-bar-label {
+      font-size: 12px; letter-spacing: 2px; color: var(--gold);
+      font-weight: 700; margin-bottom: 18px;
+    }
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .bar-dim { font-size: 13px; color: var(--silver); width: 24px; flex-shrink: 0; }
+    .bar-track {
+      flex: 1; height: 8px; background: var(--border); border-radius: 4px;
+      position: relative;
+    }
+    .bar-fill-a {
+      position: absolute; top: 0; height: 100%; border-radius: 4px 0 0 4px;
+      right: 50%;
+    }
+    .bar-fill-b {
+      position: absolute; top: 0; height: 100%; border-radius: 0 4px 4px 0;
+      left: 50%;
+    }
+    .bar-ends {
+      display: flex; justify-content: space-between;
+      font-size: 12px; margin-top: 8px;
+    }
+    .bar-label-active { color: var(--text); font-weight: 700; }
+    .bar-label-inactive { color: var(--silver); font-weight: 400; opacity: 0.5; }
+
+    /* ── PREVIEW BLUR ── */
+    .preview-blur-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+      margin-bottom: 16px; position: relative;
+      box-shadow: var(--shadow);
+    }
+    .preview-blur-header {
+      padding: 16px 20px;
+      font-size: 12px; letter-spacing: 2px; font-weight: 700;
+      color: var(--silver); background: var(--bg2);
+    }
+    .preview-blur-body {
+      padding: 18px 20px 28px;
+      filter: blur(5px); user-select: none;
+      font-family: 'Noto Serif KR', serif;
+      font-size: 15px; line-height: 1.9; color: var(--text);
+      pointer-events: none;
+      white-space: pre-line;
+    }
+    .preview-blur-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.97) 70%);
+      height: 120px;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 20px;
+    }
+    .preview-blur-label { font-size: 13px; color: var(--silver); }
+
+    /* ── CTA box ── */
+    .cta-box {
+      margin-top: 40px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 32px 20px; text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .cta-box-label {
+      font-size: 11px; letter-spacing: 2px; color: var(--gold);
+      font-weight: 700; margin-bottom: 14px;
+    }
+    .cta-box-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(20px, 5vw, 28px);
+      font-weight: 600; line-height: 1.5; margin-bottom: 14px;
+      color: var(--text);
+    }
+    .cta-box-sub {
+      color: var(--silver); font-size: 15px;
+      line-height: 1.9; margin-bottom: 24px;
+      max-width: 440px; margin-left: auto; margin-right: auto;
+    }
+
+    .btn-buy {
+      display: inline-block; padding: 18px 32px;
+      background: var(--gold); color: #FFFFFF;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px; font-weight: 800; letter-spacing: 0.5px;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background .2s, box-shadow .2s;
+      width: 100%; max-width: 420px;
+      box-shadow: 0 4px 20px rgba(154,122,46,0.25);
+      cursor: pointer; border: none;
+    }
+    .btn-buy:hover { background: var(--goldL); box-shadow: 0 6px 28px rgba(154,122,46,0.35); }
+
+    .btn-retry {
+      display: inline-block; margin-top: 24px;
+      font-size: 14px; color: var(--silver);
+      cursor: pointer; text-decoration: underline;
+      background: none; border: none;
+      font-family: 'Noto Sans KR', sans-serif;
+      transition: color .2s; padding: 8px 0;
+    }
+
+    /* ── MISSION BOX ── */
+    .mission-box {
+      background: rgba(30,102,64,0.05);
+      border: 1px solid rgba(30,102,64,0.20);
+      border-radius: 8px; padding: 22px 20px;
+      margin-bottom: 16px;
+    }
+    .mission-box-header {
+      font-size: 12px; letter-spacing: 2px; font-weight: 700;
+      color: var(--green); margin-bottom: 14px;
+    }
+    .mission-box-body {
+      font-size: 14px; line-height: 1.9; color: var(--text);
+    }
+    .mission-box-body ol { padding-left: 18px; }
+    .mission-box-body li { margin-bottom: 8px; }
+
+    /* ── SNS Share ── */
+    .share-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      margin-top: 12px;
+    }
+    .share-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13px; font-weight: 800;
+      padding: 12px 8px; border-radius: 12px;
+      text-decoration: none; cursor: pointer; border: none;
+    }
+    .btn-kakao { background: #FEE500; color: #3C1E1E; }
+    .btn-facebook { background: #1877f2; color: #fff; }
+    .btn-copy { background: transparent; border: 1px solid rgba(122,92,30,0.35); color: var(--gold); }
+    .btn-save { background: transparent; border: 1px solid rgba(122,92,30,0.35); color: var(--gold); }
+
+    /* ── NAV ── */
+    .gnav {
+      display: flex; align-items: center; gap: 0;
+      padding: 0 16px; height: 52px;
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(247,245,242,0.97);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(122,92,30,0.16);
+    }
+    .gnav-logo {
+      font-size: 13px; letter-spacing: 2px; font-weight: 700;
+      text-decoration: none; flex: 1; white-space: nowrap;
+      display: flex; align-items: center;
+    }
+    .gnav-logo .s1 { color: #8A857E; font-weight: 300; }
+    .gnav-logo .s2 { color: var(--gold); font-weight: 800; }
+    .gnav-badge {
+      font-size: 11px; font-weight: 700;
+      background: rgba(122,92,30,0.10);
+      border: 1px solid rgba(122,92,30,0.25);
+      color: var(--gold); padding: 4px 12px;
+      border-radius: 20px; letter-spacing: 0.05em;
+    }
+    .hw-btn {
+      background: rgba(122,92,30,0.08); border: 1px solid rgba(122,92,30,0.2);
+      border-radius: 8px; width: 36px; height: 36px;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 5px; cursor: pointer; flex-shrink: 0;
+      transition: background .2s; margin-right: 12px;
+    }
+    .hw-btn:hover { background: rgba(122,92,30,0.15); }
+    .hw-btn span { display: block; width: 16px; height: 2px; background: var(--gold); border-radius: 2px; transition: all .25s; }
+    .hw-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hw-btn.open span:nth-child(2) { opacity: 0; }
+    .hw-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .hw-overlay { position: fixed; inset: 0; z-index: 9998; background: rgba(0,0,0,0); pointer-events: none; transition: background .3s; }
+    .hw-overlay.open { background: rgba(0,0,0,0.4); pointer-events: all; }
+    .hw-drawer { position: fixed; top: 0; left: -280px; bottom: 0; z-index: 9999; width: 260px; background: #FFFFFF; border-right: 1px solid rgba(122,92,30,0.18); display: flex; flex-direction: column; transition: left .3s cubic-bezier(.4,0,.2,1); box-shadow: 4px 0 24px rgba(0,0,0,0.08); }
+    .hw-drawer.open { left: 0; }
+    .hw-drawer-head { padding: 44px 22px 16px; border-bottom: 1px solid rgba(122,92,30,0.10); display: flex; align-items: center; justify-content: space-between; }
+    .hw-drawer-logo { font-size: 12px; letter-spacing: 2px; font-weight: 700; color: var(--gold); }
+    .hw-close-btn { background: none; border: none; color: #AAA; font-size: 20px; cursor: pointer; padding: 4px 8px; line-height: 1; }
+    .hw-item { display: flex; align-items: center; gap: 13px; padding: 15px 22px; color: #7A7570; text-decoration: none; font-size: 14px; font-weight: 500; transition: background .18s, color .18s; border-bottom: 1px solid rgba(0,0,0,0.04); }
+    .hw-item:hover, .hw-item.active-page { background: rgba(122,92,30,0.06); color: var(--gold); }
+    .hw-item-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 680px; margin: 0 auto;
+      padding: 48px 20px 32px;
+      text-align: center;
+    }
+    .hero-tag {
+      font-size: 11px; letter-spacing: 3px; color: var(--gold);
+      font-weight: 700; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(26px, 6vw, 40px);
+      font-weight: 700; line-height: 1.4;
+      color: var(--text); margin-bottom: 16px;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero-sub {
+      color: var(--silver); font-size: 15px;
+      line-height: 1.9; margin-bottom: 28px;
+      max-width: 480px; margin-left: auto; margin-right: auto;
+    }
+    .hero-verse {
+      display: inline-block;
+      border-left: 2px solid var(--gold);
+      padding: 8px 16px;
+      color: rgba(26,23,20,0.45);
+      font-size: 13px; font-style: italic;
+      text-align: left; margin-bottom: 32px;
+      font-family: 'Noto Serif KR', serif;
+    }
+    .hero-meta {
+      display: flex; justify-content: center; gap: 20px;
+      font-size: 12px; color: var(--silver);
+      letter-spacing: 0.05em; margin-bottom: 8px;
+    }
+    .hero-meta span::before { content: '· '; }
+    .hero-meta span:first-child::before { content: ''; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 20px; text-align: center;
+      background: var(--bg2);
+      font-size: 12px; color: var(--silver);
+      opacity: 0.85; line-height: 2.0;
+    }
+
+    @media (min-width: 600px) {
+      .result-card-body, .result-shadow-body { font-size: 18px; }
+      .ab-btn { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="gnav">
+  <button class="hw-btn" id="hw-btn" onclick="hwToggle()" aria-label="메뉴"><span></span><span></span><span></span></button>
+  <a class="gnav-logo" href="https://onyuschool.com"><span class="s1">ONYU</span><span class="s2">SCHOOL</span></a>
+  <span class="gnav-badge">퍼스트클래스</span>
+</nav>
+
+<!-- OVERLAY -->
+<div class="hw-overlay" id="hw-overlay" onclick="hwClose()"></div>
+<!-- DRAWER -->
+<div class="hw-drawer" id="hw-drawer">
+  <div class="hw-drawer-head">
+    <div class="hw-drawer-logo">ONYUSCHOOL</div>
+    <button class="hw-close-btn" onclick="hwClose()">✕</button>
+  </div>
+  <a class="hw-item" href="https://onyuschool.com"><span class="hw-item-icon">🏠</span>홈</a>
+  <a class="hw-item active-page" href="firstclass-quiz.html"><span class="hw-item-icon">🌟</span>퍼스트클래스</a>
+  <a class="hw-item" href="coupleclass.html"><span class="hw-item-icon">💑</span>부부클래스</a>
+  <a class="hw-item" href="온유스쿨_목회자_체험판.html"><span class="hw-item-icon">✝</span>목회자 과정</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-tag">FIRST CLASS · 나부터 이해하기</p>
+  <h1>나는 어떤 사람인가요?<br><em>내 소통 은사를 발견하세요</em></h1>
+  <p class="hero-sub">
+    나를 이해하면, 배우자가 이해됩니다.<br>
+    배우자를 이해하면, 자녀가 이해됩니다.<br>
+    자녀를 이해하면, 공동체가 달라집니다.
+  </p>
+  <div class="hero-verse">
+    "그러므로 너희는 하나님이 택하사 거룩하고 사랑받는 자처럼<br>
+    긍휼과 자비와 겸손과 온유와 오래 참음을 옷 입고"<br>
+    — 골로새서 3:12
+  </div>
+  <div class="hero-meta">
+    <span>⏱ 5–7분</span>
+    <span>28문항</span>
+    <span>🔒 회원가입 불필요</span>
+  </div>
+</div>
+
+<!-- BACK BUTTON -->
+<div class="back-btn-wrap">
+  <button class="btn-prev hidden" id="btn-prev" onclick="goPrev()">← 이전 문항</button>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progress-fill"></div>
+  </div>
+  <div class="progress-text">
+    <span id="progress-label">문항 1 / 28</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="dimension-label" id="dim-label">영역 1 · 에너지 방향</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-section"></div>
+
+<!-- RESULT -->
+<div id="result-section">
+  <p class="result-label">나의 소통 유형 · ONYUSCHOOL</p>
+  <div class="result-type-name" id="res-type"></div>
+  <p class="result-function" id="res-function"></p>
+  <p class="result-code" id="res-code"></p>
+
+  <!-- Score bars -->
+  <div class="score-bars">
+    <p class="score-bar-label">4가지 소통 영역 프로필</p>
+    <div id="score-bar-rows"></div>
+  </div>
+
+  <!-- 사역 은사 (빛) -->
+  <div class="result-card">
+    <div class="result-card-header" id="res-light-header">✦ 나의 빛 — 사역 은사</div>
+    <div class="result-card-body" id="res-light"></div>
+  </div>
+
+  <!-- 성장 영역 (그림자) -->
+  <div class="result-card">
+    <div class="result-card-header" style="color:var(--silver);">🌑 성장 영역 — 아직 깨어나지 않은 나</div>
+    <div class="result-shadow-body" id="res-shadow"></div>
+  </div>
+
+  <!-- 쉐도우그램 캡션 -->
+  <div class="caption-card">
+    <p class="caption-card-header">✦ 쉐도우그램 캡션 — 빛이 그림자가 될 때</p>
+    <div class="caption-card-body" id="res-caption"></div>
+    <div class="caption-ls" id="res-ls"></div>
+  </div>
+
+  <!-- 마이크로 미션 -->
+  <div class="mission-box">
+    <p class="mission-box-header">🎯 오늘의 마이크로 미션</p>
+    <div class="mission-box-body" id="res-mission"></div>
+  </div>
+
+  <!-- 리포트 미리보기 (블러) -->
+  <div class="preview-blur-wrap">
+    <div class="preview-blur-header">📄 전체 리포트 미리보기 · 온유스쿨 퍼스트클래스</div>
+    <div class="preview-blur-body" id="res-preview"></div>
+    <div class="preview-blur-overlay">
+      <span class="preview-blur-label">🔒 전체 내용은 리포트에서 확인하세요</span>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <p class="cta-box-label" id="res-cta-label">온유스쿨 퍼스트클래스 · 전체 리포트</p>
+    <h2 class="cta-box-title" id="res-cta-title"></h2>
+    <p class="cta-box-sub" id="res-cta-sub"></p>
+
+    <a id="res-cta-btn" href="온유스쿨_목회자_체험판.html" class="btn-buy">전체 리포트 신청하기 →</a>
+
+    <!-- 공유 -->
+    <div style="margin-top:24px;">
+      <p style="font-size:12px;color:var(--silver);text-align:center;margin:0 0 12px;letter-spacing:0.08em;font-weight:700;">
+        ✦ 공유하기 — 지인에게도 알려주세요
+      </p>
+      <div class="share-grid">
+        <button class="share-btn btn-kakao" id="btn-kakao-share" onclick="shareKakao()">💬 카카오 공유</button>
+        <a class="share-btn btn-facebook" id="btn-facebook-share" href="#" target="_blank" rel="noopener">📘 페이스북</a>
+      </div>
+      <button class="share-btn btn-copy" id="btn-copy-link" onclick="copyQuizLink()" style="width:100%;margin-top:8px;">🔗 링크 복사하기</button>
+    </div>
+
+    <!-- 결과 저장 -->
+    <button class="share-btn btn-save" id="btn-save-link" onclick="saveMyLink()" style="width:100%;margin-top:8px;padding:10px;">🔖 내 결과 저장하기 (나중에 다시 확인)</button>
+
+    <div id="saved-link-box" style="display:none; margin-top:12px; background:rgba(154,122,46,0.08); border:1px solid rgba(154,122,46,0.3); border-radius:10px; padding:14px;">
+      <p style="font-size:11px; color:var(--silver); margin-bottom:8px; letter-spacing:1px;">📎 내 개인 링크 — 북마크나 메모에 저장하세요</p>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input id="saved-link-input" type="text" readonly style="flex:1; background:var(--bg2); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:6px; font-size:12px; font-family:monospace;"/>
+        <button onclick="copyLink()" style="background:var(--gold); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; white-space:nowrap; letter-spacing:0.03em;">복사</button>
+      </div>
+    </div>
+
+    <button class="btn-retry" onclick="restartQuiz()">다시 진단하기</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  © 2026 온유스쿨 · onyuschool.com<br>
+  인생나무코칭연구소 · 쉐도우그램 프레임워크 기반 교육 콘텐츠<br>
+  심리 유형 이론(Jung, 1921) 기반 독자적 개발 · MBTI® 미제휴<br><br>
+  문의 · <a href="mailto:joculsion@gmail.com" style="color:rgba(154,122,46,0.6);text-decoration:none;">joculsion@gmail.com</a>
+</footer>
+
+<script>
+/* ── NAV ── */
+function hwToggle(){var b=document.getElementById('hw-btn'),d=document.getElementById('hw-drawer'),o=document.getElementById('hw-overlay'),op=d.classList.toggle('open');b.classList.toggle('open',op);o.classList.toggle('open',op);}
+function hwClose(){['hw-btn','hw-drawer','hw-overlay'].forEach(function(id){document.getElementById(id).classList.remove('open');});}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hwClose();});
+
+// ══════════════════════════════════════════════════════
+// CTA 링크 (유형별 — 추후 개별 리포트 링크로 교체)
+// ══════════════════════════════════════════════════════
+const CTA_LINKS = {
+  SPARK:   '온유스쿨_목회자_체험판.html',
+  VISION:  '온유스쿨_목회자_체험판.html',
+  STEADY:  '온유스쿨_목회자_체험판.html',
+  PLAYER:  '온유스쿨_목회자_체험판.html',
+  HARMONY: '온유스쿨_목회자_체험판.html',
+  SOUL:    '온유스쿨_목회자_체험판.html',
+  LOGIC:   '온유스쿨_목회자_체험판.html',
+  LEADER:  '온유스쿨_목회자_체험판.html',
+};
+
+// ══════════════════════════════════════════════════════
+// Google Apps Script DB (shadowgram 기존 GAS 재사용)
+// ══════════════════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4gdZ0y8L47fo1p9HGcIb7JTkaDKEN6MQe2b75SIdoXj3zMnZjIR6xnRLBVgatRJ2h1w/exec';
+
+let _currentType = '';
+
+// ══════════════════════════════════════════════════════
+// 4개 영역 (MBTI 차원 기반 — 한국어 목회 언어)
+// ══════════════════════════════════════════════════════
+const DIM_LABELS = [
+  '영역 1 · 에너지 방향',
+  '영역 2 · 인식 방식',
+  '영역 3 · 판단 방식',
+  '영역 4 · 생활 방식',
+];
+
+// ══════════════════════════════════════════════════════
+// 28문항 — 목회/공동체 일상 언어로
+// ══════════════════════════════════════════════════════
+const QUESTIONS = [
+  // ── 영역 1: 에너지 방향 ──
+  { dim:1, text:"사람들과 하루를 보내고 나면, 나는 주로...",
+    a:"지쳐서 혼자만의 시간이 필요합니다.",
+    b:"오히려 활기가 차오릅니다." },
+  { dim:1, text:"문제가 생겼을 때, 나는 보통...",
+    a:"먼저 혼자 충분히 생각한 후 나눕니다.",
+    b:"말하면서 생각이 정리됩니다." },
+  { dim:1, text:"예배나 모임에서 나는 주로...",
+    a:"소수와 깊이 교제합니다.",
+    b:"여러 사람과 자유롭게 교류합니다." },
+  { dim:1, text:"새로운 사역이나 프로젝트를 시작할 때...",
+    a:"먼저 관찰하고 파악한 후 참여합니다.",
+    b:"바로 뛰어들어 해보면서 배웁니다." },
+  { dim:1, text:"동역자들이 나를 표현한다면 아마도...",
+    a:"조용하고 속을 잘 모르겠다고 합니다.",
+    b:"활발하고 표현이 풍부하다고 합니다." },
+  { dim:1, text:"사역과 일이 가장 잘 되는 환경은...",
+    a:"조용하고 집중이 잘 되는 환경입니다.",
+    b:"활발하고 소통이 많은 환경입니다." },
+  { dim:1, text:"중요한 결정을 내릴 때, 나는...",
+    a:"혼자 충분히 기도하고 묵상합니다.",
+    b:"누군가와 대화하며 정리합니다." },
+
+  // ── 영역 2: 인식 방식 ──
+  { dim:2, text:"새로운 것을 배울 때, 나는...",
+    a:"구체적인 예시와 단계별 방법을 선호합니다.",
+    b:"전체적인 원리와 개념을 먼저 파악합니다." },
+  { dim:2, text:"나는 주로...",
+    a:"직접 보고 확인할 수 있는 것을 신뢰합니다.",
+    b:"직관과 가능성, 아직 없는 것을 봅니다." },
+  { dim:2, text:"사역을 계획할 때, 나는...",
+    a:"세부 일정과 준비를 꼼꼼하게 짭니다.",
+    b:"큰 방향만 잡고 상황에 맞게 조율합니다." },
+  { dim:2, text:"팀에서 나는 주로...",
+    a:"신뢰할 수 있고, 정확하고, 현실적이라는 평을 받습니다.",
+    b:"새 아이디어와 가능성을 제시한다는 평을 받습니다." },
+  { dim:2, text:"성도가 어려움을 가져올 때, 나는 먼저...",
+    a:"구체적인 상황과 사실을 파악합니다.",
+    b:"그 이면의 패턴과 의미를 생각합니다." },
+  { dim:2, text:"나는 주로...",
+    a:"이미 검증된 방식을 개선하는 것을 선호합니다.",
+    b:"새로운 방식을 만들어 나가는 것을 선호합니다." },
+  { dim:2, text:"설교나 성경공부를 준비할 때, 나는...",
+    a:"실제적이고 구체적인 적용을 중심으로 합니다.",
+    b:"신학적 원리와 넓은 통찰을 중심으로 합니다." },
+
+  // ── 영역 3: 판단 방식 ──
+  { dim:3, text:"중요한 결정을 내릴 때, 나는...",
+    a:"논리와 원칙, 객관적인 결과를 우선합니다.",
+    b:"관계와 감정, 모두에게 미치는 영향을 우선합니다." },
+  { dim:3, text:"성도가 개인적인 어려움을 나눌 때, 나는...",
+    a:"문제를 분석하고 해결책을 먼저 제시합니다.",
+    b:"먼저 듣고 감정을 공감하며 지지합니다." },
+  { dim:3, text:"토론이나 회의에서 나는...",
+    a:"사실과 논리에 근거한 논의가 편합니다.",
+    b:"사람의 가치와 감정을 고려하는 논의가 편합니다." },
+  { dim:3, text:"어려운 피드백을 줄 때, 나는...",
+    a:"직접적으로 말하는 것이 더 존중이라고 생각합니다.",
+    b:"상처받지 않도록 단어를 신중하게 선택합니다." },
+  { dim:3, text:"다른 사람에게서 가장 힘든 것은...",
+    a:"객관적이지 못하고 감정적으로 반응하는 것입니다.",
+    b:"감정을 무시하고 차갑게 결정하는 것입니다." },
+  { dim:3, text:"팀 사역에서 나는 자연스럽게...",
+    a:"목표와 과정의 효율에 집중합니다.",
+    b:"팀 분위기와 관계를 돌봅니다." },
+  { dim:3, text:"좋은 결정이란...",
+    a:"논리적으로 타당하고 측정 가능한 결과를 내는 것입니다.",
+    b:"관계된 모든 이의 가치와 필요가 반영된 것입니다." },
+
+  // ── 영역 4: 생활 방식 ──
+  { dim:4, text:"나의 책상이나 개인 공간은 보통...",
+    a:"정돈되어 있고 각 물건의 자리가 있습니다.",
+    b:"다소 어수선하지만 나는 어디 있는지 압니다." },
+  { dim:4, text:"마감이나 일정 앞에서 나는...",
+    a:"미리 시작하고 여유 있게 마칩니다.",
+    b:"마감 압박이 오히려 나를 움직입니다." },
+  { dim:4, text:"나는 어떤 한 주를...",
+    a:"일정이 정해진 한 주를 선호합니다.",
+    b:"유연하고 열린 한 주를 선호합니다." },
+  { dim:4, text:"계획이 갑자기 바뀌면...",
+    a:"불편하고 계획대로 되길 원합니다.",
+    b:"때로는 오히려 새 가능성이 생겨 좋습니다." },
+  { dim:4, text:"나는 스스로를...",
+    a:"결단력 있다 — 불완전해도 결론을 냅니다.",
+    b:"열린 편 — 최대한 가능성을 열어둡니다." },
+  { dim:4, text:"큰 결정(직분, 사역 방향, 이사 등)을 할 때...",
+    a:"결정 후 더 이상 흔들리지 않습니다.",
+    b:"결정 후에도 다른 가능성을 계속 생각합니다." },
+  { dim:4, text:"사역할 때 나는...",
+    a:"명확한 단계, 마감, 목표가 있어야 잘 됩니다.",
+    b:"유연하게 상황을 보며 조율하는 것이 맞습니다." },
+];
+
+// ══════════════════════════════════════════════════════
+// 유형 판별
+// ══════════════════════════════════════════════════════
+function getType(d1, d2, d3, d4) {
+  const I=d1==='a', E=d1==='b';
+  const S=d2==='a', N=d2==='b';
+  const T=d3==='a', F=d3==='b';
+  const J=d4==='a', P=d4==='b';
+
+  if (I&&S&&T&&J) return 'STEADY';
+  if (I&&S&&F&&J) return 'HARMONY';
+  if (I&&S&&T&&P) return 'LOGIC';
+  if (I&&S&&F&&P) return 'SOUL';
+  if (I&&N&&T&&J) return 'VISION';
+  if (I&&N&&F&&J) return 'VISION';
+  if (I&&N&&T&&P) return 'LOGIC';
+  if (I&&N&&F&&P) return 'SOUL';
+  if (E&&S&&T&&J) return 'LEADER';
+  if (E&&S&&F&&J) return 'HARMONY';
+  if (E&&S&&T&&P) return 'PLAYER';
+  if (E&&S&&F&&P) return 'PLAYER';
+  if (E&&N&&T&&J) return 'LEADER';
+  if (E&&N&&F&&J) return 'VISION';
+  if (E&&N&&T&&P) return 'SPARK';
+  if (E&&N&&F&&P) return 'SPARK';
+  return 'STEADY';
+}
+
+// ══════════════════════════════════════════════════════
+// 유형별 콘텐츠 — 목회적 한국어
+// ══════════════════════════════════════════════════════
+const TYPES = {
+  STEADY: {
+    color: '#7B9EA8',
+    icon: '🌿',
+    function: 'Si 주기능 · ISTJ · ISFJ',
+    light: '당신은 공동체를 붙드는 힘입니다. 약속을 지키는 신뢰감, 이름과 어려움을 기억하는 섬세한 돌봄, 오래 버티는 인내가 당신의 은사입니다. 혼란 속에서도 당신 곁에 있으면 안심이 됩니다.',
+    shadow: '당신의 성장 영역은 변화를 받아들이는 유연함입니다. 새로운 시도보다 기존 방식을 고수하고, 갈등을 피하다 소통이 막히며, 묵묵히 감당하다 소진되는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 한결같은 성실함이라는 빛에 사람들이 마음 놓고 의지합니다. 그러나 당신이 "아니오"를 말하지 못한 채 모든 부탁을 감당하다 한계에 부딪쳐 무너지는 그림자를 보면서, 오히려 너무 무거운 짐을 지웠다는 죄책감에 멀어집니다.',
+    ls: '빛: 신뢰와 일관성 / 그림자: 자기 부정과 과도한 희생',
+    mission: '<ol><li>이번 주 섬김 요청 중 정중히 거절해야 할 것 딱 1개를 "Not-To-Do"에 적어보세요.</li><li>오늘 누군가의 감사 표현에 "아니에요" 대신 "감사합니다"로만 대답해보세요.</li></ol>',
+    preview: '패턴 1 · 루틴이 성역이 될 때\n변화가 왜 이렇게 두렵게 느껴지는지...\n\n패턴 2 · 신중함으로 위장한 두려움\n그림자가 위험 인식을 어떻게 왜곡하는지...\n\n패턴 3 · 수동적 저항\n자신도 모르게 변화를 막는 이유...\n\n패턴 4 · 과거에 대한 집착\n새로운 계절을 위해 놓아야 할 것들...',
+    ctaTitle: 'STEADY 유형 전체 리포트를 신청하세요.',
+    ctaSub: '4가지 무의식 패턴과 성장 방향, 목회자/동역자 가이드가 담긴 전체 리포트입니다.',
+  },
+  SPARK: {
+    color: '#E8A84A',
+    icon: '✨',
+    function: 'Ne 주기능 · ENFP · ENTP',
+    light: '당신은 감동으로 사람을 움직입니다. 설교 한 편으로 성도의 인생이 바뀌기도 합니다. 상대의 잠재력을 발견하고 진심으로 격려하는 능력, 새로운 사역 방식을 기획하는 창의성이 당신의 은사입니다.',
+    shadow: '당신의 성장 영역은 시작한 것을 완성하는 힘입니다. 시작은 강하지만 유지와 마무리가 약하고, 너무 많이 주다 갑자기 에너지가 바닥나며, 많은 일에 관심이 분산되는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 뜨거운 열정과 영감이라는 빛에 이끌려 사람들이 모여듭니다. 그러나 당신이 에너지가 소진된 채 약속을 마무리 짓지 못하고 사라지는 그림자를 보면서, 처음의 감동이 실망과 배신감으로 역전됩니다.',
+    ls: '빛: 영감과 열정 / 그림자: 소진과 인정 갈망',
+    mission: '<ol><li>감정이 격해지는 순간 타이머 "24시간"을 설정하고, 그 전에는 중요한 메시지나 결정을 보류해보세요.</li><li>이번 주 시작한 프로젝트 1개의 "완료 기준"을 문장 하나로 적고 동역자와 공유해보세요.</li></ol>',
+    preview: '패턴 1 · 결승선 직전의 포기\n왜 거의 완성된 것을 두고 떠나는지...\n\n패턴 2 · 창의성으로 위장한 분산\n진짜 영감과 완성 회피를 구분하는 법...\n\n패턴 3 · 시작에 중독되는 마음\n시작의 기쁨이 왜 이토록 강렬한지...\n\n패턴 4 · 유지 구조 만들기\nSPARK 유형이 지속할 수 있는 시스템...',
+    ctaTitle: 'SPARK 유형 전체 리포트를 신청하세요.',
+    ctaSub: '완성하지 못하는 패턴을 극복하는 방법과 SPARK 유형 맞춤 성장 가이드입니다.',
+  },
+  PLAYER: {
+    color: '#E07060',
+    icon: '🎯',
+    function: 'Se 주기능 · ESTP · ESFP',
+    light: '당신은 현장에서 빛납니다. 성도의 실제 필요를 빠르게 파악하고 즉각 행동하는 현장 감각, 위기 상황에서 흔들리지 않는 대응력, 말보다 행동으로 섬기는 실용적 돌봄이 당신의 은사입니다.',
+    shadow: '당신의 성장 영역은 내면을 바라보는 연습입니다. 장기 계획보다 눈앞의 일에 집중하고, 깊은 감정 대화에서 거리를 두며, 정해진 절차에서 에너지가 떨어지는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 발 빠른 실행력과 현장감이라는 빛에 사람들이 든든함을 느낍니다. 그러나 당신이 불안을 행동으로 덮으며 충동적으로 움직이다 수습이 안 되는 혼란을 만드는 그림자를 보면서, 믿고 따르는 것이 위험하다는 생각에 발을 빼게 됩니다.',
+    ls: '빛: 실행력과 현장감 / 그림자: 깊이 회피와 내면 방치',
+    mission: '<ol><li>돌발 상황이 터졌을 때 즉각 개입하기 전에 타이머 5분을 맞추고 내 감정 상태만 관찰해보세요.</li><li>"3개월 후 이루고 싶은 것" 딱 한 문장을 적고 신뢰할 수 있는 동역자에게 보내보세요.</li></ol>',
+    preview: '패턴 1 · 자신감으로 위장한 충동\n그림자가 위험 판단을 어떻게 왜곡하는지...\n\n패턴 2 · 현재가 미래를 삼킬 때\n왜 성과에 유효기간이 생기는지...\n\n패턴 3 · 패턴 인식의 맹점\n반복하는 사이클을 알아채는 법...\n\n패턴 4 · 내면 통합하기\nPLAYER 유형의 장기적 성장 방법...',
+    ctaTitle: 'PLAYER 유형 전체 리포트를 신청하세요.',
+    ctaSub: '지속성을 방해하는 4가지 패턴과 사역의 열매로 이어지는 성장 가이드입니다.',
+  },
+  VISION: {
+    color: '#8B7BB8',
+    icon: '🔭',
+    function: 'Ni 주기능 · INTJ · INFJ',
+    light: '당신은 큰 그림을 그립니다. 지금 보이지 않는 것을 보고, 10년 후를 설계합니다. 문제의 본질을 꿰뚫는 통찰력, 타협하지 않는 원칙으로 공동체를 이끄는 리더십이 당신의 은사입니다.',
+    shadow: '당신의 성장 영역은 사람과 함께 걷는 것입니다. 높은 기준이 차갑게 느껴지거나, 자신의 판단에 도전받을 때 위협으로 받아들이거나, 큰 그림에 집중하다 현장의 작은 필요를 놓치는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 확신과 결단력이라는 빛을 믿고 사람들이 따릅니다. 그러나 당신이 타인의 연약함을 용납하지 못하며 자신처럼 몰아붙이는 그림자를 보면서, 자신이 사역의 도구로 전락했다고 느끼며 마음을 굳게 닫아버립니다.',
+    ls: '빛: 통찰과 전략 / 그림자: 고독한 확신과 관계 단절',
+    mission: '<ol><li>반대 의견이 나왔을 때 즉각 방어하는 대신 "생각해보겠습니다"라고만 말하고 24시간 뒤 응답해보세요.</li><li>이번 주 성도 1명에게 업무 지시가 아닌 "안부 묻는 대화" 5분을 먼저 시작해보세요.</li></ol>',
+    preview: '패턴 1 · 완벽한 비전의 마비\n야심찬 계획이 왜 종이에만 머무는지...\n\n패턴 2 · 현재로부터의 분리\n관계·재정·몸에서 멀어지는 이유...\n\n패턴 3 · 비전가의 고독\n이해받기 어려운 이유와 해법...\n\n패턴 4 · 통찰을 현실로\nVISION 유형이 결과를 만드는 방법...',
+    ctaTitle: 'VISION 유형 전체 리포트를 신청하세요.',
+    ctaSub: '내면의 비전을 공동체와 나누는 방법과 VISION 유형 목회자 가이드입니다.',
+  },
+  LOGIC: {
+    color: '#5B9EA0',
+    icon: '🔬',
+    function: 'Ti 주기능 · INTP · ISTP',
+    light: '당신은 논리와 원칙으로 공동체를 세웁니다. 말씀을 치밀하게 연구하고, 문제의 구조를 꿰뚫으며, 감정에 흔들리지 않는 일관된 원칙으로 신뢰를 쌓는 것이 당신의 은사입니다.',
+    shadow: '당신의 성장 영역은 감정의 언어를 배우는 것입니다. 상처받은 성도가 논리보다 공감을 필요로 할 때 놓치거나, 설명이 길어져 핵심이 묻히거나, 완벽주의가 스트레스로 이어지는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 치밀한 논리와 정확한 말씀 해석이라는 빛에 성도들이 신뢰를 보냅니다. 그러나 당신이 상처받은 마음을 논리로만 다루며 "그건 감정적인 반응입니다"라고 차단하는 그림자를 보면서, 이 목회자에겐 내 아픔을 꺼낼 수 없다고 느끼고 멀어집니다.',
+    ls: '빛: 논리와 정확성 / 그림자: 감정 억압과 연결 회피',
+    mission: '<ol><li>오늘 성도가 어려움을 나눌 때, 해결책보다 "그랬군요, 많이 힘드셨겠네요"를 먼저 한 번 말해보세요.</li><li>설교나 성경공부에서 "결론 한 문장"을 가장 먼저 말하고 설명은 그 다음에 해보세요.</li></ol>',
+    preview: '패턴 1 · 지적 방어막\n논리가 어떻게 연약함의 방패가 되는지...\n\n패턴 2 · 정확함이 치르는 관계 비용\n사람들이 왜 당신을 존경하면서 멀어지는지...\n\n패턴 3 · 고독이 패턴이 될 때\nLOGIC 유형이 연결을 방해하는 방식...\n\n패턴 4 · 감정 통합하기\n정밀함을 유지하며 연결하는 법...',
+    ctaTitle: 'LOGIC 유형 전체 리포트를 신청하세요.',
+    ctaSub: '감정과 이성을 통합하는 방법과 LOGIC 유형 목회자 소통 가이드입니다.',
+  },
+  HARMONY: {
+    color: '#D4886A',
+    icon: '🕊️',
+    function: 'Fe 주기능 · ESFJ · ENFJ',
+    light: '당신은 공동체를 하나로 잇습니다. 성도의 감정을 정확하게 읽는 공감 능력, 갈등 속에서 다리를 놓는 중재력, 예배와 모임의 분위기를 따뜻하게 만드는 능력이 당신의 은사입니다.',
+    shadow: '당신의 성장 영역은 건강한 경계입니다. 모든 사람을 기쁘게 하려다 자신을 잃거나, 필요한 직면을 미루거나, 성도의 고통을 너무 깊이 받아들여 함께 무너지는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 따뜻한 공감이라는 빛에 사람들이 위로받습니다. 그러나 당신이 명확한 선을 긋지 못하고 남의 감정까지 흡수하다 지쳐드는 그림자를 보면서, 오히려 무거운 짐을 지웠다는 죄책감과 부담을 느끼고 점차 멀어집니다.',
+    ls: '빛: 공감과 연결 / 그림자: 자기 소멸과 경계 붕괴',
+    mission: '<ol><li>오늘 하루 누군가의 부탁에 "아니오"를 딱 한 번 말하고, 그 경험을 저녁에 한 문장으로 기록해보세요.</li><li>상담이나 심방 후 30분 내에 혼자만의 회복 시간(산책, 묵상)을 의무적으로 가져보세요.</li></ol>',
+    preview: '패턴 1 · 아니오를 말하지 못하는 이유\n왜 타인의 평화를 위해 자신을 잃는지...\n\n패턴 2 · 통제 수단이 된 죄책감\n그림자가 내면 판단으로 나타나는 방식...\n\n패턴 3 · 돌봄 제공자의 소진\n왜 반복적으로 한계에 부딪히는지...\n\n패턴 4 · 건강한 경계 세우기\n공감을 유지하며 나를 지키는 법...',
+    ctaTitle: 'HARMONY 유형 전체 리포트를 신청하세요.',
+    ctaSub: '자신을 잃지 않고 돌보는 방법과 HARMONY 유형 목회자 회복 가이드입니다.',
+  },
+  LEADER: {
+    color: '#6B8E6B',
+    icon: '⚡',
+    function: 'Te 주기능 · ENTJ · ESTJ',
+    light: '당신은 방향을 정하고 이끕니다. 결단이 필요한 순간 망설이지 않고, 사람과 자원을 효과적으로 배치하며, 교회 성장과 사역 목표를 구체적인 결과로 만드는 것이 당신의 은사입니다.',
+    shadow: '당신의 성장 영역은 내면의 가치를 듣는 것입니다. 목표 달성 과정에서 관계보다 결과를 우선하거나, 느리거나 망설이는 성도에게 답답함을 느끼거나, 자신의 감정과 필요를 무시하는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 추진력과 결단력이라는 빛에 사람들이 믿고 따릅니다. 그러나 당신이 결과를 위해 사람을 도구로 다루며 속도를 강요하는 그림자를 보면서, 관계는 계속되지만 마음은 이미 멀어져 있음을 느낍니다.',
+    ls: '빛: 추진력과 결단 / 그림자: 관계 소홀과 권위주의',
+    mission: '<ol><li>이번 주 결정 사항 1개를 실행하기 전에 팀원 2명에게 "어떻게 생각해요?"를 묻고 그 대답을 기록해보세요.</li><li>느리게 반응하는 성도에게 답답함을 느낄 때, "이 사람의 속도가 나쁜 게 아니다"를 속으로 3번 말해보세요.</li></ol>',
+    preview: '패턴 1 · 효율이 진정성을 삼킬 때\n결과 추구가 어떻게 나를 숨기는지...\n\n패턴 2 · 취약함 없는 리더십\n당신의 힘이 왜 동시에 고립을 만드는지...\n\n패턴 3 · 집행자의 공허함\n목표를 이뤄도 채워지지 않는 것...\n\n패턴 4 · 가치 기반 리더십\n진짜 소명과 연결되어 이끄는 법...',
+    ctaTitle: 'LEADER 유형 전체 리포트를 신청하세요.',
+    ctaSub: '효율이 숨기고 있는 것을 발견하고, 더 지속 가능하게 이끄는 목회자 가이드입니다.',
+  },
+  SOUL: {
+    color: '#B87BA8',
+    icon: '🌊',
+    function: 'Fi 주기능 · INFP · ISFP',
+    light: '당신은 깊은 진정성으로 사람을 대합니다. 표면이 아닌 본질을 보고, 한 사람 한 사람의 고유함을 귀하게 여기며, 거짓 없는 자기표현으로 성도의 마음 깊은 곳에 닿는 것이 당신의 은사입니다.',
+    shadow: '당신의 성장 영역은 내면을 언어로 꺼내는 용기입니다. 조직적인 행정에서 에너지가 떨어지거나, 조화를 위해 자신의 의견을 묻어두거나, 이상과 현실 사이의 간극에 지치는 패턴이 나타납니다.',
+    caption: '처음엔 당신의 깊은 진정성과 진실함이라는 빛에 성도들이 마음을 엽니다. 그러나 당신이 내면의 갈등을 말하지 않고 홀로 끌어안다가 갑자기 멀어지는 그림자를 보면서, 자신이 무엇을 잘못했는지 몰라 혼란스럽고 상처받습니다.',
+    ls: '빛: 진정성과 깊이 / 그림자: 고립과 감정 은폐',
+    mission: '<ol><li>오늘 하루 내면에서 느낀 감정 하나를 가까운 동역자에게 말로 표현해보세요 (메시지도 괜찮습니다).</li><li>구체적인 마감이 있는 일 1개를 정하고 LEADER/LOGIC 유형에게 함께해달라고 요청해보세요.</li></ol>',
+    preview: '패턴 1 · 깊이의 보이지 않음\n내면의 풍요가 왜 외부에 전달되지 않는지...\n\n패턴 2 · 실용 세계에 대한 저항\n그림자가 어떻게 회피와 미루기로 나타나는지...\n\n패턴 3 · 조용한 분노\n가치가 존중받지 못할 때 감정이 쌓이는 방식...\n\n패턴 4 · 깊이를 영향력으로\nSOUL 유형이 세상에 보이는 방법...',
+    ctaTitle: 'SOUL 유형 전체 리포트를 신청하세요.',
+    ctaSub: '깊이를 실제 사역의 열매로 연결하는 방법과 SOUL 유형 목회자 성장 가이드입니다.',
+  },
+};
+
+// ══════════════════════════════════════════════════════
+// 퀴즈 엔진
+// ══════════════════════════════════════════════════════
+let dimScores = [0, 0, 0, 0];
+let answers = new Array(QUESTIONS.length).fill(null);
+let current = 0;
+const totalQ = QUESTIONS.length;
+
+function buildQuiz() {
+  const sec = document.getElementById('quiz-section');
+  sec.innerHTML = '';
+  QUESTIONS.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'question-block' + (qi === 0 ? ' active' : '');
+    div.id = 'q-' + qi;
+    div.innerHTML = `
+      <p class="q-num">문항 ${qi + 1} / ${totalQ}</p>
+      <p class="q-text">${q.text}</p>
+      <div class="ab-options">
+        <button class="ab-btn" onclick="selectOption(${qi}, 'a', this)">
+          <span class="ab-label">A</span>
+          <span class="ab-text">${q.a}</span>
+        </button>
+        <button class="ab-btn" onclick="selectOption(${qi}, 'b', this)">
+          <span class="ab-label">B</span>
+          <span class="ab-text">${q.b}</span>
+        </button>
+      </div>
+    `;
+    sec.appendChild(div);
+  });
+}
+
+function selectOption(qIdx, choice, btn) {
+  if (qIdx === 0 && answers[qIdx] === null) {
+    if (!window._sgQuizStart) window._sgQuizStart = Date.now();
+    const hero = document.querySelector('.hero');
+    const heroMeta = document.querySelector('.hero-meta');
+    if (hero) hero.style.display = 'none';
+    if (heroMeta) heroMeta.style.display = 'none';
+  }
+  document.querySelectorAll(`#q-${qIdx} .ab-btn`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const dimIdx = QUESTIONS[qIdx].dim - 1;
+  if (answers[qIdx] === 'a') dimScores[dimIdx]--;
+  answers[qIdx] = choice;
+  if (choice === 'a') dimScores[dimIdx]++;
+  setTimeout(() => {
+    if (qIdx < totalQ - 1) goToQuestion(qIdx + 1);
+    else showResult();
+  }, 300);
+}
+
+function goToQuestion(idx) {
+  document.querySelectorAll('.question-block').forEach(b => b.classList.remove('active'));
+  document.getElementById('q-' + idx).classList.add('active');
+  current = idx;
+  updateProgress(idx);
+  const prevBtn = document.getElementById('btn-prev');
+  if (idx === 0) prevBtn.classList.add('hidden');
+  else prevBtn.classList.remove('hidden');
+  window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+
+function goPrev() {
+  if (current > 0) goToQuestion(current - 1);
+}
+
+function updateProgress(idx) {
+  const pct = Math.round((idx / totalQ) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `문항 ${idx + 1} / ${totalQ}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('dim-label').textContent = DIM_LABELS[QUESTIONS[idx].dim - 1];
+}
+
+function showResult(savedWinner) {
+  let winner, d, data;
+
+  if (savedWinner) {
+    winner = savedWinner;
+    data = TYPES[winner];
+    d = ['a','a','a','a'];
+  } else {
+    d = dimScores.map(s => s >= 4 ? 'a' : 'b');
+    winner = getType(d[0], d[1], d[2], d[3]);
+    data = TYPES[winner];
+    try {
+      localStorage.setItem('onyu_type', winner);
+      localStorage.setItem('onyu_code', d.join(''));
+      localStorage.setItem('onyu_date', new Date().toLocaleDateString('ko-KR'));
+      localStorage.setItem('onyu_scores', JSON.stringify(dimScores));
+    } catch(e) {}
+
+    // DB 전송
+    try {
+      const ua = navigator.userAgent;
+      const duration = window._sgQuizStart ? Math.round((Date.now() - window._sgQuizStart) / 1000) : null;
+      const payload = {
+        ts: new Date().toISOString(),
+        type: winner, code: d.join(''),
+        lang: 'ko', country: 'KR',
+        device: /Mobi|Android/i.test(ua) ? 'mobile' : 'desktop',
+        duration_sec: duration,
+        page_url: 'onyuschool/firstclass-quiz',
+        ref: document.referrer || 'direct',
+      };
+      fetch(GAS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }).catch(()=>{});
+    } catch(e) {}
+  }
+
+  document.getElementById('quiz-section').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.querySelector('.back-btn-wrap').style.display = 'none';
+
+  const rs = document.getElementById('result-section');
+  rs.style.display = 'block';
+  _currentType = winner;
+
+  document.getElementById('res-type').textContent = winner;
+  document.getElementById('res-type').style.color = data.color;
+  document.getElementById('res-function').textContent = data.icon + '  ' + data.function;
+  document.getElementById('res-code').textContent = `코드: ${d[0]}${d[1]}${d[2]}${d[3]}`;
+  document.getElementById('res-light-header').style.color = data.color;
+  document.getElementById('res-light').textContent = data.light;
+  document.getElementById('res-shadow').textContent = data.shadow;
+  document.getElementById('res-caption').textContent = data.caption;
+  document.getElementById('res-ls').textContent = data.ls;
+  document.getElementById('res-mission').innerHTML = data.mission;
+  document.getElementById('res-preview').textContent = data.preview;
+  document.getElementById('res-cta-label').textContent = `온유스쿨 퍼스트클래스 · 전체 리포트 · ${winner}`;
+  document.getElementById('res-cta-title').textContent = data.ctaTitle;
+  document.getElementById('res-cta-sub').textContent = data.ctaSub;
+
+  const ctaBtn = document.getElementById('res-cta-btn');
+  if (ctaBtn && CTA_LINKS[winner]) ctaBtn.href = CTA_LINKS[winner];
+
+  // 공유 설정
+  const SHARE_URL = `${window.location.href.split('?')[0]}?type=${winner}&fresh=0`;
+  const shareMsg = `온유스쿨 소통 유형 진단 결과: ${data.icon} ${winner}!\n나는 어떤 유형인가요?\n👇\n${SHARE_URL}`;
+
+  document.getElementById('btn-facebook-share').href =
+    'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(SHARE_URL);
+
+  window._shareMsg = shareMsg;
+  window._shareUrl = SHARE_URL;
+
+  // 결과 복원 배너
+  if (savedWinner) {
+    const savedDate = localStorage.getItem('onyu_date') || '';
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:rgba(154,122,46,0.06);border:1px solid rgba(154,122,46,0.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--silver);text-align:center;';
+    banner.innerHTML = `✅ 저장된 결과 · ${savedDate} · <button onclick="restartQuiz()" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:12px;text-decoration:underline;">다시 진단하기</button>`;
+    rs.insertBefore(banner, rs.firstChild);
+  }
+
+  // 점수 바
+  let scoresForBar = dimScores;
+  if (savedWinner) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('onyu_scores') || 'null');
+      if (saved) scoresForBar = saved;
+    } catch(e) {}
+  }
+
+  const dimNames = [
+    {a:'내향',     b:'외향'},
+    {a:'구체·감각', b:'직관·통찰'},
+    {a:'논리·분석', b:'감정·공감'},
+    {a:'계획·구조', b:'유연·즉흥'},
+  ];
+  const barRows = document.getElementById('score-bar-rows');
+  barRows.innerHTML = '';
+  scoresForBar.forEach((sc, i) => {
+    const isA = sc >= 4;
+    const strength = isA
+      ? Math.round(((sc - 3.5) / 3.5) * 50)
+      : Math.round(((3.5 - sc) / 3.5) * 50);
+    const fillPct = Math.max(7, strength);
+    barRows.innerHTML += `
+      <div class="bar-row">
+        <span class="bar-dim">${i + 1}</span>
+        <div style="flex:1">
+          <div class="bar-track">
+            ${isA
+              ? `<div class="bar-fill-a" style="width:${fillPct}%;background:${data.color};opacity:0.9"></div>`
+              : `<div class="bar-fill-b" style="width:${fillPct}%;background:${data.color};opacity:0.9"></div>`
+            }
+          </div>
+          <div class="bar-ends">
+            <span class="${isA ? 'bar-label-active' : 'bar-label-inactive'}">${dimNames[i].a}</span>
+            <span class="${!isA ? 'bar-label-active' : 'bar-label-inactive'}">${dimNames[i].b}</span>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restartQuiz() {
+  dimScores = [0, 0, 0, 0];
+  answers = new Array(QUESTIONS.length).fill(null);
+  current = 0;
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('quiz-section').style.display = 'block';
+  document.querySelector('.progress-wrap').style.display = 'block';
+  document.querySelector('.back-btn-wrap').style.display = 'block';
+  document.getElementById('btn-prev').classList.add('hidden');
+  const hero = document.querySelector('.hero');
+  if (hero) hero.style.display = '';
+  buildQuiz();
+  updateProgress(0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── 공유 ──
+function shareKakao() {
+  const msg = window._shareMsg || '온유스쿨 소통 유형 진단';
+  const url = window._shareUrl || window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(msg + '\n' + url);
+    alert('링크가 복사되었습니다. 카카오톡에 붙여넣기 하세요! 📋');
+  } else {
+    alert('주소창의 URL을 카카오톡으로 공유해보세요!');
+  }
+}
+
+window.copyQuizLink = function() {
+  const url = window._shareUrl || window.location.href;
+  navigator.clipboard && navigator.clipboard.writeText(url);
+  const btn = document.getElementById('btn-copy-link');
+  btn.textContent = '✅ 링크 복사 완료!';
+  setTimeout(() => btn.textContent = '🔗 링크 복사하기', 2000);
+};
+
+function saveMyLink() {
+  try {
+    const type = localStorage.getItem('onyu_type');
+    if (!type) return;
+    const base = window.location.href.split('?')[0];
+    const link = `${base}?type=${type}`;
+    document.getElementById('saved-link-input').value = link;
+    document.getElementById('saved-link-box').style.display = 'block';
+    document.getElementById('btn-save-link').style.display = 'none';
+  } catch(e) {}
+}
+
+function copyLink() {
+  const input = document.getElementById('saved-link-input');
+  input.select();
+  navigator.clipboard && navigator.clipboard.writeText(input.value).then(() => {
+    const btn = input.nextElementSibling;
+    btn.textContent = '✅ 복사됨';
+    setTimeout(() => btn.textContent = '복사', 2000);
+  });
+}
+
+// ── 저장 결과 확인 ──
+function checkSavedResult() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('fresh') === '1') {
+    try {
+      ['onyu_type','onyu_code','onyu_date','onyu_scores'].forEach(k => localStorage.removeItem(k));
+    } catch(e) {}
+    return;
+  }
+  const urlType = params.get('type');
+  if (urlType && TYPES[urlType.toUpperCase()]) {
+    showResult(urlType.toUpperCase());
+    return;
+  }
+  try {
+    const saved = localStorage.getItem('onyu_type');
+    if (saved && TYPES[saved]) { showResult(saved); return; }
+  } catch(e) {}
+}
+
+// ── INIT ──
+buildQuiz();
+updateProgress(0);
+checkSavedResult();
+document.addEventListener('keydown', e => { if(e.key==='Escape') hwClose(); });
+</script>
+</body>
+</html>

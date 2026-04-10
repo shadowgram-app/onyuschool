@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>소통스타일 결과 — 온유스쿨</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --deep:   #1A3A5C;
+      --mid:    #2D6A4F;
+      --gold:   #9A7A2E;
+      --gray:   #777;
+      --dk:     #2B2B2B;
+      --lt:     #F8F9FA;
+      --line:   #DDD;
+      --white:  #FFF;
+    }
+    body {
+      font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+      color: var(--dk); background: var(--lt); line-height: 1.75; font-size: 15px;
+    }
+    nav {
+      background: var(--white); border-bottom: 3px solid var(--deep);
+      padding: 0 6%; height: 56px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { font-size: 1.1rem; font-weight: 700; color: var(--deep); text-decoration: none; }
+    .nav-back { font-size: 0.85rem; color: var(--gray); text-decoration: none; }
+    .nav-back:hover { color: var(--deep); }
+
+    .wrap { max-width: 720px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    /* 주의사항 배너 */
+    .caution-bar {
+      border-left: 5px solid var(--gold);
+      padding: 14px 18px; margin-bottom: 28px;
+      background: var(--white); border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line); border-right: 1px solid var(--line);
+      font-size: 0.83rem; color: #555; line-height: 1.7;
+    }
+    .caution-bar strong { color: var(--gold); }
+
+    /* 유형 헤더 */
+    .type-header {
+      background: var(--white); border: 1.5px solid var(--deep);
+      border-top: 5px solid var(--deep);
+      padding: 36px 32px; margin-bottom: 20px;
+    }
+    .th-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; color: var(--mid); margin-bottom: 10px; }
+    .th-type { font-size: 2.8rem; font-weight: 700; color: var(--deep); letter-spacing: -1px; margin-bottom: 6px; }
+    .th-mbti { font-size: 1rem; color: var(--mid); margin-bottom: 16px; }
+    .th-tagline { font-size: 1.05rem; color: var(--dk); line-height: 1.6; }
+    .th-prob {
+      margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line);
+      font-size: 0.85rem; color: var(--gray);
+    }
+
+    /* 차원 바 */
+    .dims-section { background: var(--white); border: 1px solid var(--line); padding: 28px; margin-bottom: 20px; }
+    .dims-title { font-size: 0.85rem; font-weight: 700; color: var(--dk); margin-bottom: 20px; }
+    .dim-row { margin-bottom: 18px; }
+    .dim-row:last-child { margin-bottom: 0; }
+    .dim-labels { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; }
+    .dim-labels .left { color: var(--deep); font-weight: 600; }
+    .dim-labels .right { color: var(--gray); }
+    .dim-labels .pct { color: var(--deep); font-weight: 700; }
+    .dim-bar { height: 8px; background: var(--line); border-radius: 4px; position: relative; }
+    .dim-fill { height: 100%; background: var(--deep); border-radius: 4px; transition: width 1s ease; }
+
+    /* 리포트 섹션 */
+    .report-section { background: var(--white); border: 1px solid var(--line); padding: 28px 28px; margin-bottom: 20px; }
+    .rs-title {
+      font-size: 0.85rem; font-weight: 700; color: var(--white);
+      background: var(--deep); padding: 6px 14px; display: inline-block;
+      margin-bottom: 18px; letter-spacing: 0.5px;
+    }
+    .rs-title.green { background: var(--mid); }
+    .rs-title.gold { background: var(--gold); }
+    .rs-title.gray { background: var(--gray); }
+    .rs-body { font-size: 0.93rem; color: #444; line-height: 1.85; }
+    .rs-body p + p { margin-top: 12px; }
+    .rs-body ul { padding-left: 0; list-style: none; margin-top: 10px; }
+    .rs-body li { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+    .rs-body li:last-child { border-bottom: none; }
+    .rs-body li::before { content: "▸  "; color: var(--deep); }
+
+    /* 그림자 박스 */
+    .shadow-box {
+      border-left: 5px solid var(--gold); padding: 20px 22px; margin-top: 16px;
+    }
+    .shadow-box .sb-title { font-weight: 700; color: var(--gold); margin-bottom: 8px; font-size: 0.9rem; }
+    .shadow-box p { font-size: 0.9rem; color: #444; line-height: 1.8; }
+
+    /* 마이크로 미션 */
+    .mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .mission-card { border: 1px solid var(--line); padding: 18px 16px; }
+    .mc-label { font-size: 0.75rem; font-weight: 700; color: var(--mid); letter-spacing: 1px; margin-bottom: 8px; }
+    .mc-text { font-size: 0.88rem; color: var(--dk); line-height: 1.7; }
+
+    /* 목회자 전용 */
+    .pastor-only { display: none; }
+    .pastor-only.visible { display: block; }
+
+    /* 관계 가이드 표 */
+    .rel-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-top: 12px; }
+    .rel-table th {
+      background: var(--lt); border: 1px solid var(--line);
+      padding: 8px 12px; text-align: left; color: var(--deep); font-size: 0.8rem;
+    }
+    .rel-table td { border: 1px solid var(--line); padding: 9px 12px; vertical-align: top; color: #444; }
+    .rel-table tr:nth-child(even) td { background: #fafafa; }
+
+    /* 재검사 */
+    .restart-row { text-align: center; margin-top: 32px; }
+    .btn-restart {
+      padding: 11px 28px; border: 1.5px solid var(--deep); color: var(--deep);
+      background: var(--white); font-family: inherit; font-size: 0.93rem;
+      cursor: pointer; margin-right: 12px;
+    }
+    .btn-restart:hover { background: var(--deep); color: var(--white); }
+    .btn-home {
+      padding: 11px 28px; background: var(--deep); color: var(--white);
+      border: none; font-family: inherit; font-size: 0.93rem; cursor: pointer; text-decoration: none;
+      display: inline-block;
+    }
+    .btn-home:hover { background: #0f2540; }
+
+    /* 도입 안내 그리드 */
+    .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .intro-card { border: 1px solid var(--line); border-left: 4px solid var(--deep); padding: 16px; }
+    .ic-title { font-size: 0.82rem; font-weight: 700; color: var(--deep); margin-bottom: 6px; letter-spacing: 0.5px; }
+    .ic-text { font-size: 0.87rem; color: #444; line-height: 1.7; }
+
+    /* 세미나 신청 */
+    .seminar-info { border: 1px solid var(--line); padding: 18px 20px; margin-bottom: 20px; background: #fafcff; }
+    .si-row { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+    .si-row:last-child { border-bottom: none; }
+    .si-label { font-weight: 700; color: var(--deep); min-width: 70px; }
+    .si-val { color: #444; }
+    .sf-field { margin-bottom: 12px; }
+    .sf-field label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--dk); margin-bottom: 5px; }
+    .sf-field input { width: 100%; border: 1px solid var(--line); padding: 9px 12px; font-family: inherit; font-size: 0.9rem; outline: none; }
+    .sf-field input:focus { border-color: var(--deep); }
+    .sf-check { margin-bottom: 16px; font-size: 0.88rem; color: #444; }
+    .sf-check input { margin-right: 6px; }
+    .btn-seminar {
+      width: 100%; padding: 13px; background: var(--mid); color: var(--white);
+      border: none; font-family: inherit; font-size: 0.97rem; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.5px;
+    }
+    .btn-seminar:hover { background: #1e4d38; }
+
+    @media (max-width: 560px) {
+      .mission-grid { grid-template-columns: 1fr; }
+      .intro-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">온유스쿨</a>
+  <a class="nav-back" href="index.html">← 홈으로</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- 주의사항 -->
+  <div class="caution-bar">
+    <strong>참고 안내</strong> — 이 결과는 소통스타일의 <strong>경향성</strong>을 나타냅니다.
+    개인차가 있으며 상황에 따라 달라질 수 있습니다. 의학적·임상적 진단이 아니므로 참고용으로만 활용해 주세요.
+    결과로 타인을 규정하거나 판단하는 용도로 사용하지 마십시오.
+  </div>
+
+  <!-- 유형 헤더 (JS로 채움) -->
+  <div class="type-header">
+    <p class="th-label">나의 소통스타일</p>
+    <div class="th-type" id="thType">—</div>
+    <div class="th-mbti" id="thMbti">—</div>
+    <div class="th-tagline" id="thTagline">—</div>
+    <div class="th-prob" id="thProb"></div>
+  </div>
+
+  <!-- 4차원 점수 바 -->
+  <div class="dims-section">
+    <p class="dims-title">4가지 차원 경향성</p>
+    <div id="dimBars"></div>
+  </div>
+
+  <!-- 빛 — 강점 -->
+  <div class="report-section">
+    <span class="rs-title green">나의 빛 — 강점</span>
+    <div class="rs-body" id="rsLight"></div>
+  </div>
+
+  <!-- 그림자 -->
+  <div class="report-section">
+    <span class="rs-title gold">나의 그림자</span>
+    <div class="rs-body" id="rsShadow"></div>
+  </div>
+
+  <!-- 마이크로 미션 -->
+  <div class="report-section">
+    <span class="rs-title">오늘의 마이크로 미션</span>
+    <div class="rs-body">
+      <p>지금 당장 실천할 수 있는 작은 행동입니다. 거창할 필요 없습니다.</p>
+      <div class="mission-grid" id="missionGrid"></div>
+    </div>
+  </div>
+
+  <!-- 목회자 전용: 성도 관계 가이드 -->
+  <div class="report-section pastor-only" id="pastorSection">
+    <span class="rs-title gray">목회자 전용 — 성도 소통스타일 이해</span>
+    <div class="rs-body">
+      <p>각 스타일의 성도가 어떻게 신앙생활하고 소통하는지 참고하세요. 모든 성도에게 일반화할 수 없으며, 가능성이 높은 경향성입니다.</p>
+      <table class="rel-table" id="relTable"></table>
+    </div>
+  </div>
+
+  <!-- 목회자 전용: 사역 설계 -->
+  <div class="report-section pastor-only" id="ministrySection">
+    <span class="rs-title">목회자 전용 — 나의 사역 스타일</span>
+    <div class="rs-body" id="rsMinistry"></div>
+  </div>
+
+  <!-- 교회 도입 안내 (목회자 전용) -->
+  <div class="report-section pastor-only visible" id="introSection">
+    <span class="rs-title">교회 공동체 적용 안내</span>
+    <div class="rs-body">
+      <p style="margin-bottom:14px;">쉐도우그램 소통스타일 검사를 교회 공동체에 적용하면 다음과 같이 활용할 수 있습니다.</p>
+      <div class="intro-grid">
+        <div class="intro-card">
+          <div class="ic-title">소그룹 · 셀</div>
+          <div class="ic-text">그룹원의 소통스타일을 파악하고, 갈등 예방 및 역할 분담에 활용합니다.</div>
+        </div>
+        <div class="intro-card">
+          <div class="ic-title">사역자 팀</div>
+          <div class="ic-text">팀원 간 강점과 그림자를 공유함으로써 협력의 질을 높입니다.</div>
+        </div>
+        <div class="intro-card">
+          <div class="ic-title">새가족 · 상담</div>
+          <div class="ic-text">새가족의 소통스타일을 빠르게 파악해 맞춤형 관계를 형성합니다.</div>
+        </div>
+        <div class="intro-card">
+          <div class="ic-title">부부 · 가정</div>
+          <div class="ic-text">부부 간 소통스타일 차이를 이해하고 관계 회복에 활용합니다.</div>
+        </div>
+      </div>
+      <p style="margin-top:16px; font-size:0.85rem; color:var(--gray);">
+        교회 도입 문의 및 세미나 자료 요청 : <a href="mailto:joculsion@gmail.com" style="color:var(--deep);">joculsion@gmail.com</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- 구글미트 세미나 신청 (목회자 전용) -->
+  <div class="report-section pastor-only visible" id="seminarSection">
+    <span class="rs-title green">온유스쿨 목회자 세미나 신청</span>
+    <div class="rs-body">
+      <div class="seminar-info">
+        <div class="si-row">
+          <span class="si-label">1차 세미나</span>
+          <span class="si-val">2025년 4월 12일 (주일) 저녁 9시 · 구글미트 · 약 40분</span>
+        </div>
+        <div class="si-row">
+          <span class="si-label">내용</span>
+          <span class="si-val">쉐도우그램 8유형 개요 · 교회 공동체 적용 사례 · Q&amp;A</span>
+        </div>
+        <div class="si-row">
+          <span class="si-label">참가비</span>
+          <span class="si-val">무료 (사전 신청 필수)</span>
+        </div>
+      </div>
+
+      <div id="seminarFormWrap">
+        <form id="seminarForm" onsubmit="submitSeminar(event)">
+          <div class="sf-field">
+            <label>이름 *</label>
+            <input type="text" id="sf-name" placeholder="성함" required />
+          </div>
+          <div class="sf-field">
+            <label>이메일 *</label>
+            <input type="email" id="sf-email" placeholder="구글미트 링크를 이 이메일로 보내드립니다" required />
+          </div>
+          <div class="sf-field">
+            <label>교회명</label>
+            <input type="text" id="sf-church" placeholder="교회명 (선택)" />
+          </div>
+          <div class="sf-check">
+            <label>
+              <input type="checkbox" id="sf-video" />
+              1차 이후 영상 링크도 받겠습니다
+            </label>
+          </div>
+          <button type="submit" class="btn-seminar">세미나 신청하기</button>
+        </form>
+      </div>
+
+      <div id="seminarDone" style="display:none; text-align:center; padding:24px 0;">
+        <p style="font-size:1.1rem; font-weight:700; color:var(--deep); margin-bottom:10px;">신청이 완료되었습니다.</p>
+        <p style="font-size:0.9rem; color:var(--gray);">구글미트 링크를 이메일로 보내드리겠습니다.<br>4월 12일 저녁 9시에 뵙겠습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 소식 구독 + 업셀 CTA -->
+  <div class="report-section" id="subscribeSection" style="border-left:4px solid var(--gold);">
+    <span class="rs-title gold">앞으로의 소식 받기</span>
+    <div class="rs-body">
+      <p style="margin-bottom:16px;">온유스쿨은 지금 시작 단계입니다. 아래 소식을 이메일로 받아보세요.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;" id="upsellGrid">
+        <div style="border:1px solid var(--line);border-left:3px solid var(--mid);padding:14px 16px;">
+          <div style="font-size:0.78rem;font-weight:700;color:var(--mid);margin-bottom:6px;">곧 출시 예정</div>
+          <div style="font-size:0.87rem;color:var(--dk);">부부 소통스타일 리포트</div>
+        </div>
+        <div style="border:1px solid var(--line);border-left:3px solid var(--mid);padding:14px 16px;">
+          <div style="font-size:0.78rem;font-weight:700;color:var(--mid);margin-bottom:6px;">곧 출시 예정</div>
+          <div style="font-size:0.87rem;color:var(--dk);">소그룹 팀 분석 서비스</div>
+        </div>
+        <div style="border:1px solid var(--line);border-left:3px solid var(--mid);padding:14px 16px;">
+          <div style="font-size:0.78rem;font-weight:700;color:var(--mid);margin-bottom:6px;">곧 출시 예정</div>
+          <div style="font-size:0.87rem;color:var(--dk);">가정 · 자녀 양육 리포트</div>
+        </div>
+        <div style="border:1px solid var(--line);border-left:3px solid var(--gold);padding:14px 16px;">
+          <div style="font-size:0.78rem;font-weight:700;color:var(--gold);margin-bottom:6px;">정기 세미나</div>
+          <div style="font-size:0.87rem;color:var(--dk);">주일 저녁 구글미트 세미나</div>
+        </div>
+      </div>
+      <div id="subscribeFormWrap">
+        <form id="subscribeForm" onsubmit="submitSubscribe(event)" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <input type="email" id="sub-email" placeholder="이메일 주소를 입력해주세요"
+            style="flex:1;min-width:200px;border:1px solid var(--line);padding:10px 13px;font-family:inherit;font-size:0.9rem;outline:none;" required />
+          <button type="submit"
+            style="padding:10px 20px;background:var(--deep);color:var(--white);border:none;font-family:inherit;font-size:0.9rem;font-weight:700;cursor:pointer;white-space:nowrap;">
+            소식 받기
+          </button>
+        </form>
+        <p style="font-size:0.77rem;color:var(--gray);margin-top:8px;">이메일 발송 외 다른 목적으로 사용하지 않습니다</p>
+      </div>
+      <div id="subscribeDone" style="display:none;padding:14px;text-align:center;border:1px solid var(--mid);">
+        <span style="color:var(--mid);font-weight:700;">✓ 등록되었습니다.</span>
+        <span style="color:var(--gray);font-size:0.88rem;"> 새 소식이 생기면 알려드릴게요.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 재검사 / 홈 -->
+  <div class="restart-row">
+    <button class="btn-restart" onclick="location.href='check.html'">다시 검사하기</button>
+    <a class="btn-home" href="index.html">홈으로</a>
+  </div>
+
+</div>
+
+<script>
+// ── 유형 데이터 ────────────────────────────────────────
+const TYPE_DATA = {
+  STEADY: {
+    mbti: 'ISTJ · ISFJ (Si 주기능)',
+    tagline: '안정 · 신뢰 · 헌신의 소통스타일',
+    prob: 'Si(내향 감각) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '신뢰를 쌓는 데 탁월합니다. 한 번 맡은 일은 끝까지 해냅니다.',
+      '세밀하고 꼼꼼합니다. 놓치는 부분 없이 책임감 있게 처리합니다.',
+      '일관성 있는 태도로 주변에 안정감을 줍니다.',
+      '경험과 전통을 소중히 여기며 공동체의 기반을 유지합니다.',
+    ],
+    shadow: '안정이 강점인 만큼, 변화에 저항하거나 새로운 시도를 거부하는 경향이 나타날 수 있습니다. 과거의 방식에 지나치게 의존하거나, 지속적인 헌신으로 인해 소진될 수 있습니다. "원래 이렇게 해왔다"는 말이 성장을 막는 순간을 주의하세요.',
+    shadowCaption: '헌신이 의무가 될 때, 빛은 짐이 됩니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 하나의 일상 루틴을 의도적으로 바꿔보세요. 작은 변화가 유연성을 키웁니다.' },
+      { label: '관계를 위한 미션', text: '함께하는 사람에게 "고맙다"는 말을 평소보다 먼저, 구체적으로 전해보세요.' },
+    ],
+    ministry: '신뢰와 헌신으로 공동체를 든든히 세우는 목회자입니다. 성도들이 목사님의 일관됨에서 안정을 얻습니다. 다만 변화와 새로운 시도에 대해 열린 태도를 의도적으로 연습하면 더 폭넓은 사역이 가능합니다.',
+  },
+  SPARK: {
+    mbti: 'ENFP · ENTP (Ne 주기능)',
+    tagline: '영감 · 가능성 · 열정의 소통스타일',
+    prob: 'Ne(외향 직관) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '넘치는 아이디어와 가능성으로 주변을 자극합니다.',
+      '새로운 연결과 시도를 두려워하지 않습니다.',
+      '열정적인 에너지로 사람들에게 동기를 부여합니다.',
+      '다양한 관점을 빠르게 이해하고 공감합니다.',
+    ],
+    shadow: '영감이 강점인 만큼, 시작은 많지만 마무리가 부족한 경향이 있을 수 있습니다. 새로운 아이디어에 흥분하다가 기존의 약속이나 책임이 흐려질 수 있습니다. "이번엔 진짜"라는 말이 반복된다면 그림자를 직면할 시간입니다.',
+    shadowCaption: '가능성이 실체 없이 남을 때, 열정은 소음이 됩니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 시작한 일 하나를 끝까지 마무리하세요. 작더라도 완성의 경험이 중요합니다.' },
+      { label: '관계를 위한 미션', text: '지난번에 했던 약속 하나를 오늘 실제로 이행해보세요.' },
+    ],
+    ministry: '비전과 열정으로 공동체에 활력을 불어넣는 목회자입니다. 성도들이 목사님의 영감에서 새로운 가능성을 봅니다. 다만 시작한 사역을 지속적으로 마무리하는 구조와 파트너를 갖추면 더욱 안정적인 사역이 됩니다.',
+  },
+  PLAYER: {
+    mbti: 'ESTP · ESFP (Se 주기능)',
+    tagline: '현장 · 즉흥 · 활력의 소통스타일',
+    prob: 'Se(외향 감각) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '현장 감각이 뛰어납니다. 지금 이 순간에 집중합니다.',
+      '즉흥적으로 상황에 적응하고 문제를 해결합니다.',
+      '활기찬 에너지로 주변 분위기를 밝게 만듭니다.',
+      '실용적이고 행동 중심적입니다.',
+    ],
+    shadow: '현장 감각이 강점인 만큼, 장기적인 계획이나 깊은 성찰이 부족할 수 있습니다. 충동적으로 결정하거나, 지루한 루틴을 회피하는 경향이 나타날 수 있습니다.',
+    shadowCaption: '지금 이 순간에만 살면, 내일이 낯설어집니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 10분만 조용히 앉아 다음 달 하나의 목표를 적어보세요.' },
+      { label: '관계를 위한 미션', text: '평소 가볍게 지나쳤던 사람과 오늘 좀 더 깊은 대화를 나눠보세요.' },
+    ],
+    ministry: '현장 중심의 활동적인 사역에 탁월한 목회자입니다. 행사, 심방, 즉각적인 필요 대응에 강합니다. 다만 장기적인 사역 방향과 체계를 함께 세울 파트너가 있으면 균형 잡힌 사역이 됩니다.',
+  },
+  VISION: {
+    mbti: 'INTJ · INFJ (Ni 주기능)',
+    tagline: '통찰 · 장기비전 · 집중의 소통스타일',
+    prob: 'Ni(내향 직관) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '깊은 통찰로 본질을 꿰뚫어봅니다.',
+      '장기적인 비전을 설정하고 그 방향으로 흔들리지 않습니다.',
+      '복잡한 상황에서 핵심을 빠르게 파악합니다.',
+      '집중력과 독립적인 사고가 탁월합니다.',
+    ],
+    shadow: '통찰이 강점인 만큼, 자신의 직관을 지나치게 확신해 다른 시각을 닫을 수 있습니다. 완벽을 추구하다 시작을 미루거나, 혼자 짊어지려다 고립될 수 있습니다.',
+    shadowCaption: '비전이 혼자만의 세계가 될 때, 통찰은 벽이 됩니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 내 계획이나 생각을 다른 사람 한 명에게 솔직히 공유해보세요.' },
+      { label: '관계를 위한 미션', text: '내 결론과 다른 의견을 가진 사람의 말을 끝까지, 반박 없이 들어보세요.' },
+    ],
+    ministry: '깊은 통찰과 비전으로 공동체를 이끄는 목회자입니다. 성도들이 목사님의 메시지에서 방향을 찾습니다. 다만 비전을 나누고 함께 만들어가는 과정에서 사람들이 동참할 공간을 열어두세요.',
+  },
+  LOGIC: {
+    mbti: 'INTP · ISTP (Ti 주기능)',
+    tagline: '분석 · 원리 · 독립의 소통스타일',
+    prob: 'Ti(내향 사고) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '논리적으로 구조를 파악하고 원인을 분석합니다.',
+      '복잡한 문제를 체계적으로 분해합니다.',
+      '독립적인 사고로 기존 통념에 얽매이지 않습니다.',
+      '정확하고 깊이 있는 이해를 추구합니다.',
+    ],
+    shadow: '분석이 강점인 만큼, 감정적 연결이나 관계 유지에 소홀해질 수 있습니다. 비판적 시각이 냉소로 흐르거나, 자신의 논리 체계 안에 갇힐 수 있습니다.',
+    shadowCaption: '원리가 사람을 넘어설 때, 분석은 거리가 됩니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 논리보다 먼저 "어떤 마음이에요?"라고 물어보세요.' },
+      { label: '관계를 위한 미션', text: '해결책 없이 그냥 들어주는 시간을 10분 가져보세요.' },
+    ],
+    ministry: '깊이 있는 말씀 연구와 논리적인 설교로 성도들에게 신뢰를 주는 목회자입니다. 다만 성도들은 논리만큼이나 따뜻한 연결도 원합니다. 분석 이전에 마음을 먼저 여는 연습이 사역을 더욱 깊게 합니다.',
+  },
+  HARMONY: {
+    mbti: 'ESFJ · ENFJ (Fe 주기능)',
+    tagline: '공감 · 돌봄 · 연결의 소통스타일',
+    prob: 'Fe(외향 감정) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '공감 능력이 탁월합니다. 상대의 감정을 빠르게 읽습니다.',
+      '사람들을 연결하고 화합을 만들어냅니다.',
+      '돌봄과 배려로 공동체에 따뜻함을 더합니다.',
+      '관계를 소중히 여기며 신뢰를 쌓습니다.',
+    ],
+    shadow: '공감이 강점인 만큼, 모든 사람을 만족시키려다 자신을 잃을 수 있습니다. 갈등을 회피하거나, 경계를 긋지 못해 소진되는 경향이 나타날 수 있습니다.',
+    shadowCaption: '모두를 안으려 할 때, 나를 잃는 날이 옵니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 "No"라고 말해야 할 한 가지를 찾아 정중하게 거절해보세요.' },
+      { label: '관계를 위한 미션', text: '누군가를 돕기 전에 먼저 내 에너지 상태를 확인해보세요.' },
+    ],
+    ministry: '돌봄과 공감으로 성도들의 마음을 품는 목회자입니다. 심방, 상담, 관계 중심 사역에 탁월합니다. 다만 스스로를 돌보는 시간을 확보하지 않으면 지속 가능한 사역이 어렵습니다.',
+  },
+  LEADER: {
+    mbti: 'ENTJ · ESTJ (Te 주기능)',
+    tagline: '실행 · 구조 · 성과의 소통스타일',
+    prob: 'Te(외향 사고) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '명확한 목표를 세우고 효율적으로 실행합니다.',
+      '구조와 체계를 만들어 공동체를 이끕니다.',
+      '결단력 있고 빠른 의사결정을 합니다.',
+      '성과와 발전을 향해 지속적으로 추진합니다.',
+    ],
+    shadow: '실행이 강점인 만큼, 과정보다 결과를 앞세우다 사람이 소외될 수 있습니다. 통제하거나 지시하는 경향이 강해져 자율성을 억누를 수 있습니다.',
+    shadowCaption: '성과가 사람보다 앞설 때, 리더십은 두려움이 됩니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 하나의 일을 다른 사람에게 완전히 맡기고 개입하지 마세요.' },
+      { label: '관계를 위한 미션', text: '결과가 아닌 과정에서 수고한 사람을 먼저 인정해주세요.' },
+    ],
+    ministry: '체계적인 사역 구조와 강한 추진력으로 공동체를 발전시키는 목회자입니다. 다만 성도들은 성과만큼이나 과정에서의 인정과 존중을 필요로 합니다. 목표 달성과 함께 사람을 먼저 보는 눈을 키워가세요.',
+  },
+  SOUL: {
+    mbti: 'INFP · ISFP (Fi 주기능)',
+    tagline: '진정성 · 가치 · 감수성의 소통스타일',
+    prob: 'Fi(내향 감정) 주기능이 두드러질 가능성이 높습니다.',
+    light: [
+      '진정성 있는 소통으로 깊은 신뢰를 줍니다.',
+      '자신의 가치와 신념을 소중히 여깁니다.',
+      '섬세한 감수성으로 타인의 아픔을 공감합니다.',
+      '겉으로 드러나지 않는 사람의 내면을 봅니다.',
+    ],
+    shadow: '진정성이 강점인 만큼, 자신의 감정과 가치에 지나치게 몰입해 외부와 단절될 수 있습니다. 상처를 오래 품거나, 이상과 현실의 간극에서 과민 반응이 나타날 수 있습니다.',
+    shadowCaption: '내면의 순수함이 세상을 차단할 때, 진정성은 고독이 됩니다.',
+    mission: [
+      { label: '나를 위한 미션', text: '오늘 내면에만 머물지 말고, 느끼는 것을 한 사람에게 말로 표현해보세요.' },
+      { label: '관계를 위한 미션', text: '상처받은 기억 하나를 용서의 시각으로 다시 바라보는 시간을 가져보세요.' },
+    ],
+    ministry: '깊은 진정성과 감수성으로 성도들의 내면을 어루만지는 목회자입니다. 개인 상담, 조용한 심방, 글과 말씀 준비에 탁월합니다. 다만 공동체의 실제적인 필요와 연결되는 실행력을 함께 키워가면 사역이 더욱 완성됩니다.',
+  },
+};
+
+// 성도 유형 관계 가이드 (목회자용)
+const RELATION_GUIDE = [
+  { type:'STEADY', style:'안정·헌신형', faith:'꾸준하고 성실하게 신앙생활. 변화보다 정착을 선호.', comm:'구체적이고 일관된 소통. 갑작스러운 변화는 미리 충분히 안내.' },
+  { type:'SPARK',  style:'영감·열정형', faith:'새로운 사역에 열정적으로 참여. 단 지속성이 약할 수 있음.', comm:'비전과 가능성으로 동기 부여. 마무리를 함께 점검해주세요.' },
+  { type:'PLAYER', style:'현장·활동형', faith:'예배보다 봉사·행사 등 활동 참여에 활발.', comm:'이론보다 실제 사례와 바로 할 수 있는 것으로 접근.' },
+  { type:'VISION', style:'통찰·비전형', faith:'말씀의 깊이와 큰 그림에 집중. 표면적 신앙에 회의적.', comm:'깊이 있는 메시지와 장기 비전 공유. 일 대 일 대화가 효과적.' },
+  { type:'LOGIC',  style:'분석·원리형', faith:'신앙의 논리적 근거를 중시. 질문이 많을 수 있음.', comm:'논리적이고 근거 있는 설명. 질문을 환영하는 분위기.' },
+  { type:'HARMONY',style:'공감·연결형', faith:'관계 중심 신앙. 공동체 화합에 민감.', comm:'따뜻하고 인격적인 소통. 갈등 상황엔 세심한 배려 필요.' },
+  { type:'LEADER', style:'실행·성과형', faith:'사역에 직접 참여하고 이끌기를 원함.', comm:'명확한 역할과 목표 제시. 역량을 인정하고 자율성 부여.' },
+  { type:'SOUL',   style:'진정성·감수성형', faith:'개인 신앙의 깊이를 중시. 형식보다 진정성.', comm:'진심 어린 관심과 개인적 소통. 강요나 압박은 역효과.' },
+];
+
+// ── 결과 렌더 ────────────────────────────────────────
+window.onload = function() {
+  const mbti   = sessionStorage.getItem('sg_mbti');
+  const sgType = sessionStorage.getItem('sg_sgtype');
+  const dims   = JSON.parse(sessionStorage.getItem('sg_dims') || '{}');
+  const score  = JSON.parse(sessionStorage.getItem('sg_score') || '{}');
+  const uType  = sessionStorage.getItem('sg_utype') || 'laity';
+
+  if (!sgType) {
+    // 세션 없으면 검사로 이동
+    location.href = 'check.html';
+    return;
+  }
+
+  const d = TYPE_DATA[sgType];
+
+  // 헤더
+  document.getElementById('thType').textContent = sgType;
+  document.getElementById('thMbti').textContent = d.mbti;
+  document.getElementById('thTagline').textContent = d.tagline;
+  document.getElementById('thProb').textContent = '※ ' + d.prob + ' (MBTI 참고 결과: ' + mbti + ')';
+
+  // 차원 바
+  const dimLabels = {
+    EI: { left: mbti[0]==='E'?'외향(E)':'내향(I)', right: mbti[0]==='E'?'내향(I)':'외향(E)' },
+    SN: { left: mbti[1]==='S'?'감각(S)':'직관(N)', right: mbti[1]==='S'?'직관(N)':'감각(S)' },
+    TF: { left: mbti[2]==='T'?'사고(T)':'감정(F)', right: mbti[2]==='T'?'감정(F)':'사고(T)' },
+    JP: { left: mbti[3]==='J'?'판단(J)':'인식(P)', right: mbti[3]==='J'?'인식(P)':'판단(J)' },
+  };
+  const dimKeys = ['EI','SN','TF','JP'];
+  const dimScores = {
+    EI: Math.round(((score[mbti[0]]||0)/7)*100),
+    SN: Math.round(((score[mbti[1]]||0)/7)*100),
+    TF: Math.round(((score[mbti[2]]||0)/7)*100),
+    JP: Math.round(((score[mbti[3]]||0)/7)*100),
+  };
+
+  const barsEl = document.getElementById('dimBars');
+  dimKeys.forEach(k => {
+    const pct = dimScores[k];
+    barsEl.innerHTML += `
+      <div class="dim-row">
+        <div class="dim-labels">
+          <span class="left">${dimLabels[k].left}</span>
+          <span class="pct">${pct}%</span>
+          <span class="right">${dimLabels[k].right}</span>
+        </div>
+        <div class="dim-bar"><div class="dim-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  });
+
+  // 강점
+  const lightEl = document.getElementById('rsLight');
+  lightEl.innerHTML = '<ul>' + d.light.map(l => `<li>${l}</li>`).join('') + '</ul>';
+
+  // 그림자
+  document.getElementById('rsShadow').innerHTML = `
+    <p>${d.shadow}</p>
+    <div class="shadow-box">
+      <p class="sb-title">쉐도우 캡션</p>
+      <p>${d.shadowCaption}</p>
+    </div>`;
+
+  // 마이크로 미션
+  const mgEl = document.getElementById('missionGrid');
+  d.mission.forEach(m => {
+    mgEl.innerHTML += `
+      <div class="mission-card">
+        <div class="mc-label">${m.label}</div>
+        <div class="mc-text">${m.text}</div>
+      </div>`;
+  });
+
+  // 도입/세미나 섹션은 목회자일 때만 표시 (이미 visible 클래스 포함됐으므로 비목회자는 숨김)
+  if (uType !== 'pastor') {
+    const introSec = document.getElementById('introSection');
+    const semSec = document.getElementById('seminarSection');
+    if (introSec) introSec.style.display = 'none';
+    if (semSec) semSec.style.display = 'none';
+  }
+
+  // 목회자 전용
+  if (uType === 'pastor') {
+    document.getElementById('pastorSection').classList.add('visible');
+    document.getElementById('ministrySection').classList.add('visible');
+
+    // 관계 가이드 표
+    const tbl = document.getElementById('relTable');
+    tbl.innerHTML = `
+      <thead><tr>
+        <th>스타일</th><th>신앙 특징</th><th>소통 포인트</th>
+      </tr></thead>
+      <tbody>` +
+      RELATION_GUIDE.map(r => `
+        <tr>
+          <td><strong>${r.type}</strong><br><span style="font-size:0.78rem;color:var(--gray)">${r.style}</span></td>
+          <td>${r.faith}</td>
+          <td>${r.comm}</td>
+        </tr>`).join('') +
+      `</tbody>`;
+
+    // 사역 스타일
+    document.getElementById('rsMinistry').innerHTML = `<p>${d.ministry}</p>`;
+  }
+};
+
+// ── 통합 Apps Script URL (check.html과 동일하게 사용) ──
+const APPS_SCRIPT_URL_RESULT = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+// ── 소식 구독 ─────────────────────────────────────────
+async function submitSubscribe(e) {
+  e.preventDefault();
+  const email = document.getElementById('sub-email').value.trim();
+  const sgType = sessionStorage.getItem('sg_sgtype') || '';
+  try {
+    if (APPS_SCRIPT_URL_RESULT !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+      await fetch(APPS_SCRIPT_URL_RESULT, {
+        method: 'POST',
+        body: JSON.stringify({ type:'subscribe', email, sgType, date:new Date().toISOString() })
+      });
+    }
+  } catch(err) { console.warn(err); }
+  document.getElementById('subscribeFormWrap').style.display = 'none';
+  document.getElementById('subscribeDone').style.display = 'block';
+}
+
+// ── 세미나 신청 ───────────────────────────────────────
+const SEMINAR_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+async function submitSeminar(e) {
+  e.preventDefault();
+  const name   = document.getElementById('sf-name').value.trim();
+  const email  = document.getElementById('sf-email').value.trim();
+  const church = document.getElementById('sf-church').value.trim();
+  const video  = document.getElementById('sf-video').checked;
+  const sgType = sessionStorage.getItem('sg_sgtype') || '';
+  const btn = document.querySelector('.btn-seminar');
+  btn.disabled = true; btn.textContent = '신청 중...';
+  try {
+    if (SEMINAR_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+      await fetch(SEMINAR_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ name, email, church, video, sgType, type: 'seminar',
+          date: new Date().toISOString() })
+      });
+    }
+    document.getElementById('seminarFormWrap').style.display = 'none';
+    document.getElementById('seminarDone').style.display = 'block';
+  } catch {
+    btn.disabled = false; btn.textContent = '세미나 신청하기';
+    alert('오류가 발생했습니다. 이메일로 직접 문의해주세요: joculsion@gmail.com');
+  }
+}
+</script>
+</body>
+</html>

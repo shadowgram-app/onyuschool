@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>소통스타일 검사 — 온유스쿨</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --deep: #1A3A5C; --mid: #2D6A4F; --gold: #9A7A2E;
+      --gray: #777; --dk: #2B2B2B; --lt: #F8F9FA; --line: #DDD; --white: #FFF;
+    }
+    body { font-family: 'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif; color:var(--dk); background:var(--lt); line-height:1.75; font-size:15px; }
+    nav { background:var(--white); border-bottom:3px solid var(--deep); padding:0 6%; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+    .nav-brand { font-size:1.1rem; font-weight:700; color:var(--deep); text-decoration:none; }
+    .nav-back  { font-size:0.85rem; color:var(--gray); text-decoration:none; }
+    .nav-back:hover { color:var(--deep); }
+    .wrap { max-width:680px; margin:0 auto; padding:40px 20px 80px; }
+
+    /* ── 주의사항 ── */
+    #screen-notice {}
+    .notice-box { background:var(--white); border:1.5px solid var(--line); border-left:5px solid var(--gold); padding:32px 28px; }
+    .notice-box h2 { font-size:1.15rem; color:var(--dk); margin-bottom:6px; }
+    .notice-box .sub { font-size:0.88rem; color:var(--gray); margin-bottom:20px; }
+    .notice-box ul { padding:0; list-style:none; }
+    .notice-box li { font-size:0.9rem; color:#444; padding:8px 0; border-bottom:1px solid var(--line); line-height:1.75; }
+    .notice-box li:last-child { border-bottom:none; }
+    .notice-box li::before { content:"·  "; color:var(--gold); font-weight:700; }
+    .btn-full { width:100%; padding:13px; background:var(--deep); color:var(--white); border:none; font-size:1rem; font-weight:700; cursor:pointer; font-family:inherit; margin-top:24px; transition:background 0.2s; }
+    .btn-full:hover { background:#0f2540; }
+
+    /* ── 검사 ── */
+    #screen-test { display:none; }
+    .progress-wrap { margin-bottom:24px; }
+    .progress-label { display:flex; justify-content:space-between; font-size:0.82rem; color:var(--gray); margin-bottom:8px; }
+    .progress-bar { height:4px; background:var(--line); border-radius:2px; }
+    .progress-fill { height:100%; background:var(--deep); border-radius:2px; transition:width 0.35s; }
+    .dim-label { font-size:0.72rem; font-weight:700; letter-spacing:2px; color:var(--mid); text-transform:uppercase; margin-bottom:8px; }
+    .q-card { background:var(--white); border:1px solid var(--line); padding:32px 28px; }
+    .q-num  { font-size:0.78rem; color:var(--gray); margin-bottom:8px; }
+    .q-text { font-size:1.03rem; font-weight:600; color:var(--dk); margin-bottom:26px; line-height:1.6; }
+    .q-options { display:flex; flex-direction:column; gap:12px; }
+    .q-opt { padding:14px 18px; border:1.5px solid var(--line); background:var(--white); cursor:pointer; font-size:0.93rem; color:var(--dk); text-align:left; font-family:inherit; transition:all 0.15s; line-height:1.6; }
+    .q-opt:hover   { border-color:var(--deep); color:var(--deep); }
+    .q-opt.selected{ border-color:var(--deep); background:#EAF2FB; color:var(--deep); font-weight:600; }
+    .q-nav { display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+    .btn-prev { padding:10px 20px; border:1.5px solid var(--line); background:var(--white); color:var(--gray); cursor:pointer; font-family:inherit; font-size:0.9rem; }
+    .btn-prev:hover { border-color:var(--deep); color:var(--deep); }
+    .btn-next { padding:10px 26px; background:var(--deep); color:var(--white); border:none; cursor:pointer; font-family:inherit; font-size:0.9rem; font-weight:700; }
+    .btn-next:hover    { background:#0f2540; }
+    .btn-next:disabled { background:var(--line); cursor:not-allowed; }
+
+    /* ── 이메일 수집 ── */
+    #screen-email { display:none; }
+    .email-box { background:var(--white); border:1.5px solid var(--deep); border-top:5px solid var(--deep); padding:36px 32px; }
+    .email-box h2 { font-size:1.25rem; color:var(--deep); margin-bottom:8px; }
+    .email-box .sub { font-size:0.9rem; color:var(--gray); margin-bottom:24px; line-height:1.8; }
+    .basic-preview { background:var(--lt); border:1px solid var(--line); padding:16px 20px; margin-bottom:24px; }
+    .bp-label { font-size:0.75rem; font-weight:700; color:var(--mid); letter-spacing:1px; margin-bottom:6px; }
+    .bp-type  { font-size:1.6rem; font-weight:700; color:var(--deep); }
+    .bp-desc  { font-size:0.88rem; color:var(--gray); margin-top:4px; }
+    .f-row { margin-bottom:14px; }
+    .f-row label { display:block; font-size:0.83rem; font-weight:600; color:var(--dk); margin-bottom:5px; }
+    .f-row input, .f-row select { width:100%; border:1px solid var(--line); padding:10px 13px; font-size:0.92rem; font-family:inherit; color:var(--dk); outline:none; background:var(--white); }
+    .f-row input:focus, .f-row select:focus { border-color:var(--deep); }
+    .email-note { font-size:0.78rem; color:var(--gray); margin-top:10px; text-align:center; }
+
+    /* ── 발송 완료 ── */
+    #screen-sent { display:none; }
+    .sent-box { background:var(--white); border:1.5px solid var(--mid); border-top:5px solid var(--mid); padding:40px 32px; text-align:center; }
+    .sent-box h2 { font-size:1.2rem; color:var(--mid); margin-bottom:12px; }
+    .sent-box p  { font-size:0.93rem; color:#444; line-height:1.85; margin-bottom:10px; }
+
+    /* ── 코드 입력 ── */
+    #screen-code { display:none; }
+    .code-box { background:var(--white); border:1.5px solid var(--deep); padding:36px 32px; text-align:center; }
+    .code-box h2 { font-size:1.2rem; color:var(--deep); margin-bottom:8px; }
+    .code-box p  { font-size:0.9rem; color:var(--gray); margin-bottom:22px; }
+    .code-input { width:100%; padding:14px; font-size:1.1rem; text-align:center; border:1.5px solid var(--line); font-family:monospace; letter-spacing:3px; outline:none; margin-bottom:14px; text-transform:uppercase; }
+    .code-input:focus { border-color:var(--deep); }
+    .code-error { color:#c00; font-size:0.85rem; margin-top:8px; display:none; }
+    .divider-or { text-align:center; color:var(--gray); font-size:0.85rem; margin:20px 0; }
+    .btn-skip { background:none; border:none; color:var(--gray); font-size:0.85rem; cursor:pointer; text-decoration:underline; font-family:inherit; }
+
+    /* ── 로딩 ── */
+    #screen-loading { display:none; text-align:center; padding:80px 20px; }
+    #screen-loading p { font-size:1rem; color:var(--gray); margin-top:16px; }
+    .spinner { width:38px; height:38px; border:3px solid var(--line); border-top-color:var(--deep); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="index.html">온유스쿨</a>
+  <a class="nav-back"  href="index.html">← 홈으로</a>
+</nav>
+<div class="wrap">
+
+  <!-- 1. 주의사항 -->
+  <div id="screen-notice">
+    <div class="notice-box">
+      <h2>소통스타일 검사</h2>
+      <p class="sub">28문항 · 약 5분 소요 · 코드 없이 바로 시작 가능합니다</p>
+      <ul>
+        <li>이 검사는 소통스타일을 <strong>이해하기 위한 참고 도구</strong>입니다. 의학적·임상적 진단이 아닙니다.</li>
+        <li>결과는 <strong>"가능성이 높다"</strong>는 경향성을 나타내며, 개인에 따라 차이가 있습니다.</li>
+        <li>같은 사람도 상황과 시기에 따라 결과가 달라질 수 있습니다.</li>
+        <li>결과로 타인을 판단하거나 규정하는 용도로 사용하지 마세요.</li>
+        <li><strong>평소 자신의 모습</strong>을 기준으로 솔직하게 응답해주세요. 정답은 없습니다.</li>
+      </ul>
+      <button class="btn-full" onclick="show('screen-test'); renderQ()">검사 시작하기</button>
+    </div>
+  </div>
+
+  <!-- 2. 검사 -->
+  <div id="screen-test">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressText">1 / 28</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="dim-label" id="dimLabel">에너지</div>
+    <div class="q-card">
+      <p class="q-num"  id="qNum">문항 1</p>
+      <p class="q-text" id="qText"></p>
+      <div class="q-options" id="qOptions"></div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-prev" id="btnPrev" onclick="prevQ()">← 이전</button>
+      <button class="btn-next" id="btnNext" onclick="nextQ()" disabled>다음 →</button>
+    </div>
+  </div>
+
+  <!-- 3. 이메일 입력 (검사 완료 후) -->
+  <div id="screen-email">
+    <div class="email-box">
+      <h2>기본 결과가 나왔습니다 ✓</h2>
+      <p class="sub">이메일을 입력하시면 <strong>상세 리포트 열람 코드</strong>를 바로 보내드립니다.</p>
+      <div class="basic-preview">
+        <div class="bp-label">나의 소통스타일 (기본)</div>
+        <div class="bp-type" id="bpType">—</div>
+        <div class="bp-desc" id="bpDesc">—</div>
+      </div>
+      <!-- 상세리포트 포함 내용 안내 -->
+      <div style="background:var(--lt);border:1px solid var(--line);padding:14px 16px;margin-bottom:20px;font-size:0.84rem;color:#444;line-height:1.9;">
+        <strong style="color:var(--deep);display:block;margin-bottom:6px;">📄 상세리포트에 포함된 것들</strong>
+        ✓ 심리기능 구조 (주/부/3차/열등 기능)<br>
+        ✓ 빛(강점) 6가지 + 그림자 패턴 상세<br>
+        ✓ 8유형 관계 가이드 + 상황별 소통 팁<br>
+        ✓ 마이크로 미션 (오늘 바로 실천 가능)<br>
+        <span style="color:var(--mid);font-weight:600;">✓ 목회자는 성도 소통 가이드 + 사역 스타일 추가 포함</span>
+      </div>
+      <form id="emailForm" onsubmit="submitEmail(event)">
+        <div class="f-row">
+          <label>이름 <span style="color:#c00">*</span></label>
+          <input type="text" id="fName" placeholder="성함" required />
+        </div>
+        <div class="f-row">
+          <label>이메일 <span style="color:#c00">*</span></label>
+          <input type="email" id="fEmail" placeholder="코드를 받으실 이메일" required />
+        </div>
+        <div class="f-row">
+          <label>교회명</label>
+          <input type="text" id="fChurch" placeholder="(선택)" />
+        </div>
+        <div class="f-row">
+          <label>신청 구분</label>
+          <select id="fRole">
+            <option value="pastor">목회자 체험판 (목회자 전용 섹션 포함)</option>
+            <option value="laity">일반 성도</option>
+          </select>
+        </div>
+        <!-- 소식 구독 동의 -->
+        <div style="margin-bottom:14px;padding:12px 14px;border:1px solid var(--line);font-size:0.85rem;color:#444;">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-weight:normal;">
+            <input type="checkbox" id="fSubscribe" checked style="width:auto;margin-top:3px;" />
+            <span>온유스쿨 새 소식 (세미나·신규 리포트·부부 프로그램 등)을 이메일로 받겠습니다</span>
+          </label>
+        </div>
+        <button type="submit" class="btn-full">상세 리포트 코드 받기 →</button>
+        <p class="email-note">입력하신 정보는 리포트 발송 외 다른 목적으로 사용되지 않습니다.</p>
+      </form>
+    </div>
+    <div class="divider-or">— 또는 —</div>
+    <div style="text-align:center">
+      <p style="font-size:0.88rem;color:var(--gray);margin-bottom:10px;">이미 코드를 받으셨나요?</p>
+      <button class="btn-skip" onclick="show('screen-code')">코드 직접 입력하기</button>
+    </div>
+  </div>
+
+  <!-- 4. 발송 완료 -->
+  <div id="screen-sent">
+    <div class="sent-box">
+      <h2>✓ 코드를 발송했습니다</h2>
+      <p>입력하신 이메일로 <strong>상세 리포트 열람 코드</strong>를 보내드렸습니다.</p>
+      <p style="font-size:0.85rem;color:var(--gray);">(스팸함도 확인해주세요 · 보통 1~2분 내 도착)</p>
+      <button class="btn-full" style="margin-top:20px" onclick="show('screen-code')">코드 입력하러 가기 →</button>
+      <!-- 발송 대기 중 업셀 안내 -->
+      <div style="margin-top:24px;border:1px solid var(--line);padding:18px 20px;text-align:left;">
+        <p style="font-size:0.83rem;font-weight:700;color:var(--deep);margin-bottom:10px;">📅 코드를 기다리시는 동안</p>
+        <p style="font-size:0.83rem;color:#444;line-height:1.8;margin-bottom:6px;">
+          → <strong>4월 12일 (주일) 저녁 9시</strong> — 1차 목회자 세미나 (구글미트, 무료)<br>
+          → 코드 입력 후 상세리포트에서 <strong>세미나 신청</strong>이 가능합니다
+        </p>
+        <p style="font-size:0.83rem;color:var(--gray);">
+          * 소식 구독 체크하셨다면 새 리포트·프로그램 소식도 알려드립니다
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 코드 입력 -->
+  <div id="screen-code">
+    <div class="code-box">
+      <h2>상세 리포트 열람 코드</h2>
+      <p>이메일로 받으신 코드를 입력해주세요</p>
+      <input class="code-input" id="codeInput" type="text" maxlength="14"
+             placeholder="PASTOR-2026" autocomplete="off" />
+      <button class="btn-full" onclick="verifyCode()">코드 확인</button>
+      <p class="code-error" id="codeError">유효하지 않은 코드입니다. 다시 확인해주세요.</p>
+    </div>
+  </div>
+
+  <!-- 6. 로딩 -->
+  <div id="screen-loading">
+    <div class="spinner"></div>
+    <p>소통스타일을 분석하고 있습니다...</p>
+  </div>
+
+</div>
+<script>
+// ── 유효 코드 ──────────────────────────────────────────
+const DETAIL_CODE = 'ONYU2026';
+const VALID_CODES = {
+  'ONYU2026':    'pastor',
+  'PASTOR-DEMO': 'pastor',
+};
+
+let currentQ = 0;
+let answers  = new Array(28).fill(null);
+let resultMbti   = '';
+let resultSgType = '';
+
+// ── 토큰 파라미터 처리 (pastor.html 연동) ──────────────
+// URL에 ?token=xxx 이 있으면 pastor.html로 리다이렉트
+(function checkTokenRedirect() {
+  const params = new URLSearchParams(location.search);
+  const token  = params.get('token');
+  if (token) {
+    // 토큰이 있는 경우 pastor.html로 넘기기
+    location.replace('pastor.html?token=' + encodeURIComponent(token));
+  }
+})();
+
+// ── 문항 데이터 ────────────────────────────────────────
+const QUESTIONS = [
+  // 에너지 E/I
+  {dim:'EI',label:'에너지',q:'하루 종일 여러 사람들과 교류한 후, 나는 주로...',a:'혼자만의 시간이 필요하고 에너지를 회복해야 한다',b:'오히려 활기차고 더 대화하고 싶어진다',va:'I',vb:'E'},
+  {dim:'EI',label:'에너지',q:'문제를 해결할 때 나는 주로...',a:'혼자 충분히 생각한 뒤 결론을 낸다',b:'말하면서 생각하고 대화 속에서 아이디어가 나온다',va:'I',vb:'E'},
+  {dim:'EI',label:'에너지',q:'모임이나 행사에서 나는 보통...',a:'소수의 사람과 깊은 대화를 나누는 편이다',b:'여러 사람을 만나고 자연스럽게 어울린다',va:'I',vb:'E'},
+  {dim:'EI',label:'에너지',q:'새로운 환경에 처음 들어갔을 때 나는...',a:'먼저 관찰하고 파악한 후 천천히 참여한다',b:'바로 참여하면서 빠르게 익숙해진다',va:'I',vb:'E'},
+  {dim:'EI',label:'에너지',q:'나를 잘 아는 사람들은 나를 어떻게 볼까?',a:'조용하고 신중하다고 본다',b:'활발하고 개방적이라고 본다',va:'I',vb:'E'},
+  {dim:'EI',label:'에너지',q:'일이 가장 잘 되는 환경은...',a:'조용하고 방해받지 않는 공간',b:'활기차고 자극이 있는 환경',va:'I',vb:'E'},
+  {dim:'EI',label:'에너지',q:'어려운 결정을 내릴 때 나는...',a:'내면에서 충분히 정리한 후 결정한다',b:'다른 사람과 이야기하며 생각을 정리한다',va:'I',vb:'E'},
+  // 지각 S/N
+  {dim:'SN',label:'인식',q:'새로운 것을 배울 때 나는...',a:'구체적인 예시와 단계적 설명이 도움이 된다',b:'전체 개념과 큰 그림을 먼저 이해하는 게 편하다',va:'S',vb:'N'},
+  {dim:'SN',label:'인식',q:'나는 주로 무엇을 더 신뢰하나?',a:'직접 확인하고 측정할 수 있는 사실',b:'느낌이나 직관, 아직 보이지 않는 가능성',va:'S',vb:'N'},
+  {dim:'SN',label:'인식',q:'여행이나 행사를 준비할 때 나는...',a:'세부 일정을 미리 계획하는 편이다',b:'큰 방향만 잡고 유연하게 즐기는 편이다',va:'S',vb:'N'},
+  {dim:'SN',label:'인식',q:'나는 주로 어떤 점에서 인정받는가?',a:'신뢰성과 꼼꼼함, 책임감',b:'창의성과 새로운 아이디어',va:'S',vb:'N'},
+  {dim:'SN',label:'인식',q:'문제가 생겼을 때 나는...',a:'사실과 데이터를 먼저 확인한다',b:'전체적인 패턴과 원인을 파악하려 한다',va:'S',vb:'N'},
+  {dim:'SN',label:'인식',q:'일할 때 나는 주로...',a:'기존의 방식을 개선하고 다듬는 걸 선호한다',b:'새로운 방식을 만들어내는 걸 즐긴다',va:'S',vb:'N'},
+  {dim:'SN',label:'인식',q:'책이나 콘텐츠를 고를 때 나는...',a:'실용적이고 바로 적용 가능한 내용을 선호한다',b:'이론적이거나 개념적인 내용도 즐긴다',va:'S',vb:'N'},
+  // 판단 T/F
+  {dim:'TF',label:'판단',q:'중요한 결정을 내릴 때 나는...',a:'논리와 데이터를 우선 고려한다',b:'사람과의 관계와 감정적 영향을 먼저 생각한다',va:'T',vb:'F'},
+  {dim:'TF',label:'판단',q:'주변 사람이 개인적인 고민을 털어놓을 때...',a:'객관적인 해결책을 찾아주려 한다',b:'먼저 충분히 공감하고 들어주려 한다',va:'T',vb:'F'},
+  {dim:'TF',label:'판단',q:'토론이나 논의에서 나는...',a:'사실과 논리를 중심으로 이야기한다',b:'사람과 가치를 중심으로 이야기한다',va:'T',vb:'F'},
+  {dim:'TF',label:'판단',q:'누군가에게 어려운 이야기를 해야 할 때...',a:'직접적으로 명확하게 전달하는 편이다',b:'상대의 감정을 배려하며 신중하게 말한다',va:'T',vb:'F'},
+  {dim:'TF',label:'판단',q:'나를 불편하게 만드는 상황은?',a:'지나치게 감정적이거나 비논리적인 상황',b:'너무 냉정하고 인간적인 면이 없는 상황',va:'T',vb:'F'},
+  {dim:'TF',label:'판단',q:'팀 작업에서 나는 주로...',a:'목표 달성과 효율성에 집중한다',b:'팀원들의 관계와 분위기를 신경 쓴다',va:'T',vb:'F'},
+  {dim:'TF',label:'판단',q:'좋은 결정이란?',a:'논리적으로 타당하고 최선의 결과를 내는 것',b:'모두의 가치와 필요를 반영한 것',va:'T',vb:'F'},
+  // 구조 J/P
+  {dim:'JP',label:'생활방식',q:'나의 작업 공간이나 생활공간은...',a:'정돈되고 체계적인 편이다',b:'조금 어수선하지만 내 나름의 질서가 있다',va:'J',vb:'P'},
+  {dim:'JP',label:'생활방식',q:'마감이 다가올 때 나는...',a:'미리 충분히 준비해서 여유 있게 마친다',b:'마감 압박이 있을 때 집중력이 올라간다',va:'J',vb:'P'},
+  {dim:'JP',label:'생활방식',q:'이상적인 한 주는?',a:'계획한 대로 진행되는 예측 가능한 주',b:'새로운 일이 생겨도 유연하게 대처하는 주',va:'J',vb:'P'},
+  {dim:'JP',label:'생활방식',q:'계획이 갑자기 바뀌었을 때...',a:'불편하고 다시 정리가 필요하다',b:'오히려 새로운 가능성이 열린 것 같다',va:'J',vb:'P'},
+  {dim:'JP',label:'생활방식',q:'나 자신을 표현하면...',a:'결정적이고 계획적인 편이다',b:'개방적이고 즉흥적인 편이다',va:'J',vb:'P'},
+  {dim:'JP',label:'생활방식',q:'큰 결정을 할 때...',a:'충분히 비교한 후 빠르게 결정한다',b:'결정을 열어두고 계속 비교하는 편이다',va:'J',vb:'P'},
+  {dim:'JP',label:'생활방식',q:'일하는 환경에서 나는...',a:'명확한 역할과 단계가 있는 걸 선호한다',b:'상황에 따라 유연하게 조정되는 걸 선호한다',va:'J',vb:'P'},
+];
+
+const TYPE_MAP = {ISTJ:'STEADY',ISFJ:'STEADY',ENFP:'SPARK',ENTP:'SPARK',ESTP:'PLAYER',ESFP:'PLAYER',INTJ:'VISION',INFJ:'VISION',INTP:'LOGIC',ISTP:'LOGIC',ESFJ:'HARMONY',ENFJ:'HARMONY',ENTJ:'LEADER',ESTJ:'LEADER',INFP:'SOUL',ISFP:'SOUL'};
+const TYPE_DESC = {STEADY:'안정·신뢰·헌신의 소통스타일',SPARK:'영감·가능성·열정의 소통스타일',PLAYER:'현장·즉흥·활력의 소통스타일',VISION:'통찰·장기비전·집중의 소통스타일',LOGIC:'분석·원리·독립의 소통스타일',HARMONY:'공감·돌봄·연결의 소통스타일',LEADER:'실행·구조·성과의 소통스타일',SOUL:'진정성·가치·감수성의 소통스타일'};
+
+// ── 화면 전환 ──────────────────────────────────────────
+function show(id){
+  ['screen-notice','screen-test','screen-email','screen-sent','screen-code','screen-loading']
+    .forEach(s=>{ document.getElementById(s).style.display = s===id?'block':'none'; });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── 문항 렌더 ──────────────────────────────────────────
+function renderQ(){
+  const q   = QUESTIONS[currentQ];
+  const pct = Math.round((currentQ/28)*100);
+  document.getElementById('progressText').textContent = `${currentQ+1} / 28`;
+  document.getElementById('progressPct').textContent  = pct+'%';
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('dimLabel').textContent = q.label;
+  document.getElementById('qNum').textContent     = `문항 ${currentQ+1}`;
+  document.getElementById('qText').textContent    = q.q;
+  const opts = document.getElementById('qOptions');
+  opts.innerHTML = '';
+  ['a','b'].forEach(side=>{
+    const btn = document.createElement('button');
+    btn.className = 'q-opt'+(answers[currentQ]===side?' selected':'');
+    btn.textContent = (side==='a'?'A.  ':'B.  ')+q[side];
+    btn.onclick = ()=>selectAnswer(side);
+    opts.appendChild(btn);
+  });
+  document.getElementById('btnPrev').style.visibility = currentQ===0?'hidden':'visible';
+  document.getElementById('btnNext').textContent = currentQ===27?'결과 보기':'다음 →';
+  document.getElementById('btnNext').disabled    = answers[currentQ]===null;
+}
+
+function selectAnswer(side){
+  answers[currentQ]=side;
+  document.querySelectorAll('.q-opt').forEach((b,i)=>b.classList.toggle('selected',i===(side==='a'?0:1)));
+  document.getElementById('btnNext').disabled=false;
+}
+function prevQ(){ if(currentQ>0){currentQ--;renderQ();} }
+function nextQ(){
+  if(answers[currentQ]===null)return;
+  if(currentQ<27){ currentQ++; renderQ(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else calcBasic();
+}
+
+// ── 기본 결과 계산 ─────────────────────────────────────
+function calcBasic(){
+  const score={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+  QUESTIONS.forEach((q,i)=>{ score[answers[i]==='a'?q.va:q.vb]++; });
+  resultMbti =
+    (score.E>=score.I?'E':'I')+(score.S>=score.N?'S':'N')+
+    (score.T>=score.F?'T':'F')+(score.J>=score.P?'J':'P');
+  resultSgType = TYPE_MAP[resultMbti]||'STEADY';
+  sessionStorage.setItem('sg_mbti',   resultMbti);
+  sessionStorage.setItem('sg_sgtype', resultSgType);
+  sessionStorage.setItem('sg_score',  JSON.stringify(score));
+  // 기본 결과 미리보기 채우기
+  document.getElementById('bpType').textContent = resultSgType;
+  document.getElementById('bpDesc').textContent = TYPE_DESC[resultSgType];
+  show('screen-email');
+}
+
+// ── 이메일 제출 → Apps Script ──────────────────────────
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // ← 배포 후 교체
+
+async function submitEmail(e){
+  e.preventDefault();
+  const name      = document.getElementById('fName').value.trim();
+  const email     = document.getElementById('fEmail').value.trim();
+  const church    = document.getElementById('fChurch').value.trim();
+  const role      = document.getElementById('fRole').value;
+  const subscribe = document.getElementById('fSubscribe').checked;
+  const payload = {
+    type: 'check_submit',
+    name, email, church, role, subscribe,
+    mbti: resultMbti, sgType: resultSgType,
+    code: DETAIL_CODE,
+    date: new Date().toISOString()
+  };
+
+  // sessionStorage에 역할 + 이름 저장
+  sessionStorage.setItem('sg_utype', role);
+  sessionStorage.setItem('sg_name',  name);
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  if(btn){ btn.disabled=true; btn.textContent='처리 중...'; }
+
+  try {
+    if(APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE'){
+      await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
+    }
+  } catch(err) {
+    console.warn('Apps Script 미연결 상태 (로컬 테스트)', err);
+  }
+  show('screen-sent');
+}
+
+// ── 코드 검증 ──────────────────────────────────────────
+function verifyCode(){
+  const raw = document.getElementById('codeInput').value.trim().toUpperCase().replace(/-/g,'');
+  const err = document.getElementById('codeError');
+  // 정규화해서 비교
+  const normalized = {};
+  Object.entries(VALID_CODES).forEach(([k,v])=>{ normalized[k.replace(/-/g,'')]=v; });
+  if(normalized[raw]){
+    const role = sessionStorage.getItem('sg_utype') || normalized[raw];
+    sessionStorage.setItem('sg_utype', role);
+    sessionStorage.setItem('sg_detail','true');
+    err.style.display='none';
+    show('screen-loading');
+    setTimeout(()=>{ window.location.href='result.html'; },1500);
+  } else {
+    err.style.display='block';
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('codeInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter')verifyCode(); });
+});
+</script>
+</body>
+</html>
