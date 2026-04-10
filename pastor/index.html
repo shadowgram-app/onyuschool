@@ -1,987 +1,614 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>온유스쿨 목회자 체험 — 무료로 먼저 경험해 보세요</title>
-  <meta name="description" content="목회자 전용 무료 체험 패키지. 검사 무료, 리포트 샘플, 대시보드 데모, 성도 코드 3장 무료 제공." />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --pastor: #2A1F3D;
-      --deep:   #1A3A5C;
-      --mid:    #2D6A4F;
-      --gold:   #9A7A2E;
-      --gray:   #666;
-      --dk:     #222;
-      --lt:     #F7F8FA;
-      --line:   #DDD;
-      --white:  #FFF;
-    }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',sans-serif;
-      color: var(--dk); background: var(--white);
-      line-height: 1.8; font-size: 15px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>목회자 체험판 — 온유스쿨</title>
+<meta name="description" content="온유스쿨 목회자 체험판. 퍼스트클래스·부부클래스 무료 체험, 8유형 리포트 다운로드.">
+<meta property="og:title" content="온유스쿨 목회자 체험판">
+<meta property="og:description" content="성도를 이해하는 새로운 언어. 온유스쿨 퍼스트클래스·부부클래스 무료 체험.">
+<meta property="og:image" content="https://onyuschool.com/og-firstclass.png">
+<meta property="og:url" content="https://onyuschool.com/pastor">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;900&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#F7F5F2;
+  --bg2:#EEEBE6;
+  --card:#FFFFFF;
+  --text:#1A1714;
+  --gold:#7A5C1E;
+  --goldL:#9A7A2E;
+  --silver:#6B6560;
+  --border:#E0D8CC;
+  --green:#1E6640;
+  --rose:#9B3043;
+  --shadow:0 2px 16px rgba(0,0,0,0.07);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;}
 
-    /* ── NAV ── */
-    nav {
-      position: sticky; top: 0; z-index: 200;
-      background: var(--white); border-bottom: 3px solid var(--pastor);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 5%; height: 54px;
-    }
-    .nav-brand { font-size: 1.05rem; font-weight: 800; color: var(--pastor); text-decoration: none; }
-    .nav-brand span { color: var(--gray); font-weight: 400; font-size: 0.72rem; margin-left: 6px; }
-    .nav-back { font-size: 0.8rem; color: var(--gray); text-decoration: none; display: flex; align-items: center; gap: 4px; }
-    .nav-back:hover { color: var(--deep); }
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(247,245,242,0.97);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;height:54px;
+}
+.nav-logo{font-size:14px;font-weight:700;letter-spacing:.1em;text-decoration:none;color:var(--text);}
+.nav-logo em{color:var(--gold);font-style:normal;}
+.nav-cta{
+  font-size:12px;font-weight:700;color:var(--gold);
+  text-decoration:none;border:1.5px solid var(--gold);
+  padding:5px 14px;border-radius:20px;letter-spacing:.03em;
+  transition:all .2s;
+}
+.nav-cta:hover{background:var(--gold);color:#fff;}
 
-    /* ── HERO ── */
-    #hero {
-      background: linear-gradient(160deg, #FDF8F3, #F5EDE0 50%, #EDE8F5);
-      padding: 60px 5% 52px; border-bottom: 3px solid var(--gold);
-    }
-    .hero-inner { max-width: 720px; margin: 0 auto; }
-    .hero-tag {
-      display: inline-block; border: 1px solid rgba(122,92,30,0.35);
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 2px;
-      color: var(--gold); padding: 4px 12px; margin-bottom: 20px;
-    }
-    .hero-title {
-      font-size: 2rem; font-weight: 800; color: var(--pastor);
-      line-height: 1.25; margin-bottom: 16px; letter-spacing: -0.5px;
-    }
-    .hero-title em { font-style: normal; color: var(--gold); }
-    .hero-sub {
-      font-size: 0.95rem; color: #6B6560;
-      line-height: 1.9; margin-bottom: 32px; max-width: 560px;
-    }
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(150deg,#FDF8F3 0%,#F5EDE0 55%,#EDE8F5 100%);
+  border-bottom:1px solid var(--border);
+  padding:72px 5% 64px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 60% 40%,rgba(122,92,30,.06) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-pretag{
+  display:inline-block;
+  font-size:11px;font-weight:700;letter-spacing:3px;
+  color:var(--gold);border:1px solid rgba(122,92,30,.3);
+  padding:4px 16px;border-radius:20px;margin-bottom:24px;
+}
+.hero h1{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(28px,5.5vw,52px);
+  font-weight:700;line-height:1.25;
+  color:var(--text);margin-bottom:20px;
+}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero-sub{
+  font-size:clamp(15px,2vw,18px);color:var(--silver);
+  line-height:1.9;max-width:520px;margin:0 auto 16px;
+}
+.hero-verse{
+  display:inline-block;
+  border-left:3px solid var(--gold);
+  padding:8px 18px;
+  font-family:'Noto Serif KR',serif;
+  font-size:14px;font-style:italic;
+  color:rgba(26,23,20,.45);
+  text-align:left;margin-bottom:40px;
+}
+.hero-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.btn-primary{
+  display:inline-block;background:var(--gold);color:#fff;
+  font-size:15px;font-weight:700;padding:14px 32px;
+  border-radius:8px;text-decoration:none;border:none;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  box-shadow:0 4px 18px rgba(122,92,30,.25);
+  transition:all .2s;
+}
+.btn-primary:hover{background:#5E4516;transform:translateY(-1px);}
+.btn-ghost{
+  display:inline-block;background:transparent;
+  color:var(--text);font-size:15px;font-weight:600;
+  padding:13px 28px;border-radius:8px;
+  border:1.5px solid var(--border);text-decoration:none;
+  transition:all .2s;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
 
-    /* 4가지 포함 배지 */
-    .trial-badges {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 36px;
-    }
-    .tbadge {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(122,92,30,0.07); border: 1px solid rgba(122,92,30,0.2);
-      padding: 8px 16px; font-size: 0.83rem; color: var(--dk);
-    }
-    .tbadge .tbi { font-size: 1rem; }
-    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-primary {
-      display: inline-block; padding: 13px 28px;
-      background: var(--gold); color: var(--white);
-      font-size: 0.93rem; font-weight: 700;
-      text-decoration: none; border: none; cursor: pointer;
-      font-family: inherit; transition: background 0.2s;
-      box-shadow: 0 4px 16px rgba(122,92,30,0.22);
-    }
-    .btn-primary:hover { background: #5E4516; }
-    .btn-ghost {
-      display: inline-block; padding: 12px 24px;
-      border: 1.5px solid rgba(42,31,61,0.3); color: var(--pastor);
-      font-size: 0.9rem; font-weight: 600; text-decoration: none;
-      transition: all 0.2s; cursor: pointer; font-family: inherit; background: transparent;
-    }
-    .btn-ghost:hover { border-color: var(--pastor); background: rgba(42,31,61,0.04); }
+/* ── VISION ── */
+.vision{
+  padding:72px 5%;
+  max-width:860px;margin:0 auto;
+  text-align:center;
+}
+.sec-tag{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;}
+.sec-title{font-family:'Noto Serif KR',serif;font-size:clamp(22px,4vw,34px);font-weight:700;color:var(--text);margin-bottom:16px;line-height:1.35;}
+.sec-sub{color:var(--silver);font-size:15px;line-height:1.9;max-width:600px;margin:0 auto 48px;}
 
-    /* ── 공통 섹션 ── */
-    section { padding: 56px 5%; }
-    .inner { max-width: 720px; margin: 0 auto; }
-    .sec-label {
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 3px;
-      color: var(--mid); text-transform: uppercase; margin-bottom: 8px;
-    }
-    .sec-title {
-      font-size: 1.45rem; font-weight: 700; color: var(--deep);
-      margin-bottom: 6px; letter-spacing: -0.3px;
-    }
-    .sec-sub { font-size: 0.88rem; color: var(--gray); line-height: 1.8; margin-bottom: 28px; }
-    .divider { border: none; border-top: 1px solid var(--line); margin: 0; }
+.vision-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;text-align:left;}
+.vision-card{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:14px;padding:24px;
+  box-shadow:var(--shadow);
+  transition:transform .2s, box-shadow .2s;
+}
+.vision-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.10);}
+.vc-icon{font-size:28px;margin-bottom:12px;}
+.vc-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.vc-desc{font-size:13px;color:var(--silver);line-height:1.8;}
 
-    /* ── STEP 1: 신청 폼 ── */
-    #apply { background: var(--lt); }
-    .apply-box {
-      border: 1.5px solid var(--pastor); background: var(--white);
-      padding: 36px 32px;
-    }
-    .apply-steps {
-      display: flex; gap: 0; margin-bottom: 32px;
-      border-bottom: 1px solid var(--line); padding-bottom: 24px;
-    }
-    .astep {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      gap: 8px; position: relative; text-align: center;
-    }
-    .astep::after {
-      content: '→'; position: absolute; right: -12px; top: 12px;
-      color: var(--gold); font-size: 1rem; font-weight: 700;
-    }
-    .astep:last-child::after { display: none; }
-    .astep-num {
-      width: 28px; height: 28px; background: var(--pastor); color: var(--white);
-      font-size: 0.78rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .astep-text { font-size: 0.78rem; color: var(--gray); line-height: 1.5; }
+.vision-quote{
+  margin:52px auto 0;max-width:560px;
+  border-top:1px solid var(--border);
+  padding-top:40px;text-align:center;
+}
+.vq-text{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(17px,2.5vw,22px);
+  font-weight:600;color:var(--text);
+  line-height:1.7;margin-bottom:12px;
+}
+.vq-text em{color:var(--gold);font-style:normal;}
+.vq-ref{font-size:12px;color:var(--silver);letter-spacing:.05em;}
 
-    .form-row { display: flex; flex-direction: column; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label { font-size: 0.82rem; font-weight: 700; color: var(--deep); }
-    .form-label span { font-size: 0.75rem; color: var(--gray); font-weight: 400; margin-left: 4px; }
-    .form-input, .form-select, .form-textarea {
-      width: 100%; padding: 11px 14px;
-      border: 1.5px solid var(--line); font-size: 0.9rem;
-      font-family: inherit; color: var(--dk); background: var(--white);
-      outline: none; transition: border-color 0.2s;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--pastor);
-    }
-    .form-textarea { resize: vertical; min-height: 80px; }
-    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-check {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 0.83rem; color: #444; line-height: 1.6; cursor: pointer;
-    }
-    .form-check input[type=checkbox] {
-      margin-top: 3px; width: 16px; height: 16px; flex-shrink: 0;
-      accent-color: var(--pastor);
-    }
-    .form-note {
-      font-size: 0.78rem; color: var(--gray); line-height: 1.6;
-      background: var(--lt); padding: 10px 14px; border-left: 3px solid var(--gold);
-      margin-top: 4px;
-    }
-    .btn-submit {
-      width: 100%; padding: 15px; background: var(--pastor); color: var(--white);
-      font-size: 1rem; font-weight: 700; border: none; cursor: pointer;
-      font-family: inherit; margin-top: 20px; transition: background 0.2s;
-    }
-    .btn-submit:hover { background: #1a0f2e; }
+/* ── TRIAL SECTION ── */
+.trial-wrap{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:72px 5%;}
+.trial-inner{max-width:860px;margin:0 auto;}
+.trial-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;}
+@media(max-width:640px){.trial-cards{grid-template-columns:1fr;}}
 
-    /* 발급 완료 상태 (JS 토글) */
-    #code-result { display: none; margin-top: 24px; }
-    .code-result-box {
-      border: 2px solid var(--gold); padding: 24px 28px; text-align: center;
-    }
-    .cr-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: var(--mid); margin-bottom: 10px; }
-    .cr-code {
-      font-size: 2rem; font-weight: 800; letter-spacing: 4px;
-      color: var(--pastor); margin: 10px 0; font-family: monospace;
-    }
-    .cr-desc { font-size: 0.83rem; color: var(--gray); line-height: 1.7; }
-    .cr-codes-list {
-      display: flex; flex-direction: column; gap: 8px; margin: 16px 0;
-    }
-    .cr-code-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 16px; background: var(--lt); border: 1px solid var(--line);
-    }
-    .cr-code-val { font-size: 1.1rem; font-weight: 700; font-family: monospace; color: var(--pastor); letter-spacing: 2px; }
-    .cr-code-who { font-size: 0.78rem; color: var(--gray); }
-    .btn-copy-all {
-      padding: 10px 20px; background: var(--mid); color: var(--white);
-      font-size: 0.85rem; font-weight: 700; border: none; cursor: pointer;
-      font-family: inherit; margin-top: 8px;
-    }
+.trial-card{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:transform .2s, box-shadow .2s;
+}
+.trial-card:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,0,0,.10);}
+.tc-header{padding:24px 24px 20px;}
+.tc-badge{
+  display:inline-block;font-size:11px;font-weight:700;
+  letter-spacing:.08em;padding:3px 10px;border-radius:12px;
+  margin-bottom:14px;
+}
+.badge-first{background:rgba(122,92,30,.10);color:var(--gold);}
+.badge-couple{background:rgba(155,48,67,.10);color:var(--rose);}
+.tc-icon{font-size:32px;margin-bottom:10px;}
+.tc-title{font-size:19px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.tc-sub{font-size:13px;color:var(--silver);line-height:1.7;}
+.tc-body{padding:0 24px 24px;}
+.tc-flow{
+  display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;margin-bottom:20px;
+}
+.tc-step{
+  font-size:11px;font-weight:700;
+  background:var(--bg);border:1px solid var(--border);
+  padding:4px 10px;border-radius:20px;color:var(--silver);
+  white-space:nowrap;
+}
+.tc-step.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.tc-arrow{font-size:11px;color:var(--border);}
+.tc-btn{
+  display:block;text-align:center;
+  background:var(--gold);color:#fff;
+  font-size:14px;font-weight:700;
+  padding:13px;border-radius:8px;
+  text-decoration:none;
+  box-shadow:0 3px 12px rgba(122,92,30,.2);
+  transition:all .2s;
+}
+.tc-btn.rose{background:var(--rose);box-shadow:0 3px 12px rgba(155,48,67,.2);}
+.tc-btn:hover{filter:brightness(0.9);transform:translateY(-1px);}
 
-    /* ── STEP 2: 리포트 샘플 ── */
-    #samples { background: var(--white); }
-    .sample-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-      margin-bottom: 24px;
-    }
-    .sample-card {
-      border: 1.5px solid var(--line); padding: 20px 14px;
-      text-align: center; cursor: pointer;
-      transition: border-color 0.2s, transform 0.1s;
-      text-decoration: none; color: var(--dk);
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-    }
-    .sample-card:hover { border-color: var(--pastor); transform: translateY(-2px); }
-    .sample-icon { font-size: 1.8rem; }
-    .sample-type { font-size: 0.75rem; font-weight: 800; letter-spacing: 1.5px; color: var(--pastor); }
-    .sample-name { font-size: 0.82rem; color: var(--gray); }
-    .sample-tag {
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 1px;
-      padding: 2px 8px; background: var(--lt); color: var(--mid); margin-top: 4px;
-    }
+/* ── FLOW SECTION (검사→결과→리포트) ── */
+.flow-section{padding:72px 5%;max-width:860px;margin:0 auto;}
+.flow-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0;margin:40px 0;}
+.flow-step{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding:28px 16px;
+  position:relative;
+}
+.flow-step:not(:last-child)::after{
+  content:'→';
+  position:absolute;right:-8px;top:50%;transform:translateY(-50%);
+  font-size:20px;color:var(--border);
+}
+@media(max-width:600px){
+  .flow-steps{grid-template-columns:1fr;}
+  .flow-step:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-10px;transform:translateX(50%);}
+}
+.fs-num{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--gold);color:#fff;
+  font-size:16px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;
+  box-shadow:0 4px 12px rgba(122,92,30,.2);
+}
+.fs-icon{font-size:26px;margin-bottom:10px;}
+.fs-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.fs-desc{font-size:12px;color:var(--silver);line-height:1.7;}
 
-    /* 샘플 미리보기 패널 */
-    .sample-preview {
-      border: 1.5px solid var(--pastor); padding: 28px 24px;
-      display: none; margin-bottom: 20px;
-    }
-    .sample-preview.active { display: block; }
-    .sp-header {
-      display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
-      padding-bottom: 16px; border-bottom: 1px solid var(--line);
-    }
-    .sp-icon { font-size: 2.2rem; }
-    .sp-type-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: var(--pastor); margin-bottom: 4px; }
-    .sp-type-name { font-size: 1.1rem; font-weight: 800; color: var(--deep); }
-    .sp-type-sub { font-size: 0.83rem; color: var(--gray); }
-    .sp-section { margin-bottom: 18px; }
-    .sp-sec-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; color: var(--mid); margin-bottom: 8px; text-transform: uppercase; }
-    .sp-hands {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-    }
-    .sp-hand {
-      padding: 14px 16px; border: 1px solid var(--line);
-    }
-    .sp-hand-label { font-size: 0.72rem; font-weight: 700; color: var(--gray); margin-bottom: 6px; }
-    .sp-hand-r .sp-hand-label { color: var(--deep); }
-    .sp-hand-l .sp-hand-label { color: var(--mid); }
-    .sp-hand-body { font-size: 0.88rem; color: var(--dk); line-height: 1.7; }
-    .sp-keywords { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-    .sp-kw {
-      font-size: 0.75rem; padding: 3px 10px;
-      background: var(--lt); border: 1px solid var(--line); color: #444;
-    }
-    .sp-blur {
-      filter: blur(4px); user-select: none;
-      background: linear-gradient(to bottom, transparent, var(--white));
-      pointer-events: none;
-    }
-    .sp-lock {
-      text-align: center; padding: 16px;
-      border: 1px dashed var(--line); margin-top: 8px;
-      font-size: 0.83rem; color: var(--gray); line-height: 1.7;
-    }
-    .sp-lock strong { color: var(--pastor); }
+/* ── DOWNLOAD SECTION ── */
+.dl-section{
+  background:linear-gradient(135deg,#FDF8F3,#F0EBF8);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:72px 5%;
+}
+.dl-inner{max-width:860px;margin:0 auto;}
 
-    .sample-cta {
-      background: var(--lt); padding: 20px 24px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    }
-    .sc-text { font-size: 0.88rem; color: var(--dk); line-height: 1.6; }
-    .sc-text strong { color: var(--deep); }
+.dl-type-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));
+  gap:10px;margin:32px 0 24px;
+}
+.dl-type-btn{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:10px;padding:14px;cursor:pointer;
+  transition:all .15s;text-align:left;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.dl-type-btn:hover{border-color:var(--goldL);}
+.dl-type-btn.selected{border-color:var(--gold);background:#FFF8EC;}
+.dtb-icon{font-size:20px;margin-bottom:6px;}
+.dtb-code{font-size:13px;font-weight:800;color:var(--text);}
+.dtb-kr{font-size:11px;color:var(--silver);}
+.dtb-check{float:right;color:var(--gold);font-size:16px;display:none;}
+.dl-type-btn.selected .dtb-check{display:block;}
 
-    /* ── STEP 3: 대시보드 데모 ── */
-    #dashboard-demo { background: var(--lt); }
-    .demo-mockup {
-      border: 1.5px solid var(--line); background: var(--white); overflow: hidden;
-    }
-    .dm-topbar {
-      background: var(--pastor); padding: 10px 16px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .dm-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dm-dot.r { background: #FF5F57; }
-    .dm-dot.y { background: #FEBC2E; }
-    .dm-dot.g { background: #28C840; }
-    .dm-url {
-      flex: 1; background: rgba(255,255,255,0.1);
-      padding: 4px 10px; font-size: 0.75rem; color: rgba(255,255,255,0.6);
-      margin: 0 8px;
-    }
-    .dm-content {
-      display: grid; grid-template-columns: 200px 1fr; min-height: 320px;
-    }
-    .dm-sidebar {
-      background: var(--pastor); padding: 16px 0;
-    }
-    .dm-church-name {
-      padding: 8px 16px 16px; font-size: 0.8rem; font-weight: 700;
-      color: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(255,255,255,0.1);
-      margin-bottom: 8px;
-    }
-    .dm-church-name small { display: block; font-size: 0.65rem; font-weight: 400; color: rgba(255,255,255,0.4); margin-top: 2px; }
-    .dm-menu-item {
-      padding: 9px 16px; font-size: 0.78rem;
-      color: rgba(255,255,255,0.55); cursor: default;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .dm-menu-item.active {
-      background: rgba(255,255,255,0.12); color: var(--white); font-weight: 700;
-    }
-    .dm-main { padding: 20px; }
-    .dm-title { font-size: 0.85rem; font-weight: 700; color: var(--deep); margin-bottom: 16px; }
-    .dm-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-    .dm-stat {
-      border: 1px solid var(--line); padding: 12px; text-align: center;
-    }
-    .dm-stat-num { font-size: 1.5rem; font-weight: 800; color: var(--pastor); }
-    .dm-stat-label { font-size: 0.72rem; color: var(--gray); margin-top: 2px; }
-    .dm-chart-area {
-      border: 1px solid var(--line); padding: 12px; margin-bottom: 12px;
-    }
-    .dm-chart-label { font-size: 0.72rem; font-weight: 700; color: var(--gray); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
-    .dm-bars { display: flex; flex-direction: column; gap: 6px; }
-    .dm-bar-row { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; }
-    .dm-bar-type { width: 60px; color: var(--dk); font-weight: 600; text-align: right; }
-    .dm-bar-track { flex: 1; background: var(--lt); height: 14px; position: relative; }
-    .dm-bar-fill { height: 100%; background: var(--pastor); opacity: 0.7; }
-    .dm-bar-count { width: 24px; color: var(--gray); }
+/* 다운로드 결과 카드 */
+#dl-result{
+  display:none;
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:14px;padding:28px;
+  box-shadow:var(--shadow);
+  animation:fadeUp .3s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-    .demo-cta {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 16px; margin-top: 20px; padding: 18px 20px;
-      background: var(--white); border: 1.5px solid var(--pastor);
-    }
-    .dc-text { font-size: 0.88rem; color: var(--dk); line-height: 1.6; }
-    .dc-text strong { color: var(--pastor); }
+.dl-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;background:var(--bg);border-radius:10px;
+  padding:16px 20px;margin-bottom:12px;
+}
+.dl-row-info .dri-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.dl-row-info .dri-desc{font-size:12px;color:var(--silver);}
+.btn-dl{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--gold);color:#fff;
+  font-size:13px;font-weight:700;
+  padding:10px 20px;border-radius:8px;
+  border:none;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  text-decoration:none;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(122,92,30,.2);
+  transition:all .2s;
+}
+.btn-dl:hover{background:#5E4516;transform:translateY(-1px);}
 
-    /* ── STEP 4: 피드백 폼 ── */
-    #feedback { background: var(--white); }
-    .feedback-intro {
-      display: flex; gap: 20px; margin-bottom: 28px;
-      padding: 20px 24px; background: var(--lt);
-      border-left: 4px solid var(--gold);
-    }
-    .fi-icon { font-size: 1.8rem; flex-shrink: 0; }
-    .fi-text { font-size: 0.9rem; color: #444; line-height: 1.8; }
-    .fi-text strong { color: var(--deep); }
+/* 체크 보너스 */
+.bonus-row{
+  display:flex;align-items:flex-start;gap:14px;
+  background:#F0FAF4;border:1.5px solid rgba(30,102,64,.18);
+  border-radius:10px;padding:16px 20px;cursor:pointer;
+  transition:background .15s;margin-top:4px;
+}
+.bonus-row:hover{background:#E6F7EC;}
+.bonus-box{
+  width:26px;height:26px;flex-shrink:0;margin-top:1px;
+  border-radius:6px;border:2px solid rgba(30,102,64,.35);
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-size:15px;font-weight:800;color:#fff;
+}
+.bonus-box.on{background:var(--green);border-color:var(--green);}
+.bonus-info .bi-title{font-size:14px;font-weight:700;color:var(--green);margin-bottom:3px;}
+.bonus-info .bi-desc{font-size:12px;color:#4A7A60;line-height:1.6;}
+#bonus-btn{
+  display:none;
+  width:100%;margin-top:14px;
+  background:var(--green);color:#fff;
+  font-size:14px;font-weight:700;
+  padding:13px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  text-decoration:none;text-align:center;
+  box-shadow:0 3px 12px rgba(30,102,64,.2);
+  transition:background .2s;
+}
+#bonus-btn:hover{background:#154D30;}
 
-    .feedback-box {
-      border: 1.5px solid var(--line); padding: 32px 28px;
-    }
-    .rating-row { display: flex; flex-direction: column; gap: 20px; margin-bottom: 24px; }
-    .rating-item { display: flex; flex-direction: column; gap: 8px; }
-    .rating-label { font-size: 0.85rem; font-weight: 700; color: var(--dk); }
-    .rating-stars { display: flex; gap: 6px; }
-    .star {
-      font-size: 1.4rem; cursor: pointer; color: #CCC;
-      transition: color 0.1s;
-    }
-    .star.on, .star:hover { color: var(--gold); }
-    .star-group:hover .star { color: var(--gold); }
-    .star-group .star:hover ~ .star { color: #CCC; }
-
-    .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-    .cb-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 0.88rem; color: #444; line-height: 1.6; cursor: pointer;
-    }
-    .cb-item input { margin-top: 3px; accent-color: var(--pastor); }
-
-    .btn-feedback {
-      width: 100%; padding: 14px; background: var(--mid); color: var(--white);
-      font-size: 0.97rem; font-weight: 700; border: none; cursor: pointer;
-      font-family: inherit; transition: background 0.2s; margin-top: 8px;
-    }
-    .btn-feedback:hover { background: #1f5038; }
-
-    /* 제출 완료 */
-    #feedback-done { display: none; text-align: center; padding: 40px 24px; }
-    .fd-icon { font-size: 3rem; margin-bottom: 16px; }
-    .fd-title { font-size: 1.2rem; font-weight: 700; color: var(--deep); margin-bottom: 10px; }
-    .fd-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.8; }
-
-    /* ── 하단 CTA ── */
-    #final-cta {
-      background: linear-gradient(135deg, #FDF8F3, #F0EBF8);
-      border-top: 1px solid #E0D8CC;
-      padding: 56px 5%; text-align: center;
-    }
-    .fc-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; color: var(--gold); margin-bottom: 12px; }
-    .fc-title { font-size: 1.55rem; font-weight: 800; color: var(--pastor); line-height: 1.3; margin-bottom: 12px; letter-spacing: -0.5px; }
-    .fc-title em { font-style: normal; color: var(--gold); }
-    .fc-sub { font-size: 0.9rem; color: #6B6560; margin-bottom: 32px; line-height: 1.8; }
-    .fc-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-
-    /* ── 푸터 ── */
-    footer {
-      background: #EEEBE6; border-top: 1px solid #E0D8CC;
-      padding: 28px 5%;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    }
-    .ft-brand { font-size: 0.92rem; font-weight: 800; color: var(--pastor); }
-    .ft-brand small { display: block; font-size: 0.72rem; font-weight: 400; color: #8A857E; margin-top: 2px; }
-    .ft-copy { font-size: 0.75rem; color: #A09890; }
-
-    /* ── 반응형 ── */
-    @media (max-width: 640px) {
-      .hero-title { font-size: 1.55rem; }
-      .form-row-2 { grid-template-columns: 1fr; }
-      .sample-grid { grid-template-columns: repeat(2, 1fr); }
-      .dm-content { grid-template-columns: 1fr; }
-      .dm-sidebar { display: none; }
-      .demo-cta, .sample-cta { flex-direction: column; align-items: flex-start; }
-      .apply-steps { gap: 4px; }
-      .astep-text { font-size: 0.7rem; }
-      .sp-hands { grid-template-columns: 1fr; }
-      .dm-stat-row { grid-template-columns: repeat(3, 1fr); }
-    }
-  </style>
+/* ── FOOTER ── */
+footer{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:40px 5%;text-align:center;
+  font-size:12px;color:var(--silver);line-height:2.2;
+}
+footer a{color:var(--silver);text-decoration:none;}
+footer strong{color:#5A5550;}
+</style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <a href="https://onyuschool.com" class="nav-brand">온유스쿨 <span>onyuschool.com</span></a>
-  <a href="https://onyuschool.com" class="nav-back">← 목회자 페이지로</a>
+  <a class="nav-logo" href="https://onyuschool.com"><em>ONYU</em>SCHOOL</a>
+  <a class="nav-cta" href="#download">리포트 받기 ↓</a>
 </nav>
 
 <!-- HERO -->
-<section id="hero">
-  <div class="hero-inner">
-    <div class="hero-tag">PASTOR FREE TRIAL</div>
-    <h1 class="hero-title">결정하기 전에<br><em>직접 경험해 보세요</em></h1>
-    <p class="hero-sub">
-      도입 여부는 나중에 결정하셔도 됩니다.<br>
-      목회자 본인이 먼저 검사받고, 리포트를 보고, 대시보드를 확인하고,<br>
-      성도 3명에게도 나눠보세요. 완전 무료입니다.
+<section class="hero">
+  <p class="hero-pretag">목회자 체험판</p>
+  <h1>성도를 이해하는<br><em>새로운 언어</em></h1>
+  <p class="hero-sub">
+    온유스쿨은 쉐도우그램 8유형 프레임워크를 통해<br>
+    목회자가 성도를 더 깊이 이해하고<br>
+    공동체를 더 건강하게 세우도록 돕습니다.
+  </p>
+  <div class="hero-verse">
+    "그러므로 너희는 하나님이 택하사 거룩하고 사랑받는 자처럼<br>
+    긍휼과 자비와 겸손과 <strong>온유</strong>와 오래 참음을 옷 입고"<br>
+    — 골로새서 3:12
+  </div>
+  <div class="hero-btns">
+    <a href="#trial" class="btn-primary">무료 체험하기 →</a>
+    <a href="#download" class="btn-ghost">리포트 바로 받기</a>
+  </div>
+</section>
+
+<!-- VISION -->
+<section class="vision">
+  <p class="sec-tag">OUR VISION</p>
+  <h2 class="sec-title">목회자가 성도를 이해할 때<br>공동체가 달라집니다</h2>
+  <p class="sec-sub">
+    온유스쿨은 심리 유형론을 목회 현장에 적용하여<br>
+    성도 개개인의 소통 언어를 목회자가 이해하고<br>
+    더 깊은 돌봄과 사역이 가능하도록 설계되었습니다.
+  </p>
+
+  <div class="vision-grid">
+    <div class="vision-card">
+      <div class="vc-icon">🌱</div>
+      <div class="vc-title">나부터 이해하기</div>
+      <div class="vc-desc">8가지 소통 은사 중 나의 언어를 발견합니다. 강점과 그림자를 알 때 진정한 섬김이 시작됩니다.</div>
+    </div>
+    <div class="vision-card">
+      <div class="vc-icon">💑</div>
+      <div class="vc-title">배우자 이해하기</div>
+      <div class="vc-desc">64가지 부부 조합으로 서로의 소통 언어를 이해합니다. 갈등이 달리 보이고 사랑이 더 깊어집니다.</div>
+    </div>
+    <div class="vision-card">
+      <div class="vc-icon">⛪</div>
+      <div class="vc-title">성도 이해하기</div>
+      <div class="vc-desc">목회자가 성도의 유형을 알 때 설교·심방·사역 배치가 달라집니다. 공동체가 건강해집니다.</div>
+    </div>
+    <div class="vision-card">
+      <div class="vc-icon">🌿</div>
+      <div class="vc-title">함께 지어져 가기</div>
+      <div class="vc-desc">다름을 이해하면 갈등이 성장의 자원이 됩니다. 온유스쿨은 공동체가 함께 성숙하는 여정을 안내합니다.</div>
+    </div>
+  </div>
+
+  <div class="vision-quote">
+    <p class="vq-text">
+      "나를 이해하면 배우자가 이해됩니다.<br>
+      배우자를 이해하면 자녀가 이해됩니다.<br>
+      자녀를 이해하면 <em>공동체가 달라집니다.</em>"
     </p>
-    <div class="trial-badges">
-      <div class="tbadge"><span class="tbi">🔍</span> 목회자 본인 검사 무료</div>
-      <div class="tbadge"><span class="tbi">📄</span> 전 유형 리포트 샘플 열람</div>
-      <div class="tbadge"><span class="tbi">📊</span> 대시보드 데모 체험</div>
-      <div class="tbadge"><span class="tbi">🎟</span> 성도 코드 3장 무료 제공</div>
-    </div>
-    <div class="hero-cta">
-      <a href="#apply" class="btn-primary">무료 체험 신청하기</a>
-      <a href="#samples" class="btn-ghost">리포트 샘플 먼저 보기</a>
-    </div>
+    <p class="vq-ref">— 온유스쿨 · 인생나무코칭연구소</p>
   </div>
 </section>
 
-<hr class="divider">
+<!-- TRIAL -->
+<div class="trial-wrap" id="trial">
+  <div class="trial-inner">
+    <p class="sec-tag" style="text-align:center;">FREE TRIAL · 무료 체험</p>
+    <h2 class="sec-title" style="text-align:center;font-family:'Noto Serif KR',serif;font-size:clamp(22px,4vw,32px);margin-bottom:10px;">지금 바로 체험해보세요</h2>
+    <p class="sec-sub" style="text-align:center;max-width:500px;margin:0 auto;">퍼스트클래스와 부부클래스를 무료로 체험하고<br>내 유형 리포트를 받아가세요.</p>
 
-<!-- STEP 1: 체험 신청 폼 -->
-<section id="apply">
-  <div class="inner">
-    <div class="sec-label">STEP 01</div>
-    <h2 class="sec-title">무료 체험 신청</h2>
-    <p class="sec-sub">아래 정보를 입력하시면 이메일로 체험 코드 3장을 발송해 드립니다.<br>별도 결제나 카드 등록이 없습니다.</p>
-
-    <div class="apply-box">
-      <!-- 진행 단계 -->
-      <div class="apply-steps">
-        <div class="astep">
-          <div class="astep-num">1</div>
-          <div class="astep-text">신청서 작성</div>
+    <div class="trial-cards">
+      <!-- 퍼스트클래스 -->
+      <div class="trial-card">
+        <div class="tc-header">
+          <span class="tc-badge badge-first">FIRST CLASS</span>
+          <div class="tc-icon">🌱</div>
+          <div class="tc-title">퍼스트클래스<br>나부터 이해하기</div>
+          <div class="tc-sub">28문항으로 나의 소통 은사를 발견합니다.<br>5분 · 무료 · 즉시 결과</div>
         </div>
-        <div class="astep">
-          <div class="astep-num">2</div>
-          <div class="astep-text">이메일 코드<br>발송 (1일 내)</div>
-        </div>
-        <div class="astep">
-          <div class="astep-num">3</div>
-          <div class="astep-text">목회자<br>본인 검사</div>
-        </div>
-        <div class="astep">
-          <div class="astep-num">4</div>
-          <div class="astep-text">성도 3명<br>나눔</div>
-        </div>
-        <div class="astep">
-          <div class="astep-num">5</div>
-          <div class="astep-text">피드백<br>공유</div>
+        <div class="tc-body">
+          <div class="tc-flow">
+            <span class="tc-step active">검사</span>
+            <span class="tc-arrow">→</span>
+            <span class="tc-step active">결과 확인</span>
+            <span class="tc-arrow">→</span>
+            <span class="tc-step active">리포트 받기</span>
+          </div>
+          <a href="https://onyuschool.com/firstclass-quiz.html" class="tc-btn">퍼스트클래스 체험하기 →</a>
         </div>
       </div>
 
-      <!-- 폼 -->
-      <form id="trial-form" onsubmit="handleTrialSubmit(event)">
-        <div class="form-row">
-          <div class="form-row-2">
-            <div class="form-group">
-              <label class="form-label" for="pastor-name">목사님 성함 <span>*</span></label>
-              <input class="form-input" type="text" id="pastor-name" placeholder="홍길동 목사" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="church-name">교회명 <span>*</span></label>
-              <input class="form-input" type="text" id="church-name" placeholder="○○교회" required />
-            </div>
-          </div>
-
-          <div class="form-row-2">
-            <div class="form-group">
-              <label class="form-label" for="pastor-email">이메일 <span>*</span></label>
-              <input class="form-input" type="email" id="pastor-email" placeholder="pastor@church.kr" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="pastor-phone">연락처 <span>선택</span></label>
-              <input class="form-input" type="tel" id="pastor-phone" placeholder="010-0000-0000" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="church-size">교회 규모</label>
-            <select class="form-select" id="church-size">
-              <option value="">-- 선택해 주세요 --</option>
-              <option value="under50">50명 미만</option>
-              <option value="50-150">50 ~ 150명</option>
-              <option value="150-500">150 ~ 500명</option>
-              <option value="over500">500명 이상</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="use-case">어떤 사역에 활용하고 싶으신가요? <span>선택</span></label>
-            <textarea class="form-textarea" id="use-case" placeholder="예: 소그룹 리더 훈련, 가정사역, 부부세미나, 새가족 교육 등"></textarea>
-          </div>
-
-          <div class="form-check">
-            <input type="checkbox" id="agree-privacy" required />
-            <label for="agree-privacy">
-              체험 종료 후 간단한 피드백 설문(5분 이내)에 참여하는 것에 동의합니다.
-              <br><span style="color:var(--gray); font-size:0.78rem;">수집된 피드백은 서비스 개선에만 활용되며, 개인정보는 제3자에게 제공되지 않습니다.</span>
-            </label>
-          </div>
-
-          <div class="form-note">
-            📬 신청 후 <strong>1영업일 이내</strong>에 입력하신 이메일로 체험 코드 3장을 발송해 드립니다.<br>
-            코드는 <strong>check.html</strong> 페이지에서 성도 이름과 함께 입력하면 검사가 시작됩니다.
-          </div>
-
-          <button type="submit" class="btn-submit">무료 체험 신청하기 →</button>
+      <!-- 부부클래스 -->
+      <div class="trial-card">
+        <div class="tc-header">
+          <span class="tc-badge badge-couple">COUPLE CLASS</span>
+          <div class="tc-icon">💑</div>
+          <div class="tc-title">부부클래스<br>배우자 이해하기</div>
+          <div class="tc-sub">64가지 부부 조합으로 우리의 소통 언어를 이해합니다.<br>유형 선택 · 무료 · 즉시 결과</div>
         </div>
-      </form>
-
-      <!-- 발급 완료 (데모용) -->
-      <div id="code-result">
-        <div class="code-result-box">
-          <div class="cr-label">체험 코드 발급 완료</div>
-          <p style="font-size:0.88rem; color:#444; margin-bottom:16px; line-height:1.7;">
-            아래 코드를 성도들에게 전달해 주세요. 각 코드는 1회 사용 가능합니다.
-          </p>
-          <div class="cr-codes-list">
-            <div class="cr-code-item">
-              <span class="cr-code-val">ONYU-TRL-001</span>
-              <span class="cr-code-who">목회자 본인용</span>
-            </div>
-            <div class="cr-code-item">
-              <span class="cr-code-val">ONYU-TRL-002</span>
-              <span class="cr-code-who">성도 1</span>
-            </div>
-            <div class="cr-code-item">
-              <span class="cr-code-val">ONYU-TRL-003</span>
-              <span class="cr-code-who">성도 2</span>
-            </div>
+        <div class="tc-body">
+          <div class="tc-flow">
+            <span class="tc-step active">유형 선택</span>
+            <span class="tc-arrow">→</span>
+            <span class="tc-step active">조합 확인</span>
+            <span class="tc-arrow">→</span>
+            <span class="tc-step active">리포트 받기</span>
           </div>
-          <button class="btn-copy-all" onclick="copyAllCodes()">📋 코드 전체 복사</button>
-          <p style="font-size:0.78rem; color:var(--gray); margin-top:14px; line-height:1.6;">
-            코드 입력 주소: <strong>onyuschool.com/check</strong><br>
-            코드 유효기간: 발급일로부터 30일
-          </p>
+          <a href="https://onyuschool.com/coupleclass.html" class="tc-btn rose">부부클래스 체험하기 →</a>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="flow-section">
+  <p class="sec-tag" style="text-align:center;">HOW IT WORKS</p>
+  <h2 class="sec-title" style="text-align:center;font-family:'Noto Serif KR',serif;font-size:clamp(20px,3.5vw,30px);margin-bottom:8px;">이렇게 진행됩니다</h2>
+  <p class="sec-sub" style="text-align:center;max-width:480px;margin:0 auto 0;">검사부터 리포트까지 5분이면 충분해요.</p>
+
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="fs-num">1</div>
+      <div class="fs-icon">✏️</div>
+      <div class="fs-title">검사</div>
+      <div class="fs-desc">28개 A/B 질문에<br>직관적으로 답합니다</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-num">2</div>
+      <div class="fs-icon">🔍</div>
+      <div class="fs-title">결과 확인</div>
+      <div class="fs-desc">8유형 중 내 유형과<br>소통 은사를 발견합니다</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-num">3</div>
+      <div class="fs-icon">📄</div>
+      <div class="fs-title">리포트 받기</div>
+      <div class="fs-desc">유형별 상세 리포트를<br>무료로 다운받습니다</div>
+    </div>
+    <div class="flow-step">
+      <div class="fs-num">4</div>
+      <div class="fs-icon">📚</div>
+      <div class="fs-title">통합 가이드</div>
+      <div class="fs-desc">체크 하나로 8유형<br>전체 통합본도 받습니다</div>
+    </div>
+  </div>
 </section>
 
-<hr class="divider">
+<!-- DOWNLOAD -->
+<div class="dl-section" id="download">
+  <div class="dl-inner">
+    <p class="sec-tag" style="text-align:center;">FREE DOWNLOAD</p>
+    <h2 class="sec-title" style="text-align:center;font-family:'Noto Serif KR',serif;font-size:clamp(22px,4vw,32px);margin-bottom:10px;">내 유형 리포트를 받으세요</h2>
+    <p style="text-align:center;color:var(--silver);font-size:14px;margin-bottom:4px;">회원가입 없음 · 이메일 불필요 · 즉시 다운로드</p>
 
-<!-- STEP 2: 리포트 샘플 -->
-<section id="samples">
-  <div class="inner">
-    <div class="sec-label">STEP 02</div>
-    <h2 class="sec-title">8유형 리포트 무료 다운로드</h2>
-    <p class="sec-sub">성도 유형별 개별 리포트와 부부 64케이스 리포트를 무료로 다운받으세요.<br>목회자 심방·상담·소그룹에 바로 활용할 수 있습니다.</p>
-    <div style="text-align:center;margin-bottom:28px;">
-      <a href="https://onyuschool.com/download.html" class="btn-primary" style="display:inline-block;font-size:1rem;padding:14px 36px;border-radius:8px;text-decoration:none;">
-        📥 리포트 다운로드 페이지 →
+    <div class="dl-type-grid">
+      <div class="dl-type-btn" onclick="pick(this,'STEADY','🌿','스테디','Si · ISTJ · ISFJ')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">🌿</div>
+        <div class="dtb-code">STEADY</div>
+        <div class="dtb-kr">스테디 · 안정 · 신뢰</div>
+      </div>
+      <div class="dl-type-btn" onclick="pick(this,'SPARK','✨','스파크','Ne · ENFP · ENTP')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">✨</div>
+        <div class="dtb-code">SPARK</div>
+        <div class="dtb-kr">스파크 · 열정 · 영감</div>
+      </div>
+      <div class="dl-type-btn" onclick="pick(this,'PLAYER','⚡','플레이어','Se · ESTP · ESFP')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">⚡</div>
+        <div class="dtb-code">PLAYER</div>
+        <div class="dtb-kr">플레이어 · 행동 · 현장</div>
+      </div>
+      <div class="dl-type-btn" onclick="pick(this,'VISION','🔭','비전','Ni · INTJ · INFJ')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">🔭</div>
+        <div class="dtb-code">VISION</div>
+        <div class="dtb-kr">비전 · 통찰 · 미래</div>
+      </div>
+      <div class="dl-type-btn" onclick="pick(this,'LOGIC','🧠','로직','Ti · INTP · ISTP')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">🧠</div>
+        <div class="dtb-code">LOGIC</div>
+        <div class="dtb-kr">로직 · 분석 · 원리</div>
+      </div>
+      <div class="dl-type-btn" onclick="pick(this,'HARMONY','🤝','하모니','Fe · ESFJ · ENFJ')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">🤝</div>
+        <div class="dtb-code">HARMONY</div>
+        <div class="dtb-kr">하모니 · 돌봄 · 연결</div>
+      </div>
+      <div class="dl-type-btn" onclick="pick(this,'LEADER','🦁','리더','Te · ENTJ · ESTJ')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">🦁</div>
+        <div class="dtb-code">LEADER</div>
+        <div class="dtb-kr">리더 · 추진 · 결단</div>
+      </div>
+      <div class="dl-type-btn" onclick="pick(this,'SOUL','🌙','소울','Fi · INFP · ISFP')">
+        <span class="dtb-check">✓</span>
+        <div class="dtb-icon">🌙</div>
+        <div class="dtb-code">SOUL</div>
+        <div class="dtb-kr">소울 · 깊이 · 진정성</div>
+      </div>
+    </div>
+
+    <div id="dl-result">
+      <!-- 개별 리포트 -->
+      <div class="dl-row">
+        <div class="dl-row-info">
+          <div class="dri-title" id="dl-title">리포트 제목</div>
+          <div class="dri-desc">강점 · 그림자 · 소통 팁 · 마이크로 미션 · 목회자 가이드 · 쉐도우그램 캡션</div>
+        </div>
+        <a id="dl-btn" href="#" download class="btn-dl">⬇ 다운로드</a>
+      </div>
+
+      <!-- 체크 보너스 -->
+      <div class="bonus-row" onclick="toggleBonus()">
+        <div class="bonus-box" id="bonus-box"></div>
+        <div class="bonus-info">
+          <div class="bi-title">📚 8유형 전체 통합 가이드도 받을게요</div>
+          <div class="bi-desc">체크하면 8유형이 모두 담긴 통합 리포트(목회자·부부·소그룹 활용 가능)도 함께 받을 수 있어요.</div>
+        </div>
+      </div>
+      <a id="bonus-btn"
+        href="https://raw.githubusercontent.com/shadowgram-app/onyuschool/main/reports/%EC%98%A8%EC%9C%A0%EC%8A%A4%EC%BF%A8_8%EC%9C%A0%ED%98%95_%EC%84%B1%EB%8F%84%EC%9D%B4%ED%95%B4%EB%A6%AC%ED%8F%AC%ED%8A%B8.pdf"
+        download="온유스쿨_8유형_성도이해리포트.pdf">
+        📚 통합 가이드 다운로드
       </a>
     </div>
 
-    <div class="sample-grid">
-      <div class="sample-card" onclick="showSample('SPARK')">
-        <div class="sample-icon">🔥</div>
-        <div class="sample-type">SPARK</div>
-        <div class="sample-name">불꽃형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-      <div class="sample-card" onclick="showSample('VISION')">
-        <div class="sample-icon">🦅</div>
-        <div class="sample-type">VISION</div>
-        <div class="sample-name">비전형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-      <div class="sample-card" onclick="showSample('STEADY')">
-        <div class="sample-icon">🐢</div>
-        <div class="sample-type">STEADY</div>
-        <div class="sample-name">신뢰형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-      <div class="sample-card" onclick="showSample('PLAYER')">
-        <div class="sample-icon">🌊</div>
-        <div class="sample-type">PLAYER</div>
-        <div class="sample-name">활동형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-      <div class="sample-card" onclick="showSample('HARMONY')">
-        <div class="sample-icon">🐬</div>
-        <div class="sample-type">HARMONY</div>
-        <div class="sample-name">조화형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-      <div class="sample-card" onclick="showSample('SOUL')">
-        <div class="sample-icon">🌙</div>
-        <div class="sample-type">SOUL</div>
-        <div class="sample-name">감성형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-      <div class="sample-card" onclick="showSample('LOGIC')">
-        <div class="sample-icon">🐦‍⬛</div>
-        <div class="sample-type">LOGIC</div>
-        <div class="sample-name">논리형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-      <div class="sample-card" onclick="showSample('LEADER')">
-        <div class="sample-icon">🦁</div>
-        <div class="sample-type">LEADER</div>
-        <div class="sample-name">주도형</div>
-        <div class="sample-tag">보기</div>
-      </div>
-    </div>
-
-    <!-- 샘플 미리보기 -->
-    <div id="sample-preview" class="sample-preview">
-      <!-- JS로 채워짐 -->
-    </div>
-
-    <div class="sample-cta">
-      <div class="sc-text">
-        실제 리포트는 <strong>개인 유형 + 관계 특징 + 양육 스타일</strong>을 포함합니다.<br>
-        풀 리포트(4,900원) 및 부부클래스(4,900원), 자녀양육(9,900원)도 체험 후 구매 가능합니다.
-      </div>
-      <a href="#apply" class="btn-primary" style="white-space:nowrap;">무료 체험 신청</a>
+    <div style="text-align:center;margin-top:32px;">
+      <p style="font-size:13px;color:var(--silver);margin-bottom:14px;">부부클래스 64케이스 리포트도 받을 수 있어요</p>
+      <a href="https://onyuschool.com/download.html" class="btn-ghost" style="font-size:14px;">💑 부부 리포트 다운로드 →</a>
     </div>
   </div>
-</section>
-
-<hr class="divider">
-
-<!-- STEP 3: 대시보드 데모 -->
-<section id="dashboard-demo">
-  <div class="inner">
-    <div class="sec-label">STEP 03</div>
-    <h2 class="sec-title">교회 관리 대시보드 데모</h2>
-    <p class="sec-sub">
-      성도들이 검사를 완료하면 목회자 전용 대시보드에서 유형 분포와 소통 제안을 확인할 수 있습니다.<br>
-      아래는 실제 화면 구성입니다.
-    </p>
-
-    <!-- 브라우저 목업 -->
-    <div class="demo-mockup">
-      <div class="dm-topbar">
-        <div class="dm-dot r"></div>
-        <div class="dm-dot y"></div>
-        <div class="dm-dot g"></div>
-        <div class="dm-url">onyuschool.com/church-dashboard?token=demo</div>
-      </div>
-      <div class="dm-content">
-        <div class="dm-sidebar">
-          <div class="dm-church-name">
-            은혜중앙교회
-            <small>담임목사 전용</small>
-          </div>
-          <div class="dm-menu-item active">📊 유형 분포</div>
-          <div class="dm-menu-item">💬 소통 가이드</div>
-          <div class="dm-menu-item">📢 공지 템플릿</div>
-          <div class="dm-menu-item">👥 상담 동의자</div>
-          <div class="dm-menu-item">🎟 코드 관리</div>
-          <div class="dm-menu-item">📚 세미나 자료</div>
-          <div class="dm-menu-item">⚙ 설정</div>
-        </div>
-        <div class="dm-main">
-          <div class="dm-title">성도 유형 분포 현황</div>
-          <div class="dm-stat-row">
-            <div class="dm-stat">
-              <div class="dm-stat-num">47</div>
-              <div class="dm-stat-label">검사 완료</div>
-            </div>
-            <div class="dm-stat">
-              <div class="dm-stat-num">8</div>
-              <div class="dm-stat-label">유형 분포</div>
-            </div>
-            <div class="dm-stat">
-              <div class="dm-stat-num">23</div>
-              <div class="dm-stat-label">상담 동의</div>
-            </div>
-          </div>
-          <div class="dm-chart-area">
-            <div class="dm-chart-label">유형별 인원</div>
-            <div class="dm-bars">
-              <div class="dm-bar-row">
-                <div class="dm-bar-type">HARMONY</div>
-                <div class="dm-bar-track"><div class="dm-bar-fill" style="width:65%"></div></div>
-                <div class="dm-bar-count">11</div>
-              </div>
-              <div class="dm-bar-row">
-                <div class="dm-bar-type">STEADY</div>
-                <div class="dm-bar-track"><div class="dm-bar-fill" style="width:50%"></div></div>
-                <div class="dm-bar-count">8</div>
-              </div>
-              <div class="dm-bar-row">
-                <div class="dm-bar-type">SOUL</div>
-                <div class="dm-bar-track"><div class="dm-bar-fill" style="width:42%"></div></div>
-                <div class="dm-bar-count">7</div>
-              </div>
-              <div class="dm-bar-row">
-                <div class="dm-bar-type">VISION</div>
-                <div class="dm-bar-track"><div class="dm-bar-fill" style="width:36%"></div></div>
-                <div class="dm-bar-count">6</div>
-              </div>
-              <div class="dm-bar-row">
-                <div class="dm-bar-type">LOGIC</div>
-                <div class="dm-bar-track"><div class="dm-bar-fill" style="width:30%"></div></div>
-                <div class="dm-bar-count">5</div>
-              </div>
-              <div class="dm-bar-row">
-                <div class="dm-bar-type">SPARK</div>
-                <div class="dm-bar-track"><div class="dm-bar-fill" style="width:24%"></div></div>
-                <div class="dm-bar-count">4</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo-cta">
-      <div class="dc-text">
-        실제 대시보드는 체험 코드 3장을 모두 사용한 후 확인 가능합니다.<br>
-        <strong>지금은 데모 링크로 전체 기능을 미리 탐색</strong>해 보세요.
-      </div>
-      <a href="https://onyuschool.com/church-dashboard.html" class="btn-primary" target="_blank" style="white-space:nowrap;">데모 대시보드 열기 →</a>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- STEP 4: 피드백 폼 -->
-<section id="feedback">
-  <div class="inner">
-    <div class="sec-label">STEP 04</div>
-    <h2 class="sec-title">체험 후 피드백 공유</h2>
-    <p class="sec-sub">2주간 체험 후 아래 설문에 응해 주시면 감사하겠습니다. 약 5분 소요됩니다.</p>
-
-    <div class="feedback-intro">
-      <div class="fi-icon">🙏</div>
-      <div class="fi-text">
-        <strong>피드백은 온유스쿨을 함께 만들어가는 과정입니다.</strong><br>
-        좋은 점, 불편한 점, 교회 현장에서 필요한 기능 모두 귀하게 듣겠습니다.<br>
-        응답해 주신 모든 분께는 정식 도입 시 <strong>코드 10장 추가 증정</strong> 혜택을 드립니다.
-      </div>
-    </div>
-
-    <div class="feedback-box" id="feedback-form-wrap">
-      <form id="feedback-form" onsubmit="handleFeedbackSubmit(event)">
-        <!-- 평점 -->
-        <div class="rating-row">
-          <div class="rating-item">
-            <div class="rating-label">검사 경험은 어떠셨나요?</div>
-            <div class="rating-stars star-group" id="star-test">
-              <span class="star" data-v="1" onclick="setRating('test',1)">★</span>
-              <span class="star" data-v="2" onclick="setRating('test',2)">★</span>
-              <span class="star" data-v="3" onclick="setRating('test',3)">★</span>
-              <span class="star" data-v="4" onclick="setRating('test',4)">★</span>
-              <span class="star" data-v="5" onclick="setRating('test',5)">★</span>
-            </div>
-          </div>
-          <div class="rating-item">
-            <div class="rating-label">리포트 내용은 유익하셨나요?</div>
-            <div class="rating-stars star-group" id="star-report">
-              <span class="star" data-v="1" onclick="setRating('report',1)">★</span>
-              <span class="star" data-v="2" onclick="setRating('report',2)">★</span>
-              <span class="star" data-v="3" onclick="setRating('report',3)">★</span>
-              <span class="star" data-v="4" onclick="setRating('report',4)">★</span>
-              <span class="star" data-v="5" onclick="setRating('report',5)">★</span>
-            </div>
-          </div>
-          <div class="rating-item">
-            <div class="rating-label">교회 도입 의향이 있으신가요?</div>
-            <div class="rating-stars star-group" id="star-intent">
-              <span class="star" data-v="1" onclick="setRating('intent',1)">★</span>
-              <span class="star" data-v="2" onclick="setRating('intent',2)">★</span>
-              <span class="star" data-v="3" onclick="setRating('intent',3)">★</span>
-              <span class="star" data-v="4" onclick="setRating('intent',4)">★</span>
-              <span class="star" data-v="5" onclick="setRating('intent',5)">★</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 체크박스: 활용 의향 -->
-        <div class="form-group" style="margin-bottom:20px;">
-          <div class="form-label" style="margin-bottom:10px;">도입한다면 어떤 사역에 활용하고 싶으신가요? (복수 선택)</div>
-          <div class="checkbox-group">
-            <label class="cb-item"><input type="checkbox" name="usecase" value="sg"> 소그룹 / 셀 / 구역 모임</label>
-            <label class="cb-item"><input type="checkbox" name="usecase" value="couple"> 부부 사역 / 결혼준비학교</label>
-            <label class="cb-item"><input type="checkbox" name="usecase" value="parenting"> 자녀 양육 / 부모교육</label>
-            <label class="cb-item"><input type="checkbox" name="usecase" value="newmember"> 새가족 교육</label>
-            <label class="cb-item"><input type="checkbox" name="usecase" value="leader"> 리더 훈련 / 사역자 교육</label>
-            <label class="cb-item"><input type="checkbox" name="usecase" value="seminar"> 교회 세미나</label>
-          </div>
-        </div>
-
-        <!-- 장벽 -->
-        <div class="form-group" style="margin-bottom:20px;">
-          <div class="form-label" style="margin-bottom:10px;">도입에 망설여지는 이유가 있다면? (복수 선택)</div>
-          <div class="checkbox-group">
-            <label class="cb-item"><input type="checkbox" name="barrier" value="cost"> 비용 부담 (1인 3,000원)</label>
-            <label class="cb-item"><input type="checkbox" name="barrier" value="trust"> 쉐도우그램 프레임에 대한 신뢰 부족</label>
-            <label class="cb-item"><input type="checkbox" name="barrier" value="time"> 성도들의 참여를 이끌어낼 시간/에너지 부족</label>
-            <label class="cb-item"><input type="checkbox" name="barrier" value="compare"> MBTI와의 차이가 아직 불명확</label>
-            <label class="cb-item"><input type="checkbox" name="barrier" value="none"> 특별한 장벽 없음, 도입할 것 같음</label>
-          </div>
-        </div>
-
-        <!-- 자유 의견 -->
-        <div class="form-group">
-          <label class="form-label" for="free-opinion">자유롭게 말씀해 주세요 <span>선택</span></label>
-          <textarea class="form-textarea" id="free-opinion" style="min-height:100px;"
-            placeholder="현장에서 느낀 점, 추가되었으면 하는 기능, 궁금한 점 등 무엇이든 환영합니다."></textarea>
-        </div>
-
-        <div class="form-check" style="margin-top:16px;">
-          <input type="checkbox" id="agree-followup" />
-          <label for="agree-followup">
-            추가 인터뷰 요청 시 참여할 의향이 있습니다. (선택, 코드 10장 추가 증정)
-          </label>
-        </div>
-
-        <button type="submit" class="btn-feedback">피드백 제출하기 →</button>
-      </form>
-    </div>
-
-    <div id="feedback-done">
-      <div class="fd-icon">🙌</div>
-      <div class="fd-title">피드백 감사합니다!</div>
-      <div class="fd-desc">
-        목사님의 현장 의견이 온유스쿨을 더 좋은 도구로 만듭니다.<br>
-        약속드린 <strong>코드 10장</strong>은 입력하신 이메일로 순차 발송해 드리겠습니다.<br><br>
-        <a href="https://onyuschool.com" class="btn-primary" style="display:inline-block;">목회자 페이지로 돌아가기</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- FINAL CTA -->
-<section id="final-cta">
-  <div class="fc-label">NEXT STEP</div>
-  <h2 class="fc-title">체험이 확신이 되셨다면<br><em>교회 전체로 함께 가요</em></h2>
-  <p class="fc-sub">
-    코드는 낱개 구매 가능, 1장 3,000원.<br>
-    교육부서·소그룹·청년부 등 부서 단위로 시작하셔도 됩니다.
-  </p>
-  <div class="fc-btns">
-    <a href="https://onyuschool.com/#pricing" class="btn-primary">코드 구매 안내 보기</a>
-    <a href="https://onyuschool.com" class="btn-ghost">목회자 서비스 전체 보기</a>
-  </div>
-</section>
+</div>
 
 <!-- FOOTER -->
 <footer>
-  <div class="ft-brand">
-    온유스쿨
-    <small>함께 지어져 가기 위해 온유를 배웁니다</small>
-  </div>
-  <div class="ft-copy">© 2025 Shadowgram · onyuschool.com</div>
+  <strong>온유스쿨</strong> · onyuschool.com<br>
+  인생나무코칭연구소 · 쉐도우그램 프레임워크 기반 교육 콘텐츠<br>
+  심리 유형 이론(Jung, 1921) 기반 독자적 개발 · MBTI® 미제휴<br>
+  문의 · <a href="mailto:joculsion@gmail.com">joculsion@gmail.com</a>
 </footer>
 
-<!-- ── JS ── -->
 <script>
-  /* ── 유형 데이터 ── */
-  const TYPES = {
-    SPARK:   { icon:'🔥', name:'불꽃형', right:'열정·추진력', rightDesc:'새로운 것을 먼저 시작하고 에너지로 주변을 이끕니다. 변화와 도전에서 생명력을 느낍니다.', left:'깊은 경청·관계 지속력 개발', leftDesc:'빠른 추진 속에서 상대의 속도와 감정을 기다리는 연습이 성장의 열쇠입니다.', keywords:['열정','주도','변화','도전','즉흥'] },
-    VISION:  { icon:'🦅', name:'비전형', right:'통찰·장기적 사고', rightDesc:'큰 그림을 보고 미래를 설계합니다. 전략적 사고와 가능성 발견에 탁월합니다.', left:'현재·세부 실행력 개발', leftDesc:'비전을 현실로 연결하는 구체적 실행과 지금 이 관계에 집중하는 연습이 성장의 열쇠입니다.', keywords:['전략','미래','통찰','가능성','독립'] },
-    STEADY:  { icon:'🐢', name:'신뢰형', right:'안정·신뢰감', rightDesc:'꾸준하고 믿음직스럽습니다. 변함없는 헌신으로 공동체의 기반을 만듭니다.', left:'유연한 변화 수용 개발', leftDesc:'안정을 지키면서도 새로운 방식을 두려움 없이 시도하는 유연성이 성장의 열쇠입니다.', keywords:['안정','헌신','신뢰','인내','지속'] },
-    PLAYER:  { icon:'🌊', name:'활동형', right:'유연성·현장 감각', rightDesc:'현재에 집중하며 행동으로 반응합니다. 융통성 있게 상황에 적응하는 능력이 탁월합니다.', left:'계획성·원칙 일관성 개발', leftDesc:'즉흥적 강점을 살리면서도 장기적 방향과 원칙을 세우는 연습이 성장의 열쇠입니다.', keywords:['현장','적응','행동','자유','실용'] },
-    HARMONY: { icon:'🐬', name:'조화형', right:'공감·배려', rightDesc:'관계 안에서 모두가 편안하도록 세밀하게 배려합니다. 공동체의 정서적 온도를 조율합니다.', left:'객관적 판단력 개발', leftDesc:'공감을 유지하면서도 때로는 명확한 기준을 세우고 건강하게 경계를 긋는 연습이 성장의 열쇠입니다.', keywords:['공감','배려','관계','조화','따뜻함'] },
-    SOUL:    { icon:'🌙', name:'감성형', right:'깊이·진정성', rightDesc:'감정과 의미를 깊이 탐구합니다. 진실한 관계와 내면의 일치를 중요하게 여깁니다.', left:'표현·외향적 연결 개발', leftDesc:'내면의 깊이를 말과 행동으로 더 적극적으로 표현하고 나누는 연습이 성장의 열쇠입니다.', keywords:['진정성','깊이','감수성','의미','내면'] },
-    LOGIC:   { icon:'🐦‍⬛', name:'논리형', right:'분석·객관성', rightDesc:'체계적으로 사고하고 원인과 결과를 명확히 파악합니다. 복잡한 문제를 단순화하는 능력이 탁월합니다.', left:'감정 언어·공감력 개발', leftDesc:'논리적 정확함을 유지하면서도 감정을 언어로 표현하고 상대의 감정을 수용하는 연습이 성장의 열쇠입니다.', keywords:['논리','분석','체계','객관','정확'] },
-    LEADER:  { icon:'🦁', name:'주도형', right:'결단력·추진력', rightDesc:'빠르게 결정하고 책임지며 이끕니다. 위기 상황에서 방향을 제시하는 능력이 탁월합니다.', left:'섬세한 경청·협력 개발', leftDesc:'강한 추진력을 살리면서도 구성원의 목소리를 기다리고 함께 만들어가는 연습이 성장의 열쇠입니다.', keywords:['결단','리더십','책임','목표','주도'] },
-  };
+const BASE = 'https://raw.githubusercontent.com/shadowgram-app/onyuschool/main/reports/';
+let bonusOn = false;
 
-  /* ── 샘플 보기 ── */
-  function showSample(type) {
-    const d = TYPES[type];
-    const el = document.getElementById('sample-preview');
-    el.innerHTML = `
-      <div class="sp-header">
-        <div class="sp-icon">${d.icon}</div>
-        <div>
-          <div class="sp-type-label">${type} TYPE</div>
-          <div class="sp-type-name">${d.name}</div>
-          <div class="sp-type-sub">쉐도우그램 8유형 리포트 샘플</div>
-        </div>
-      </div>
+function pick(el, code, icon, kr, sub){
+  document.querySelectorAll('.dl-type-btn').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
 
-      <div class="sp-section">
-        <div class="sp-sec-title">✦ 오른손 · 왼손 (주기능 / 성장의 열쇠)</div>
-        <div class="sp-hands">
-          <div class="sp-hand sp-hand-r">
-            <div class="sp-hand-label">오른손 — 지금의 강점</div>
-            <div class="sp-hand-body">${d.rightDesc}</div>
-          </div>
-          <div class="sp-hand sp-hand-l">
-            <div class="sp-hand-label">왼손 — 성장의 열쇠</div>
-            <div class="sp-hand-body">${d.leftDesc}</div>
-          </div>
-        </div>
-      </div>
+  const fname = encodeURIComponent('온유스쿨_퍼스트클래스_' + code + '_리포트.pdf');
+  document.getElementById('dl-title').textContent = icon + ' ' + code + ' ' + kr + ' 유형 리포트  ·  ' + sub;
+  const btn = document.getElementById('dl-btn');
+  btn.href = BASE + 'individual/' + fname;
+  btn.download = '온유스쿨_퍼스트클래스_' + code + '_리포트.pdf';
 
-      <div class="sp-section">
-        <div class="sp-sec-title">✦ 핵심 키워드</div>
-        <div class="sp-keywords">
-          ${d.keywords.map(k => `<span class="sp-kw">${k}</span>`).join('')}
-        </div>
-      </div>
+  // 보너스 리셋
+  bonusOn = false;
+  document.getElementById('bonus-box').classList.remove('on');
+  document.getElementById('bonus-box').textContent = '';
+  document.getElementById('bonus-btn').style.display = 'none';
 
-      <div class="sp-section">
-        <div class="sp-sec-title">✦ 커플 유형 특징 / 양육 스타일 <span style="font-size:0.72rem; font-weight:400; color:var(--gray); text-transform:none;">(풀 리포트 포함)</span></div>
-        <div class="sp-blur">
-          <p style="font-size:0.88rem; line-height:1.8; color:#444;">
-            ${d.name}은(는) 관계에서 상대에게 ${d.right.split('·')[0]}을(를) 제공하는 방식으로 연결을 형성합니다.
-            갈등 상황에서는 주로 자신만의 방식으로 해결을 시도하며, 상대 유형에 따라 소통 패턴이 크게 달라집니다.
-            자녀 양육에서는 ${d.right.split('·')[0]} 중심의 환경을 자연스럽게 형성합니다.
-          </p>
-        </div>
-        <div class="sp-lock">
-          🔒 <strong>풀 리포트(4,900원)</strong>에서 확인 가능합니다.<br>
-          체험 코드로 검사 후 리포트 구매 시 5월 특가 적용됩니다.
-        </div>
-      </div>
-    `;
-    el.classList.add('active');
-    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const res = document.getElementById('dl-result');
+  res.style.display = 'block';
+  setTimeout(function(){ res.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 80);
+}
+
+function toggleBonus(){
+  bonusOn = !bonusOn;
+  const box = document.getElementById('bonus-box');
+  const btn = document.getElementById('bonus-btn');
+  if(bonusOn){
+    box.classList.add('on');
+    box.textContent = '✓';
+    btn.style.display = 'block';
+    setTimeout(function(){ btn.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 100);
+  } else {
+    box.classList.remove('on');
+    box.textContent = '';
+    btn.style.display = 'none';
   }
-
-  /* ── 신청 폼 제출 (데모) ── */
-  function handleTrialSubmit(e) {
-    e.preventDefault();
-    const name = document.getElementById('pastor-name').value;
-    document.getElementById('trial-form').style.display = 'none';
-    document.getElementById('code-result').style.display = 'block';
-    document.getElementById('code-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  /* ── 코드 전체 복사 ── */
-  function copyAllCodes() {
-    const codes = `온유스쿨 체험 코드\n\nONYU-TRL-001 (목회자 본인용)\nONYU-TRL-002 (성도 1)\nONYU-TRL-003 (성도 2)\n\n코드 입력 주소: onyuschool.com/check\n유효기간: 발급일로부터 30일`;
-    navigator.clipboard.writeText(codes).then(() => {
-      const btn = document.querySelector('.btn-copy-all');
-      btn.textContent = '✅ 복사 완료!';
-      setTimeout(() => btn.textContent = '📋 코드 전체 복사', 2000);
-    }).catch(() => {
-      alert('코드를 직접 선택하여 복사해 주세요.');
-    });
-  }
-
-  /* ── 별점 ── */
-  const ratings = { test: 0, report: 0, intent: 0 };
-  function setRating(group, val) {
-    ratings[group] = val;
-    const stars = document.querySelectorAll(`#star-${group} .star`);
-    stars.forEach((s, i) => {
-      s.classList.toggle('on', i < val);
-    });
-  }
-
-  /* ── 피드백 폼 제출 ── */
-  function handleFeedbackSubmit(e) {
-    e.preventDefault();
-    document.getElementById('feedback-form-wrap').style.display = 'none';
-    document.getElementById('feedback-done').style.display = 'block';
-    document.getElementById('feedback-done').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+}
 </script>
-
 </body>
 </html>
