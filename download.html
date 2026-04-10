@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>무료 리포트 다운로드 — 온유스쿨</title>
+<meta name="description" content="온유스쿨 퍼스트클래스 8유형 개별 리포트와 부부클래스 64케이스 리포트를 무료로 다운받으세요.">
+<meta property="og:title" content="온유스쿨 무료 리포트 다운로드">
+<meta property="og:description" content="8유형 개별 리포트 + 64케이스 부부 리포트 무료 다운로드">
+<meta property="og:image" content="https://onyuschool.com/og-firstclass.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;900&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#F7F5F2; --bg2:#EEEBE6; --card:#FFFFFF;
+  --text:#1A1714; --gold:#7A5C1E; --goldL:#9A7A2E;
+  --silver:#6B6560; --border:#E0D8CC;
+  --green:#1E6640; --shadow:0 2px 12px rgba(0,0,0,0.07);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(247,245,242,0.97);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;height:52px;border-bottom:1px solid var(--border);
+}
+.nav-logo{color:var(--text);font-size:14px;font-weight:700;letter-spacing:.08em;text-decoration:none;}
+.nav-logo span{color:var(--gold);}
+.nav-back{font-size:13px;color:var(--silver);text-decoration:none;}
+.nav-back:hover{color:var(--gold);}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#FDF8F3,#F5EDE0 60%,#EDE8F5);
+  padding:56px 5% 48px;text-align:center;border-bottom:1px solid var(--border);
+}
+.hero-tag{font-size:11px;letter-spacing:3px;color:var(--gold);font-weight:700;margin-bottom:16px;}
+.hero h1{font-family:'Noto Serif KR',serif;font-size:clamp(24px,5vw,38px);font-weight:700;line-height:1.35;margin-bottom:14px;color:var(--text);}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero-sub{color:var(--silver);font-size:15px;line-height:1.9;max-width:480px;margin:0 auto 24px;}
+.hero-note{font-size:12px;color:#A09890;letter-spacing:.05em;}
+
+/* SECTION */
+section{padding:52px 5%;max-width:900px;margin:0 auto;}
+.sec-tag{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+.sec-title{font-family:'Noto Serif KR',serif;font-size:clamp(20px,3.5vw,28px);font-weight:700;color:var(--text);margin-bottom:8px;}
+.sec-sub{color:var(--silver);font-size:14px;margin-bottom:32px;line-height:1.8;}
+
+/* TYPE GRID */
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;}
+.type-btn{
+  background:var(--card);border:1.5px solid var(--border);border-radius:12px;
+  padding:16px;cursor:pointer;transition:all .18s;text-align:left;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.type-btn:hover{border-color:var(--goldL);box-shadow:var(--shadow);}
+.type-btn.selected{border-color:var(--gold);background:#FFF8EC;box-shadow:0 4px 16px rgba(122,92,30,.12);}
+.type-btn .t-icon{font-size:22px;margin-bottom:6px;}
+.type-btn .t-code{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.type-btn .t-kr{font-size:11px;color:var(--silver);}
+.type-btn .t-check{float:right;font-size:18px;color:var(--gold);display:none;}
+.type-btn.selected .t-check{display:block;}
+
+/* DOWNLOAD CARD */
+#download-card{
+  display:none;
+  background:var(--card);border:1.5px solid var(--border);border-radius:16px;
+  padding:28px;margin-bottom:16px;
+  animation:fadeUp .3s ease;
+  box-shadow:var(--shadow);
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.dl-type-banner{
+  display:flex;align-items:center;gap:16px;
+  padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px;
+}
+.dl-type-icon{font-size:40px;}
+.dl-type-name{font-size:22px;font-weight:900;color:var(--text);}
+.dl-type-sub{font-size:12px;color:var(--silver);margin-top:2px;}
+
+.dl-row{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:16px;background:var(--bg);border-radius:10px;margin-bottom:10px;
+}
+.dl-info .dl-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.dl-info .dl-desc{font-size:12px;color:var(--silver);}
+.btn-dl{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--gold);color:#fff;
+  font-size:13px;font-weight:700;
+  padding:10px 20px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  text-decoration:none;white-space:nowrap;
+  transition:background .2s, transform .15s;
+  box-shadow:0 3px 10px rgba(122,92,30,.2);
+}
+.btn-dl:hover{background:#5E4516;transform:translateY(-1px);}
+.btn-dl:active{transform:translateY(0);}
+
+/* BONUS 체크 */
+.bonus-wrap{
+  background:#F0FAF4;border:1.5px solid rgba(30,102,64,.2);
+  border-radius:10px;padding:16px 20px;margin-top:16px;
+  display:flex;align-items:flex-start;gap:14px;cursor:pointer;
+  transition:background .18s;
+}
+.bonus-wrap:hover{background:#E6F7EC;}
+.bonus-check{
+  width:24px;height:24px;border-radius:6px;border:2px solid rgba(30,102,64,.4);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px;transition:all .2s;background:#fff;
+}
+.bonus-check.checked{background:var(--green);border-color:var(--green);}
+.bonus-check.checked::after{content:'✓';color:#fff;font-size:14px;font-weight:800;}
+.bonus-text .bt-title{font-size:14px;font-weight:700;color:var(--green);margin-bottom:3px;}
+.bonus-text .bt-desc{font-size:12px;color:#4A7A60;line-height:1.6;}
+#bonus-dl-btn{
+  display:none;margin-top:12px;width:100%;
+  background:var(--green);color:#fff;
+  font-size:14px;font-weight:700;
+  padding:12px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  text-decoration:none;text-align:center;
+  transition:background .2s;
+  box-shadow:0 3px 10px rgba(30,102,64,.2);
+}
+#bonus-dl-btn:hover{background:#154D30;}
+
+/* COUPLE SECTION */
+.couple-section{background:var(--bg2);border-top:1px solid var(--border);padding:52px 5%;}
+.couple-inner{max-width:900px;margin:0 auto;}
+.couple-selectors{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start;margin-bottom:24px;}
+@media(max-width:640px){.couple-selectors{grid-template-columns:1fr;}}
+.c-col h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;text-align:center;}
+.c-list{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow-y:auto;}
+.c-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--card);cursor:pointer;transition:all .15s;
+  font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;
+  color:var(--text);
+}
+.c-btn:hover{border-color:var(--goldL);}
+.c-btn.sel-me{border-color:#9B3043;background:#FFF0F3;}
+.c-btn.sel-partner{border-color:var(--goldL);background:#FFF8EC;}
+.vs-circle{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--gold);color:#fff;font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:36px;flex-shrink:0;
+}
+#couple-result-card{
+  display:none;background:var(--card);border:1.5px solid var(--border);
+  border-radius:14px;padding:24px;margin-top:8px;
+  animation:fadeUp .3s ease;box-shadow:var(--shadow);
+}
+.cr-banner{
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg);border-radius:10px;padding:14px 16px;margin-bottom:16px;
+}
+.cr-names{font-size:18px;font-weight:900;color:var(--text);letter-spacing:.05em;}
+.cr-sub{font-size:12px;color:var(--silver);margin-top:2px;}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:36px 5%;text-align:center;font-size:12px;color:var(--silver);line-height:2;}
+footer a{color:var(--silver);text-decoration:none;}
+
+@media(max-width:600px){
+  section{padding:40px 4%;}
+  .dl-row{flex-direction:column;align-items:flex-start;}
+  .btn-dl{width:100%;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="https://onyuschool.com"><span>ONYU</span>SCHOOL</a>
+  <a class="nav-back" href="https://onyuschool.com/pastor">← 목회자 체험판</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-tag">FREE DOWNLOAD · 무료 리포트</p>
+  <h1>내 유형 리포트를<br><em>지금 바로 다운받으세요</em></h1>
+  <p class="hero-sub">
+    퍼스트클래스 8유형 개별 리포트와<br>
+    부부클래스 64케이스 리포트를 모두 무료로 제공합니다.
+  </p>
+  <p class="hero-note">· 회원가입 없음 · 이메일 불필요 · 즉시 다운로드</p>
+</div>
+
+<!-- 개인 리포트 -->
+<section>
+  <p class="sec-tag">FIRST CLASS · 개인 리포트</p>
+  <h2 class="sec-title">내 유형을 선택하세요</h2>
+  <p class="sec-sub">
+    유형을 모르신다면 <a href="firstclass-quiz.html" style="color:var(--gold);font-weight:700;">퍼스트클래스 진단</a>을 먼저 받아보세요. (5분 · 무료)
+  </p>
+
+  <div class="type-grid">
+    <div class="type-btn" onclick="selectType('STEADY','🌿','스테디','Si · ISTJ · ISFJ')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">🌿</div>
+      <div class="t-code">STEADY</div>
+      <div class="t-kr">스테디 · 안정 · 신뢰</div>
+    </div>
+    <div class="type-btn" onclick="selectType('SPARK','✨','스파크','Ne · ENFP · ENTP')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">✨</div>
+      <div class="t-code">SPARK</div>
+      <div class="t-kr">스파크 · 열정 · 영감</div>
+    </div>
+    <div class="type-btn" onclick="selectType('PLAYER','⚡','플레이어','Se · ESTP · ESFP')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">⚡</div>
+      <div class="t-code">PLAYER</div>
+      <div class="t-kr">플레이어 · 행동 · 현장</div>
+    </div>
+    <div class="type-btn" onclick="selectType('VISION','🔭','비전','Ni · INTJ · INFJ')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">🔭</div>
+      <div class="t-code">VISION</div>
+      <div class="t-kr">비전 · 통찰 · 미래</div>
+    </div>
+    <div class="type-btn" onclick="selectType('LOGIC','🧠','로직','Ti · INTP · ISTP')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">🧠</div>
+      <div class="t-code">LOGIC</div>
+      <div class="t-kr">로직 · 분석 · 원리</div>
+    </div>
+    <div class="type-btn" onclick="selectType('HARMONY','🤝','하모니','Fe · ESFJ · ENFJ')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">🤝</div>
+      <div class="t-code">HARMONY</div>
+      <div class="t-kr">하모니 · 돌봄 · 연결</div>
+    </div>
+    <div class="type-btn" onclick="selectType('LEADER','🦁','리더','Te · ENTJ · ESTJ')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">🦁</div>
+      <div class="t-code">LEADER</div>
+      <div class="t-kr">리더 · 추진 · 결단</div>
+    </div>
+    <div class="type-btn" onclick="selectType('SOUL','🌙','소울','Fi · INFP · ISFP')">
+      <span class="t-check">✓</span>
+      <div class="t-icon">🌙</div>
+      <div class="t-code">SOUL</div>
+      <div class="t-kr">소울 · 깊이 · 진정성</div>
+    </div>
+  </div>
+
+  <!-- 다운로드 카드 -->
+  <div id="download-card">
+    <div class="dl-type-banner">
+      <div class="dl-type-icon" id="dl-icon"></div>
+      <div>
+        <div class="dl-type-name" id="dl-name"></div>
+        <div class="dl-type-sub" id="dl-sub"></div>
+      </div>
+    </div>
+
+    <!-- 개별 리포트 다운 -->
+    <div class="dl-row">
+      <div class="dl-info">
+        <div class="dl-title" id="dl-title"></div>
+        <div class="dl-desc">강점 · 그림자 · 소통 팁 · 마이크로 미션 · 목회자 가이드 · 쉐도우그램 캡션</div>
+      </div>
+      <a id="dl-btn" href="#" download class="btn-dl">⬇ 다운로드</a>
+    </div>
+
+    <!-- 보너스 체크 -->
+    <div class="bonus-wrap" id="bonus-wrap" onclick="toggleBonus()">
+      <div class="bonus-check" id="bonus-check"></div>
+      <div class="bonus-text">
+        <div class="bt-title">📚 8유형 전체 통합 리포트도 받을게요</div>
+        <div class="bt-desc">체크하면 8유형 전체가 담긴 통합 리포트(목회자·부부·가족 활용 가능)도 함께 받을 수 있어요.</div>
+      </div>
+    </div>
+    <a id="bonus-dl-btn"
+       href="https://raw.githubusercontent.com/shadowgram-app/onyuschool/main/reports/%EC%98%A8%EC%9C%A0%EC%8A%A4%EC%BF%A8_8%EC%9C%A0%ED%98%95_%EC%84%B1%EB%8F%84%EC%9D%B4%ED%95%B4%EB%A6%AC%ED%8F%AC%ED%8A%B8.pdf"
+       download="온유스쿨_8유형_성도이해리포트.pdf"
+       class="btn-dl" style="background:var(--green);box-shadow:0 3px 10px rgba(30,102,64,.2);">
+      📚 통합 리포트 다운로드
+    </a>
+  </div>
+</section>
+
+<!-- 부부 리포트 -->
+<div class="couple-section">
+  <div class="couple-inner">
+    <p class="sec-tag">COUPLE CLASS · 부부 리포트</p>
+    <h2 class="sec-title">부부 유형 조합을 선택하세요</h2>
+    <p class="sec-sub">나의 유형과 배우자의 유형을 각각 선택하면 해당 케이스 리포트를 받을 수 있어요.</p>
+
+    <div class="couple-selectors">
+      <div class="c-col">
+        <h3>나의 유형</h3>
+        <div class="c-list" id="me-list"></div>
+      </div>
+      <div class="vs-circle">VS</div>
+      <div class="c-col">
+        <h3>배우자 유형</h3>
+        <div class="c-list" id="partner-list"></div>
+      </div>
+    </div>
+
+    <div id="couple-result-card">
+      <div class="cr-banner">
+        <div>
+          <div class="cr-names" id="cr-names"></div>
+          <div class="cr-sub">부부 소통 유형 리포트</div>
+        </div>
+      </div>
+      <div class="dl-row">
+        <div class="dl-info">
+          <div class="dl-title" id="cr-title"></div>
+          <div class="dl-desc">시너지 · 갈등 포인트 · 소통 팁 · 부부 쉐도우그램 캡션 · 부부 미션</div>
+        </div>
+        <a id="couple-dl-btn" href="#" download class="btn-dl">⬇ 다운로드</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 온유스쿨 · onyuschool.com<br>
+  인생나무코칭연구소 · 쉐도우그램 프레임워크 기반 교육 콘텐츠<br>
+  문의 · <a href="mailto:joculsion@gmail.com">joculsion@gmail.com</a>
+</footer>
+
+<script>
+const BASE = 'https://raw.githubusercontent.com/shadowgram-app/onyuschool/main/reports/';
+
+const TYPES = [
+  {code:'STEADY', icon:'🌿', kr:'스테디'},
+  {code:'SPARK',  icon:'✨', kr:'스파크'},
+  {code:'PLAYER', icon:'⚡', kr:'플레이어'},
+  {code:'VISION', icon:'🔭', kr:'비전'},
+  {code:'LOGIC',  icon:'🧠', kr:'로직'},
+  {code:'HARMONY',icon:'🤝', kr:'하모니'},
+  {code:'LEADER', icon:'🦁', kr:'리더'},
+  {code:'SOUL',   icon:'🌙', kr:'소울'},
+];
+
+// 유형 버튼 목록 렌더링
+function renderCoupleLists(){
+  ['me-list','partner-list'].forEach(function(id){
+    const el = document.getElementById(id);
+    const cls = id === 'me-list' ? 'sel-me' : 'sel-partner';
+    el.innerHTML = TYPES.map(function(t){
+      return `<button class="c-btn" onclick="selectCouple('${id}','${t.code}','${t.icon}','${t.kr}')" id="${id}-${t.code}">
+        <span>${t.icon}</span><span>${t.code} <small style="font-weight:400;color:var(--silver);">${t.kr}</small></span>
+      </button>`;
+    }).join('');
+  });
+}
+renderCoupleLists();
+
+// 개인 유형 선택
+let selectedType = null;
+let bonusChecked = false;
+
+function selectType(code, icon, kr, sub){
+  // 이전 선택 해제
+  document.querySelectorAll('.type-btn').forEach(function(b){ b.classList.remove('selected'); });
+  // 현재 선택
+  event.currentTarget.classList.add('selected');
+  selectedType = code;
+
+  // 카드 업데이트
+  const fname = encodeURIComponent(`온유스쿨_퍼스트클래스_${code}_리포트.pdf`);
+  const url = `${BASE}individual/${fname}`;
+
+  document.getElementById('dl-icon').textContent = icon;
+  document.getElementById('dl-name').textContent = `${icon} ${code}`;
+  document.getElementById('dl-sub').textContent = `${kr} 유형  ·  ${sub}`;
+  document.getElementById('dl-title').textContent = `온유스쿨 퍼스트클래스 ${code} 유형 리포트`;
+  document.getElementById('dl-btn').href = url;
+  document.getElementById('dl-btn').download = `온유스쿨_퍼스트클래스_${code}_리포트.pdf`;
+
+  // 보너스 초기화
+  bonusChecked = false;
+  document.getElementById('bonus-check').classList.remove('checked');
+  document.getElementById('bonus-dl-btn').style.display = 'none';
+
+  // 카드 표시
+  const card = document.getElementById('download-card');
+  card.style.display = 'block';
+  card.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// 통합 리포트 체크 토글
+function toggleBonus(){
+  bonusChecked = !bonusChecked;
+  const check = document.getElementById('bonus-check');
+  const btn   = document.getElementById('bonus-dl-btn');
+  if(bonusChecked){
+    check.classList.add('checked');
+    btn.style.display = 'flex';
+    btn.style.alignItems = 'center';
+    btn.style.justifyContent = 'center';
+    btn.style.gap = '8px';
+    setTimeout(function(){ btn.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 100);
+  } else {
+    check.classList.remove('checked');
+    btn.style.display = 'none';
+  }
+}
+
+// 부부 유형 선택
+let meType = null, partnerType = null;
+function selectCouple(listId, code, icon, kr){
+  const cls = listId === 'me-list' ? 'sel-me' : 'sel-partner';
+  // 같은 열 초기화
+  document.querySelectorAll(`#${listId} .c-btn`).forEach(function(b){ b.classList.remove(cls); });
+  document.getElementById(`${listId}-${code}`).classList.add(cls);
+
+  if(listId === 'me-list') meType = code;
+  else partnerType = code;
+
+  if(meType && partnerType) showCoupleResult();
+}
+
+function showCoupleResult(){
+  // GitHub에 저장된 파일명 형식: 온유스쿨_부부클래스_SPARK×STEADY.pdf
+  // × 문자 인코딩 주의
+  const fname = encodeURIComponent(`온유스쿨_부부클래스_${meType}×${partnerType}.pdf`);
+  const url = `${BASE}couple/${fname}`;
+
+  document.getElementById('cr-names').textContent = `${meType}  ×  ${partnerType}`;
+  document.getElementById('cr-title').textContent = `온유스쿨 부부클래스 ${meType} × ${partnerType} 리포트`;
+
+  const btn = document.getElementById('couple-dl-btn');
+  btn.href = url;
+  btn.download = `온유스쿨_부부클래스_${meType}×${partnerType}_리포트.pdf`;
+
+  const card = document.getElementById('couple-result-card');
+  card.style.display = 'block';
+  card.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+</script>
+</body>
+</html>
