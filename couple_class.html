@@ -1257,6 +1257,19 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
+// URL 파라미터로 결과 바로 표시: ?a=STEADY&b=SPARK
+(function(){
+  const p = new URLSearchParams(location.search);
+  const a = (p.get('a')||'').toUpperCase();
+  const b = (p.get('b')||'').toUpperCase();
+  const valid = ['STEADY','SPARK','PLAYER','VISION','LOGIC','HARMONY','LEADER','SOUL'];
+  if(valid.includes(a) && valid.includes(b)){
+    document.addEventListener('DOMContentLoaded', function(){
+      showResult(a, b);
+    });
+  }
+})();
+
 async function downloadCoupleReport(){
   const url = window._coupleReportUrl;
   const name = window._coupleReportName || 'onyu_couple_report.pdf';
