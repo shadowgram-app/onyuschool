@@ -379,28 +379,6 @@
       color: var(--gold); padding: 4px 12px;
       border-radius: 20px; letter-spacing: 0.05em;
     }
-    .hw-btn {
-      background: rgba(122,92,30,0.08); border: 1px solid rgba(122,92,30,0.2);
-      border-radius: 8px; width: 36px; height: 36px;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 5px; cursor: pointer; flex-shrink: 0;
-      transition: background .2s; margin-right: 12px;
-    }
-    .hw-btn:hover { background: rgba(122,92,30,0.15); }
-    .hw-btn span { display: block; width: 16px; height: 2px; background: var(--gold); border-radius: 2px; transition: all .25s; }
-    .hw-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hw-btn.open span:nth-child(2) { opacity: 0; }
-    .hw-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-    .hw-overlay { position: fixed; inset: 0; z-index: 9998; background: rgba(0,0,0,0); pointer-events: none; transition: background .3s; }
-    .hw-overlay.open { background: rgba(0,0,0,0.4); pointer-events: all; }
-    .hw-drawer { position: fixed; top: 0; left: -280px; bottom: 0; z-index: 9999; width: 260px; background: #FFFFFF; border-right: 1px solid rgba(122,92,30,0.18); display: flex; flex-direction: column; transition: left .3s cubic-bezier(.4,0,.2,1); box-shadow: 4px 0 24px rgba(0,0,0,0.08); }
-    .hw-drawer.open { left: 0; }
-    .hw-drawer-head { padding: 44px 22px 16px; border-bottom: 1px solid rgba(122,92,30,0.10); display: flex; align-items: center; justify-content: space-between; }
-    .hw-drawer-logo { font-size: 12px; letter-spacing: 2px; font-weight: 700; color: var(--gold); }
-    .hw-close-btn { background: none; border: none; color: #AAA; font-size: 20px; cursor: pointer; padding: 4px 8px; line-height: 1; }
-    .hw-item { display: flex; align-items: center; gap: 13px; padding: 15px 22px; color: #7A7570; text-decoration: none; font-size: 14px; font-weight: 500; transition: background .18s, color .18s; border-bottom: 1px solid rgba(0,0,0,0.04); }
-    .hw-item:hover, .hw-item.active-page { background: rgba(122,92,30,0.06); color: var(--gold); }
-    .hw-item-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
 
     /* ── HERO ── */
     .hero {
@@ -459,23 +437,9 @@
 
 <!-- NAV -->
 <nav class="gnav">
-  <button class="hw-btn" id="hw-btn" onclick="hwToggle()" aria-label="메뉴"><span></span><span></span><span></span></button>
   <a class="gnav-logo" href="https://onyuschool.com"><span class="s1">ONYU</span><span class="s2">SCHOOL</span></a>
   <span class="gnav-badge">퍼스트클래스</span>
 </nav>
-
-<!-- OVERLAY -->
-<div class="hw-overlay" id="hw-overlay" onclick="hwClose()"></div>
-<!-- DRAWER -->
-<div class="hw-drawer" id="hw-drawer">
-  <div class="hw-drawer-head">
-    <div class="hw-drawer-logo">ONYUSCHOOL</div>
-    <button class="hw-close-btn" onclick="hwClose()">✕</button>
-  </div>
-  <a class="hw-item" href="https://onyuschool.com"><span class="hw-item-icon">🏠</span>홈</a>
-  <a class="hw-item active-page" href="firstclass-quiz.html"><span class="hw-item-icon">🌟</span>퍼스트클래스</a>
-  <a class="hw-item" href="couple_class.html"><span class="hw-item-icon">💑</span>부부클래스</a>
-</div>
 
 <!-- HERO -->
 <div class="hero">
@@ -672,10 +636,6 @@
 </footer>
 
 <script>
-/* ── NAV ── */
-function hwToggle(){var b=document.getElementById('hw-btn'),d=document.getElementById('hw-drawer'),o=document.getElementById('hw-overlay'),op=d.classList.toggle('open');b.classList.toggle('open',op);o.classList.toggle('open',op);}
-function hwClose(){['hw-btn','hw-drawer','hw-overlay'].forEach(function(id){document.getElementById(id).classList.remove('open');});}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')hwClose();});
 
 // ══════════════════════════════════════════════════════
 // CTA 링크 (유형별 — 추후 개별 리포트 링크로 교체)
@@ -1360,7 +1320,6 @@ function checkSavedResult() {
 buildQuiz();
 updateProgress(0);
 checkSavedResult();
-document.addEventListener('keydown', e => { if(e.key==='Escape') hwClose(); });
 </script>
 </body>
 </html>
