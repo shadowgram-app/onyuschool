@@ -1200,11 +1200,33 @@ document.querySelectorAll('input[name="position"]').forEach(radio => {
 });
 
 // ── 리포트 다운로드 (fetch blob 방식) ──
-function downloadReport() {
+async function downloadReport() {
   const t = (window._currentType || localStorage.getItem('onyu_type') || '').toUpperCase();
   if (!t) { alert('유형 진단 후 이용 가능합니다.'); return; }
   const url = `온유스쿨_8유형_목회자리포트/온유스쿨_목회자리포트_${t}.pdf`;
-  window.open(url, '_blank');
+  const filename = `온유스쿨_목회자리포트_${t}.pdf`;
+  const btn = document.getElementById('dl-report');
+  btn.textContent = '⏳ 다운로드 중...';
+  btn.disabled = true;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('not ok');
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(blobUrl); a.remove(); }, 2000);
+    btn.textContent = `✅ ${t} 유형 리포트 다운로드 완료`;
+  } catch(e) {
+    // 폴백: 새 탭 열기
+    window.open(url, '_blank');
+    btn.textContent = `📄 ${t} 유형 리포트 전체 다운로드`;
+  }
+  btn.disabled = false;
 }
 
 async function submitSurvey() {
