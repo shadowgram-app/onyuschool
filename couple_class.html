@@ -1265,6 +1265,12 @@ function showToast(msg){
   const valid = ['STEADY','SPARK','PLAYER','VISION','LOGIC','HARMONY','LEADER','SOUL'];
   if(valid.includes(a) && valid.includes(b)){
     document.addEventListener('DOMContentLoaded', function(){
+      // 이름 기본값 설정
+      if(!nameA) nameA = a;
+      if(!nameB) nameB = b;
+      // 퀴즈 숨기고 결과 바로 표시
+      const sq = document.getElementById('screen-q');
+      if(sq) sq.style.display = 'none';
       showResult(a, b);
     });
   }
