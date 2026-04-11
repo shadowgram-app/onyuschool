@@ -519,8 +519,8 @@ footer a:hover { color: var(--gold-light); }
       <input class="form-input" id="f-church" type="text" placeholder="○○교회">
     </div>
     <div class="form-group">
-      <label class="form-label" for="f-contact">연락처 (이메일 또는 전화)</label>
-      <input class="form-input" id="f-contact" type="text" placeholder="email@church.com 또는 010-0000-0000">
+      <label class="form-label" for="f-contact">이메일</label>
+      <input class="form-input" id="f-contact" type="email" placeholder="email@church.com">
     </div>
     <div class="form-group">
       <label class="form-label">관심 클래스 (복수 선택 가능)</label>
@@ -587,7 +587,7 @@ async function submitForm() {
   const contact = document.getElementById('f-contact').value.trim();
 
   if (!name || !church || !contact) {
-    alert('이름, 교회명, 연락처를 입력해주세요.');
+    alert('이름, 교회명, 이메일을 입력해주세요.');
     return;
   }
 

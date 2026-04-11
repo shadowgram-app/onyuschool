@@ -604,8 +604,8 @@
         </div>
       </div>
       <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">연락처</label>
-        <input id="sv-contact" type="text" placeholder="010-0000-0000 또는 email@church.com" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">이메일</label>
+        <input id="sv-contact" type="email" placeholder="email@church.com" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
       </div>
       <div style="margin-bottom:14px;">
         <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">소감 한 줄</label>
@@ -1200,7 +1200,7 @@ async function submitSurvey() {
   const church = document.getElementById('sv-church').value.trim();
   const contact = document.getElementById('sv-contact').value.trim();
   if (!name || !church || !contact) {
-    alert('이름, 교회명, 연락처는 필수입니다.');
+    alert('이름, 교회명, 이메일은 필수입니다.');
     return;
   }
   const position = (document.querySelector('input[name="position"]:checked') || {}).value || '미선택';
