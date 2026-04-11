@@ -556,8 +556,11 @@ document.querySelectorAll('.check-label input').forEach(cb => {
   });
 });
 
+// ★ Google Apps Script Web App URL — 배포 후 여기에 붙여넣기
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+
 // 폼 제출
-function submitForm() {
+async function submitForm() {
   const name = document.getElementById('f-name').value.trim();
   const church = document.getElementById('f-church').value.trim();
   const contact = document.getElementById('f-contact').value.trim();
@@ -567,20 +570,37 @@ function submitForm() {
     return;
   }
 
-  // 선택된 클래스
   const selected = [...document.querySelectorAll('.check-group input:checked')].map(c => c.value).join(', ');
   const comment = document.getElementById('f-comment').value.trim();
 
-  // Google Forms or mailto fallback
-  const subject = encodeURIComponent(`[온유스쿨 얼리버드] ${church} ${name}`);
-  const body = encodeURIComponent(
-    `이름: ${name}\n교회명: ${church}\n연락처: ${contact}\n관심클래스: ${selected || '미선택'}\n\n소감:\n${comment}`
-  );
-  window.open(`mailto:info@onyuschool.com?subject=${subject}&body=${body}`, '_blank');
+  const btn = document.querySelector('.submit-btn');
+  btn.disabled = true;
+  btn.textContent = '전송 중...';
 
-  // 완료 화면
-  document.getElementById('earlybird-form').style.display = 'none';
-  document.getElementById('form-done').style.display = 'block';
+  const payload = { name, church, contact, classes: selected || '미선택', comment };
+
+  try {
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
+      // Apps Script URL 미설정 시 mailto 폴백
+      const subject = encodeURIComponent(`[온유스쿨 얼리버드] ${church} ${name}`);
+      const body = encodeURIComponent(`이름: ${name}\n교회명: ${church}\n연락처: ${contact}\n관심클래스: ${selected || '미선택'}\n\n소감:\n${comment}`);
+      window.open(`mailto:info@onyuschool.com?subject=${subject}&body=${body}`, '_blank');
+    } else {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
+    // 완료 화면
+    document.getElementById('earlybird-form').style.display = 'none';
+    document.getElementById('form-done').style.display = 'block';
+  } catch (e) {
+    alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    btn.disabled = false;
+    btn.textContent = '신청 완료하기 ✓';
+  }
 }
 </script>
 
