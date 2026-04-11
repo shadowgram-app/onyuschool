@@ -566,38 +566,102 @@
     </div>
   </div>
 
-  <!-- CTA -->
+  <!-- CTA + 설문 -->
   <div class="cta-box">
     <p class="cta-box-label" id="res-cta-label">온유스쿨 퍼스트클래스 · 전체 리포트</p>
     <h2 class="cta-box-title" id="res-cta-title"></h2>
     <p class="cta-box-sub" id="res-cta-sub"></p>
 
-    <a id="res-cta-btn" href="온유스쿨_목회자_체험판.html" class="btn-buy">전체 리포트 신청하기 →</a>
-
-    <!-- 공유 -->
-    <div style="margin-top:24px;">
-      <p style="font-size:12px;color:var(--silver);text-align:center;margin:0 0 12px;letter-spacing:0.08em;font-weight:700;">
-        ✦ 공유하기 — 지인에게도 알려주세요
+    <!-- 설문 폼 -->
+    <div id="survey-form" style="margin-top:20px; text-align:left;">
+      <p style="font-size:13px; color:var(--silver); text-align:center; margin-bottom:18px; line-height:1.8;">
+        아래 정보를 입력하시면 <strong style="color:var(--gold);">개인 리포트 전체</strong>와<br><strong style="color:var(--gold);">온유스쿨 안내서</strong>를 바로 받으실 수 있습니다.
       </p>
-      <div class="share-grid">
-        <button class="share-btn btn-kakao" id="btn-kakao-share" onclick="shareKakao()">💬 카카오 공유</button>
-        <a class="share-btn btn-facebook" id="btn-facebook-share" href="#" target="_blank" rel="noopener">📘 페이스북</a>
+
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">이름</label>
+        <input id="sv-name" type="text" placeholder="홍길동" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
       </div>
-      <button class="share-btn btn-copy" id="btn-copy-link" onclick="copyQuizLink()" style="width:100%;margin-top:8px;">🔗 링크 복사하기</button>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">교회명</label>
+        <input id="sv-church" type="text" placeholder="○○교회" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">직분</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <label id="pos-1" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
+            <input type="radio" name="position" value="담임목사" style="display:none;"> 담임목사
+          </label>
+          <label id="pos-2" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
+            <input type="radio" name="position" value="부교역자" style="display:none;"> 부교역자
+          </label>
+          <label id="pos-3" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
+            <input type="radio" name="position" value="사모" style="display:none;"> 사모
+          </label>
+          <label id="pos-4" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
+            <input type="radio" name="position" value="중직자" style="display:none;"> 중직자
+          </label>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">연락처</label>
+        <input id="sv-contact" type="text" placeholder="010-0000-0000 또는 email@church.com" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">소감 한 줄</label>
+        <input id="sv-comment" type="text" placeholder="진단해보니 어땠나요?" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:8px;">온유스쿨을 통해 기대하는 효과 (복수 선택)</label>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
+            <input type="checkbox" value="성도들의 개별적 특성을 고려한 목회 방향" style="margin-top:2px;accent-color:var(--gold);"> 성도 개개인의 특성을 이해하고 맞춤 목양
+          </label>
+          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
+            <input type="checkbox" value="자신의 유형에 맞는 목회적 방향성 설정" style="margin-top:2px;accent-color:var(--gold);"> 나 자신의 유형에 맞는 목회 방향성 찾기
+          </label>
+          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
+            <input type="checkbox" value="부부·가정 갈등 이해와 회복" style="margin-top:2px;accent-color:var(--gold);"> 부부·가정 내 갈등 이해와 관계 회복
+          </label>
+          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
+            <input type="checkbox" value="교역자·평신도 리더십 팀 사역 강화" style="margin-top:2px;accent-color:var(--gold);"> 교역자·평신도 팀 사역 시너지 향상
+          </label>
+        </div>
+      </div>
+      <div style="margin-bottom:18px;">
+        <label style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--silver);cursor:pointer;line-height:1.6;">
+          <input id="sv-agree" type="checkbox" style="margin-top:2px;accent-color:var(--gold);flex-shrink:0;">
+          <span>[선택] 온유스쿨 오픈 소식 및 유용한 목양 콘텐츠 안내에 동의합니다.</span>
+        </label>
+      </div>
+
+      <button onclick="submitSurvey()" id="sv-btn" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:background 0.2s;">
+        리포트 받기 →
+      </button>
     </div>
 
-    <!-- 결과 저장 -->
-    <button class="share-btn btn-save" id="btn-save-link" onclick="saveMyLink()" style="width:100%;margin-top:8px;padding:10px;">🔖 내 결과 저장하기 (나중에 다시 확인)</button>
+    <!-- 제출 완료 + 다운로드 -->
+    <div id="survey-done" style="display:none; text-align:center; padding:8px 0;">
+      <div style="font-size:40px; margin-bottom:12px;">🙏</div>
+      <h3 style="font-size:18px;font-weight:900;color:var(--gold);margin-bottom:8px;">감사합니다!</h3>
+      <p style="font-size:13px;color:var(--silver);line-height:1.8;margin-bottom:24px;">
+        온유스쿨이 섬기는 교회가 되겠습니다.<br>아래에서 리포트와 안내서를 받아보세요.
+      </p>
 
-    <div id="saved-link-box" style="display:none; margin-top:12px; background:rgba(154,122,46,0.08); border:1px solid rgba(154,122,46,0.3); border-radius:10px; padding:14px;">
-      <p style="font-size:11px; color:var(--silver); margin-bottom:8px; letter-spacing:1px;">📎 내 개인 링크 — 북마크나 메모에 저장하세요</p>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <input id="saved-link-input" type="text" readonly style="flex:1; background:var(--bg2); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:6px; font-size:12px; font-family:monospace;"/>
-        <button onclick="copyLink()" style="background:var(--gold); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; white-space:nowrap; letter-spacing:0.03em;">복사</button>
-      </div>
+      <a id="dl-report" href="#" download style="display:block;width:100%;background:var(--gold);color:#fff;text-decoration:none;border-radius:12px;padding:14px;font-size:14px;font-weight:800;margin-bottom:10px;box-sizing:border-box;">
+        📄 내 유형 리포트 전체 다운로드
+      </a>
+      <a href="/reports/온유스쿨_8유형_성도이해리포트.pdf" download style="display:block;width:100%;background:transparent;color:var(--gold);text-decoration:none;border:1.5px solid var(--gold);border-radius:12px;padding:14px;font-size:14px;font-weight:800;margin-bottom:20px;box-sizing:border-box;">
+        🌿 온유스쿨 8유형 안내서 다운로드
+      </a>
+
+      <!-- 링크 공유 (하나만) -->
+      <button onclick="copyQuizLink()" id="btn-copy-link" style="width:100%;background:transparent;border:1px solid rgba(154,122,46,0.35);color:var(--gold);border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+        🔗 검사 링크 공유하기
+      </button>
     </div>
 
-    <button class="btn-retry" onclick="restartQuiz()">다시 진단하기</button>
+    <button class="btn-retry" onclick="restartQuiz()" style="margin-top:16px;">다시 진단하기</button>
   </div>
 </div>
 
@@ -1027,6 +1091,7 @@ function showResult(savedWinner) {
 
   window._shareMsg = shareMsg;
   window._shareUrl = SHARE_URL;
+  window._currentType = winner;
 
   // 결과 복원 배너
   if (savedWinner) {
@@ -1095,6 +1160,70 @@ function restartQuiz() {
   buildQuiz();
   updateProgress(0);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── 설문 제출 ──
+const FC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxURspHBjXM6bQssCScm7z9CGdTNdY5Pmdorl7LlJjpG9kp8zCT2HyBNebBdhWkMm1bZQ/exec';
+
+// 직분 라디오 스타일
+document.querySelectorAll('input[name="position"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    document.querySelectorAll('input[name="position"]').forEach(r => {
+      r.closest('label').style.background = 'var(--bg2)';
+      r.closest('label').style.borderColor = 'var(--border)';
+      r.closest('label').style.color = 'var(--text)';
+    });
+    this.closest('label').style.background = 'rgba(154,122,46,0.12)';
+    this.closest('label').style.borderColor = 'var(--gold)';
+    this.closest('label').style.color = 'var(--gold)';
+  });
+});
+
+async function submitSurvey() {
+  const name = document.getElementById('sv-name').value.trim();
+  const church = document.getElementById('sv-church').value.trim();
+  const contact = document.getElementById('sv-contact').value.trim();
+  if (!name || !church || !contact) {
+    alert('이름, 교회명, 연락처는 필수입니다.');
+    return;
+  }
+  const position = (document.querySelector('input[name="position"]:checked') || {}).value || '미선택';
+  const comment = document.getElementById('sv-comment').value.trim();
+  const expects = [...document.querySelectorAll('.expect-label input:checked')].map(c => c.value).join(' / ') || '미선택';
+  const agree = document.getElementById('sv-agree').checked ? '동의' : '미동의';
+  const myType = window._currentType || localStorage.getItem('onyu_type') || '';
+
+  const btn = document.getElementById('sv-btn');
+  btn.disabled = true; btn.textContent = '전송 중...';
+
+  const payload = {
+    sheet: '퍼스트클래스결과',
+    name, church, position, contact, comment, expects, agree,
+    type: myType
+  };
+
+  try {
+    await fetch(FC_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {}
+
+  // 다운로드 링크 유형별 설정
+  const typeKey = myType.toUpperCase();
+  const reportMap = {
+    STEADY:'STEADY', SPARK:'SPARK', PLAYER:'PLAYER', VISION:'VISION',
+    LOGIC:'LOGIC', HARMONY:'HARMONY', LEADER:'LEADER', SOUL:'SOUL'
+  };
+  const t = reportMap[typeKey] || typeKey;
+  const dlBtn = document.getElementById('dl-report');
+  dlBtn.href = `/reports/individual/온유스쿨_퍼스트클래스_${t}_리포트.pdf`;
+  dlBtn.textContent = `📄 ${t} 유형 리포트 전체 다운로드`;
+
+  // 완료 화면
+  document.getElementById('survey-form').style.display = 'none';
+  document.getElementById('survey-done').style.display = 'block';
 }
 
 // ── 공유 ──
