@@ -555,16 +555,56 @@ body {
     <div id="type-card-b" class="type-card"></div>
   </div>
 
-  <!-- 다운로드 -->
+  <!-- 다운로드 섹션 -->
   <div class="dl-section">
     <div class="dl-title">📋 부부 리포트 받기</div>
     <div class="dl-sub">두 분의 유형 조합에 맞는 깊이 있는 리포트를<br>무료로 다운받으세요</div>
-    <a class="dl-btn" id="dl-report-btn" href="#" target="_blank">부부 리포트 다운로드</a>
-    <div style="font-size:12px;color:var(--silver);margin-top:4px;">
-      온유스쿨 퍼스트클래스에서 더 깊은 분석을 받아보세요
+
+    <!-- 설문 폼 (미제출 시 노출) -->
+    <div id="couple-survey-form" style="margin-top:20px; text-align:left; max-width:420px; margin-left:auto; margin-right:auto;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">이름 (남편분)</label>
+        <input id="cs-name" type="text" placeholder="홍길동" style="width:100%;padding:10px 13px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);border-radius:9px;color:var(--text,#2a2218);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">교회명</label>
+        <input id="cs-church" type="text" placeholder="○○교회" style="width:100%;padding:10px 13px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);border-radius:9px;color:var(--text,#2a2218);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">직분</label>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          <label id="cp-1" style="display:flex;align-items:center;gap:5px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);padding:7px 13px;border-radius:8px;font-size:13px;cursor:pointer;"><input type="radio" name="cp-position" value="담임목사" style="display:none;"> 담임목사</label>
+          <label id="cp-2" style="display:flex;align-items:center;gap:5px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);padding:7px 13px;border-radius:8px;font-size:13px;cursor:pointer;"><input type="radio" name="cp-position" value="부교역자" style="display:none;"> 부교역자</label>
+          <label id="cp-3" style="display:flex;align-items:center;gap:5px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);padding:7px 13px;border-radius:8px;font-size:13px;cursor:pointer;"><input type="radio" name="cp-position" value="사모" style="display:none;"> 사모</label>
+          <label id="cp-4" style="display:flex;align-items:center;gap:5px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);padding:7px 13px;border-radius:8px;font-size:13px;cursor:pointer;"><input type="radio" name="cp-position" value="중직자" style="display:none;"> 중직자</label>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">연락처</label>
+        <input id="cs-contact" type="text" placeholder="010-0000-0000 또는 email" style="width:100%;padding:10px 13px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);border-radius:9px;color:var(--text,#2a2218);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">소감 한 줄 (선택)</label>
+        <input id="cs-comment" type="text" placeholder="부부 검사를 해보니 어떠셨나요?" style="width:100%;padding:10px 13px;background:var(--bg2,#f5f0e8);border:1px solid var(--border,#e0d4c0);border-radius:9px;color:var(--text,#2a2218);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;">
+      </div>
+      <button id="cs-btn" onclick="submitCoupleForm()" style="width:100%;background:var(--gold,#7a5c1e);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">
+        리포트 받기 →
+      </button>
+    </div>
+
+    <!-- 다운로드 버튼 (제출 후 노출) -->
+    <div id="couple-dl-ready" style="display:none; margin-top:16px;">
+      <p style="font-size:13px;color:var(--silver);margin-bottom:16px;line-height:1.8;">
+        🙏 감사합니다! 아래 버튼을 눌러 리포트를 받아가세요.
+      </p>
+      <a class="dl-btn" id="dl-report-btn" href="#" download>부부 리포트 다운로드</a>
+    </div>
+
+    <div style="font-size:12px;color:var(--silver);margin-top:16px;">
+      온유스쿨 퍼스트클래스에서 더 깊은 개인 분석을 받아보세요
     </div>
     <a href="https://onyuschool.com/firstclass-quiz.html"
-       style="display:inline-block;margin-top:14px;font-size:13px;color:var(--gold);font-weight:700;text-decoration:none;">
+       style="display:inline-block;margin-top:10px;font-size:13px;color:var(--gold);font-weight:700;text-decoration:none;">
       개인 유형 검사도 해보기 →
     </a>
   </div>
@@ -1063,13 +1103,72 @@ function showResult(typeA, typeB){
   document.getElementById('type-card-a').innerHTML = makeTypeCard(typeA, nameA, 'a');
   document.getElementById('type-card-b').innerHTML = makeTypeCard(typeB, nameB, 'b');
 
-  // 다운로드 링크
-  const BASE = 'https://raw.githubusercontent.com/shadowgram-app/onyuschool/main/reports/couple/';
+  // 다운로드 링크 설정 (전역 보관)
   const types = [typeA, typeB].sort();
-  const fname = encodeURIComponent(`온유스쿨_부부클래스_${types[0]}_${types[1]}_리포트.pdf`);
-  document.getElementById('dl-report-btn').href = BASE + fname;
+  window._coupleReportUrl = `/reports/couple/온유스쿨_부부클래스_${types[0]}×${types[1]}_리포트.pdf`;
+
+  // 이미 설문 제출한 경우 바로 다운로드 버튼 표시
+  try {
+    if (localStorage.getItem('onyu_survey_done') === '1') {
+      document.getElementById('couple-survey-form').style.display = 'none';
+      document.getElementById('couple-dl-ready').style.display = 'block';
+      document.getElementById('dl-report-btn').href = window._coupleReportUrl;
+    }
+  } catch(e) {}
+
+  // 직분 라디오 스타일
+  document.querySelectorAll('input[name="cp-position"]').forEach(r => {
+    r.addEventListener('change', function() {
+      document.querySelectorAll('input[name="cp-position"]').forEach(x => {
+        x.closest('label').style.background = '';
+        x.closest('label').style.borderColor = '';
+        x.closest('label').style.color = '';
+      });
+      this.closest('label').style.background = 'rgba(122,92,30,0.12)';
+      this.closest('label').style.borderColor = 'var(--gold,#7a5c1e)';
+      this.closest('label').style.color = 'var(--gold,#7a5c1e)';
+    });
+  });
 
   window.scrollTo({top:0, behavior:'smooth'});
+}
+
+const COUPLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxURspHBjXM6bQssCScm7z9CGdTNdY5Pmdorl7LlJjpG9kp8zCT2HyBNebBdhWkMm1bZQ/exec';
+
+async function submitCoupleForm() {
+  const name    = document.getElementById('cs-name').value.trim();
+  const church  = document.getElementById('cs-church').value.trim();
+  const contact = document.getElementById('cs-contact').value.trim();
+  if (!name || !church || !contact) {
+    alert('이름, 교회명, 연락처는 필수입니다.');
+    return;
+  }
+  const position = (document.querySelector('input[name="cp-position"]:checked') || {}).value || '미선택';
+  const comment  = document.getElementById('cs-comment').value.trim();
+
+  const btn = document.getElementById('cs-btn');
+  btn.disabled = true; btn.textContent = '전송 중...';
+
+  try {
+    await fetch(COUPLE_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sheet: '부부클래스결과',
+        name, church, position, contact, comment,
+        typeA: (window._coupleReportUrl||'').match(/클래스_(.+)×/)?.[1] || '',
+        typeB: (window._coupleReportUrl||'').match(/×(.+)_리포트/)?.[1] || ''
+      })
+    });
+  } catch(e) {}
+
+  // 설문 제출 기록 (localStorage + 쿠키)
+  try { localStorage.setItem('onyu_survey_done', '1'); } catch(e) {}
+
+  // 다운로드 활성화
+  document.getElementById('dl-report-btn').href = window._coupleReportUrl;
+  document.getElementById('couple-survey-form').style.display = 'none';
+  document.getElementById('couple-dl-ready').style.display = 'block';
 }
 
 function renderDomainCards(typeA, typeB){
