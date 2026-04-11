@@ -1063,11 +1063,13 @@ function showResult(typeA, typeB){
   document.getElementById('type-card-a').innerHTML = makeTypeCard(typeA, nameA, 'a');
   document.getElementById('type-card-b').innerHTML = makeTypeCard(typeB, nameB, 'b');
 
-  // 다운로드 링크
-  const BASE = 'https://raw.githubusercontent.com/shadowgram-app/onyuschool/main/reports/couple/';
+  // 다운로드 링크 — 파일명: 온유스쿨_부부클래스_A×B.pdf (알파벳 정렬)
   const types = [typeA, typeB].sort();
-  const fname = encodeURIComponent(`온유스쿨_부부클래스_${types[0]}_${types[1]}_리포트.pdf`);
-  document.getElementById('dl-report-btn').href = BASE + fname;
+  window._coupleReportUrl = `온유스쿨_부부클래스_리포트/온유스쿨_부부클래스_${types[0]}×${types[1]}.pdf`;
+  window._coupleReportName = `온유스쿨_부부클래스_${types[0]}×${types[1]}.pdf`;
+  const dlBtn = document.getElementById('dl-report-btn');
+  dlBtn.removeAttribute('href');
+  dlBtn.onclick = downloadCoupleReport;
 
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -1253,6 +1255,33 @@ function showToast(msg){
   t.textContent=msg;
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+async function downloadCoupleReport(){
+  const url = window._coupleReportUrl;
+  const name = window._coupleReportName || 'onyu_couple_report.pdf';
+  if (!url) { alert('결과 확인 후 이용 가능합니다.'); return; }
+  const btn = document.getElementById('dl-report-btn');
+  const orig = btn.textContent;
+  btn.textContent = '⏳ 다운로드 중...';
+  btn.disabled = true;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('fail');
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl; a.download = name;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(blobUrl); a.remove(); }, 2000);
+    btn.textContent = '✅ 다운로드 완료';
+  } catch(e) {
+    window.open(url, '_blank');
+    btn.textContent = orig;
+  }
+  btn.disabled = false;
 }
 </script>
 </body>
