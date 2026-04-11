@@ -655,8 +655,8 @@
       </a>
 
       <!-- 링크 공유 (하나만) -->
-      <button onclick="copyQuizLink()" id="btn-copy-link" style="width:100%;background:transparent;border:1px solid rgba(154,122,46,0.35);color:var(--gold);border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
-        🔗 검사 링크 공유하기
+      <button onclick="shareQuizLink()" id="btn-copy-link" style="width:100%;background:transparent;border:1px solid rgba(154,122,46,0.35);color:var(--gold);border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+        📤 검사 링크 공유하기
       </button>
     </div>
 
@@ -1295,7 +1295,24 @@ window.copyQuizLink = function() {
   navigator.clipboard && navigator.clipboard.writeText(url);
   const btn = document.getElementById('btn-copy-link');
   btn.textContent = '✅ 링크 복사 완료!';
-  setTimeout(() => btn.textContent = '🔗 링크 복사하기', 2000);
+  setTimeout(() => btn.textContent = '📤 검사 링크 공유하기', 2000);
+};
+
+window.shareQuizLink = async function() {
+  const url = window._shareUrl || window.location.href;
+  const winner = window._currentType || localStorage.getItem('onyu_type') || '';
+  const text = winner ? `나는 온유스쿨 ${winner} 유형! 당신의 소통 유형은?` : '온유스쿨 소통 유형 진단';
+  const btn = document.getElementById('btn-copy-link');
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '온유스쿨 소통 유형 진단', text, url });
+      return;
+    } catch(e) {}
+  }
+  // 폴백: 클립보드 복사
+  try { await navigator.clipboard.writeText(url); } catch(e) {}
+  btn.textContent = '✅ 링크 복사 완료!';
+  setTimeout(() => btn.textContent = '📤 검사 링크 공유하기', 2000);
 };
 
 function saveMyLink() {
