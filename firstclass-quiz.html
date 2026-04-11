@@ -1063,6 +1063,18 @@ function showResult(savedWinner) {
   rs.style.display = 'block';
   _currentType = winner;
 
+  // 유형 저장 (재방문 시 다운로드 링크 복원용)
+  try { localStorage.setItem('onyu_type', winner); } catch(e) {}
+
+  // 다운로드 링크 항상 세팅
+  (function() {
+    const dlBtn = document.getElementById('dl-report');
+    if (dlBtn) {
+      dlBtn.href = `온유스쿨_8유형_목회자리포트/온유스쿨_목회자리포트_${winner}.pdf`;
+      dlBtn.textContent = `📄 ${winner} 유형 리포트 전체 다운로드`;
+    }
+  })();
+
   // 설문 제출 여부 확인 — 이미 제출했으면 바로 다운로드 화면
   try {
     if (localStorage.getItem('onyu_survey_done') === '1') {
