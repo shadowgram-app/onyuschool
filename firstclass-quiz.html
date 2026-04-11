@@ -1204,9 +1204,17 @@ document.querySelectorAll('input[name="position"]').forEach(radio => {
 
 // ── 리포트 다운로드 (fetch blob 방식) ──
 async function downloadReport() {
+  // _reportUrl 없으면 localStorage에서 유형 복원
+  if (!window._reportUrl) {
+    const t = (window._currentType || localStorage.getItem('onyu_type') || '').toUpperCase();
+    if (t) {
+      window._reportUrl = `온유스쿨_8유형_목회자리포트/온유스쿨_목회자리포트_${t}.pdf`;
+      window._reportName = `온유스쿨_목회자리포트_${t}.pdf`;
+    }
+  }
   const url = window._reportUrl;
   const name = window._reportName || 'onyu_report.pdf';
-  if (!url || url === '#') { alert('유형 진단 후 이용 가능합니다.'); return; }
+  if (!url) { alert('유형 진단 후 이용 가능합니다.'); return; }
   const btn = document.getElementById('dl-report');
   const orig = btn.textContent;
   btn.textContent = '⏳ 다운로드 중...';
