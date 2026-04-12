@@ -492,7 +492,7 @@ footer a:hover { color: var(--gold-light); }
       <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px; color:rgba(255,255,255,0.55); line-height:1.6; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px;">
         <span style="flex-shrink:0;">📞</span>
         <span>나머지 클래스 <strong style="color:rgba(255,255,255,0.75);">단체 구매</strong>를 원하시면 별도 문의 바랍니다.<br>
-        <a href="mailto:info@onyuschool.com" style="color:var(--gold-light); text-decoration:none;">info@onyuschool.com</a></span>
+        <a href="mailto:joculsion@gmail.com" style="color:var(--gold-light); text-decoration:none;">joculsion@gmail.com</a></span>
       </div>
     </div>
   </div>
@@ -552,7 +552,7 @@ footer a:hover { color: var(--gold-light); }
 <footer>
   <div class="f-logo">ONYUSCHOOL</div>
   <p>인생나무코칭연구소 · 쉐도우그램 기반<br>
-  <a href="mailto:info@onyuschool.com">info@onyuschool.com</a></p>
+  <a href="mailto:joculsion@gmail.com">joculsion@gmail.com</a></p>
 </footer>
 
 <script>
@@ -605,7 +605,7 @@ async function submitForm() {
       // Apps Script URL 미설정 시 mailto 폴백
       const subject = encodeURIComponent(`[온유스쿨 얼리버드] ${church} ${name}`);
       const body = encodeURIComponent(`이름: ${name}\n교회명: ${church}\n연락처: ${contact}\n관심클래스: ${selected || '미선택'}\n\n소감:\n${comment}`);
-      window.open(`mailto:info@onyuschool.com?subject=${subject}&body=${body}`, '_blank');
+      window.open(`mailto:joculsion@gmail.com?subject=${subject}&body=${body}`, '_blank');
     } else {
       await fetch(SCRIPT_URL, {
         method: 'POST',
