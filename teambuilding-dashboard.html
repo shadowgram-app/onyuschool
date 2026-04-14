@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀빌딩 대시보드 — 온유스쿨</title>
+<style>
+:root{--navy:#1A3055;--teal:#256060;--gold:#8A6400;--bg:#F0F2F5;--white:#FFF;
+  --gray:#333;--mid:#666;--light:#999;--border:#DDD;--green:#8FC49A;--red:#C0392B}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:14px;line-height:1.7;background:var(--bg);color:var(--gray)}
+/* topbar */
+.topbar{background:var(--navy);padding:0 24px;height:52px;display:flex;
+  align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-logo{color:#fff;font-size:.88rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.tb-logo span{color:var(--green)}
+.tb-right{display:flex;align-items:center;gap:16px}
+.tb-church{font-size:.82rem;color:rgba(255,255,255,.65)}
+.tb-church strong{color:#FFE08A}
+/* layout */
+.layout{display:flex;min-height:calc(100vh - 52px)}
+/* sidebar */
+.sidebar{width:200px;flex-shrink:0;background:var(--navy);padding:20px 0}
+.sb-sec{font-size:.6rem;font-weight:800;letter-spacing:2px;color:#4A5A7A;
+  padding:14px 18px 4px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:8px;padding:9px 18px;
+  color:#A8B8D0;font-size:.82rem;cursor:pointer;transition:all .14s;
+  border-left:3px solid transparent;text-decoration:none}
+.sb-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+.sb-item.active{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--green)}
+/* main */
+.main{flex:1;padding:24px;overflow-x:auto;min-width:0}
+.page{display:none}.page.active{display:block}
+/* 카드 공통 */
+.row{display:grid;gap:14px}
+.row-3{grid-template-columns:repeat(3,1fr)}
+.row-2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:700px){.row-3,.row-2{grid-template-columns:1fr}}
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px}
+.card-title{font-size:.78rem;font-weight:800;color:var(--navy);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+/* stat cards */
+.stat-num{font-size:2.2rem;font-weight:800;color:var(--navy);line-height:1}
+.stat-lbl{font-size:.75rem;color:var(--light);margin-top:4px}
+/* progress */
+.prog-wrap{margin:8px 0}
+.prog-row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--mid);margin-bottom:5px}
+.prog-bar{height:8px;background:#EEE;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),#5AAFAF);
+  border-radius:4px;transition:width .6s ease}
+/* 멤버 테이블 */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:.72rem;font-weight:800;color:var(--navy);text-align:left;
+  padding:8px 10px;border-bottom:2px solid var(--navy);white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid #F5F5F5;font-size:.82rem;color:var(--mid);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#FAFAFA}
+.badge-done{background:rgba(37,96,96,.12);color:var(--teal);font-size:.68rem;
+  font-weight:800;padding:2px 8px;border-radius:8px}
+.badge-wait{background:#F5F5F5;color:var(--light);font-size:.68rem;
+  font-weight:800;padding:2px 8px;border-radius:8px}
+.type-badge{font-size:.68rem;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:4px}
+/* 유형 색상 */
+.T-SPARK{background:rgba(138,100,0,.1);color:#7A5500}
+.T-VISION{background:rgba(74,35,90,.1);color:#4A235A}
+.T-STEADY{background:rgba(37,96,96,.1);color:#256060}
+.T-PLAYER{background:rgba(61,77,28,.1);color:#3D4D1C}
+.T-HARMONY{background:rgba(123,26,26,.1);color:#7B1A1A}
+.T-SOUL{background:rgba(85,85,85,.1);color:#555}
+.T-LOGIC{background:rgba(44,62,80,.1);color:#2C3E50}
+.T-LEADER{background:rgba(26,48,85,.1);color:#1A3055}
+/* 차트 바 */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-lbl{font-size:.75rem;font-weight:700;min-width:72px;color:var(--mid)}
+.bar-bg{flex:1;height:12px;background:#EEE;border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;transition:width .8s ease}
+.bar-val{font-size:.72rem;color:var(--light);min-width:24px;text-align:right}
+/* 리포트 섹션 */
+.rpt-list{display:grid;gap:12px}
+.rpt-item{border:1px solid var(--border);border-radius:10px;padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.rpt-info{flex:1}
+.rpt-name{font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:2px}
+.rpt-desc{font-size:.75rem;color:var(--light)}
+.btn-dl{padding:8px 16px;border:none;border-radius:7px;font-size:.78rem;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:all .18s;white-space:nowrap}
+.btn-dl.team{background:var(--navy);color:#fff}
+.btn-dl.team:hover{background:#102540}
+.btn-dl.ind{background:var(--teal);color:#fff}
+.btn-dl.ind:hover{background:#1A4848}
+.btn-dl.disabled{background:#EEE;color:var(--light);cursor:default}
+/* 리마인더 버튼 */
+.btn-remind{padding:8px 16px;background:#FFF8E6;border:1px solid #E8D8A0;color:#7A6000;
+  border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-remind:hover{background:#FFF0C0}
+.btn-refresh{padding:7px 14px;background:var(--white);border:1px solid var(--border);
+  color:var(--navy);border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .18s}
+.btn-refresh:hover{border-color:var(--navy)}
+/* 빈 상태 */
+.empty{text-align:center;padding:40px 20px;color:var(--light);font-size:.85rem}
+.empty .e-ico{font-size:2.4rem;margin-bottom:10px}
+/* 로딩 */
+.loading{text-align:center;padding:30px;color:var(--light);font-size:.85rem}
+/* toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#222;color:#fff;padding:9px 22px;border-radius:24px;font-size:.82rem;
+  opacity:0;transition:transform .3s,opacity .3s;z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tb-logo" href="https://onyuschool.com">ONYUSCHOOL <span>쉐도우그램</span></a>
+  <div class="tb-right">
+    <div class="tb-church">대시보드 · <strong id="tb-church">로딩 중...</strong></div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <div class="sb-sec">워크숍 관리</div>
+    <div class="sb-item active" onclick="navTo('status',this)">📊 검사 현황</div>
+    <div class="sb-item" onclick="navTo('types',this)">🌿 유형 분포</div>
+    <div class="sb-item" onclick="navTo('reports',this)">📄 리포트 다운로드</div>
+    <div class="sb-sec" style="margin-top:12px">안내</div>
+    <div class="sb-item" onclick="navTo('info',this)">ℹ️ 워크숍 정보</div>
+  </div>
+
+  <!-- 메인 -->
+  <div class="main">
+
+    <!-- ── PAGE: 검사 현황 ── -->
+    <div id="page-status" class="page active">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--navy)" id="ws-title">워크숍 현황</div>
+          <div style="font-size:.78rem;color:var(--light)" id="ws-code-disp"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-remind" id="btn-remind" onclick="sendReminder()">📨 리마인더 발송</button>
+          <button class="btn-refresh" onclick="loadData()">↻ 새로고침</button>
+        </div>
+      </div>
+
+      <!-- 통계 카드 -->
+      <div class="row row-3" style="margin-bottom:16px">
+        <div class="card">
+          <div class="stat-num" id="stat-total">—</div>
+          <div class="stat-lbl">총 참여 예정</div>
+        </div>
+        <div class="card">
+          <div class="stat-num" id="stat-done" style="color:var(--teal)">—</div>
+          <div class="stat-lbl">검사 완료</div>
+        </div>
+        <div class="card">
+          <div class="stat-num" id="stat-remain" style="color:var(--light)">—</div>
+          <div class="stat-lbl">미완료</div>
+        </div>
+      </div>
+
+      <!-- 진행률 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="prog-wrap">
+          <div class="prog-row">
+            <span style="font-weight:700;color:var(--navy)">진행률</span>
+            <span id="prog-pct" style="font-weight:800;color:var(--teal)">0%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+          <div style="font-size:.7rem;color:var(--light);margin-top:5px">* 새로고침 버튼을 눌러 최신 현황을 확인하세요</div>
+        </div>
+      </div>
+
+      <!-- 멤버 테이블 -->
+      <div class="card">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>참여자 현황</span>
+          <span id="done-count-label" style="font-size:.75rem;font-weight:600;color:var(--teal)"></span>
+        </div>
+        <div id="member-wrap"><div class="loading">⏳ 데이터 불러오는 중...</div></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: 유형 분포 ── -->
+    <div id="page-types" class="page">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:18px">유형 분포</div>
+      <div class="row row-2">
+        <div class="card">
+          <div class="card-title">유형 분포 차트</div>
+          <div id="type-chart"><div class="empty"><div class="e-ico">📊</div>완료된 검사가 없습니다</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">팀 인사이트</div>
+          <div id="team-insight" style="font-size:.83rem;color:var(--mid);line-height:1.8">
+            <div class="empty"><div class="e-ico">🌿</div>검사 완료 후 인사이트가 생성됩니다</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: 리포트 다운로드 ── -->
+    <div id="page-reports" class="page">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:6px">리포트 다운로드</div>
+      <div style="font-size:.8rem;color:var(--light);margin-bottom:18px">검사 완료 인원 기준으로 리포트가 생성됩니다</div>
+
+      <div class="rpt-list">
+        <div class="rpt-item">
+          <div class="rpt-info">
+            <div class="rpt-name">📊 팀 전체 분포 인사이트 리포트</div>
+            <div class="rpt-desc">유형 분포 차트 · 팀 강점·그림자 · 동역 구조 제안</div>
+          </div>
+          <button class="btn-dl team" id="btn-team-rpt" onclick="downloadTeamReport()">HTML 다운로드</button>
+        </div>
+        <div class="rpt-item">
+          <div class="rpt-info">
+            <div class="rpt-name">🌿 개인 리포트 일괄 생성</div>
+            <div class="rpt-desc">완료자 전원 개인 쉐도우그램 리포트 (ZIP)</div>
+          </div>
+          <button class="btn-dl ind" id="btn-ind-rpt" onclick="downloadIndividualReports()">일괄 다운로드</button>
+        </div>
+        <div class="rpt-item">
+          <div class="rpt-info">
+            <div class="rpt-name">📋 퍼실리테이션 매뉴얼</div>
+            <div class="rpt-desc">90분 워크숍 진행 가이드 · 상황별 퍼실리테이션 스크립트</div>
+          </div>
+          <a class="btn-dl team" href="teambuilding-manual.html" target="_blank" style="text-decoration:none">열기 ↗</a>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
+        padding:14px 16px;font-size:.8rem;color:#7A6000;line-height:1.7" id="rpt-status-msg">
+        ⏳ 참여자 현황을 불러오는 중...
+      </div>
+    </div>
+
+    <!-- ── PAGE: 워크숍 정보 ── -->
+    <div id="page-info" class="page">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:18px">워크숍 정보</div>
+      <div class="card" id="ws-info-card">
+        <div class="loading">⏳ 불러오는 중...</div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+const TYPE_DATA = {
+  SPARK:  {icon:'✨',kr:'스파크', color:'#8A6400', keywords:'열정·영감·비전·감화',
+    strengths:['영감을 주는 말 — 사람의 마음을 건드리고 새로운 가능성을 보게 함','창의적 아이디어 — 새로운 방식과 기획에 탁월함','비전 제시 — 공동체가 나아갈 방향을 생생하게 그려줌'],
+    shadows:['마무리의 어려움 — 시작은 강하지만 유지·마무리가 약함','감정 소진 — 많이 주다 에너지가 갑자기 바닥남'],
+    cowork:'STEADY, LOGIC'},
+  VISION: {icon:'🔭',kr:'비전',   color:'#4A235A', keywords:'통찰·미래·구조·개념',
+    strengths:['전략적 사고 — 중장기 방향과 구조를 설계하는 능력','통찰력 — 문제의 본질을 꿰뚫어 핵심을 짚는 능력'],
+    shadows:['관계적 거리감 — 높은 기준이 차갑게 느껴지는 상황','피드백 수용의 어려움'],
+    cowork:'HARMONY'},
+  STEADY: {icon:'🌿',kr:'스테디', color:'#256060', keywords:'안정·신뢰·꾸준함·성실',
+    strengths:['약속을 지키는 신뢰감','디테일한 돌봄 — 이름·생일·어려움을 오래 기억','오래 버티는 힘'],
+    shadows:['변화에 대한 저항','자기 의견 표현의 어려움','번아웃의 은밀함'],
+    cowork:'LOGIC, LEADER'},
+  PLAYER: {icon:'🎯',kr:'플레이어',color:'#3D4D1C', keywords:'실행·현장·즉흥·적응',
+    strengths:['현장 감각 — 실제 필요를 빠르게 파악하고 즉각 행동','위기 대응력','유연성'],
+    shadows:['장기 계획의 어려움','감정 표현의 불편함'],
+    cowork:'VISION'},
+  HARMONY:{icon:'🕊️',kr:'하모니', color:'#7B1A1A', keywords:'공감·조화·돌봄·연결',
+    strengths:['공감 능력 — 상대 감정을 정확히 읽고 언어화','관계 회복 — 갈등 속 중재 능력'],
+    shadows:['경계 설정의 어려움','갈등 직면 회피','감정 흡수'],
+    cowork:'LOGIC, LEADER'},
+  SOUL:   {icon:'🌊',kr:'소울',   color:'#555555', keywords:'깊이·의미·진정성·내면',
+    strengths:['내면 깊이 — 고통에 대한 깊은 공명','진정성 — 자신의 연약함을 솔직히 나눔'],
+    shadows:['공적 리더십의 불편함','실행력의 약점'],
+    cowork:'LEADER, LOGIC'},
+  LOGIC:  {icon:'🔬',kr:'로직',   color:'#2C3E50', keywords:'분석·정확·원칙·체계',
+    strengths:['깊은 연구 능력','논리적 소통 — 체계적이고 설득력 있는 전달'],
+    shadows:['감정 연결의 어려움','완벽주의적 경향'],
+    cowork:'HARMONY'},
+  LEADER: {icon:'⚡',kr:'리더',   color:'#1A3055', keywords:'추진·결단·영향력·목표',
+    strengths:['결단력 — 필요한 순간 빠르고 명확한 결정','조직화 능력'],
+    shadows:['성도를 수단으로 보는 위험','권위주의적 경향'],
+    cowork:'HARMONY'},
+};
+
+// URL 파라미터
+const sp = new URLSearchParams(location.search);
+const CODE   = sp.get('code') || '';
+const CHURCH = decodeURIComponent(sp.get('church') || '');
+
+document.getElementById('tb-church').textContent = CHURCH || CODE;
+
+let wsData = null;
+let results = [];
+
+/* ── 사이드바 네비 ── */
+function navTo(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ── 데이터 로드 ── */
+async function loadData() {
+  try {
+    // 워크숍 정보
+    const wRes = await fetch(
+      `${SB_URL}/rest/v1/workshops?code=eq.${CODE}&select=*`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    const ws = await wRes.json();
+    wsData = ws?.[0] || null;
+
+    // 검사 결과
+    const rRes = await fetch(
+      `${SB_URL}/rest/v1/survey_results?workshop_code=eq.${CODE}&order=submitted_at.asc&select=*`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    results = await rRes.json() || [];
+
+    renderStatus();
+    renderTypeChart();
+    renderInfo();
+    updateReportStatus();
+    showToast('✅ 최신 현황으로 업데이트되었습니다');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ 데이터 로드 실패: ' + e.message);
+  }
+}
+
+/* ── 현황 렌더링 ── */
+function renderStatus() {
+  const total  = wsData?.max_count || results.length;
+  const done   = results.length;
+  const remain = Math.max(0, total - done);
+  const pct    = total > 0 ? Math.round(done / total * 100) : 0;
+
+  document.getElementById('ws-title').textContent = wsData?.title || '워크숍 현황';
+  document.getElementById('ws-code-disp').textContent = '코드: ' + CODE;
+  document.getElementById('stat-total').textContent   = total;
+  document.getElementById('stat-done').textContent    = done;
+  document.getElementById('stat-remain').textContent  = remain;
+  document.getElementById('prog-pct').textContent     = pct + '%';
+  document.getElementById('prog-fill').style.width    = pct + '%';
+  document.getElementById('done-count-label').textContent = `완료 ${done} / 전체 ${total}`;
+
+  // 멤버 테이블
+  if (done === 0) {
+    document.getElementById('member-wrap').innerHTML =
+      '<div class="empty"><div class="e-ico">📋</div>아직 검사를 완료한 교인이 없습니다.<br>링크를 공유해 주세요.</div>';
+    return;
+  }
+  const rows = results.map(r => {
+    const td = TYPE_DATA[r.sg_type] || {};
+    return `<tr>
+      <td><strong style="color:var(--navy)">${r.name}</strong></td>
+      <td style="color:var(--mid)">${r.role || '—'}</td>
+      <td><span class="badge-done">완료</span>
+        ${r.sg_type ? `<span class="type-badge T-${r.sg_type}">${td.icon||''} ${r.sg_type}</span>` : ''}
+      </td>
+      <td style="color:var(--light);font-size:.72rem">${fmtDate(r.submitted_at)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('member-wrap').innerHTML = `
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr>
+        <th>이름</th><th>소속</th><th>유형</th><th>완료일시</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+/* ── 유형 분포 차트 ── */
+function renderTypeChart() {
+  if (results.length === 0) return;
+  const counts = {};
+  results.forEach(r => { if (r.sg_type) counts[r.sg_type] = (counts[r.sg_type]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+  const max = sorted[0]?.[1] || 1;
+
+  document.getElementById('type-chart').innerHTML = sorted.map(([t,n]) => {
+    const td = TYPE_DATA[t] || {};
+    const pct = Math.round(n / max * 100);
+    return `<div class="bar-row">
+      <span class="bar-lbl" style="color:${td.color||'#666'}">${td.icon||''} ${td.kr||t}</span>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${td.color||'#AAA'}"></div></div>
+      <span class="bar-val">${n}명</span>
+    </div>`;
+  }).join('');
+
+  // 팀 인사이트 자동 생성
+  genInsight(counts);
+}
+
+function genInsight(counts) {
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if (sorted.length === 0) return;
+  const top = sorted.slice(0,2).map(([t])=>TYPE_DATA[t]?.kr||t);
+  const bot = sorted.slice(-1).map(([t])=>TYPE_DATA[t]?.kr||t);
+  const topTypes = sorted.slice(0,2).map(([t])=>t);
+  const strengths = topTypes.flatMap(t => (TYPE_DATA[t]?.strengths||[]).slice(0,1));
+  const shadows   = topTypes.flatMap(t => (TYPE_DATA[t]?.shadows||[]).slice(0,1));
+
+  document.getElementById('team-insight').innerHTML = `
+    <div style="margin-bottom:12px">
+      <strong style="color:var(--navy)">✦ 팀 주요 유형</strong><br>
+      ${top.join(', ')} 중심의 팀입니다.
+    </div>
+    <div style="margin-bottom:12px">
+      <strong style="color:var(--teal)">강점</strong><br>
+      ${strengths.map(s=>'• '+s).join('<br>')}
+    </div>
+    <div style="margin-bottom:12px">
+      <strong style="color:#7B1A1A">주의 그림자</strong><br>
+      ${shadows.map(s=>'• '+s).join('<br>')}
+    </div>
+    <div>
+      <strong style="color:var(--navy)">동역 구조 제안</strong><br>
+      ${topTypes.map(t=>`• ${TYPE_DATA[t]?.kr}의 약점은 <strong>${TYPE_DATA[t]?.cowork}</strong>이 보완`).join('<br>')}
+    </div>`;
+}
+
+/* ── 워크숍 정보 ── */
+function renderInfo() {
+  if (!wsData) return;
+  document.getElementById('ws-info-card').innerHTML = `
+    <div class="card-title">워크숍 정보</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:.85rem">
+      <div><div style="color:var(--light);font-size:.75rem">교회</div><strong>${wsData.church_name}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">클래스</div><strong>${wsData.product_type}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">담당자</div><strong>${wsData.leader_name}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">이메일</div><strong>${wsData.leader_email}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">최대 인원</div><strong>${wsData.max_count}명</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">상태</div><strong>${wsData.status}</strong></div>
+      ${wsData.title?`<div style="grid-column:span 2"><div style="color:var(--light);font-size:.75rem">제목</div><strong>${wsData.title}</strong></div>`:''}
+      ${wsData.themes?`<div style="grid-column:span 2"><div style="color:var(--light);font-size:.75rem">주제</div><strong>${wsData.themes}</strong></div>`:''}
+    </div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+      <div style="font-size:.75rem;font-weight:800;color:var(--teal);margin-bottom:8px">성도 검사 링크</div>
+      <div style="font-size:.78rem;background:#F8F7F3;border:1px solid var(--border);border-radius:6px;
+        padding:9px 12px;word-break:break-all;font-weight:600;color:var(--navy)">
+        https://onyuschool.com/teambuilding-survey.html?church=${encodeURIComponent(wsData.church_name)}&code=${CODE}
+      </div>
+    </div>`;
+}
+
+function updateReportStatus() {
+  const done = results.length;
+  const total = wsData?.max_count || 0;
+  const msg = done === 0
+    ? '⏳ 아직 완료된 검사가 없습니다. 교인들과 링크를 공유해 주세요.'
+    : done < total
+    ? `✅ 현재 ${done}명 완료 (${total}명 중). 전원 완료 전에도 다운로드 가능합니다.`
+    : `🎉 전원 검사 완료! 최종 리포트를 다운로드하세요.`;
+  document.getElementById('rpt-status-msg').innerHTML = msg;
+}
+
+/* ── 팀 리포트 HTML 생성 & 다운로드 ── */
+function downloadTeamReport() {
+  if (results.length === 0) { showToast('완료된 검사가 없습니다.'); return; }
+
+  const counts = {};
+  results.forEach(r => { if (r.sg_type) counts[r.sg_type] = (counts[r.sg_type]||0)+1; });
+  const church = wsData?.church_name || CHURCH;
+  const title  = wsData?.title || church + ' 팀 리포트';
+
+  const sortedTypes = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+
+  const typeRows = sortedTypes.map(([t,n]) => {
+    const td = TYPE_DATA[t] || {};
+    const pct = Math.round(n / results.length * 100);
+    return `
+      <div style="margin-bottom:20px;padding:18px;border:1px solid #DDD;border-radius:10px;
+        border-left:4px solid ${td.color||'#AAA'}">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:1.4rem">${td.icon||''}</span>
+          <strong style="color:${td.color};font-size:1rem">${t} (${td.kr||''})</strong>
+          <span style="background:${td.color}18;color:${td.color};font-size:.75rem;
+            font-weight:700;padding:2px 10px;border-radius:10px;margin-left:auto">${n}명 (${pct}%)</span>
+        </div>
+        <div style="font-size:.82rem;color:#555">키워드: ${td.keywords||''}</div>
+        <div style="margin-top:8px;font-size:.82rem;color:#333">
+          <strong style="color:${td.color}">강점</strong>: ${(td.strengths||[]).slice(0,2).join(' / ')}
+        </div>
+        <div style="margin-top:4px;font-size:.82rem;color:#555">
+          <strong>주의</strong>: ${(td.shadows||[]).slice(0,1).join('')}
+        </div>
+        <div style="margin-top:4px;font-size:.82rem;color:#555">
+          <strong>동역 추천</strong>: ${td.cowork||''}
+        </div>
+        <div style="margin-top:8px">
+          <span style="font-size:.78rem;font-weight:700;color:#999;margin-bottom:4px;display:block">참여자</span>
+          ${results.filter(r=>r.sg_type===t).map(r=>
+            `<span style="display:inline-block;background:#F0F0F0;border-radius:5px;
+              padding:2px 8px;font-size:.75rem;margin:2px">${r.name} (${r.role||'—'})</span>`
+          ).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title}</title>
+<style>
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:760px;
+  margin:0 auto;padding:24px 20px;color:#333;line-height:1.7}
+h1{font-size:1.4rem;color:#1A3055;margin-bottom:4px}
+.meta{font-size:.8rem;color:#999;margin-bottom:28px}
+h2{font-size:1rem;color:#256060;border-bottom:2px solid #256060;padding-bottom:6px;margin:24px 0 14px}
+@media print{body{padding:0}}
+</style></head><body>
+<h1>${title}</h1>
+<div class="meta">온유스쿨 쉐도우그램 팀빌딩 워크숍 · 생성일: ${new Date().toLocaleDateString('ko-KR')}</div>
+<h2>📊 팀 유형 분포 (${results.length}명 완료)</h2>
+${typeRows}
+<h2>👥 참여자 전체 목록</h2>
+<table style="width:100%;border-collapse:collapse;font-size:.83rem">
+<thead><tr>
+  <th style="border-bottom:2px solid #1A3055;padding:8px;text-align:left">이름</th>
+  <th style="border-bottom:2px solid #1A3055;padding:8px;text-align:left">소속</th>
+  <th style="border-bottom:2px solid #1A3055;padding:8px;text-align:left">유형</th>
+</tr></thead>
+<tbody>
+${results.map(r=>`<tr>
+  <td style="padding:7px 8px;border-bottom:1px solid #EEE">${r.name}</td>
+  <td style="padding:7px 8px;border-bottom:1px solid #EEE;color:#666">${r.role||'—'}</td>
+  <td style="padding:7px 8px;border-bottom:1px solid #EEE">
+    ${TYPE_DATA[r.sg_type]?.icon||''} ${r.sg_type||'—'}
+  </td>
+</tr>`).join('')}
+</tbody></table>
+<div style="margin-top:32px;padding:14px;background:#F5F3EE;border-radius:8px;font-size:.78rem;color:#888">
+  온유스쿨 (ONYUSCHOOL) · 인생나무코칭연구소 · onyuschool.com
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${church}_팀리포트_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'')}.html`;
+  a.click();
+  showToast('📄 팀 리포트 다운로드 완료!');
+}
+
+/* ── 개인 리포트 일괄 HTML (ZIP 없이 각각 다운로드) ── */
+function downloadIndividualReports() {
+  if (results.length === 0) { showToast('완료된 검사가 없습니다.'); return; }
+  showToast(`📄 ${results.length}개 개인 리포트 다운로드 시작...`);
+  results.forEach((r, i) => {
+    setTimeout(() => downloadOneReport(r), i * 400);
+  });
+}
+
+function downloadOneReport(r) {
+  const td = TYPE_DATA[r.sg_type] || {};
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${r.name} 쉐도우그램 리포트</title>
+<style>
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:680px;
+  margin:0 auto;padding:24px 20px;color:#333;line-height:1.75}
+.hero{background:linear-gradient(135deg,${td.color||'#1A3055'}EE,${td.color||'#256060'}AA);
+  color:#fff;border-radius:14px;padding:28px 24px;text-align:center;margin-bottom:24px}
+.type-name{font-size:2rem;font-weight:800;letter-spacing:.06em}
+.type-kr{font-size:1rem;opacity:.8;margin-top:4px}
+.keywords{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.kw{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+  color:#fff;font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:16px}
+.sec{background:#fff;border:1px solid #DDD;border-radius:12px;padding:20px;margin-bottom:16px}
+.sec-title{font-size:.78rem;font-weight:800;color:${td.color||'#256060'};letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #EEE}
+.lock{background:#fff;border:2px dashed #DDD;border-radius:12px;padding:20px;text-align:center;
+  margin-bottom:16px;color:#999;font-size:.85rem}
+@media print{body{padding:0}}
+</style></head><body>
+<div class="hero">
+  <div style="font-size:2.2rem;margin-bottom:8px">${td.icon||'🌿'}</div>
+  <div class="type-name">${r.sg_type}</div>
+  <div class="type-kr">${td.kr||''}</div>
+  <div class="keywords">
+    ${(td.keywords||'').split('·').map(k=>`<span class="kw">${k.trim()}</span>`).join('')}
+  </div>
+</div>
+<div style="margin-bottom:20px;font-size:.9rem;color:#555">
+  <strong style="color:#1A3055">${r.name}</strong> · ${r.role||'—'}
+</div>
+<div class="sec">
+  <div class="sec-title">✦ 나의 강점</div>
+  ${(td.strengths||[]).map(s=>`
+    <div style="padding:7px 0;border-bottom:1px solid #F5F5F5;font-size:.85rem;color:#555;
+      display:flex;gap:8px"><span style="color:${td.color};font-weight:700">✦</span>${s}</div>`).join('')}
+</div>
+<div class="lock">
+  🔒 <strong>그림자 & 소통 팁</strong><br>
+  워크숍 당일 전체 리포트에서 공개됩니다
+</div>
+<div class="lock">
+  🌑 <strong>쉐도우그램 서사</strong><br>
+  "처음엔 당신의 빛에 이끌렸지만..." — 워크숍 리포트에서 확인하세요
+</div>
+<div style="margin-top:24px;padding:12px;background:#F5F3EE;border-radius:8px;
+  font-size:.75rem;color:#999;text-align:center">
+  온유스쿨 쉐도우그램 · onyuschool.com
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${r.name}_쉐도우그램_${r.sg_type}.html`;
+  a.click();
+}
+
+/* ── 리마인더 ── */
+function sendReminder() {
+  showToast('📨 리마인더 기능은 Apps Script 연동 후 활성화됩니다');
+}
+
+/* ── 날짜 포맷 ── */
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+/* ── 토스트 ── */
+function showToast(msg, dur=2800) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+/* ── 초기화 ── */
+if (CODE) loadData();
+else document.getElementById('member-wrap').innerHTML =
+  '<div class="empty"><div class="e-ico">⚠️</div>워크숍 코드가 없습니다.<br>올바른 링크로 접속해 주세요.</div>';
+</script>
+</body>
+</html>
