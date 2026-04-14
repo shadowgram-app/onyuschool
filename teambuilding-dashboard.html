@@ -203,36 +203,74 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 
     <!-- ── PAGE: 리포트 다운로드 ── -->
     <div id="page-reports" class="page">
-      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:6px">리포트 다운로드</div>
-      <div style="font-size:.8rem;color:var(--light);margin-bottom:18px">검사 완료 인원 기준으로 리포트가 생성됩니다</div>
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px">리포트 생성</div>
+      <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">쉐도우그램 철학 기반 AI 리포트 자동 생성</div>
 
+      <!-- API 키 입력 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">⚡ AI 리포트 생성 (Claude API)</div>
+        <div style="font-size:.8rem;color:var(--mid);margin-bottom:12px;line-height:1.7">
+          Anthropic API 키를 입력하면 쉐도우그램 철학에 따라 팀·개인 서술을 자동 생성합니다.<br>
+          키 없이도 룰 기반 리포트는 생성 가능합니다.
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input type="password" id="api-key-input"
+            style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;
+              font-size:.85rem;font-family:inherit;outline:none;color:var(--gray)"
+            placeholder="sk-ant-api03-... (선택 사항)">
+          <button onclick="saveApiKey()"
+            style="padding:10px 18px;background:var(--teal);color:#fff;border:none;border-radius:8px;
+              font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap">저장</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--light)">키는 브라우저에만 저장되며 외부로 전송되지 않습니다 (Anthropic API 직접 호출)</div>
+      </div>
+
+      <!-- 생성 진행 상태 -->
+      <div id="gen-progress" style="display:none;background:#F0F7F4;border:1px solid rgba(37,96,96,.25);
+        border-radius:10px;padding:16px;margin-bottom:16px">
+        <div style="font-size:.85rem;font-weight:700;color:var(--teal);margin-bottom:8px" id="gen-status-text">준비 중...</div>
+        <div style="height:6px;background:#E0EDE8;border-radius:3px;overflow:hidden">
+          <div id="gen-prog-bar" style="height:100%;background:var(--teal);border-radius:3px;
+            width:0%;transition:width .4s ease"></div>
+        </div>
+      </div>
+
+      <!-- 리포트 목록 -->
       <div class="rpt-list">
         <div class="rpt-item">
           <div class="rpt-info">
-            <div class="rpt-name">📊 팀 전체 분포 인사이트 리포트</div>
-            <div class="rpt-desc">유형 분포 차트 · 팀 강점·그림자 · 동역 구조 제안</div>
+            <div class="rpt-name">📊 팀 전체 인사이트 리포트</div>
+            <div class="rpt-desc">유형 분포 · 팀 서사 · 강점·그림자 · 동역 구조 제안 · 워크숍 오프닝</div>
           </div>
-          <button class="btn-dl team" id="btn-team-rpt" onclick="downloadTeamReport()">HTML 다운로드</button>
+          <button class="btn-dl team" onclick="generateAndDownload('team')">생성 & 다운로드</button>
         </div>
         <div class="rpt-item">
           <div class="rpt-info">
             <div class="rpt-name">🌿 개인 리포트 일괄 생성</div>
-            <div class="rpt-desc">완료자 전원 개인 쉐도우그램 리포트 (ZIP)</div>
+            <div class="rpt-desc">완료자 전원 · 역할 맥락 반영 개인 서술 · 쉐도우그램 캡션 포함</div>
           </div>
-          <button class="btn-dl ind" id="btn-ind-rpt" onclick="downloadIndividualReports()">일괄 다운로드</button>
+          <button class="btn-dl ind" onclick="generateAndDownload('individual')">생성 & 다운로드</button>
+        </div>
+        <div class="rpt-item">
+          <div class="rpt-info">
+            <div class="rpt-name">📦 전체 패키지 (팀 + 개인 전부)</div>
+            <div class="rpt-desc">팀 리포트 + 개인 리포트 전원 순차 다운로드</div>
+          </div>
+          <button class="btn-dl team" style="background:var(--gold);color:#fff" onclick="generateAndDownload('all')">전체 생성</button>
         </div>
         <div class="rpt-item">
           <div class="rpt-info">
             <div class="rpt-name">📋 퍼실리테이션 매뉴얼</div>
-            <div class="rpt-desc">90분 워크숍 진행 가이드 · 상황별 퍼실리테이션 스크립트</div>
+            <div class="rpt-desc">90분 워크숍 진행 가이드 · 상황별 스크립트</div>
           </div>
-          <a class="btn-dl team" href="teambuilding-manual.html" target="_blank" style="text-decoration:none">열기 ↗</a>
+          <a class="btn-dl team" href="teambuilding-manual.html" target="_blank"
+            style="text-decoration:none;display:inline-block">열기 ↗</a>
         </div>
       </div>
 
-      <div style="margin-top:20px;background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
-        padding:14px 16px;font-size:.8rem;color:#7A6000;line-height:1.7" id="rpt-status-msg">
-        ⏳ 참여자 현황을 불러오는 중...
+      <div style="margin-top:16px;background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
+        padding:12px 15px;font-size:.8rem;color:#7A6000;line-height:1.7" id="rpt-status-msg">
+        ⏳ 현황을 불러오는 중...
       </div>
     </div>
 
@@ -248,6 +286,9 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 </div><!-- /layout -->
 
 <div class="toast" id="toast"></div>
+
+<!-- 쉐도우그램 리포트 엔진 -->
+<script src="report-engine.js"></script>
 
 <script>
 const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
@@ -462,8 +503,12 @@ function updateReportStatus() {
   document.getElementById('rpt-status-msg').innerHTML = msg;
 }
 
-/* ── 팀 리포트 HTML 생성 & 다운로드 ── */
-function downloadTeamReport() {
+/* ── 구형 함수 (엔진으로 대체됨, 하위 호환용) ── */
+function downloadTeamReport() { generateAndDownload('team'); }
+function downloadIndividualReports() { generateAndDownload('individual'); }
+
+/* ── DEPRECATED: 하드코딩 팀 리포트 ── */
+function _downloadTeamReport_legacy() {
   if (results.length === 0) { showToast('완료된 검사가 없습니다.'); return; }
 
   const counts = {};
@@ -549,16 +594,8 @@ ${results.map(r=>`<tr>
   showToast('📄 팀 리포트 다운로드 완료!');
 }
 
-/* ── 개인 리포트 일괄 HTML (ZIP 없이 각각 다운로드) ── */
-function downloadIndividualReports() {
-  if (results.length === 0) { showToast('완료된 검사가 없습니다.'); return; }
-  showToast(`📄 ${results.length}개 개인 리포트 다운로드 시작...`);
-  results.forEach((r, i) => {
-    setTimeout(() => downloadOneReport(r), i * 400);
-  });
-}
-
-function downloadOneReport(r) {
+/* ── DEPRECATED: 하드코딩 개인 리포트 ── */
+function _downloadOneReport_legacy(r) {
   const td = TYPE_DATA[r.sg_type] || {};
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -641,6 +678,279 @@ function showToast(msg, dur=2800) {
 if (CODE) loadData();
 else document.getElementById('member-wrap').innerHTML =
   '<div class="empty"><div class="e-ico">⚠️</div>워크숍 코드가 없습니다.<br>올바른 링크로 접속해 주세요.</div>';
+
+// ══════════════════════════════════════════════
+//  리포트 엔진 연동
+// ══════════════════════════════════════════════
+
+/* ── API 키 저장/로드 ── */
+function saveApiKey() {
+  const v = document.getElementById('api-key-input').value.trim();
+  if (!v) { showToast('API 키를 입력해 주세요.'); return; }
+  try { sessionStorage.setItem('sg_api_key', v); } catch(e) {}
+  showToast('✅ API 키가 저장되었습니다 (세션 동안 유지)');
+}
+function getApiKey() {
+  try { return sessionStorage.getItem('sg_api_key') || ''; } catch(e) { return ''; }
+}
+// 저장된 키 복원
+(function() {
+  const k = getApiKey();
+  if (k) document.getElementById('api-key-input').value = '••••••••••••••••';
+})();
+
+/* ── 진행 UI ── */
+function setProgress(text, pct) {
+  document.getElementById('gen-progress').style.display = 'block';
+  document.getElementById('gen-status-text').textContent = text;
+  document.getElementById('gen-prog-bar').style.width = pct + '%';
+}
+function hideProgress() {
+  setTimeout(() => {
+    document.getElementById('gen-progress').style.display = 'none';
+  }, 1500);
+}
+
+/* ── 메인: 생성 & 다운로드 ── */
+async function generateAndDownload(mode) {
+  if (results.length === 0) { showToast('검사 완료된 인원이 없습니다.'); return; }
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showToast('⚠️ API 키 없음 — 룰 기반 리포트로 생성합니다');
+  }
+
+  // 엔진 로드 확인
+  if (!window.ShadowgramEngine) {
+    showToast('❌ 엔진 로드 실패. 페이지를 새로고침해 주세요.');
+    return;
+  }
+
+  try {
+    const report = await window.ShadowgramEngine.generateReport(
+      results,
+      wsData,
+      apiKey,
+      (text, pct) => setProgress(text, pct)
+    );
+
+    if (mode === 'team' || mode === 'all') {
+      downloadTeamReportV2(report);
+    }
+    if (mode === 'individual' || mode === 'all') {
+      report.individuals.forEach((ind, i) => {
+        setTimeout(() => downloadIndReportV2(ind), i * 500);
+      });
+    }
+
+    hideProgress();
+    showToast(`✅ 리포트 생성 완료 (${apiKey ? 'AI' : '룰 기반'})`);
+  } catch(e) {
+    hideProgress();
+    console.error(e);
+    showToast('❌ 생성 오류: ' + e.message);
+  }
+}
+
+/* ── 팀 리포트 HTML 생성 (엔진 버전) ── */
+function downloadTeamReportV2(report) {
+  const { team, analysis } = report;
+  const church = team.churchName || CHURCH;
+
+  const typeRows = team.typeDistribution.map(([t, n]) => {
+    const td = window.ShadowgramEngine.TYPE_MASTER[t] || {};
+    const pct = Math.round(n / results.length * 100);
+    const members = results.filter(r => r.sg_type === t);
+    return `
+    <div style="margin-bottom:22px;padding:20px;border:1px solid #DDD;border-radius:12px;
+      border-left:5px solid ${td.color||'#AAA'}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:1.5rem">${td.icon||''}</span>
+        <strong style="color:${td.color};font-size:1.05rem">${t} (${td.kr||''})</strong>
+        <span style="background:${td.color}18;color:${td.color};font-size:.75rem;
+          font-weight:700;padding:3px 10px;border-radius:10px;margin-left:auto">${n}명 (${pct}%)</span>
+      </div>
+      <div style="font-size:.82rem;color:#666;margin-bottom:6px">
+        키워드: ${(td.keywords||[]).join(' · ')}
+      </div>
+      <div style="font-size:.83rem;color:#333;margin-bottom:6px">
+        <strong style="color:${td.color}">강점</strong>: ${(td.strengths||[]).slice(0,2).join(' / ')}
+      </div>
+      <div style="font-size:.83rem;color:#555;margin-bottom:10px">
+        <strong>주의</strong>: ${(td.shadows||[]).slice(0,1)[0]||''}
+      </div>
+      <div>
+        <span style="font-size:.75rem;font-weight:700;color:#999;display:block;margin-bottom:5px">참여자</span>
+        ${members.map(r =>
+          `<span style="display:inline-block;background:#F0F0F0;border-radius:5px;
+            padding:3px 10px;font-size:.75rem;margin:2px 2px">${r.name} (${r.role||'—'})</span>`
+        ).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${team.churchName} 팀 리포트 — 온유스쿨 쉐도우그램</title>
+<style>
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:780px;
+  margin:0 auto;padding:28px 20px;color:#333;line-height:1.75}
+h1{font-size:1.4rem;color:#1A3055;margin-bottom:4px}
+h2{font-size:1rem;color:#256060;border-bottom:2px solid #256060;padding-bottom:6px;margin:28px 0 16px}
+.meta{font-size:.8rem;color:#999;margin-bottom:8px}
+.narrative{background:#F0F7F4;border-left:4px solid #256060;padding:16px 18px;
+  border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.88rem;line-height:1.8;color:#333}
+.shadow-box{background:#FDF0F0;border-left:4px solid #7B1A1A;padding:14px 18px;
+  border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.85rem;line-height:1.8;color:#555}
+.opening{background:#F8F7F3;border:1px solid #DDD;border-radius:10px;padding:16px 18px;
+  margin-bottom:24px;font-size:.88rem;color:#444;font-style:italic}
+.cowork-list{list-style:none;padding:0}
+.cowork-list li{padding:6px 0;border-bottom:1px solid #F0EDE6;font-size:.83rem;color:#555}
+.cowork-list li:last-child{border-bottom:none}
+footer{margin-top:40px;padding:14px;background:#F5F3EE;border-radius:8px;
+  font-size:.75rem;color:#999;text-align:center}
+@media print{body{padding:0}}
+</style></head><body>
+
+<h1>🌿 ${team.churchName} — 쉐도우그램 팀 리포트</h1>
+<div class="meta">온유스쿨 쉐도우그램 팀빌딩 워크숍 · 생성일: ${new Date().toLocaleDateString('ko-KR')} · 참여 ${results.length}명</div>
+
+${team.workshopOpening ? `
+<h2>📣 워크숍 오프닝</h2>
+<div class="opening">"${team.workshopOpening}"</div>` : ''}
+
+<h2>📊 팀 유형 분포</h2>
+${typeRows}
+
+${team.teamNarrative ? `
+<h2>🌿 팀 소통 구조 분석</h2>
+<div class="narrative">${team.teamNarrative}</div>` : ''}
+
+${team.teamShadow ? `
+<h2>🌑 팀이 주의해야 할 그림자</h2>
+<div class="shadow-box">${team.teamShadow}</div>` : ''}
+
+${team.coworkStructure?.length ? `
+<h2>🤝 동역 구조 제안</h2>
+<ul class="cowork-list">
+  ${team.coworkStructure.map(s => `<li>• ${s}</li>`).join('')}
+</ul>` : ''}
+
+${team.vulnerabilities?.length ? `
+<h2>⚠️ 취약 영역</h2>
+<ul class="cowork-list">
+  ${team.vulnerabilities.map(s => `<li>• ${s}</li>`).join('')}
+</ul>` : ''}
+
+<footer>온유스쿨 쉐도우그램 · onyuschool.com · "소통을 회복하는 8가지 언어"</footer>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${church}_팀리포트_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'')}.html`;
+  a.click();
+}
+
+/* ── 개인 리포트 HTML 생성 (엔진 버전) ── */
+function downloadIndReportV2(ind) {
+  const td = window.ShadowgramEngine.TYPE_MASTER[ind.type] || {};
+
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${ind.name} 쉐도우그램 리포트 — 온유스쿨</title>
+<style>
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:680px;
+  margin:0 auto;padding:28px 20px;color:#333;line-height:1.75}
+.hero{background:linear-gradient(135deg,${td.color||'#1A3055'}EE,${td.color||'#256060'}99);
+  color:#fff;border-radius:14px;padding:28px 24px;text-align:center;margin-bottom:24px}
+.type-name{font-size:2rem;font-weight:800;letter-spacing:.06em}
+.type-kr{font-size:1rem;opacity:.75;margin-top:4px}
+.keywords{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.kw{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+  color:#fff;font-size:.8rem;font-weight:700;padding:4px 13px;border-radius:16px}
+.narrative{background:#F0F7F4;border-left:4px solid ${td.color||'#256060'};
+  padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:18px;font-size:.86rem;
+  line-height:1.8;color:#333;font-style:italic}
+.sec{background:#fff;border:1px solid #DDD;border-radius:12px;padding:20px;margin-bottom:16px}
+.sec-title{font-size:.75rem;font-weight:800;color:${td.color||'#256060'};
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;
+  padding-bottom:8px;border-bottom:1px solid #EEE}
+.str-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #F5F5F5;
+  font-size:.85rem;color:#444}
+.str-item:last-child{border-bottom:none}
+.ico{color:${td.color||'#256060'};font-weight:800;flex-shrink:0;padding-top:1px}
+.growth{background:#FFF8E6;border:1px solid #E8D8A0;border-radius:10px;
+  padding:16px;margin-bottom:16px;font-size:.84rem;color:#7A6000;line-height:1.8}
+.mission-item{padding:8px 0;border-bottom:1px solid #F5F5F5;font-size:.83rem;color:#555}
+.mission-item:last-child{border-bottom:none}
+.shadow-cap{background:#1A3055;color:rgba(255,255,255,.88);border-radius:10px;
+  padding:18px 20px;margin-bottom:16px;font-size:.85rem;line-height:1.85;font-style:italic}
+.lock{background:#fff;border:2px dashed #DDD;border-radius:12px;padding:20px;
+  text-align:center;color:#999;font-size:.83rem;margin-bottom:16px}
+footer{padding:12px;background:#F5F3EE;border-radius:8px;font-size:.72rem;
+  color:#999;text-align:center;margin-top:24px}
+@media print{body{padding:0}}
+</style></head><body>
+
+<div class="hero">
+  <div style="font-size:2.5rem;margin-bottom:8px">${td.icon||'🌿'}</div>
+  <div class="type-name">${ind.type}</div>
+  <div class="type-kr">${ind.typeKr}</div>
+  <div class="keywords">
+    ${(ind.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join('')}
+  </div>
+</div>
+
+<div style="font-size:.9rem;color:#555;margin-bottom:18px">
+  <strong style="color:#1A3055">${ind.name}</strong> · ${ind.role||'—'}
+</div>
+
+${ind.personalNarrative ? `<div class="narrative">${ind.personalNarrative}</div>` : ''}
+
+<div class="sec">
+  <div class="sec-title">✦ 나의 강점</div>
+  ${(ind.strengths||[]).map(s=>`
+    <div class="str-item"><span class="ico">✦</span>${s}</div>`).join('')}
+</div>
+
+${ind.shadowCaption ? `
+<div class="shadow-cap">
+  <div style="font-size:.72rem;font-weight:800;color:rgba(255,255,255,.5);
+    letter-spacing:.08em;margin-bottom:8px">🌑 쉐도우그램</div>
+  ${ind.shadowCaption}
+</div>` : ''}
+
+<div class="growth">
+  🌱 <strong>성장 방향</strong><br>${ind.growth||''}
+  <div style="margin-top:8px;font-size:.8rem">
+    <strong>빛:</strong> ${ind.light||''} &nbsp;/&nbsp; <strong>그림자:</strong> ${ind.shadow||''}
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-title">🎯 이번 주 마이크로 미션</div>
+  ${(ind.missions||[]).map((m,i)=>`
+    <div class="mission-item">${i+1}. ${m}</div>`).join('')}
+</div>
+
+<div class="lock">
+  👥 <strong>동역자 가이드 & 팀 리포트</strong><br>
+  워크숍 당일 팀 전체 리포트에서 공개됩니다
+</div>
+
+<footer>온유스쿨 쉐도우그램 · onyuschool.com · "소통을 회복하는 8가지 언어"</footer>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${ind.name}_${ind.type}_리포트.html`;
+  a.click();
+}
+
+/* ── 초기화 ── */
+if (CODE) loadData();
 </script>
 </body>
 </html>
