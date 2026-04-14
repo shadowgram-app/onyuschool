@@ -743,17 +743,18 @@ const ORG_NAME = {
 
 // ══════════════════════════════════
 //  직분 폼 동적 렌더링
+//  조직은 링크에서 이미 정해짐 → 이름 + 직분 선택만
 // ══════════════════════════════════
 function renderRoleForm() {
   const area  = document.getElementById('role-form-area');
   const label = document.getElementById('role-section-label');
-  const orgName = ORG_NAME[orgType] || '직분';
-  label.textContent = orgName + ' 직분';
+  const orgName = ORG_NAME[orgType] || '';
+  label.textContent = orgName ? orgName + ' 직분' : '직분';
 
   const roles = ORG_ROLES[orgType];
 
   if (!roles) {
-    // 조직 타입 정보 없음 → 직접 입력 필드만
+    // org_type 없거나 custom → 자유 입력
     area.innerHTML = `
       <label class="form-label">직분 / 역할</label>
       <input class="form-input" type="text" id="dyn-role"
@@ -761,7 +762,7 @@ function renderRoleForm() {
     return;
   }
 
-  // 직분 선택 + 기타 직접 입력
+  // 직분 선택 드롭다운 + 기타 직접 입력
   const opts = roles.map(r =>
     `<option value="${r}">${r}</option>`
   ).join('');
@@ -776,75 +777,27 @@ function renderRoleForm() {
       <input class="form-input" type="text" id="dyn-etc-input"
         placeholder="직분을 직접 입력해 주세요" maxlength="30">
     </div>`;
-
-  // 교사팀은 부서 선택 추가
-  if (orgType === 'teachers') {
-    area.innerHTML = `
-      <label class="form-label" for="dyn-dept">담당 부서</label>
-      <select class="form-select" id="dyn-dept" onchange="onDynDept(this.value)">
-        <option value="">담당 부서를 선택해 주세요</option>
-        <option>유치부</option><option>유아부</option>
-        <option>초등부 저학년</option><option>초등부 고학년</option>
-        <option>중등부</option><option>고등부</option><option>청년부</option>
-        <option value="__etc__">기타 (직접 입력)</option>
-      </select>
-      <div id="dyn-dept-etc" style="display:none;margin-top:-4px">
-        <input class="form-input" type="text" id="dyn-dept-etc-input"
-          placeholder="부서명을 직접 입력해 주세요" maxlength="30">
-      </div>
-      <label class="form-label" for="dyn-role-sel" style="margin-top:6px">역할</label>
-      <select class="form-select" id="dyn-role-sel" onchange="onDynRole(this.value)">
-        <option value="">역할을 선택해 주세요</option>
-        ${opts}
-      </select>
-      <div id="dyn-etc-wrap" style="display:none;margin-top:-4px">
-        <input class="form-input" type="text" id="dyn-etc-input"
-          placeholder="역할을 직접 입력해 주세요" maxlength="30">
-      </div>`;
-  }
 }
 
 function onDynRole(v) {
   const w = document.getElementById('dyn-etc-wrap');
   if (w) w.style.display = v === '기타' ? 'block' : 'none';
 }
-function onDynDept(v) {
-  const w = document.getElementById('dyn-dept-etc');
-  if (w) w.style.display = v === '__etc__' ? 'block' : 'none';
-}
 
 // ── 최종 역할 문자열 추출 ──
 function resolveRole() {
-  const roles = ORG_ROLES[orgType];
+  // 자유 입력 모드
+  const freeEl = document.getElementById('dyn-role');
+  if (freeEl) return freeEl.value.trim() || null;
 
-  if (!roles) {
-    // 자유 입력
-    return document.getElementById('dyn-role')?.value.trim() || null;
-  }
-
+  // 드롭다운 모드
   const selEl = document.getElementById('dyn-role-sel');
-  if (!selEl) return null;
-  const selVal = selEl.value;
-  if (!selVal) return null;
+  if (!selEl || !selEl.value) return null;
 
-  let roleStr = selVal === '기타'
-    ? (document.getElementById('dyn-etc-input')?.value.trim() || null)
-    : selVal;
-
-  if (!roleStr) return null;
-
-  // 교사팀: 부서 + 역할 조합
-  if (orgType === 'teachers') {
-    const deptEl = document.getElementById('dyn-dept');
-    if (!deptEl || !deptEl.value) return null;
-    const deptVal = deptEl.value === '__etc__'
-      ? (document.getElementById('dyn-dept-etc-input')?.value.trim() || null)
-      : deptEl.value;
-    if (!deptVal) return null;
-    return deptVal + ' · ' + roleStr;
+  if (selEl.value === '기타') {
+    return document.getElementById('dyn-etc-input')?.value.trim() || null;
   }
-
-  return roleStr;
+  return selEl.value;
 }
 
 function startSurvey() {
