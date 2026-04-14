@@ -517,77 +517,10 @@ body {
 
     <hr class="form-divider">
 
-    <!-- 그룹 선택 -->
-    <span class="form-section-label">소속 구분</span>
-
-    <label class="form-label" for="inp-group">어느 팀으로 참여하시나요?</label>
-    <select class="form-select" id="inp-group" onchange="onGroup(this.value)">
-      <option value="">선택해 주세요</option>
-      <option value="L">교회 리더십팀</option>
-      <option value="T">교사팀</option>
-    </select>
-
-    <!-- ── 리더십팀 ── -->
-    <div class="sub-group" id="grp-L">
-      <label class="form-label" for="sel-pos">직분</label>
-      <select class="form-select" id="sel-pos" onchange="onEtc('pos', this.value)">
-        <option value="">직분을 선택해 주세요</option>
-        <optgroup label="── 목회자 ──">
-          <option>담임목사</option>
-          <option>부교역자 (전도사·부목사)</option>
-          <option>담임목사 사모</option>
-          <option>부교역자 사모</option>
-        </optgroup>
-        <optgroup label="── 중직자 ──">
-          <option>장로</option>
-          <option>권사</option>
-          <option>집사</option>
-        </optgroup>
-        <optgroup label="── 성도 ──">
-          <option>성도</option>
-        </optgroup>
-        <option value="__etc__">기타 (직접 입력)</option>
-      </select>
-      <div class="etc-wrap" id="etc-pos">
-        <input class="form-input" type="text" id="txt-pos"
-               placeholder="직분을 직접 입력해 주세요" maxlength="30">
-      </div>
-    </div>
-
-    <!-- ── 교사팀 ── -->
-    <div class="sub-group" id="grp-T">
-      <label class="form-label" for="sel-dept">담당 부서</label>
-      <select class="form-select" id="sel-dept" onchange="onEtc('dept', this.value)">
-        <option value="">담당 부서를 선택해 주세요</option>
-        <option>유치부</option>
-        <option>유아부</option>
-        <option>초등부 저학년</option>
-        <option>초등부 고학년</option>
-        <option>중등부</option>
-        <option>고등부</option>
-        <option>청년부</option>
-        <option value="__etc__">기타 (직접 입력)</option>
-      </select>
-      <div class="etc-wrap" id="etc-dept">
-        <input class="form-input" type="text" id="txt-dept"
-               placeholder="부서명을 직접 입력해 주세요" maxlength="30">
-      </div>
-
-      <label class="form-label" for="sel-role">역할</label>
-      <select class="form-select" id="sel-role" onchange="onEtc('role', this.value)">
-        <option value="">역할을 선택해 주세요</option>
-        <option>담당교역자</option>
-        <option>부장</option>
-        <option>총무</option>
-        <option>회계</option>
-        <option>교사</option>
-        <option>보조교사</option>
-        <option value="__etc__">기타 (직접 입력)</option>
-      </select>
-      <div class="etc-wrap" id="etc-role">
-        <input class="form-input" type="text" id="txt-role"
-               placeholder="역할을 직접 입력해 주세요" maxlength="30">
-      </div>
+    <!-- 직분 선택 — URL org_type에 따라 JS로 렌더링 -->
+    <span class="form-section-label" id="role-section-label">직분 선택</span>
+    <div id="role-form-area">
+      <!-- JS로 채워짐 -->
     </div>
 
   </form>
@@ -791,57 +724,143 @@ let uName = '', uRole = '', uGroup = '';
 
 // URL 파라미터
 const params       = new URLSearchParams(location.search);
-const churchName   = params.get('church') || '';
-const workshopCode = params.get('code')   || '';
+const churchName   = params.get('church')   || '';
+const workshopCode = params.get('code')     || '';
+const orgType      = params.get('org_type') || ''; // staff | leadership | teachers | custom
+const wsTitle      = decodeURIComponent(params.get('title') || '');
+
 if (churchName) document.getElementById('topbar-church').textContent = churchName;
 
+// ── 조직별 직분 정의 (teambuilding.html과 동일) ──
+const ORG_ROLES = {
+  staff:      ['담임목사', '부교역자', '행정부서', '교구부서', '교육부서', '기타'],
+  leadership: ['담임목사', '부교역자', '장로', '안수집사', '권사', '기타'],
+  teachers:   ['담당교역자', '부장', '총무', '회계', '교사', '기타'],
+};
+const ORG_NAME = {
+  staff: '교역자팀', leadership: '리더십', teachers: '교사팀', custom: '팀',
+};
+
 // ══════════════════════════════════
-//  폼 로직
+//  직분 폼 동적 렌더링
 // ══════════════════════════════════
-function onGroup(v) {
-  document.getElementById('grp-L').classList.toggle('show', v === 'L');
-  document.getElementById('grp-T').classList.toggle('show', v === 'T');
-}
-function onEtc(key, v) {
-  document.getElementById('etc-' + key).classList.toggle('show', v === '__etc__');
+function renderRoleForm() {
+  const area  = document.getElementById('role-form-area');
+  const label = document.getElementById('role-section-label');
+  const orgName = ORG_NAME[orgType] || '직분';
+  label.textContent = orgName + ' 직분';
+
+  const roles = ORG_ROLES[orgType];
+
+  if (!roles) {
+    // 조직 타입 정보 없음 → 직접 입력 필드만
+    area.innerHTML = `
+      <label class="form-label">직분 / 역할</label>
+      <input class="form-input" type="text" id="dyn-role"
+        placeholder="예: 담임목사, 교사, 부장 등" maxlength="30">`;
+    return;
+  }
+
+  // 직분 선택 + 기타 직접 입력
+  const opts = roles.map(r =>
+    `<option value="${r}">${r}</option>`
+  ).join('');
+
+  area.innerHTML = `
+    <label class="form-label" for="dyn-role-sel">직분을 선택해 주세요</label>
+    <select class="form-select" id="dyn-role-sel" onchange="onDynRole(this.value)">
+      <option value="">선택해 주세요</option>
+      ${opts}
+    </select>
+    <div id="dyn-etc-wrap" style="display:none;margin-top:-4px">
+      <input class="form-input" type="text" id="dyn-etc-input"
+        placeholder="직분을 직접 입력해 주세요" maxlength="30">
+    </div>`;
+
+  // 교사팀은 부서 선택 추가
+  if (orgType === 'teachers') {
+    area.innerHTML = `
+      <label class="form-label" for="dyn-dept">담당 부서</label>
+      <select class="form-select" id="dyn-dept" onchange="onDynDept(this.value)">
+        <option value="">담당 부서를 선택해 주세요</option>
+        <option>유치부</option><option>유아부</option>
+        <option>초등부 저학년</option><option>초등부 고학년</option>
+        <option>중등부</option><option>고등부</option><option>청년부</option>
+        <option value="__etc__">기타 (직접 입력)</option>
+      </select>
+      <div id="dyn-dept-etc" style="display:none;margin-top:-4px">
+        <input class="form-input" type="text" id="dyn-dept-etc-input"
+          placeholder="부서명을 직접 입력해 주세요" maxlength="30">
+      </div>
+      <label class="form-label" for="dyn-role-sel" style="margin-top:6px">역할</label>
+      <select class="form-select" id="dyn-role-sel" onchange="onDynRole(this.value)">
+        <option value="">역할을 선택해 주세요</option>
+        ${opts}
+      </select>
+      <div id="dyn-etc-wrap" style="display:none;margin-top:-4px">
+        <input class="form-input" type="text" id="dyn-etc-input"
+          placeholder="역할을 직접 입력해 주세요" maxlength="30">
+      </div>`;
+  }
 }
 
+function onDynRole(v) {
+  const w = document.getElementById('dyn-etc-wrap');
+  if (w) w.style.display = v === '기타' ? 'block' : 'none';
+}
+function onDynDept(v) {
+  const w = document.getElementById('dyn-dept-etc');
+  if (w) w.style.display = v === '__etc__' ? 'block' : 'none';
+}
+
+// ── 최종 역할 문자열 추출 ──
 function resolveRole() {
-  const g = document.getElementById('inp-group').value;
-  if (g === 'L') {
-    const v = document.getElementById('sel-pos').value;
-    if (!v) return null;
-    if (v === '__etc__') return document.getElementById('txt-pos').value.trim() || null;
-    return v;
+  const roles = ORG_ROLES[orgType];
+
+  if (!roles) {
+    // 자유 입력
+    return document.getElementById('dyn-role')?.value.trim() || null;
   }
-  if (g === 'T') {
-    const d = document.getElementById('sel-dept').value;
-    const r = document.getElementById('sel-role').value;
-    if (!d || !r) return null;
-    const ds = d === '__etc__' ? (document.getElementById('txt-dept').value.trim() || null) : d;
-    const rs = r === '__etc__' ? (document.getElementById('txt-role').value.trim() || null) : r;
-    if (!ds || !rs) return null;
-    return ds + ' · ' + rs;
+
+  const selEl = document.getElementById('dyn-role-sel');
+  if (!selEl) return null;
+  const selVal = selEl.value;
+  if (!selVal) return null;
+
+  let roleStr = selVal === '기타'
+    ? (document.getElementById('dyn-etc-input')?.value.trim() || null)
+    : selVal;
+
+  if (!roleStr) return null;
+
+  // 교사팀: 부서 + 역할 조합
+  if (orgType === 'teachers') {
+    const deptEl = document.getElementById('dyn-dept');
+    if (!deptEl || !deptEl.value) return null;
+    const deptVal = deptEl.value === '__etc__'
+      ? (document.getElementById('dyn-dept-etc-input')?.value.trim() || null)
+      : deptEl.value;
+    if (!deptVal) return null;
+    return deptVal + ' · ' + roleStr;
   }
-  return null;
+
+  return roleStr;
 }
 
 function startSurvey() {
   const name = document.getElementById('inp-name').value.trim();
   if (!name) { alert('이름을 입력해 주세요.'); return; }
-  const g = document.getElementById('inp-group').value;
-  if (!g) { alert('소속 구분을 선택해 주세요.'); return; }
   const role = resolveRole();
-  if (!role) {
-    alert(g === 'L' ? '직분을 선택(또는 입력)해 주세요.' : '부서와 역할을 모두 선택해 주세요.');
-    return;
-  }
+  if (!role) { alert('직분을 선택(또는 입력)해 주세요.'); return; }
   uName  = name;
   uRole  = role;
-  uGroup = g;
+  uGroup = orgType || 'etc';
   showScreen('quiz');
   renderQ();
 }
+
+// ── 페이지 진입 시 직분 폼 렌더링 ──
+renderRoleForm();
 
 // ══════════════════════════════════
 //  화면 전환

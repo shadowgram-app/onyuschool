@@ -179,34 +179,39 @@ footer strong{color:var(--navy)}
   </div>
 </div>
 
-<!-- ── SCREEN: 클래스 선택 ── -->
+<!-- ── SCREEN: 조직 선택 ── -->
 <div id="screen-select" class="screen">
   <div class="container"><div class="sec">
     <div class="card">
-      <div class="card-title">클래스 선택</div>
-      <div class="card-sub">워크숍 대상 팀을 선택해 주세요</div>
+      <div class="card-title">팀빌딩 조직 선택</div>
+      <div class="card-sub">워크숍을 진행할 조직을 선택해 주세요</div>
       <div class="cls-grid">
+        <div class="cls-card" id="cls-staff" onclick="selectClass('staff')">
+          <div class="cls-icon">🌿</div>
+          <div class="cls-name">교역자팀</div>
+          <div class="cls-desc">담임목사 · 부교역자<br>행정·교구·교육부서 등</div>
+        </div>
         <div class="cls-card" id="cls-leadership" onclick="selectClass('leadership')">
           <div class="cls-icon">⚡</div>
-          <div class="cls-name">중직자 리더십</div>
-          <div class="cls-desc">장로·권사·집사·목회자<br>교회 리더십팀 소통 구조</div>
+          <div class="cls-name">리더십</div>
+          <div class="cls-desc">담임목사 · 부교역자<br>장로 · 안수집사 · 권사</div>
         </div>
         <div class="cls-card" id="cls-teachers" onclick="selectClass('teachers')">
           <div class="hot">인기</div>
           <div class="cls-icon">📚</div>
           <div class="cls-name">교사팀</div>
-          <div class="cls-desc">교사·부장·총무·담당교역자<br>부서 교사팀 협력 강화</div>
+          <div class="cls-desc">담당교역자 · 부장<br>총무 · 회계 · 교사</div>
         </div>
-        <div class="cls-card" id="cls-ministry" onclick="selectClass('ministry')">
-          <div class="cls-icon">🎵</div>
-          <div class="cls-name">사역팀</div>
-          <div class="cls-desc">찬양·방송·기도·봉사팀<br>사역팀 역할 이해와 협력</div>
+        <div class="cls-card" id="cls-custom" onclick="selectClass('custom')">
+          <div class="cls-icon">✏️</div>
+          <div class="cls-name">기타 (직접 입력)</div>
+          <div class="cls-desc">사역팀·찬양팀·봉사팀 등<br>직접 조직명 입력</div>
         </div>
-        <div class="cls-card" id="cls-staff" onclick="selectClass('staff')">
-          <div class="cls-icon">🌿</div>
-          <div class="cls-name">교역자팀</div>
-          <div class="cls-desc">담임·부목사·전도사<br>교역자팀 소통 패턴 점검</div>
-        </div>
+      </div>
+      <!-- 기타 직접 입력 -->
+      <div id="custom-input-wrap" style="display:none;margin-bottom:16px">
+        <input class="fi" type="text" id="inp-custom-cls"
+          placeholder="조직명을 입력해 주세요 (예: 찬양팀, 봉사팀)" maxlength="20">
       </div>
       <button class="btn-p" id="btn-to-pay" onclick="goToPayment()" disabled>선택 후 다음 →</button>
     </div>
@@ -273,15 +278,14 @@ footer strong{color:var(--navy)}
       <hr class="f-divider">
 
       <div class="fg">
-        <label class="fl">팀빌딩 주제 <small>(복수 선택 가능)</small></label>
-        <div class="theme-chips">
-          <div class="tc" onclick="togTheme(this,'소통 회복')">소통 회복</div>
-          <div class="tc" onclick="togTheme(this,'갈등 이해')">갈등 이해</div>
-          <div class="tc" onclick="togTheme(this,'팀 강점 발견')">팀 강점 발견</div>
-          <div class="tc" onclick="togTheme(this,'리더십 개발')">리더십 개발</div>
-          <div class="tc" onclick="togTheme(this,'새 학기 준비')">새 학기 준비</div>
-          <div class="tc" onclick="togTheme(this,'연말 결산')">연말 결산</div>
-          <div class="tc" onclick="togTheme(this,'사역 점검')">사역 점검</div>
+        <label class="fl">팀 구성원 직분 <small>(해당 직분을 모두 선택)</small></label>
+        <div id="role-chips" class="theme-chips">
+          <!-- JS로 조직에 맞게 렌더링 -->
+        </div>
+        <!-- 기타 직접 입력 -->
+        <div id="role-etc-wrap" style="display:none;margin-top:8px">
+          <input class="fi" type="text" id="inp-role-etc"
+            placeholder="직분을 직접 입력해 주세요 (예: 순장, 셀리더)" maxlength="30">
         </div>
       </div>
 
@@ -355,9 +359,28 @@ const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
 const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
 const SITE   = 'https://onyuschool.com';
 
-const CLS = { leadership:'중직자 리더십', teachers:'교사팀', ministry:'사역팀', staff:'교역자팀' };
+// ── 조직별 직분 정의 ──
+const ORG = {
+  staff: {
+    name: '교역자팀',
+    roles: ['담임목사', '부교역자', '행정부서', '교구부서', '교육부서', '기타'],
+  },
+  leadership: {
+    name: '리더십',
+    roles: ['담임목사', '부교역자', '장로', '안수집사', '권사', '기타'],
+  },
+  teachers: {
+    name: '교사팀',
+    roles: ['담당교역자', '부장', '총무', '회계', '교사', '기타'],
+  },
+  custom: {
+    name: '', // 직접 입력
+    roles: ['기타'],
+  },
+};
+
 let selCls = null, cnt = 10, wCode = '';
-const themes = new Set();
+const selRoles = new Set();
 
 /* ── 화면 전환 ── */
 function showScreen(id) {
@@ -374,16 +397,28 @@ function showScreen(id) {
   });
 }
 
-/* ── 클래스 선택 ── */
+/* ── 조직 선택 ── */
 function selectClass(c) {
   selCls = c;
   document.querySelectorAll('.cls-card').forEach(el => el.classList.remove('selected'));
   document.getElementById('cls-' + c).classList.add('selected');
   document.getElementById('btn-to-pay').disabled = false;
+
+  // 기타 직접 입력 필드 토글
+  const customWrap = document.getElementById('custom-input-wrap');
+  customWrap.style.display = c === 'custom' ? 'block' : 'none';
 }
+
 function goToPayment() {
   if (!selCls) return;
-  document.getElementById('pay-sub').textContent = CLS[selCls] + ' 워크숍';
+  // 기타 조직명 처리
+  if (selCls === 'custom') {
+    const v = document.getElementById('inp-custom-cls').value.trim();
+    if (!v) { toast('조직명을 입력해 주세요.'); return; }
+    ORG.custom.name = v;
+  }
+  const orgName = ORG[selCls].name;
+  document.getElementById('pay-sub').textContent = orgName + ' 팀빌딩 워크숍';
   calcPrice();
   showScreen('payment');
 }
@@ -396,12 +431,39 @@ function calcPrice() {
 }
 function chgCount(d) { cnt = Math.max(1, cnt + d); calcPrice(); }
 
-function goToSetup() { showScreen('setup'); }
+function goToSetup() {
+  // 직분 칩 렌더링
+  renderRoleChips();
+  // 제목 placeholder 자동 설정
+  const orgName = ORG[selCls].name;
+  const y = new Date().getFullYear();
+  document.getElementById('inp-title').placeholder =
+    `예: ${y} 교회 ${orgName} 소통 워크숍`;
+  showScreen('setup');
+}
 
-/* ── 주제 칩 ── */
-function togTheme(el, v) {
+/* ── 직분 칩 렌더링 ── */
+function renderRoleChips() {
+  selRoles.clear();
+  const roles = ORG[selCls]?.roles || ['기타'];
+  const wrap = document.getElementById('role-chips');
+  wrap.innerHTML = roles.map(r => `
+    <div class="tc" onclick="togRole(this,'${r}')">${r}</div>
+  `).join('');
+  // 기타 직접 입력 토글 — 기타 칩 클릭 시
+  document.getElementById('role-etc-wrap').style.display = 'none';
+}
+
+/* ── 직분 칩 토글 ── */
+function togRole(el, v) {
   el.classList.toggle('on');
-  el.classList.contains('on') ? themes.add(v) : themes.delete(v);
+  if (el.classList.contains('on')) {
+    selRoles.add(v);
+    if (v === '기타') document.getElementById('role-etc-wrap').style.display = 'block';
+  } else {
+    selRoles.delete(v);
+    if (v === '기타') document.getElementById('role-etc-wrap').style.display = 'none';
+  }
 }
 
 /* ── 코드 생성 ── */
@@ -427,11 +489,18 @@ async function createWorkshop() {
   btn.disabled = true; btn.textContent = '생성 중...';
 
   wCode = genCode(church);
+  // 기타 직분 직접 입력 반영
+  const etcRole = document.getElementById('inp-role-etc').value.trim();
+  if (etcRole && selRoles.has('기타')) {
+    selRoles.delete('기타');
+    selRoles.add(etcRole);
+  }
+  const orgName = ORG[selCls].name;
   const body = {
     code: wCode, church_name: church, leader_name: leader,
     leader_email: email, product_type: selCls, max_count: cnt,
-    title: title || `${church} ${CLS[selCls]} 워크숍`,
-    themes: [...themes].join(','), workshop_date: date || null,
+    title: title || `${church} ${orgName} 워크숍`,
+    themes: [...selRoles].join(','), workshop_date: date || null,
   };
 
   try {
@@ -457,10 +526,10 @@ async function createWorkshop() {
   btn.disabled = false; btn.textContent = '🔗 전용 링크 생성하기';
 
   /* 결과 화면 */
-  const su = `${SITE}/teambuilding-survey.html?church=${encodeURIComponent(church)}&code=${wCode}&title=${encodeURIComponent(title||'')}`;
+  const su = `${SITE}/teambuilding-survey.html?church=${encodeURIComponent(church)}&code=${wCode}&org_type=${selCls}&title=${encodeURIComponent(title||'')}`;
   const du = `${SITE}/teambuilding-dashboard.html?code=${wCode}&church=${encodeURIComponent(church)}`;
   document.getElementById('d-church').textContent  = church;
-  document.getElementById('d-class').textContent   = CLS[selCls];
+  document.getElementById('d-class').textContent   = ORG[selCls].name;
   document.getElementById('d-count').textContent   = cnt + '명';
   document.getElementById('d-leader').textContent  = leader;
   document.getElementById('url-survey').textContent = su;
