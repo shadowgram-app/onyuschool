@@ -627,7 +627,7 @@ body {
       </p>
     </div>
 
-    <button class="btn-share" onclick="shareResult()">결과 공유하기 📸</button>
+    <button class="btn-share" onclick="shareResult()">이 검사 추천하기 🌿</button>
 
     <div class="brand-foot">
       온유스쿨 쉐도우그램 · onyuschool.com<br>
@@ -1008,19 +1008,46 @@ async function submitToSupabase(payload) {
   }
 }
 
-// ── 공유 ──
+// ── 공유 — 온유스쿨 메인 링크 공유 ──
 function shareResult() {
-  const type = document.getElementById('res-type').textContent;
-  const kr   = document.getElementById('res-kr').textContent;
+  const type    = document.getElementById('res-type').textContent;
+  const kr      = document.getElementById('res-kr').textContent;
+  const tagline = (TYPE_DATA[type]?.tagline || '').split('\n')[0];
+
+  const shareUrl  = 'https://onyuschool.com';
+  const shareText = `나의 소통 유형은 ${type}(${kr})!\n"${tagline}"\n\n우리 교회 팀이 서로를 더 잘 이해할 수 있었어요 😊\n온유스쿨 쉐도우그램 — 소통을 회복하는 8가지 언어`;
+
   if (navigator.share) {
     navigator.share({
-      title: `나의 쉐도우그램 유형: ${type} (${kr})`,
-      text: `온유스쿨 쉐도우그램 — ${type} (${kr})\n${TYPE_DATA[type]?.tagline || ''}`,
-      url: location.href,
+      title: `나는 ${type}(${kr}) 유형 — 온유스쿨 쉐도우그램`,
+      text:  shareText,
+      url:   shareUrl,
     });
   } else {
-    alert(`나의 유형: ${type} (${kr})\n\n링크를 복사해서 공유해 보세요:\n${location.href}`);
+    // 클립보드 복사 fallback
+    const copyText = `${shareText}\n👉 ${shareUrl}`;
+    navigator.clipboard.writeText(copyText).then(() => {
+      showShareToast();
+    }).catch(() => {
+      alert(copyText);
+    });
   }
+}
+
+function showShareToast() {
+  // 기존 toast 재활용 or 간단 알림
+  const existing = document.getElementById('share-toast');
+  if (existing) { existing.classList.add('show'); setTimeout(() => existing.classList.remove('show'), 2800); return; }
+  const t = document.createElement('div');
+  t.id = 'share-toast';
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;color:#fff;padding:10px 22px;border-radius:24px;font-size:.85rem;opacity:0;transition:transform .3s,opacity .3s;z-index:999;white-space:nowrap';
+  t.textContent = '🔗 링크가 복사되었습니다! 친구에게 공유해 보세요';
+  document.body.appendChild(t);
+  requestAnimationFrame(() => {
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    t.style.opacity   = '1';
+  });
+  setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)'; t.style.opacity = '0'; }, 2800);
 }
 </script>
 </body>
