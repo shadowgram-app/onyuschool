@@ -78,8 +78,8 @@ async function callClaude(systemPrompt: string, userPrompt: string, apiKey: stri
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1800,
+      model: 'claude-sonnet-4-6',
+      max_tokens: 900,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
     }),
@@ -101,43 +101,13 @@ function parseJSON(raw: string): any {
   }
 }
 
-// ── 메인 리포트 생성 ──
-async function generateFamilyReport(members: any[], apiKey: string): Promise<Record<string, any>> {
-  const parents  = members.filter(m => m.member_type === 'parent')
-  const children = members.filter(m => m.member_type === 'child')
-  const result: Record<string, any> = {}
+// ── 프롬프트 빌더들 (병렬 호출을 위해 분리) ──
+function buildParentPrompt(parents: any[], children: any[], SYSTEM: string, apiKey: string): Promise<any> {
+  const childTypes = children.map((c: any) => `${c.name}(${TYPE_META[c.sg_type]?.kr||c.sg_type})`).join(', ')
 
-  // 구성원 요약 텍스트
-  const memberLines = members.map(m => {
-    const td = TYPE_META[m.sg_type] || {}
-    const ageStr = m.birth_year ? `만 ${getAge(m.birth_year)}세, ${getDevStage(getAge(m.birth_year))}` : ''
-    return `• ${m.name}(${m.role}): ${td.kr||m.sg_type} — 빛:${td.light||''} / 그림자:${td.shadow||''} ${ageStr}`
-  }).join('\n')
-
-  const SYSTEM = `당신은 온유스쿨 쉐도우그램 8유형 전문가입니다.
-
-[쉐도우그램 핵심 원리]
-1. 빛과 그림자 — 각 유형의 강점(빛)이 과잉되거나 미숙할 때 그림자가 된다
-2. 빛→그림자 역전 패턴 — "처음엔 빛에 끌렸지만, 그림자를 보고 갈등한다"
-3. 개성화 훈련 — "더 많이"가 아닌 "내려놓음과 균형"으로 성장
-4. 8유형: 스파크(Ne)·비전(Ni)·스테디(Si)·플레이어(Se)·하모니(Fe)·소울(Fi)·로직(Ti)·리더(Te)
-
-[절대 규칙 — 반드시 지킬 것]
-- 모든 문장에서 "이 부모", "한 부모", "다른 부모", "이 아이", "이 유형" 같은 익명 표현 절대 금지
-- 반드시 실제 이름을 사용하여 서술 (예: "민철님의 스파크 기질이", "은율이가 힘들어하는 상황은")
-- "부모의 창의성"이 아니라 "민철님의 창의성", "자녀의 안정감"이 아니라 "은율이의 안정감"처럼 구체적으로
-- 일반론·뻔한 표현 절대 금지 (예: "서로를 이해하는 것이 중요합니다" 같은 표현 금지)
-- 실제 가정에서 일어날 법한 구체적 장면 묘사 필수
-- 바로 쓸 수 있는 실제 대화 문장 예시 포함
-- 반드시 JSON만 응답 (설명 텍스트 절대 금지)`
-
-  // ─── 1. 부모 양육 성향 ───
   if (parents.length === 1) {
-    const p = parents[0]
-    const td = TYPE_META[p.sg_type] || {}
-    const childTypes = children.map(c => `${c.name}(${TYPE_META[c.sg_type]?.kr||c.sg_type})`).join(', ')
-
-    const raw1 = await callClaude(SYSTEM, `
+    const p = parents[0]; const td = TYPE_META[p.sg_type] || {}
+    return callClaude(SYSTEM, `
 [양육자 정보]
 이름: ${p.name} / 역할: ${p.role} / 유형: ${td.kr}
 빛: ${td.light} / 그림자: ${td.shadow}
@@ -152,16 +122,11 @@ ${p.name}님의 ${td.kr} 기질이 양육에서 어떻게 드러나는지 분석
 - ${p.name}님이 내일 바로 실천할 소통 방법 2가지 (실제 대화 문장 포함)
 
 JSON: {"parentingStyle":"${p.name}님 이름 포함 3~4문장","parentingStrength":"${p.name}님 이름 포함 2~3문장","parentingChallenge":"${p.name}님 이름 포함 2~3문장","parentingTips":["${p.name}님 팁1 (대화예시포함)","${p.name}님 팁2 (대화예시포함)"]}`, apiKey)
+  }
 
-    const parsed1 = parseJSON(raw1)
-    if (parsed1) Object.assign(result, parsed1)
-
-  } else if (parents.length >= 2) {
-    const p1 = parents[0], p2 = parents[1]
-    const t1 = TYPE_META[p1.sg_type] || {}, t2 = TYPE_META[p2.sg_type] || {}
-    const childTypes = children.map(c => `${c.name}(${TYPE_META[c.sg_type]?.kr||c.sg_type})`).join(', ')
-
-    const raw1 = await callClaude(SYSTEM, `
+  const p1 = parents[0], p2 = parents[1]
+  const t1 = TYPE_META[p1.sg_type] || {}, t2 = TYPE_META[p2.sg_type] || {}
+  return callClaude(SYSTEM, `
 [부모 정보]
 ${p1.name}(${p1.role}): ${t1.kr} — 빛:${t1.light} / 그림자:${t1.shadow}
 ${p2.name}(${p2.role}): ${t2.kr} — 빛:${t2.light} / 그림자:${t2.shadow}
@@ -181,20 +146,14 @@ JSON: {
   "coupleChallenge": "이름 포함 2~3문장 (충돌 패턴)",
   "parentingStyle": "${p1.name}님 역할 + ${p2.name}님 역할 각각 명시 2~3문장"
 }`, apiKey)
+}
 
-    const parsed1 = parseJSON(raw1)
-    if (parsed1) Object.assign(result, parsed1)
-  }
-
-  // ─── 2. 자녀 개별 분석 (childrenDetails 배열) ───
-  result.childrenDetails = []
-  for (const child of children) {
-    const td = TYPE_META[child.sg_type] || {}
-    const age = child.birth_year ? getAge(child.birth_year) : null
-    const devStage = age ? getDevStage(age) : '나이 정보 없음'
-    const parentInfo = parents.map(p => `${p.name}(${TYPE_META[p.sg_type]?.kr||p.sg_type})`).join(', ')
-
-    const raw2 = await callClaude(SYSTEM, `
+function buildChildPrompt(child: any, parents: any[], SYSTEM: string, apiKey: string): Promise<string> {
+  const td = TYPE_META[child.sg_type] || {}
+  const age = child.birth_year ? getAge(child.birth_year) : null
+  const devStage = age ? getDevStage(age) : '나이 정보 없음'
+  const parentInfo = parents.map((p: any) => `${p.name}(${TYPE_META[p.sg_type]?.kr||p.sg_type})`).join(', ')
+  return callClaude(SYSTEM, `
 [자녀 정보]
 이름: ${child.name} / 유형: ${td.kr} / ${age ? age+'세' : ''}
 발달 단계: ${devStage}
@@ -219,72 +178,193 @@ JSON: {
   "challenges": ["${child.name}가 힘들어하는 구체적 상황1", "상황2"],
   "parentTips": ["${child.name}와 소통 팁1 (구체적 행동+문장)", "팁2"]
 }`, apiKey)
+}
 
-    const parsed2 = parseJSON(raw2)
-    if (parsed2) result.childrenDetails.push(parsed2)
-  }
-
-  // ─── 3. 부모-자녀 소통 가이드 (parentChildGuides 배열) ───
-  result.parentChildGuides = []
-  for (const parent of parents) {
-    for (const child of children) {
-      const pt = TYPE_META[parent.sg_type] || {}
-      const ct = TYPE_META[child.sg_type] || {}
-      const age = child.birth_year ? getAge(child.birth_year) : null
-
-      const raw3 = await callClaude(SYSTEM, `
+function buildGuidePrompt(parent: any, child: any, SYSTEM: string, apiKey: string): Promise<string> {
+  const pt = TYPE_META[parent.sg_type] || {}
+  const ct = TYPE_META[child.sg_type] || {}
+  const age = child.birth_year ? getAge(child.birth_year) : null
+  return callClaude(SYSTEM, `
 [관계 정보]
 부모: ${parent.name}(${parent.role}) — ${pt.kr} / 빛:${pt.light} / 그림자:${pt.shadow}
 자녀: ${child.name}${age ? `(${age}세)` : ''} — ${ct.kr} / 빛:${ct.light} / 그림자:${ct.shadow}
 
 ⚠️ 반드시 "${parent.name}"과 "${child.name}" 이름을 모든 문장에 명시하세요. "부모", "자녀" 같은 익명 표현 절대 금지.
-⚠️ ${pt.kr}의 특성(${pt.light}/${pt.shadow})과 ${ct.kr}의 특성(${ct.light}/${ct.shadow})이 만나는 구체적 역동을 서술하세요. 유형과 무관한 일반론 절대 금지.
+⚠️ ${pt.kr}의 특성(${pt.light}/${pt.shadow})과 ${ct.kr}의 특성(${ct.light}/${ct.shadow})이 만나는 구체적 역동을 서술하세요.
 
 ${parent.name}(${pt.kr})과 ${child.name}(${ct.kr})의 관계 역동:
-
-[시너지] ${parent.name}의 ${pt.light}와 ${child.name}의 ${ct.light}가 자연스럽게 맞닿는 순간 2가지
-→ 각각 집에서 일어날 법한 구체적 장면으로 묘사
-
-[갈등] ${parent.name}의 ${pt.shadow}와 ${child.name}의 ${ct.shadow}가 부딪히는 전형적 상황 2가지
-→ 각각 "저녁 식사 중", "숙제 시간에" 같은 실제 가정 상황으로 묘사
-
-[해결 스크립트] 갈등이 생겼을 때 ${parent.name}가 ${child.name}에게 실제로 말할 수 있는 한 문장
-→ ${pt.kr} 특성을 살리되 ${ct.kr}의 마음을 열 수 있는 말
+[시너지] ${parent.name}의 ${pt.light}와 ${child.name}의 ${ct.light}가 맞닿는 순간 2가지 (집에서 일어날 법한 구체적 장면)
+[갈등] ${parent.name}의 ${pt.shadow}와 ${child.name}의 ${ct.shadow}가 부딪히는 상황 2가지 (실제 가정 상황)
+[해결] 갈등 시 ${parent.name}가 ${child.name}에게 말할 수 있는 실제 한 문장
 
 JSON: {
   "parentName": "${parent.name}",
   "childName": "${child.name}",
-  "synergy": ["${parent.name}와 ${child.name} 이름 포함 시너지 장면1", "시너지 장면2"],
-  "conflicts": ["${parent.name}와 ${child.name} 이름 포함 갈등 상황1", "갈등 상황2"],
-  "resolutionScript": "${parent.name}가 ${child.name}에게 실제로 하는 대화 문장"
+  "synergy": ["${parent.name}와 ${child.name} 시너지 장면1", "시너지 장면2"],
+  "conflicts": ["${parent.name}와 ${child.name} 갈등 상황1", "갈등 상황2"],
+  "resolutionScript": "${parent.name}가 ${child.name}에게 하는 실제 대화 문장"
 }`, apiKey)
+}
 
-      const parsed3 = parseJSON(raw3)
-      if (parsed3) result.parentChildGuides.push(parsed3)
+function buildMemberPrompt(member: any, members: any[], SYSTEM: string, apiKey: string): Promise<string> {
+  const td = TYPE_META[member.sg_type] || {}
+  const otherNames = members.filter((m: any) => m.name !== member.name).map((m: any) => `${m.name}(${TYPE_META[m.sg_type]?.kr||m.sg_type})`).join(', ')
+  return callClaude(SYSTEM, `
+[구성원 정보]
+이름: ${member.name}(${member.role}) / 유형: ${td.kr}
+빛: ${td.light} / 그림자: ${td.shadow}
+캡션 참고: "${td.caption||''}"
+가족 내 다른 구성원: ${otherNames}
+
+⚠️ 반드시 "${member.name}"이라는 이름을 모든 문장에 사용하세요. "이 분", "이 유형" 절대 금지.
+⚠️ ${td.kr}의 구체적 특성(빛:${td.light} / 그림자:${td.shadow})을 반드시 내용에 녹여내세요.
+
+${member.name}(${td.kr})의 개인 쉐도우그램:
+[캡션] ${member.name}의 빛(${td.light})과 그림자(${td.shadow})를 담은 시적이고 날카로운 한 문장
+[빛과 그림자] ${member.name}가 ${otherNames}와의 관계에서 빛날 때와 그림자가 드러날 때
+[미션] ${member.name}가 내일 바로 실천할 개인 미션 2가지
+
+JSON: {
+  "name": "${member.name}",
+  "shadowCaption": "${member.name} 이름 포함 시적 한 문장",
+  "lightShadowSummary": "${member.name} 이름 포함, 가족 맥락 2~3문장",
+  "microMissions": ["${member.name}의 내일 실천 미션1 (구체적 행동)", "미션2"]
+}`, apiKey)
+}
+
+// ── DB에서 유형 조합 데이터 로드 ──
+async function loadTypeCombinations(supabase: any, types: string[]): Promise<string> {
+  try {
+    const pairs: string[] = []
+    const checked = new Set<string>()
+    for (let i = 0; i < types.length; i++) {
+      for (let j = i; j < types.length; j++) {
+        const key = [types[i], types[j]].sort().join('_')
+        if (!checked.has(key)) {
+          checked.add(key)
+          pairs.push(`(type1.eq.${types[i]},type2.eq.${types[j]})`)
+          if (types[i] !== types[j]) pairs.push(`(type1.eq.${types[j]},type2.eq.${types[i]})`)
+        }
+      }
     }
-  }
+    const { data } = await supabase
+      .from('sg_type_combinations')
+      .select('type1,type2,attraction,conflict,superpower,growth')
+      .in('type1', types)
 
-  // ─── 4. 가족 성장 + 미션 ───
+    if (!data || data.length === 0) return ''
+
+    return data.map((r: any) =>
+      `[${r.type1}×${r.type2}] 끌림: ${r.attraction?.substring(0,150)||''} | 갈등: ${r.conflict?.substring(0,200)||''} | 슈퍼파워: ${r.superpower?.substring(0,120)||''}`
+    ).join('\n')
+  } catch(e) {
+    return ''
+  }
+}
+
+// ── 메인 리포트 생성 (모든 API 호출 병렬화) ──
+async function generateFamilyReport(members: any[], apiKey: string, supabase: any): Promise<Record<string, any>> {
+  const parents  = members.filter(m => m.member_type === 'parent')
+  const children = members.filter(m => m.member_type === 'child')
+  const result: Record<string, any> = {}
+
+  // 구성원 요약 텍스트
+  const memberLines = members.map(m => {
+    const td = TYPE_META[m.sg_type] || {}
+    const ageStr = m.birth_year ? `만 ${getAge(m.birth_year)}세, ${getDevStage(getAge(m.birth_year))}` : ''
+    return `• ${m.name}(${m.role}): ${td.kr||m.sg_type} — 빛:${td.light||''} / 그림자:${td.shadow||''} ${ageStr}`
+  }).join('\n')
+
+  // DB에서 이 가족의 유형 조합 데이터 로드
+  const memberTypes = [...new Set(members.map(m => m.sg_type))]
+  const combinationData = await loadTypeCombinations(supabase, memberTypes)
+
+  const SYSTEM = `당신은 온유스쿨 쉐도우그램 8유형 전문가입니다. 아래의 쉐도우그램 고유 지식을 반드시 활용하여 분석하세요.
+
+[쉐도우그램 핵심 원리]
+- 각 유형은 주기능(빛)과 열등기능(그림자)의 2축 긴장으로 작동한다
+- 행동 패턴은 의지력 문제가 아니라 심리 구조의 자연스러운 발현이다
+- 개성화: "더 많이"가 아니라 열등기능을 통합하는 "내려놓음과 균형"으로 성장
+- 빛이 강할수록 그림자도 깊어진다
+
+[8유형 고유 심리 구조]
+
+SPARK (Ne↔Si):
+- 빛: 새로운 가능성 발견, 영감 전파, 열정으로 분위기 전환
+- 반복 패턴: 에너지 소진 후 갑자기 냉랭, 시작은 강렬하지만 마무리가 약함
+- 양육 그림자: 약속을 자주 바꾸거나 흥분했다가 식어버려 자녀가 일관성을 기대 못함
+- 개성화: 하나를 끝내는 경험, "지쳤어"라고 말하는 연습
+
+VISION (Ni↔Se):
+- 빛: 큰 그림 설계, 미래 통찰, 높은 원칙과 기준
+- 반복 패턴: 완벽한 계획을 기다리다 실행 미룸, 높은 기준이 자녀에게 압박
+- 양육 그림자: 감정보다 논리를 앞세워 자녀가 마음을 꺼내지 못함
+- 개성화: 자녀 감정 먼저 묻기, "완벽하지 않아도 시작" 연습
+
+STEADY (Si↔Ne):
+- 빛: 약속 이행, 한결같은 돌봄, 신뢰의 닻
+- 반복 패턴: 아니오를 못 해서 혼자 감당하다 번아웃, 변화에 과도한 불안
+- 양육 그림자: 루틴 붕괴 시 불안 전달, 자녀의 새 도전을 무의식적으로 막음
+- 개성화: 작은 변화 체험, "싫어요" 한 번 말하기
+
+PLAYER (Se↔Ni):
+- 빛: 현장 즉각 반응, 유연한 적응력, 지금 이 순간의 활력
+- 반복 패턴: 충동적 결정 후 후회, 계획 자주 바뀌어 가족이 불안
+- 양육 그림자: 감정 대화 회피, 장기 일관성 부족으로 자녀가 "내일 어떻게 될지 모름"
+- 개성화: 저녁에 내일 계획 5분 이야기, 감정을 말로 표현하는 연습
+
+HARMONY (Fe↔Ti):
+- 빛: 감정 정확히 읽기, 갈등 중재, 따뜻한 분위기 조성
+- 반복 패턴: 갈등 회피 → 쌓인 감정이 한꺼번에 터짐, 경계를 못 그어 지침
+- 양육 그림자: 자기 소실(타인을 맞추다 내가 사라짐), 자녀의 감정에 과몰입
+- 개성화: "나 오늘 힘들어"라고 먼저 말하기, 불편한 진실을 부드럽게 말하기
+
+SOUL (Fi↔Te):
+- 빛: 깊은 공명, 진정성, 내면 가치 지킴, 진짜 대화 이끌기
+- 반복 패턴: 이해받지 못한다는 느낌 → 내면으로 고립, 힘들 때 혼자 삭임
+- 양육 그림자: 감정 과부하로 자녀 앞에서 갑자기 위축, 실행력 부족으로 약속 미이행
+- 개성화: 힘든 것 한 마디라도 말하기, 작은 행동 하나 즉시 실행
+
+LOGIC (Ti↔Fe):
+- 빛: 치밀한 분석, 논리적 설명, 원칙 일관성
+- 반복 패턴: 오류 즉각 지적 → 상대가 공격받은 느낌, 감정 연결 어려움
+- 양육 그림자: 자녀 감정을 논리로 해결하려 함 → 자녀가 "말해봤자 이유만 들어"
+- 개성화: "그렇구나, 힘들었겠다"만 먼저 말하기, 감정 질문 1개씩
+
+LEADER (Te↔Fi):
+- 빛: 빠른 결단, 효율적 조직화, 명확한 방향 제시
+- 반복 패턴: 결과를 위해 관계 도구화, 가족이 상처받는데 인지 못함
+- 양육 그림자: 자녀를 목표 달성 수단으로 보는 패턴, 약함 못 참아 자녀 위축
+- 개성화: 결정 전 "어떻게 생각해?" 먼저 묻기, 자녀의 약함 인정해주기
+
+[이 가족의 유형 조합 데이터 — 반드시 참고]
+${combinationData || '(조합 데이터 없음 — 위 유형별 패턴에서 추론)'}
+
+[절대 규칙]
+- 이름 명시 필수: "이 부모/이 아이/한 부모" 금지, 실제 이름 사용
+- 위의 유형별 고유 패턴 + 조합 데이터를 반드시 서술에 녹여낼 것 (일반론 금지)
+- 실제 가정 장면 묘사 + 바로 쓸 수 있는 대화 문장 포함
+- JSON만 응답 (설명 텍스트 금지)`
+
+  // ══════════════════════════════════════════════════════════════
+  // 모든 Claude API 호출을 Promise.all로 병렬 실행 → 타임아웃 방지
+  // 4인 가족 기준: 부모1 + 자녀2 + 가이드4 + 가족1 + 개인4 = 최대 12개 동시 → ~30~40초
+  // ══════════════════════════════════════════════════════════════
   const familyNames = members.map(m => m.name).join(', ')
-  const raw4 = await callClaude(SYSTEM, `
+
+  // 가족 성장 프롬프트 빌드
+  const growthPromise = callClaude(SYSTEM, `
 [가족 구성]
 ${memberLines}
 
 ⚠️ 강점·그림자·미션 모두 가족 구성원 이름(${familyNames})을 명시하세요. "이 가족", "가족 구성원" 같은 익명 표현 절대 금지.
-⚠️ 각 유형의 구체적 특성에서 도출된 내용이어야 합니다. 일반론("서로 이해하는 것이 중요") 절대 금지.
+⚠️ 각 유형의 구체적 특성에서 도출된 내용이어야 합니다. 일반론 절대 금지.
 
 이 가족의 유형 조합이 만들어내는 집단 역동:
-
-[강점 3가지] 각 구성원 이름과 유형 특성이 어우러져 만들어내는 이 가족만의 강점
-→ 예: "${familyNames.split(',')[0]}님의 ~과 ~의 ~이 만나 ~한다"
-
-[집단적 그림자 2가지] 이 유형 조합에서 반복적으로 나타나는 갈등 패턴
-→ 특정 구성원 이름을 언급하며 실제 가정 상황으로 묘사
-
-[마이크로 미션 3가지] 각 미션에 특정 구성원 이름 포함, 10분 내 집에서 실천 가능
-→ 예: "${familyNames.split(',')[0]}님이 ~에게 ~ 해보기"
-
-[1개월 후] 이 가족이 미션을 실천했을 때의 구체적 변화 장면 (이름 명시)
+[강점 3가지] 구성원 이름과 유형 특성이 어우러져 만들어내는 이 가족만의 강점 (이름 포함)
+[그림자 2가지] 반복적으로 나타나는 갈등 패턴 (이름 포함, 실제 가정 상황 묘사)
+[마이크로 미션 3가지] 특정 구성원 이름 포함, 10분 내 실천 가능
+[1개월 후] 미션을 실천했을 때의 구체적 변화 장면 (이름 명시)
 
 JSON: {
   "familyStrengths": ["이름 포함 강점1", "이름 포함 강점2", "이름 포함 강점3"],
@@ -293,47 +373,42 @@ JSON: {
   "monthlyChange": "이름 포함 1개월 후 변화 장면 2~3문장"
 }`, apiKey)
 
-  const parsed4 = parseJSON(raw4)
-  if (parsed4) Object.assign(result, parsed4)
+  // ── 병렬 실행: 부모양육 + 자녀분석 + 가족성장 + 개인캡션 (4인 가족 최대 8개)
+  // 부모-자녀 가이드는 HTML 섹션 삭제됨 → API 호출 제거
+  const [
+    parentRaw,
+    ...parallelResults
+  ] = await Promise.all([
+    parents.length > 0 ? buildParentPrompt(parents, children, SYSTEM, apiKey) : Promise.resolve('{}'),
+    ...children.map(c => buildChildPrompt(c, parents, SYSTEM, apiKey)),
+    growthPromise,
+    ...members.map(m => buildMemberPrompt(m, members, SYSTEM, apiKey)),
+  ])
 
-  // ─── 5. 개인 쉐도우그램 캡션 (individualShadowgrams 배열) ───
-  result.individualShadowgrams = []
-  for (const member of members) {
-    const td = TYPE_META[member.sg_type] || {}
+  // 결과 분배
+  const parentParsed = parseJSON(typeof parentRaw === 'string' ? parentRaw : JSON.stringify(parentRaw))
+  if (parentParsed) Object.assign(result, parentParsed)
 
-    const otherNames = members.filter(m => m.name !== member.name).map(m => `${m.name}(${TYPE_META[m.sg_type]?.kr||m.sg_type})`).join(', ')
-    const raw5 = await callClaude(SYSTEM, `
-[구성원 정보]
-이름: ${member.name}(${member.role}) / 유형: ${td.kr}
-빛: ${td.light} / 그림자: ${td.shadow}
-캡션 참고: "${td.caption}"
-가족 내 다른 구성원: ${otherNames}
+  let idx = 0
+  result.childrenDetails = children.map(() => parseJSON(parallelResults[idx++])).filter(Boolean)
+  result.parentChildGuides = [] // 섹션 삭제됨
 
-⚠️ 반드시 "${member.name}"이라는 이름을 모든 문장에 사용하세요. "이 분", "이 유형" 절대 금지.
-⚠️ ${td.kr}의 구체적 특성(빛:${td.light} / 그림자:${td.shadow})을 반드시 내용에 녹여내세요.
+  const growthParsed = parseJSON(parallelResults[idx++])
+  if (growthParsed) Object.assign(result, growthParsed)
 
-${member.name}(${td.kr})의 개인 쉐도우그램:
+  result.individualShadowgrams = members.map(() => parseJSON(parallelResults[idx++])).filter(Boolean)
 
-[캡션] ${member.name}의 빛(${td.light})과 그림자(${td.shadow})를 담은 시적이고 날카로운 한 문장
-→ 참고 캡션보다 더 ${member.name}의 가족 맥락에 맞게
+  return result
+}
 
-[빛과 그림자 요약] ${member.name}가 가족 안에서 빛날 때와 그림자가 드러날 때의 구체적 모습
-→ ${otherNames}와의 관계 맥락에서 서술
-
-[마이크로 미션 2가지] ${member.name}가 내일 바로 실천할 수 있는 개인 미션
-→ ${td.kr}의 그림자를 인식하고 개성화 방향으로 나아가는 행동
-
-JSON: {
-  "name": "${member.name}",
-  "shadowCaption": "${member.name} 이름 포함 시적 한 문장",
-  "lightShadowSummary": "${member.name} 이름 포함, 가족 맥락 2~3문장",
-  "microMissions": ["${member.name}의 내일 실천 미션1 (구체적 행동)", "미션2"]
-}`, apiKey)
-
-    const parsed5 = parseJSON(raw5)
-    if (parsed5) result.individualShadowgrams.push(parsed5)
-  }
-
+// ── 더 이상 사용되지 않는 순차 코드 제거 — 아래는 구버전 잔여 코드 제거용 더미 ──
+function _unused_sequential_placeholder() {
+  // 이 함수는 호출되지 않음. 아래 return result 를 위한 구조적 닫기.
+  const result: any = {}
+  // ─── (구버전 순차 코드 제거됨) ───
+  // 개인 쉐도우그램 캡션 — 이제 병렬 처리됨 (위 Promise.all 참고)
+  // 아래는 컴파일러를 위한 더미 코드
+  const members: any[] = []
   return result
 }
 
@@ -367,7 +442,7 @@ serve(async (req) => {
     if (!completed.length) throw new Error('완료된 구성원 없음')
 
     // AI 리포트 생성
-    const aiData = await generateFamilyReport(completed, ANTHROPIC_KEY)
+    const aiData = await generateFamilyReport(completed, ANTHROPIC_KEY, supabase)
 
     // 세션 상태 업데이트
     await supabase
