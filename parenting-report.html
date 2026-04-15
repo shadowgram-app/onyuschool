@@ -25,6 +25,52 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .btn-print{background:var(--green);color:var(--navy);padding:8px 16px;border-radius:6px;
   border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-print:hover{background:#7AB88A}
+/* 공유 버튼 */
+.btn-share-family{background:linear-gradient(135deg,#FF6B9D,#FF8E53);color:#fff;
+  padding:14px 28px;border-radius:12px;border:none;font-size:1rem;font-weight:800;
+  cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(255,107,157,.35);transition:all .2s;margin:0 auto}
+.btn-share-family:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,107,157,.45)}
+/* 공유 모달 */
+.share-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s}
+.share-overlay.open{opacity:1;pointer-events:all}
+.share-modal{width:100%;max-width:420px;background:#fff;border-radius:24px 24px 0 0;
+  padding:24px 20px 40px;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.share-overlay.open .share-modal{transform:translateY(0)}
+.share-handle{width:40px;height:4px;background:#DDD;border-radius:2px;margin:0 auto 20px}
+/* 공유 카드 */
+.share-card{background:linear-gradient(145deg,#1A3055 0%,#256060 60%,#1A4055 100%);
+  border-radius:18px;padding:24px 20px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden}
+.share-card::before{content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.06)}
+.share-card::after{content:'';position:absolute;bottom:-20px;left:-20px;
+  width:80px;height:80px;border-radius:50%;background:rgba(143,196,154,.1)}
+.sc-brand{font-size:.68rem;font-weight:800;letter-spacing:.12em;color:rgba(255,255,255,.55);
+  text-transform:uppercase;margin-bottom:14px}
+.sc-title{font-size:1rem;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.4}
+.sc-sub{font-size:.78rem;color:rgba(255,255,255,.65);margin-bottom:18px;line-height:1.6}
+.sc-members{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.sc-member-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:5px 12px;font-size:.75rem;color:#fff;font-weight:600;
+  display:flex;align-items:center;gap:4px}
+.sc-quote{font-size:.82rem;color:rgba(255,255,255,.8);font-style:italic;
+  border-left:2px solid rgba(143,196,154,.6);padding-left:12px;line-height:1.65;margin-bottom:18px}
+.sc-cta{background:var(--green);color:var(--navy);font-size:.85rem;font-weight:800;
+  padding:12px 20px;border-radius:10px;text-align:center;display:block;text-decoration:none}
+/* 공유 액션 버튼들 */
+.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.share-act-btn{padding:13px;border:1.5px solid var(--border);border-radius:10px;
+  background:#fff;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:6px;color:var(--navy);
+  transition:all .18s}
+.share-act-btn:hover{border-color:var(--navy);background:#F5F8FF}
+.share-act-btn.kakao{background:#FEE500;border-color:#FEE500;color:#3C1E1E}
+.share-act-btn.kakao:hover{background:#F0D800}
+.share-modal-title{font-size:.92rem;font-weight:800;color:var(--navy);margin-bottom:14px;text-align:center}
+.share-close{position:absolute;top:20px;right:20px;background:none;border:none;
+  font-size:1.4rem;cursor:pointer;color:var(--light);line-height:1}
 /* section */
 .sec{padding:40px 0;border-bottom:2px solid var(--border);page-break-after:always}
 .sec:last-child{border-bottom:none}
@@ -136,10 +182,58 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
     </div>
   </div>
 
+  <!-- 공유 버튼 -->
+  <div style="padding:36px 20px;text-align:center;background:linear-gradient(to bottom,var(--bg),#EEE9E0)">
+    <p style="font-size:.9rem;color:var(--mid);margin-bottom:16px;line-height:1.7">
+      우리 가족 유형 결과를 주변에 알려주세요 😊<br>
+      <small style="color:var(--light)">공유하면 더 많은 가족이 서로를 이해할 수 있어요</small>
+    </p>
+    <button class="btn-share-family" onclick="openShareModal()">
+      🌿 우리 가족 결과 공유하기
+    </button>
+  </div>
+
   <footer>
     온유스쿨 · <a href="https://onyuschool.com" style="color:var(--navy);text-decoration:none">onyuschool.com</a><br>
     이 리포트는 쉐도우그램 8유형 심리검사 결과를 바탕으로 AI가 생성한 맞춤형 가족 분석입니다.
   </footer>
+</div>
+
+<!-- 공유 모달 -->
+<div class="share-overlay" id="share-overlay" onclick="closeShareModal(event)">
+  <div class="share-modal">
+    <button class="share-close" onclick="closeShareModal()">×</button>
+    <div class="share-handle"></div>
+    <div class="share-modal-title">📤 우리 가족 결과 공유하기</div>
+
+    <!-- 공유 카드 미리보기 -->
+    <div class="share-card" id="share-card-preview">
+      <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
+      <div class="sc-title" id="sc-title">우리 가족의 소통 유형을<br>알았어요! 🌿</div>
+      <div class="sc-sub" id="sc-sub">쉐도우그램 8유형으로 가족을 이해하다</div>
+      <div class="sc-members" id="sc-members"></div>
+      <div class="sc-quote" id="sc-quote">"빛을 보고 끌렸는데, 그림자를 보고 갈등한다"<br>— 우리 가족도 서로의 빛을 발견했어요</div>
+      <a href="https://onyuschool.com/parenting.html" class="sc-cta" target="_blank">
+        👨‍👩‍👧‍👦 우리 가족도 테스트해보기 →
+      </a>
+    </div>
+
+    <!-- 공유 액션 -->
+    <div class="share-actions">
+      <button class="share-act-btn" onclick="shareKakao()">
+        💬 카카오톡 공유
+      </button>
+      <button class="share-act-btn" onclick="shareNative()">
+        📤 다른 앱으로
+      </button>
+      <button class="share-act-btn" onclick="copyShareLink()">
+        🔗 링크 복사
+      </button>
+      <button class="share-act-btn" onclick="shareInstagram()">
+        📸 이미지 저장
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- SCREEN: 에러 -->
@@ -176,9 +270,14 @@ const TYPE_DATA = {
 // ════════════════════════════════════════════════════════════════
 // 초기화
 // ════════════════════════════════════════════════════════════════
+// 전역 — 공유 카드에서 접근
+let _shareMembers = [];
+let _shareSessionCode = '';
+
 async function init() {
   const params = new URLSearchParams(location.search);
   const sessionCode = params.get('session');
+  _shareSessionCode = sessionCode || '';
 
   if (!sessionCode) {
     showError('유효하지 않은 세션입니다');
@@ -206,6 +305,9 @@ async function init() {
       showError('세션 데이터를 찾을 수 없습니다');
       return;
     }
+
+    // 공유용 멤버 저장
+    _shareMembers = members;
 
     // 완료된 구성원만 필터링 (미완료자 있어도 리포트 생성 가능)
     const completedMembers = members.filter(m => m.completed_at && m.sg_type);
@@ -1218,6 +1320,135 @@ function getIndividualMissions(type) {
     ],
   };
   return missions[type] || ['당신의 강점을 발휘하면서, 약점을 인정하고 자라나는 것을 경험해보세요'];
+}
+
+// ════════════════════════════════════════════════════════════════
+// 공유 기능
+// ════════════════════════════════════════════════════════════════
+function openShareModal() {
+  buildShareCard(_shareMembers);
+  document.getElementById('share-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeShareModal(event) {
+  // 오버레이 배경 클릭 또는 X 버튼 클릭 시 닫기
+  if (event && event.target !== document.getElementById('share-overlay') && event.type !== 'click') return;
+  document.getElementById('share-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function buildShareCard(members) {
+  const completedMembers = members.filter(m => m.sg_type);
+
+  // 멤버 칩 렌더링
+  const chipsEl = document.getElementById('sc-members');
+  chipsEl.innerHTML = '';
+  completedMembers.forEach(m => {
+    const typeInfo = TYPE_DATA[m.sg_type] || {};
+    const chip = document.createElement('div');
+    chip.className = 'sc-member-chip';
+    chip.textContent = `${typeInfo.icon || '✨'} ${m.name} · ${typeInfo.kr || m.sg_type}`;
+    chipsEl.appendChild(chip);
+  });
+
+  // 타이틀 — 구성원 수에 따라
+  const titleEl = document.getElementById('sc-title');
+  const subEl   = document.getElementById('sc-sub');
+  if (completedMembers.length >= 4) {
+    titleEl.innerHTML = '우리 가족의 소통 유형을<br>모두 알았어요! 🌿';
+    subEl.textContent = `${completedMembers.length}명의 유형을 쉐도우그램으로 분석했어요`;
+  } else {
+    const firstType = TYPE_DATA[completedMembers[0]?.sg_type]?.kr || '';
+    titleEl.innerHTML = `우리 가족에<br>${firstType}이(가) 있어요! ✨`;
+    subEl.textContent = '쉐도우그램 8유형으로 가족을 이해하다';
+  }
+}
+
+async function copyShareLink() {
+  const url = location.href;
+  try {
+    await navigator.clipboard.writeText(url);
+    // 버튼 피드백
+    const btn = event.currentTarget;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ 복사됐어요!';
+    btn.style.borderColor = '#4CAF50';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; }, 2000);
+  } catch (e) {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('링크가 복사됐어요! 📋\n' + url);
+  }
+}
+
+function shareKakao() {
+  const url = location.href;
+  const members = _shareMembers.filter(m => m.sg_type);
+  const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr || m.sg_type}(${m.name})`).join(', ');
+  const text = `우리 가족 쉐도우그램 결과: ${memberText}\n\n서로를 더 깊이 이해하게 됐어요 💚\n\n👉 ${url}`;
+
+  // Kakao SDK가 있으면 사용, 없으면 URL scheme
+  if (window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized()) {
+    window.Kakao.Link.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: '우리 가족 쉐도우그램 결과',
+        description: memberText + '\n서로를 더 깊이 이해하게 됐어요',
+        imageUrl: 'https://onyuschool.com/og-image.png',
+        link: { mobileWebUrl: url, webUrl: url }
+      },
+      buttons: [{ title: '결과 보기', link: { mobileWebUrl: url, webUrl: url } }]
+    });
+  } else {
+    // 카카오톡 URL scheme fallback
+    const kakaoUrl = 'kakaotalk://msg/send?text=' + encodeURIComponent(text);
+    window.location.href = kakaoUrl;
+    setTimeout(() => {
+      // 앱이 없으면 웹 공유로 폴백
+      if (navigator.share) {
+        navigator.share({ title: '우리 가족 쉐도우그램 결과', text: memberText, url: url });
+      } else {
+        copyShareLink();
+      }
+    }, 1000);
+  }
+}
+
+function shareNative() {
+  const url = location.href;
+  const members = _shareMembers.filter(m => m.sg_type);
+  const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr || m.sg_type}(${m.name})`).join(', ');
+
+  if (navigator.share) {
+    navigator.share({
+      title: '우리 가족 쉐도우그램 결과 🌿',
+      text: `우리 가족 유형: ${memberText}\n쉐도우그램으로 서로를 이해했어요!`,
+      url: url
+    }).catch(err => {
+      if (err.name !== 'AbortError') copyShareLink();
+    });
+  } else {
+    copyShareLink();
+  }
+}
+
+function shareInstagram() {
+  // 인스타그램은 직접 공유 API가 없으므로 이미지 저장 안내
+  const overlay = document.getElementById('share-overlay');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+
+  setTimeout(() => {
+    alert('📸 인스타그램 공유 방법\n\n1. 화면을 캡처하세요 (전원 + 볼륨 down)\n2. 캡처 이미지를 인스타 스토리에 올리세요\n3. 링크 스티커에 아래 주소를 붙여넣으세요:\n\n' + location.href);
+  }, 300);
 }
 
 // 페이지 로드 시 초기화
