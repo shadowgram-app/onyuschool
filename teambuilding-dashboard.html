@@ -738,14 +738,17 @@ function showToast(msg, dur=2800) {
    ══════════════════════════════════════════════ */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-3nT7SfFWU8uEp1l95X2Tn0uUmSRvLU5u-joUOq6MEFS7Qdmf1M9UEX41IQCRhsvVAw/exec';
 let liEmail = '', liOtp = '', liTimer = null;
+let _liOtpSending = false; // 중복 발송 방지 플래그
 
 async function liSendOtp() {
+  if (_liOtpSending) return; // 중복 발송 방지
+  _liOtpSending = true;
   const sendBtn = document.querySelector('#login-step-email .login-btn');
-  if (sendBtn && sendBtn.disabled) return; // 중복 클릭 방지
   if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '발송 중...'; }
 
   const email = document.getElementById('li-email').value.trim();
   if (!email || !email.includes('@')) {
+    _liOtpSending = false;
     if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '인증코드 받기'; }
     showToast('이메일을 정확히 입력해 주세요'); return;
   }
@@ -756,7 +759,11 @@ async function liSendOtp() {
     { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
   );
   const rows = await r.json();
-  if (!rows?.length) { showToast('등록된 이메일이 없습니다. 신청 시 입력한 이메일을 확인해 주세요.'); return; }
+  if (!rows?.length) {
+    _liOtpSending = false;
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '인증코드 받기'; }
+    showToast('등록된 이메일이 없습니다. 신청 시 입력한 이메일을 확인해 주세요.'); return;
+  }
 
   liEmail = email;
   liOtp   = String(Math.floor(100000 + Math.random() * 900000));
@@ -781,7 +788,7 @@ async function liSendOtp() {
     showToast('📧 인증코드가 발송되었습니다');
   } catch(e) { showToast('🔑 인증코드: ' + liOtp); }
 
-  if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '인증코드 받기'; }
+  // 버튼 재활성화 없음 — OTP 화면으로 전환됨
 
   document.getElementById('li-otp-desc').textContent = liEmail + '로 발송된 6자리 코드를 입력해 주세요';
   document.getElementById('login-step-email').style.display = 'none';

@@ -296,6 +296,7 @@ const TYPE_COLOR= {SPARK:'#8A6400',VISION:'#4A235A',STEADY:'#256060',PLAYER:'#3D
 let verifiedEmail = '';
 let currentOtp    = '';
 let otpTimer      = null;
+let _otpSending   = false; // 중복 발송 방지 플래그
 let currentSessionCode = '';
 
 // ── URL 파라미터로 바로 세션 접속 지원 ──
@@ -316,14 +317,15 @@ function showScreen(id) {
 //  이메일 입력 → OTP 발송
 // ══════════════════════════════════
 async function sendOtp() {
+  if (_otpSending) return; // 중복 발송 방지
+  _otpSending = true;
   const btn = document.getElementById('btn-send-otp');
-  if (btn.disabled) return; // 중복 클릭 방지
-  btn.disabled = true;
-  btn.textContent = '발송 중...';
+  if (btn) { btn.disabled = true; btn.textContent = '발송 중...'; }
 
   const email = document.getElementById('inp-email').value.trim();
   if (!email || !email.includes('@')) {
-    btn.disabled = false; btn.textContent = '인증코드 받기';
+    _otpSending = false;
+    if (btn) { btn.disabled = false; btn.textContent = '인증코드 받기'; }
     toast('유효한 이메일을 입력해 주세요'); return;
   }
 
@@ -334,8 +336,9 @@ async function sendOtp() {
   );
   const sessions = await res.json();
   if (!sessions?.length) {
-    toast('해당 이메일로 등록된 세션이 없습니다');
-    return;
+    _otpSending = false;
+    if (btn) { btn.disabled = false; btn.textContent = '인증코드 받기'; }
+    toast('해당 이메일로 등록된 세션이 없습니다'); return;
   }
 
   // OTP 생성 (6자리 숫자)
@@ -359,9 +362,7 @@ async function sendOtp() {
   // 이메일 발송 (단 한 번만)
   await sendOtpEmail(email, currentOtp);
 
-  btn.disabled = false; btn.textContent = '인증코드 받기';
-
-  // OTP 화면으로 이동
+  // OTP 화면으로 이동 (버튼 재활성화 없음 — 화면 전환으로 대체)
   document.getElementById('otp-email-display').textContent = email;
   showScreen('otp');
   startOtpTimer();
