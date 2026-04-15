@@ -145,12 +145,14 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
 <!-- SCREEN: 로딩 -->
 <div id="screen-loading" class="screen active">
   <div class="container" style="padding-top:80px;padding-bottom:80px">
-    <div style="text-align:center;margin-bottom:20px">
-      <h2 style="border:none;padding-bottom:0" id="loading-title">리포트를 불러오는 중입니다</h2>
+    <div style="text-align:center;margin-bottom:24px">
+      <h2 style="border:none;padding-bottom:0;margin-bottom:12px" id="loading-title">리포트를 생성 중입니다</h2>
+      <p id="loading-sub" style="font-size:.88rem;color:var(--mid);line-height:1.8;max-width:320px;margin:0 auto"></p>
     </div>
     <div class="spinner">
       <div class="spinner-ring"></div>
     </div>
+    <p id="loading-tip" style="text-align:center;font-size:.78rem;color:var(--light);margin-top:24px;line-height:1.7;max-width:300px;margin-left:auto;margin-right:auto"></p>
   </div>
 </div>
 
@@ -351,10 +353,31 @@ async function init() {
   _shareSessionCode = sessionCode || '';
   window._isViewerMode = isViewer; // generateReport에서 참조
 
-  // 로딩 타이틀 설정
+  // 로딩 메시지 설정
   const loadingTitle = document.getElementById('loading-title');
-  if (loadingTitle) {
-    loadingTitle.textContent = isViewer ? '가족 리포트를 불러오는 중...' : '리포트를 생성 중입니다';
+  const loadingSub   = document.getElementById('loading-sub');
+  const loadingTip   = document.getElementById('loading-tip');
+  if (isViewer) {
+    if (loadingTitle) loadingTitle.textContent = '가족 리포트를 불러오는 중...';
+    if (loadingSub)   loadingSub.textContent = '';
+  } else {
+    if (loadingTitle) loadingTitle.textContent = '쉐도우그램 가족 리포트 생성 중';
+    if (loadingSub)   loadingSub.innerHTML = '쉐도우그램 연구개발자의 공식 알고리즘으로<br>가족 맞춤형 AI 리포트를 생성하고 있어요 🌿<br><span style="color:var(--light);font-size:.8rem">약 30초~1분 소요됩니다</span>';
+    if (loadingTip)   loadingTip.textContent = '각 가족 구성원의 유형 조합을 분석하고,\n부모-자녀 소통 가이드와 맞춤 미션을 준비 중입니다';
+    // 로딩 중 메시지 순환
+    const tips = [
+      '가족 구성원의 빛과 그림자를 분석하는 중...',
+      '부모-자녀 소통 시너지를 계산하는 중...',
+      '가족만의 맞춤 마이크로 미션을 생성하는 중...',
+      '개인 쉐도우그램 캡션을 작성하는 중...',
+    ];
+    let tipIdx = 0;
+    const tipInterval = setInterval(() => {
+      if (loadingTip) loadingTip.textContent = tips[tipIdx % tips.length];
+      tipIdx++;
+    }, 5000);
+    // 리포트 표시될 때 인터벌 정리
+    window._loadingInterval = tipInterval;
   }
 
   if (!sessionCode) {
@@ -476,6 +499,7 @@ async function generateReport(members, sessionCode) {
     renderCaptionSection(members, aiData);
 
     // 화면 전환
+    if (window._loadingInterval) clearInterval(window._loadingInterval);
     document.getElementById('screen-loading').classList.remove('active');
     document.getElementById('screen-report').classList.add('active');
 
@@ -563,10 +587,15 @@ function renderParentsSection(parents, children, aiData = {}) {
     const t2 = TYPE_DATA[p2.sg_type] || {};
 
     // AI 서술 또는 규칙 기반
-    const dynamics = aiData.coupleDynamics || `${t1.kr}와 ${t2.kr}의 조합은 ${getCoupleDynamics(p1.sg_type, p2.sg_type)}의 특징을 보입니다. 이 두 유형의 조화를 통해 자녀들은 다양한 관점과 접근 방식을 배우게 됩니다.`;
+    const dynamics = aiData.coupleDynamics || `${p1.name}님(${t1.kr})과 ${p2.name}님(${t2.kr})의 조합은 ${getCoupleDynamics(p1.sg_type, p2.sg_type)}의 특징을 보입니다.`;
 
-    const synergy = getParentCoupleSynergy(p1.sg_type, p2.sg_type);
-    const caution = getParentCoupleWarning(p1.sg_type, p2.sg_type);
+    // AI 시너지/주의점 우선, 없으면 이름 삽입 폴백
+    const synergy = aiData.coupleStrength
+      ? [aiData.coupleStrength]
+      : getParentCoupleSynergy(p1.sg_type, p2.sg_type, p1.name, p2.name);
+    const caution = aiData.coupleChallenge
+      ? [aiData.coupleChallenge]
+      : getParentCoupleWarning(p1.sg_type, p2.sg_type, p1.name, p2.name);
     const p1Tips = getParentTips(p1.sg_type);
     const p2Tips = getParentTips(p2.sg_type);
 
@@ -1148,58 +1177,79 @@ function getParentTips(type) {
   return tips[type] || ['자녀의 입장에서 생각하고, 자신의 개성을 자녀가 따라배우도록 모델링하세요'];
 }
 
-function getParentCoupleSynergy(t1, t2) {
-  const key = [t1, t2].sort().join('-');
-  const synergies = {
+// n1=이름1(t1유형), n2=이름2(t2유형) — 이름 순서는 원래 t1,t2 기준
+function getParentCoupleSynergy(t1, t2, n1, n2) {
+  // 정렬된 키를 쓰되, 이름은 유형에 맞게 매핑
+  const sorted = [[t1,n1||'첫째 부모'],[t2,n2||'둘째 부모']].sort((a,b)=>a[0]<b[0]?-1:1);
+  const [sn1, sn2] = [sorted[0][1], sorted[1][1]];
+  const [st1, st2] = [sorted[0][0], sorted[1][0]];
+  const key = st1 + '-' + st2;
+  const td1 = TYPE_DATA[t1]||{}, td2 = TYPE_DATA[t2]||{};
+
+  const synergies: Record<string,string[]> = {
     'HARMONY-LOGIC': [
-      '감정 표현과 논리적 설명이 조화로우면 자녀가 심정과 합리성을 동시에 배웁니다',
-      '한 부모는 따뜻함으로, 다른 부모는 원칙으로 보완하여 균형 잡힌 양육 환경을 만듭니다'
+      `${n1||''}님의 따뜻한 공감력과 ${n2||''}님의 논리적 설명이 합쳐져 자녀가 감정과 이성을 동시에 배웁니다`,
+      `${n1||''}님이 분위기를 부드럽게 만들면 ${n2||''}님이 명확한 원칙을 전달하는 최적의 협력이 됩니다`
     ],
     'LOGIC-LEADER': [
-      '체계적이고 결단력 있는 부모들의 조합으로 자녀가 명확한 방향성을 느낍니다',
-      '규칙과 목표가 함께 제시되어 자녀가 책임감 있으면서도 도전적인 성향을 기릅니다'
+      `${n1||''}님의 체계적 분석과 ${n2||''}님의 결단력이 만나 자녀에게 명확한 방향성을 줍니다`,
+      `${n1||''}님의 원칙과 ${n2||''}님의 목표 설정이 자녀의 책임감과 추진력을 함께 키웁니다`
     ],
     'PLAYER-VISION': [
-      '현장의 유연성과 장기 전략이 만나 자녀가 현실 속에서 큰 꿈을 그릴 수 있습니다',
-      '즉시 필요와 미래 방향의 균형이 맞춰져 자녀의 성숙한 판단력을 키웁니다'
+      `${n1||''}님의 현장 적응력과 ${n2||''}님의 장기 전략이 만나 자녀가 현실 속에서 큰 꿈을 그립니다`,
+      `${n1||''}님이 지금 상황을 잘 처리하면 ${n2||''}님이 미래 방향을 잡아주는 역할 분담이 됩니다`
     ],
     'SPARK-STEADY': [
-      '영감과 안정감이 함께 있어 자녀는 새로운 도전을 두려워하지 않으면서도 기반이 튼튼합니다',
-      '한 부모의 창의성과 다른 부모의 신뢰감이 자녀의 균형 잡힌 성장을 돕습니다'
+      `${n1||''}님의 영감과 ${n2||''}님의 안정감이 함께해서 자녀는 새로운 도전을 두려워하지 않으면서도 기반이 튼튼합니다`,
+      `${n1||''}님이 가능성을 열면 ${n2||''}님이 신뢰로 받아주는 구조가 자녀의 자존감을 키웁니다`
     ],
     'SOUL-HARMONY': [
-      '진정성과 공감이 깊게 만나 자녀는 감정적으로 깊이 있는 관계를 배웁니다',
-      '의미와 따뜻함이 함께하여 자녀의 내면적 풍요로움이 자랍니다'
+      `${n1||''}님의 진정성과 ${n2||''}님의 공감이 만나 가족 안에 깊이 있는 정서적 연결이 형성됩니다`,
+      `${n1||''}님의 내면적 깊이와 ${n2||''}님의 따뜻함이 자녀의 감수성과 관계 능력을 동시에 키웁니다`
     ],
   };
-  return synergies[key] || ['두 부모의 다른 강점이 자녀에게 다양한 배움을 제공합니다', '각각의 약점을 보완하는 구조로 자녀는 양육 안에서 모델을 배웁니다'];
+
+  if (synergies[key]) return synergies[key];
+  // 기본 폴백도 이름 삽입
+  return [
+    `${n1||''}님의 ${td1.keywords?.[0]||td1.kr||''}과 ${n2||''}님의 ${td2.keywords?.[0]||td2.kr||''}이 자녀에게 다양한 관점을 제공합니다`,
+    `${n1||''}님과 ${n2||''}님의 서로 다른 강점이 균형 있는 양육 환경을 만듭니다`
+  ];
 }
 
-function getParentCoupleWarning(t1, t2) {
-  const key = [t1, t2].sort().join('-');
-  const warnings = {
+function getParentCoupleWarning(t1, t2, n1, n2) {
+  const sorted = [[t1,n1||'첫째 부모'],[t2,n2||'둘째 부모']].sort((a,b)=>a[0]<b[0]?-1:1);
+  const key = sorted[0][0] + '-' + sorted[1][0];
+  const td1 = TYPE_DATA[t1]||{}, td2 = TYPE_DATA[t2]||{};
+
+  const warnings: Record<string,string[]> = {
     'HARMONY-LOGIC': [
-      '감정과 논리가 충돌하면 자녀가 혼란스러워할 수 있으니, 부모들 사이에 먼저 대화가 필요합니다',
-      '한 부모는 "감정을 무시한다"고, 다른 부모는 "감정적이다"고 느낄 수 있어 일관성 있는 메시지 전달이 중요합니다'
+      `${n1||''}님은 "감정을 무시한다"고, ${n2||''}님은 "너무 감정적이다"고 느낄 때 자녀가 혼란을 경험합니다`,
+      `${n1||''}님의 갈등 회피와 ${n2||''}님의 직선적 피드백이 충돌하면 자녀가 어떤 기준을 따를지 몰라 불안해집니다`
     ],
     'LOGIC-LEADER': [
-      '규칙과 원칙이 너무 강하면 자녀가 억압받음을 느낄 수 있습니다',
-      '감정 표현의 기회가 부족해 자녀의 내면이 말해지지 않을 수 있습니다'
+      `${n1||''}님의 완벽주의와 ${n2||''}님의 강한 추진력이 겹치면 자녀가 항상 부족하다는 느낌을 받을 수 있습니다`,
+      `두 분 모두 결과와 원칙을 중시하다 보면 자녀의 감정을 다루는 공간이 부족해질 수 있습니다`
     ],
     'PLAYER-VISION': [
-      '현장의 즉흥성과 미래의 계획성이 충돌하면 자녀가 부모 사이에서 방향 혼란을 경험할 수 있습니다',
-      '한 부모는 "계획만 세운다"고, 다른 부모는 "깊이 없다"고 느낄 수 있으니 존중이 중요합니다'
+      `${n1||''}님이 계획을 자주 바꾸고 ${n2||''}님이 원칙을 고집할 때 자녀가 "어느 쪽이 맞아요?"라고 혼란스러워합니다`,
+      `${n1||''}님의 즉흥성과 ${n2||''}님의 일관성 요구가 충돌하면 자녀는 눈치를 보며 행동을 결정하게 됩니다`
     ],
     'SPARK-STEADY': [
-      '변화 추구와 안정 추구 사이의 긴장으로 자녀가 이중 신호를 받을 수 있습니다',
-      '부모 사이의 의견 차이가 명확하면 자녀가 "어느 쪽이 맞는가"를 혼란스러워합니다'
+      `${n1||''}님이 새로운 것을 시도하고 싶을 때 ${n2||''}님이 저항하면 자녀가 이중 메시지를 받아 혼란스러워집니다`,
+      `${n1||''}님의 에너지 기복이 ${n2||''}님의 일관성 추구와 충돌할 때 자녀가 "오늘은 어떤 분위기인지" 눈치 보게 됩니다`
     ],
     'SOUL-HARMONY': [
-      '과도한 감정 몰입이 자녀를 압도할 수 있으니, 객관적 거리감도 필요합니다',
-      '감정 중심으로만 보다 보면 자녀의 현실적 필요가 놓칠 수 있습니다'
+      `두 분 모두 감정 중심이라 자녀의 현실적 필요(규칙, 결과, 계획)가 놓칠 수 있습니다`,
+      `${n1||''}님과 ${n2||''}님이 감정에 깊이 집중하다 보면 경계 설정이나 훈육이 일관되지 않을 수 있습니다`
     ],
   };
-  return warnings[key] || ['부모들이 다를 때 자녀는 혼란을 경험할 수 있으니 부부 소통이 중요합니다', '부모들이 서로의 방식을 인정하는 것이 자녀에게 가장 좋은 메시지입니다'];
+
+  if (warnings[key]) return warnings[key];
+  return [
+    `${n1||''}님과 ${n2||''}님의 방식이 다를 때 자녀가 어느 쪽을 따라야 할지 혼란을 경험할 수 있습니다`,
+    `두 분이 자녀 앞에서 서로 다른 기준을 보이면 자녀가 그 틈을 활용하거나 불안해질 수 있습니다`
+  ];
 }
 
 // ════════════════════════════════════════════════════════════════
