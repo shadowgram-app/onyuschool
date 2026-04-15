@@ -489,7 +489,8 @@ async function saveFamilyToSupabase() {
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=representation'
       },
       body: JSON.stringify({
         code: sessionCode,
@@ -500,13 +501,15 @@ async function saveFamilyToSupabase() {
     });
 
     if (!sessionRes.ok) {
-      throw new Error('Failed to create session: ' + sessionRes.statusText);
+      const errText = await sessionRes.text();
+      throw new Error('세션 생성 실패: ' + errText);
     }
 
     const sessionJson = await sessionRes.json();
-    sessionId = sessionJson[0].id;
+    sessionId = sessionJson[0]?.id;
+    if (!sessionId) throw new Error('세션 ID를 받지 못했습니다');
 
-    // 2. family_members INSERT (부모 + 자녀)
+    // 2. family_members 구성 (토큰 미리 생성해서 저장)
     const members = [];
 
     if (familyData.father) {
@@ -546,6 +549,9 @@ async function saveFamilyToSupabase() {
       });
     });
 
+    // 전역에 members 저장 (renderLinksScreen에서 토큰 재사용)
+    familyData.savedMembers = members;
+
     // batch insert
     for (const member of members) {
       const memberRes = await fetch(`${SUPABASE_URL}/rest/v1/family_members`, {
@@ -553,13 +559,15 @@ async function saveFamilyToSupabase() {
         headers: {
           'Content-Type': 'application/json',
           'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Prefer': 'return=minimal'
         },
         body: JSON.stringify(member)
       });
 
       if (!memberRes.ok) {
-        throw new Error('Failed to insert member: ' + memberRes.statusText);
+        const errText = await memberRes.text();
+        throw new Error('구성원 저장 실패: ' + errText);
       }
     }
 
@@ -580,35 +588,20 @@ function renderLinksScreen() {
   const container = document.getElementById('links-container');
   container.innerHTML = '';
 
-  // 부모
-  if (familyData.father) {
-    const token = getTokenByName(familyData.father);
-    if (token) {
-      container.innerHTML += createLinkBox('아버지', familyData.father, token);
-    }
-  }
+  const members = familyData.savedMembers || [];
+  const roleLabel = { father:'아버지', mother:'어머니' };
 
-  if (familyData.mother) {
-    const token = getTokenByName(familyData.mother);
-    if (token) {
-      container.innerHTML += createLinkBox('어머니', familyData.mother, token);
-    }
-  }
-
-  // 자녀
-  familyData.children.forEach((child, idx) => {
-    const token = getTokenByName(child.name);
-    if (token) {
-      const role = '자녀' + (familyData.children.length > 1 ? ' ' + (idx + 1) : '');
-      container.innerHTML += createLinkBox(role, child.name, token);
-    }
+  members.forEach((m, idx) => {
+    const label = m.member_type === 'parent'
+      ? (roleLabel[m.role] || m.role)
+      : `자녀${members.filter(x=>x.member_type==='child').indexOf(m)+1}`;
+    container.innerHTML += createLinkBox(label, m.name, m.survey_token);
   });
-}
 
-function getTokenByName(name) {
-  // 실제로는 Supabase에서 조회해야 하지만, 여기선 간단히 표시
-  // 실제 구현은 복잡하므로, 토큰을 전역으로 저장하는 방식도 가능
-  return 'TOKEN_' + randomCode(12);
+  // 링크가 없으면 안내
+  if (members.length === 0) {
+    container.innerHTML = '<p style="color:var(--light)">구성원 정보가 없습니다.</p>';
+  }
 }
 
 function createLinkBox(role, name, token) {
