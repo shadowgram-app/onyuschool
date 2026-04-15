@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자녀양육 클래스 대시보드 — 온유스쿨</title>
+<style>
+:root{
+  --navy:#1A3055;--teal:#256060;--gold:#8A6400;
+  --bg:#F5F3EE;--white:#FFF;--gray:#333;
+  --mid:#666;--light:#999;--border:#DDD;--green:#8FC49A;
+  --red:#C0392B;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:15px;line-height:1.7;background:var(--bg);color:var(--gray);min-height:100vh}
+
+/* ── 상단 바 ── */
+.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo span{color:var(--green)}
+.topbar-right{color:rgba(255,255,255,.55);font-size:.8rem;cursor:pointer}
+.topbar-right:hover{color:#fff}
+
+/* ── 화면 공통 ── */
+.screen{display:none}
+.screen.active{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.container{max-width:680px;margin:0 auto;padding:40px 20px 60px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:32px 28px}
+.card-title{font-size:1.2rem;font-weight:800;color:var(--navy);margin-bottom:6px}
+.card-sub{font-size:.84rem;color:var(--light);margin-bottom:24px}
+
+/* ── 폼 ── */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:.84rem;font-weight:700;color:var(--navy);margin-bottom:7px}
+.fi{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.95rem;font-family:inherit;outline:none;color:var(--gray);background:#fff;
+  transition:border-color .2s}
+.fi:focus{border-color:var(--navy)}
+.btn-p{width:100%;padding:15px;background:var(--navy);color:#fff;border:none;
+  border-radius:10px;font-size:.97rem;font-weight:800;cursor:pointer;
+  font-family:inherit;transition:background .2s;margin-top:6px}
+.btn-p:hover{background:#102540}
+.btn-p:disabled{background:var(--border);color:var(--light);cursor:default}
+
+/* ── OTP 입력 ── */
+.otp-wrap{display:flex;gap:8px;justify-content:center;margin:20px 0}
+.otp-input{width:48px;height:56px;text-align:center;font-size:1.4rem;font-weight:800;
+  border:2px solid var(--border);border-radius:10px;outline:none;color:var(--navy);
+  font-family:inherit;transition:border-color .2s}
+.otp-input:focus{border-color:var(--navy)}
+.otp-resend{font-size:.8rem;color:var(--light);text-align:center;margin-top:10px}
+.otp-resend a{color:var(--teal);cursor:pointer;text-decoration:underline}
+.timer{font-weight:700;color:var(--navy)}
+
+/* ── 세션 목록 ── */
+.session-list{display:flex;flex-direction:column;gap:12px}
+.session-card{background:var(--white);border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block}
+.session-card:hover{border-color:var(--teal);box-shadow:0 4px 16px rgba(37,96,96,.1);transform:translateY(-1px)}
+.sc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sc-title{font-size:.95rem;font-weight:800;color:var(--navy)}
+.sc-date{font-size:.75rem;color:var(--light)}
+.sc-members{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.sc-member{font-size:.72rem;padding:2px 8px;border-radius:10px;font-weight:700}
+.sc-member.done{background:rgba(37,96,96,.1);color:var(--teal)}
+.sc-member.wait{background:#F5F5F5;color:var(--light)}
+.sc-progress{height:5px;background:#EEE;border-radius:3px;overflow:hidden}
+.sc-progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),#5AAFAF);border-radius:3px}
+.sc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;
+  font-size:.78rem;color:var(--light)}
+.sc-btn{padding:6px 14px;background:var(--navy);color:#fff;border:none;border-radius:6px;
+  font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* ── 개별 세션 대시보드 ── */
+.dash-header{margin-bottom:20px}
+.dash-title{font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:2px}
+.dash-sub{font-size:.8rem;color:var(--light)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:14px;text-align:center}
+.stat-num{font-size:1.6rem;font-weight:800;color:var(--navy)}
+.stat-lbl{font-size:.72rem;color:var(--light);margin-top:2px}
+.member-table{width:100%;border-collapse:collapse;font-size:.83rem}
+.member-table th{font-size:.72rem;font-weight:800;color:var(--navy);text-align:left;
+  padding:8px 10px;border-bottom:2px solid var(--navy)}
+.member-table td{padding:9px 10px;border-bottom:1px solid #F5F5F5;color:var(--mid);vertical-align:middle}
+.member-table tr:last-child td{border-bottom:none}
+.badge-done{background:rgba(37,96,96,.12);color:var(--teal);font-size:.68rem;
+  font-weight:800;padding:2px 8px;border-radius:8px}
+.badge-wait{background:#F5F5F5;color:var(--light);font-size:.68rem;
+  font-weight:800;padding:2px 8px;border-radius:8px}
+.type-badge{font-size:.7rem;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:4px}
+.dash-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn-report{padding:12px 20px;background:var(--teal);color:#fff;border:none;
+  border-radius:8px;font-size:.85rem;font-weight:800;cursor:pointer;font-family:inherit;
+  transition:background .2s;text-decoration:none;display:inline-block}
+.btn-report:hover{background:#1A4848}
+.btn-back{padding:11px 18px;background:transparent;border:1.5px solid var(--border);
+  color:var(--mid);border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .18s}
+.btn-back:hover{border-color:var(--navy);color:var(--navy)}
+.btn-refresh{padding:11px 16px;background:var(--bg);border:1px solid var(--border);
+  color:var(--navy);border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .18s}
+.btn-refresh:hover{border-color:var(--navy)}
+
+/* ── 링크 공유 박스 ── */
+.share-box{background:#F0F7F4;border:1.5px solid rgba(37,96,96,.25);border-radius:10px;
+  padding:14px 16px;margin-top:12px}
+.share-box-title{font-size:.74rem;font-weight:800;color:var(--teal);margin-bottom:6px}
+.share-url{font-size:.75rem;color:var(--navy);word-break:break-all;
+  background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:8px}
+.share-acts{display:flex;gap:6px}
+.btn-copy{padding:7px 14px;background:var(--teal);color:#fff;border:none;border-radius:6px;
+  font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-kakao{padding:7px 14px;background:#FEE500;color:#3C1E1E;border:none;border-radius:6px;
+  font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* ── 알림 ── */
+.info-box{background:#EEF3FF;border:1px solid rgba(26,48,85,.2);border-radius:8px;
+  padding:12px 15px;font-size:.82rem;color:var(--navy);margin:12px 0}
+
+/* ── 토스트 ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#222;color:#fff;padding:9px 22px;border-radius:24px;font-size:.83rem;
+  opacity:0;transition:transform .3s,opacity .3s;z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── 로딩 ── */
+.loading{text-align:center;padding:40px;color:var(--light);font-size:.85rem}
+
+footer{background:#F0F4F8;border-top:1px solid var(--border);padding:20px;
+  text-align:center;font-size:.75rem;color:var(--light)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="https://onyuschool.com">ONYUSCHOOL <span>자녀양육클래스</span></a>
+  <div class="topbar-right" id="topbar-user" onclick="logout()" style="display:none">
+    <span id="topbar-email"></span> · 로그아웃
+  </div>
+</div>
+
+<!-- ══ SCREEN 1: 이메일 입력 ══ -->
+<div id="screen-email" class="screen active">
+  <div class="container">
+    <div class="card">
+      <div class="card-title">대시보드 접속</div>
+      <div class="card-sub">신청 시 입력한 이메일 주소를 입력해 주세요</div>
+      <div class="fg">
+        <label class="fl" for="inp-email">이메일</label>
+        <input class="fi" type="email" id="inp-email"
+          placeholder="example@church.com" autocomplete="email"
+          onkeydown="if(event.key==='Enter') sendOtp()">
+      </div>
+      <button class="btn-p" id="btn-send-otp" onclick="sendOtp()">인증코드 받기</button>
+      <div class="info-box" style="margin-top:16px">
+        💡 신청 시 입력한 이메일로 6자리 인증코드가 발송됩니다.<br>
+        코드를 입력하면 내 세션 대시보드에 접속할 수 있습니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: OTP 입력 ══ -->
+<div id="screen-otp" class="screen">
+  <div class="container">
+    <div class="card">
+      <div class="card-title">인증코드 입력</div>
+      <div class="card-sub"><span id="otp-email-display"></span>로 발송된 6자리 코드를 입력해 주세요</div>
+
+      <div class="otp-wrap">
+        <input class="otp-input" type="text" maxlength="1" id="otp-0" oninput="otpInput(0)" onkeydown="otpKey(event,0)">
+        <input class="otp-input" type="text" maxlength="1" id="otp-1" oninput="otpInput(1)" onkeydown="otpKey(event,1)">
+        <input class="otp-input" type="text" maxlength="1" id="otp-2" oninput="otpInput(2)" onkeydown="otpKey(event,2)">
+        <input class="otp-input" type="text" maxlength="1" id="otp-3" oninput="otpInput(3)" onkeydown="otpKey(event,3)">
+        <input class="otp-input" type="text" maxlength="1" id="otp-4" oninput="otpInput(4)" onkeydown="otpKey(event,4)">
+        <input class="otp-input" type="text" maxlength="1" id="otp-5" oninput="otpInput(5)" onkeydown="otpKey(event,5)">
+      </div>
+
+      <button class="btn-p" id="btn-verify" onclick="verifyOtp()" disabled>확인</button>
+
+      <div class="otp-resend">
+        코드를 받지 못했나요?
+        <a onclick="resendOtp()">재발송</a>
+        &nbsp;|&nbsp; <span class="timer" id="otp-timer">3:00</span>
+      </div>
+
+      <button class="btn-back" style="width:100%;margin-top:12px" onclick="showScreen('email')">← 이메일 다시 입력</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: 세션 목록 ══ -->
+<div id="screen-sessions" class="screen">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--navy)">내 자녀양육 세션</div>
+        <div style="font-size:.8rem;color:var(--light)" id="sessions-email-label"></div>
+      </div>
+      <button class="btn-refresh" onclick="loadSessions()">↻ 새로고침</button>
+    </div>
+    <div class="session-list" id="session-list">
+      <div class="loading">세션을 불러오는 중...</div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <a href="parenting.html" style="font-size:.82rem;color:var(--teal);font-weight:600">
+        + 새 자녀양육 세션 시작하기
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: 세션 대시보드 ══ -->
+<div id="screen-dash" class="screen">
+  <div class="container">
+    <div class="dash-header">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">
+        <div class="dash-title" id="dash-title">세션 대시보드</div>
+        <button class="btn-back" onclick="showScreen('sessions')">← 목록</button>
+      </div>
+      <div class="dash-sub" id="dash-sub"></div>
+    </div>
+
+    <!-- 통계 -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">—</div>
+        <div class="stat-lbl">총 구성원</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--teal)" id="stat-done">—</div>
+        <div class="stat-lbl">검사 완료</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--light)" id="stat-wait">—</div>
+        <div class="stat-lbl">대기 중</div>
+      </div>
+    </div>
+
+    <!-- 진행률 -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;
+      padding:14px 16px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--mid);margin-bottom:6px">
+        <span>진행률</span><span id="progress-pct" style="font-weight:800;color:var(--teal)">0%</span>
+      </div>
+      <div style="height:7px;background:#EEE;border-radius:4px;overflow:hidden">
+        <div id="progress-bar" style="height:100%;background:linear-gradient(90deg,var(--teal),#5AAFAF);
+          border-radius:4px;transition:width .6s ease;width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 구성원 테이블 -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;
+      padding:16px;margin-bottom:14px;overflow-x:auto">
+      <div style="font-size:.78rem;font-weight:800;color:var(--navy);margin-bottom:10px;
+        letter-spacing:.06em;text-transform:uppercase">구성원 현황</div>
+      <div id="member-table-wrap">
+        <div class="loading">불러오는 중...</div>
+      </div>
+    </div>
+
+    <!-- 검사 링크 공유 박스 -->
+    <div id="share-boxes"></div>
+
+    <!-- 액션 버튼 -->
+    <div class="dash-actions">
+      <a class="btn-report" id="btn-open-report" href="#" target="_blank">📊 리포트 열기</a>
+      <button class="btn-refresh" onclick="loadDash(currentSessionCode)">↻ 새로고침</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  온유스쿨 쉐도우그램 · onyuschool.com · "소통을 회복하는 8가지 언어"
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+
+const TYPE_KR   = {SPARK:'스파크',VISION:'비전',STEADY:'스테디',PLAYER:'플레이어',
+                   HARMONY:'하모니',SOUL:'소울',LOGIC:'로직',LEADER:'리더'};
+const TYPE_ICON = {SPARK:'✨',VISION:'🔭',STEADY:'🌿',PLAYER:'🎯',
+                   HARMONY:'🕊️',SOUL:'🌊',LOGIC:'🔬',LEADER:'⚡'};
+const TYPE_COLOR= {SPARK:'#8A6400',VISION:'#4A235A',STEADY:'#256060',PLAYER:'#3D4D1C',
+                   HARMONY:'#7B1A1A',SOUL:'#555',LOGIC:'#2C3E50',LEADER:'#1A3055'};
+
+let verifiedEmail = '';
+let currentOtp    = '';
+let otpTimer      = null;
+let currentSessionCode = '';
+
+// ── URL 파라미터로 바로 세션 접속 지원 ──
+const urlParams = new URLSearchParams(location.search);
+const directSession = urlParams.get('session');
+const directEmail   = urlParams.get('email');
+
+// ══════════════════════════════════
+//  화면 전환
+// ══════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════
+//  이메일 입력 → OTP 발송
+// ══════════════════════════════════
+async function sendOtp() {
+  const email = document.getElementById('inp-email').value.trim();
+  if (!email || !email.includes('@')) { toast('유효한 이메일을 입력해 주세요'); return; }
+
+  // DB에서 해당 이메일의 세션 존재 여부 확인
+  const res = await fetch(
+    `${SB_URL}/rest/v1/family_sessions?leader_email=eq.${encodeURIComponent(email)}&select=code&limit=1`,
+    { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+  );
+  const sessions = await res.json();
+  if (!sessions?.length) {
+    toast('해당 이메일로 등록된 세션이 없습니다');
+    return;
+  }
+
+  // OTP 생성 (6자리 숫자)
+  currentOtp = String(Math.floor(100000 + Math.random() * 900000));
+  verifiedEmail = email;
+
+  // OTP를 family_sessions에 임시 저장 (otp_code 컬럼 — 없으면 로컬 저장소 활용)
+  try {
+    await fetch(`${SB_URL}/rest/v1/family_sessions?leader_email=eq.${encodeURIComponent(email)}`, {
+      method: 'PATCH',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY,
+                 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ otp_code: currentOtp, otp_expires: new Date(Date.now() + 3*60*1000).toISOString() })
+    });
+  } catch(e) {
+    // otp_code 컬럼 없으면 로컬에만 저장 (베타)
+    sessionStorage.setItem('sg_otp', currentOtp);
+    sessionStorage.setItem('sg_otp_email', email);
+  }
+
+  // 이메일 발송 (Supabase Auth 활용)
+  await sendOtpEmail(email, currentOtp);
+
+  // OTP 화면으로 이동
+  document.getElementById('otp-email-display').textContent = email;
+  showScreen('otp');
+  startOtpTimer();
+  document.getElementById('otp-0').focus();
+}
+
+// Supabase Edge Function 또는 Apps Script로 이메일 발송
+async function sendOtpEmail(email, otp) {
+  try {
+    // Supabase Edge Function 사용
+    await fetch(`${SB_URL}/functions/v1/send-otp`, {
+      method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY,
+                 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp }),
+    });
+    toast('📧 인증코드가 발송되었습니다');
+  } catch(e) {
+    // Edge Function 없을 경우 코드 직접 표시 (베타)
+    toast(`🔑 인증코드: ${otp} (베타: 직접 표시)`);
+  }
+}
+
+// ══════════════════════════════════
+//  OTP 입력 UI
+// ══════════════════════════════════
+function otpInput(idx) {
+  const val = document.getElementById(`otp-${idx}`).value.replace(/\D/g,'');
+  document.getElementById(`otp-${idx}`).value = val;
+  if (val && idx < 5) document.getElementById(`otp-${idx+1}`).focus();
+  checkOtpFilled();
+}
+function otpKey(e, idx) {
+  if (e.key === 'Backspace' && !document.getElementById(`otp-${idx}`).value && idx > 0) {
+    document.getElementById(`otp-${idx-1}`).focus();
+  }
+}
+function checkOtpFilled() {
+  const filled = [0,1,2,3,4,5].every(i => document.getElementById(`otp-${i}`).value);
+  document.getElementById('btn-verify').disabled = !filled;
+}
+function getOtpValue() {
+  return [0,1,2,3,4,5].map(i => document.getElementById(`otp-${i}`).value).join('');
+}
+
+// ── OTP 타이머 ──
+function startOtpTimer() {
+  clearInterval(otpTimer);
+  let sec = 180;
+  otpTimer = setInterval(() => {
+    sec--;
+    const m = Math.floor(sec/60), s = sec%60;
+    document.getElementById('otp-timer').textContent = `${m}:${String(s).padStart(2,'0')}`;
+    if (sec <= 0) { clearInterval(otpTimer); document.getElementById('otp-timer').textContent = '만료'; }
+  }, 1000);
+}
+function resendOtp() { sendOtp(); }
+
+// ══════════════════════════════════
+//  OTP 검증
+// ══════════════════════════════════
+async function verifyOtp() {
+  const entered = getOtpValue();
+
+  // DB에서 OTP 확인 또는 로컬 fallback
+  let storedOtp = currentOtp;
+  const localOtp = sessionStorage.getItem('sg_otp');
+  const localEmail = sessionStorage.getItem('sg_otp_email');
+  if (localOtp && localEmail === verifiedEmail) storedOtp = localOtp;
+
+  // DB에서 otp_code 조회 시도
+  try {
+    const r = await fetch(
+      `${SB_URL}/rest/v1/family_sessions?leader_email=eq.${encodeURIComponent(verifiedEmail)}&select=otp_code,otp_expires&limit=1`,
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+    );
+    const rows = await r.json();
+    if (rows?.[0]?.otp_code) {
+      storedOtp = rows[0].otp_code;
+      // 만료 시간 체크
+      if (rows[0].otp_expires && new Date() > new Date(rows[0].otp_expires)) {
+        toast('인증코드가 만료되었습니다. 다시 요청해 주세요.'); return;
+      }
+    }
+  } catch(e) { /* fallback */ }
+
+  if (entered !== storedOtp) {
+    toast('인증코드가 올바르지 않습니다');
+    [0,1,2,3,4,5].forEach(i => { document.getElementById(`otp-${i}`).value = ''; });
+    document.getElementById('otp-0').focus();
+    return;
+  }
+
+  clearInterval(otpTimer);
+  sessionStorage.removeItem('sg_otp');
+  sessionStorage.removeItem('sg_otp_email');
+
+  // 로그인 상태 저장
+  sessionStorage.setItem('sg_auth_email', verifiedEmail);
+
+  // 상단 바 이메일 표시
+  setAuthHeader(verifiedEmail);
+
+  // 세션 목록 로드
+  await loadSessions();
+  showScreen('sessions');
+  toast('✅ 인증 완료!');
+}
+
+// ══════════════════════════════════
+//  인증 헤더
+// ══════════════════════════════════
+function setAuthHeader(email) {
+  document.getElementById('topbar-user').style.display = 'block';
+  document.getElementById('topbar-email').textContent = email;
+}
+function logout() {
+  sessionStorage.removeItem('sg_auth_email');
+  verifiedEmail = '';
+  showScreen('email');
+  document.getElementById('topbar-user').style.display = 'none';
+}
+
+// ══════════════════════════════════
+//  세션 목록 로드
+// ══════════════════════════════════
+async function loadSessions() {
+  const email = verifiedEmail || sessionStorage.getItem('sg_auth_email');
+  if (!email) { showScreen('email'); return; }
+
+  document.getElementById('sessions-email-label').textContent = email + '으로 등록된 세션';
+  document.getElementById('session-list').innerHTML = '<div class="loading">불러오는 중...</div>';
+
+  try {
+    // 이 이메일의 모든 세션 조회
+    const sRes = await fetch(
+      `${SB_URL}/rest/v1/family_sessions?leader_email=eq.${encodeURIComponent(email)}&order=created_at.desc`,
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+    );
+    const sessions = await sRes.json();
+
+    if (!sessions?.length) {
+      document.getElementById('session-list').innerHTML =
+        `<div style="text-align:center;padding:30px;color:var(--light);font-size:.85rem">
+          아직 등록된 세션이 없습니다.<br>
+          <a href="parenting.html" style="color:var(--teal);font-weight:700">자녀양육 클래스 시작하기 →</a>
+        </div>`;
+      return;
+    }
+
+    // 각 세션의 구성원 현황 조회
+    const sessionCards = await Promise.all(sessions.map(async s => {
+      const mRes = await fetch(
+        `${SB_URL}/rest/v1/family_members?session_code=eq.${s.code}&select=name,role,sg_type,completed_at`,
+        { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+      );
+      const members = await mRes.json() || [];
+      const done = members.filter(m => m.completed_at && m.sg_type);
+      const pct  = members.length ? Math.round(done.length/members.length*100) : 0;
+      return { session: s, members, done, pct };
+    }));
+
+    document.getElementById('session-list').innerHTML = sessionCards.map(({ session: s, members, done, pct }) => `
+      <div class="session-card" onclick="loadDash('${s.code}')">
+        <div class="sc-header">
+          <span class="sc-title">세션 ${s.code}</span>
+          <span class="sc-date">${fmtDate(s.created_at)}</span>
+        </div>
+        <div class="sc-members">
+          ${members.map(m => `
+            <span class="sc-member ${m.completed_at ? 'done' : 'wait'}">
+              ${m.name}${m.sg_type ? ' · '+(TYPE_ICON[m.sg_type]||'')+TYPE_KR[m.sg_type] : ' ⏳'}
+            </span>`).join('')}
+        </div>
+        <div class="sc-progress"><div class="sc-progress-fill" style="width:${pct}%"></div></div>
+        <div class="sc-footer">
+          <span>${done.length}/${members.length}명 완료 (${pct}%)</span>
+          <span style="color:var(--teal);font-weight:700">대시보드 열기 →</span>
+        </div>
+      </div>`).join('');
+
+  } catch(e) {
+    document.getElementById('session-list').innerHTML = `<div class="loading">오류: ${e.message}</div>`;
+  }
+}
+
+// ══════════════════════════════════
+//  개별 세션 대시보드
+// ══════════════════════════════════
+async function loadDash(code) {
+  currentSessionCode = code;
+  showScreen('dash');
+
+  document.getElementById('dash-title').textContent = '세션 ' + code;
+  document.getElementById('dash-sub').textContent = '검사 현황을 실시간으로 확인하세요';
+  document.getElementById('btn-open-report').href = `parenting-report.html?session=${code}`;
+  document.getElementById('member-table-wrap').innerHTML = '<div class="loading">불러오는 중...</div>';
+
+  try {
+    const mRes = await fetch(
+      `${SB_URL}/rest/v1/family_members?session_code=eq.${code}&select=name,role,sg_type,completed_at,survey_token&order=created_at.asc`,
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+    );
+    const members = await mRes.json() || [];
+    const done    = members.filter(m => m.completed_at && m.sg_type);
+    const waiting = members.filter(m => !m.completed_at || !m.sg_type);
+    const pct     = members.length ? Math.round(done.length/members.length*100) : 0;
+
+    // 통계
+    document.getElementById('stat-total').textContent = members.length;
+    document.getElementById('stat-done').textContent  = done.length;
+    document.getElementById('stat-wait').textContent  = waiting.length;
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-bar').style.width = pct + '%';
+
+    // 구성원 테이블
+    const ROLE_KR = {father:'아버지',mother:'어머니',child_1:'자녀1',child_2:'자녀2',child_3:'자녀3',child_4:'자녀4'};
+    document.getElementById('member-table-wrap').innerHTML = `
+      <table class="member-table">
+        <thead><tr>
+          <th>이름</th><th>역할</th><th>유형</th><th>상태</th>
+        </tr></thead>
+        <tbody>
+          ${members.map(m => `<tr>
+            <td><strong style="color:var(--navy)">${m.name}</strong></td>
+            <td style="color:var(--mid)">${ROLE_KR[m.role]||m.role}</td>
+            <td>${m.sg_type
+              ? `<span class="type-badge" style="background:${TYPE_COLOR[m.sg_type]}18;color:${TYPE_COLOR[m.sg_type]}">${TYPE_ICON[m.sg_type]||''} ${TYPE_KR[m.sg_type]}</span>`
+              : '<span style="color:var(--light);font-size:.78rem">—</span>'}</td>
+            <td><span class="${m.completed_at ? 'badge-done' : 'badge-wait'}">${m.completed_at ? '완료' : '대기 중'}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+
+    // 미완료자 링크 공유 박스
+    const shareHtml = waiting.length > 0 ? `
+      <div style="font-size:.8rem;font-weight:700;color:var(--navy);margin-bottom:10px">
+        📋 검사 미완료 — 링크 재공유
+      </div>
+      ${waiting.map(m => {
+        const url = `${location.origin}/parenting-survey.html?token=${m.survey_token}`;
+        return `<div class="share-box" style="margin-bottom:8px">
+          <div class="share-box-title">${ROLE_KR[m.role]||m.role} · ${m.name}</div>
+          <div class="share-url">${url}</div>
+          <div class="share-acts">
+            <button class="btn-copy" onclick="copyText('${url}')">복사</button>
+            <button class="btn-kakao" onclick="shareKakao('${url}','${m.name}')">💬 카카오</button>
+          </div>
+        </div>`;
+      }).join('')}` : `<div class="info-box">🎉 모든 구성원이 검사를 완료했습니다! 리포트를 확인해 주세요.</div>`;
+
+    document.getElementById('share-boxes').innerHTML = shareHtml;
+
+  } catch(e) {
+    document.getElementById('member-table-wrap').innerHTML = `<div class="loading">오류: ${e.message}</div>`;
+  }
+}
+
+// ══════════════════════════════════
+//  유틸
+// ══════════════════════════════════
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => toast('🔗 복사되었습니다'));
+}
+function shareKakao(url, name) {
+  const msg = `${name}님, 자녀양육 유형 검사 링크입니다 🌿\n${url}`;
+  if (navigator.share) navigator.share({ title:'쉐도우그램 검사', text: msg, url });
+  else navigator.clipboard.writeText(msg).then(() => toast('📋 공유 메시지가 복사되었습니다'));
+}
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function toast(msg, dur=2800) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ══════════════════════════════════
+//  초기화 — 이미 로그인 상태 복원
+// ══════════════════════════════════
+(async function init() {
+  // 세션 저장소에서 이메일 복원
+  const savedEmail = sessionStorage.getItem('sg_auth_email');
+
+  // URL로 직접 접속 (이메일 파라미터)
+  if (directEmail && directSession) {
+    verifiedEmail = directEmail;
+    setAuthHeader(directEmail);
+    await loadDash(directSession);
+    showScreen('dash');
+    return;
+  }
+
+  if (savedEmail) {
+    verifiedEmail = savedEmail;
+    setAuthHeader(savedEmail);
+    await loadSessions();
+    showScreen('sessions');
+    return;
+  }
+
+  // URL에 session 코드만 있으면 이메일 입력 후 바로 그 세션으로
+  if (directSession) {
+    document.getElementById('inp-email').dataset.redirectSession = directSession;
+  }
+})();
+</script>
+</body>
+</html>
