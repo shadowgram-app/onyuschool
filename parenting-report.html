@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>가족 리포트 — 온유스쿨</title>
+<style>
+:root{
+  --navy:#1A3055;--teal:#256060;--gold:#8A6400;
+  --bg:#F5F3EE;--white:#FFF;--gray:#333;
+  --mid:#666;--light:#999;--border:#DDD;--green:#8FC49A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:15px;line-height:1.7;background:var(--bg);color:var(--gray)}
+.screen{display:none}.screen.active{display:block}
+.container{max-width:920px;margin:0 auto;padding:0 20px}
+/* topbar */
+.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo span{color:var(--green)}
+.topbar-actions{display:flex;gap:12px}
+.btn-print{background:var(--green);color:var(--navy);padding:8px 16px;border-radius:6px;
+  border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-print:hover{background:#7AB88A}
+/* section */
+.sec{padding:40px 0;border-bottom:2px solid var(--border);page-break-after:always}
+.sec:last-child{border-bottom:none}
+.page-break{page-break-after:always}
+.sec h2{font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:20px;
+  padding-bottom:12px;border-bottom:2px solid var(--teal)}
+.sec h3{font-size:1.1rem;font-weight:800;color:var(--navy);margin-top:18px;margin-bottom:12px}
+/* member card */
+.member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:24px}
+.member-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:16px;
+  text-align:center;transition:all .2s}
+.member-card:hover{border-color:var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.mc-icon{font-size:2.2rem;margin-bottom:8px}
+.mc-name{font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:4px}
+.mc-type{font-size:1rem;font-weight:800;color:var(--teal);margin-bottom:8px}
+.mc-keywords{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.mc-kw{background:rgba(37,96,96,.1);color:var(--teal);font-size:.65rem;
+  padding:2px 6px;border-radius:4px;font-weight:600}
+/* content box */
+.content-box{background:#fff;border:1px solid var(--border);border-radius:10px;
+  padding:20px;margin-bottom:18px;line-height:1.75}
+.content-box strong{color:var(--navy);font-weight:800}
+.content-box em{color:var(--teal);font-style:normal}
+.content-box ul{margin-left:18px;margin-top:12px}
+.content-box li{margin-bottom:8px}
+.content-box li strong{color:var(--navy)}
+/* tips */
+.tip-section{background:#FFF8E6;border-left:4px solid var(--gold);border-radius:6px;
+  padding:16px;margin-bottom:18px}
+.tip-section strong{color:#7A6000;display:block;margin-bottom:6px}
+.tip-section p{font-size:.9rem;color:#7A6000;margin-bottom:6px}
+.tip-section p:last-child{margin-bottom:0}
+/* loading */
+.spinner{display:flex;align-items:center;justify-content:center;min-height:300px}
+.spinner-ring{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--navy);
+  border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* error */
+.error-box{background:#FFE8E8;border:1px solid #FF9999;border-radius:10px;padding:24px;
+  text-align:center}
+/* footer */
+footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
+  text-align:center;font-size:.73rem;color:var(--light);margin-top:40px}
+/* print styles */
+@media print{
+  body{background:#fff}
+  .topbar{display:none}
+  footer{border-top:none;padding:0;margin-top:0}
+  .btn-print{display:none}
+  .sec{border-color:#999;page-break-inside:avoid}
+  .member-card{border:1px solid #999}
+  .content-box{border:1px solid #999}
+  .tip-section{border-left:4px solid #666;background:#f5f5f5}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="https://onyuschool.com">ONYUSCHOOL <span>쉐도우그램</span></a>
+  <div class="topbar-actions">
+    <button class="btn-print" onclick="window.print()">📄 PDF 저장</button>
+  </div>
+</div>
+
+<!-- SCREEN: 로딩 -->
+<div id="screen-loading" class="screen active">
+  <div class="container" style="padding-top:80px;padding-bottom:80px">
+    <div style="text-align:center;margin-bottom:20px">
+      <h2 style="border:none;padding-bottom:0">리포트를 생성 중입니다</h2>
+    </div>
+    <div class="spinner">
+      <div class="spinner-ring"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: 리포트 -->
+<div id="screen-report" class="screen">
+  <div class="container">
+    <div class="sec">
+      <h2>가족 구성원 소개</h2>
+      <div id="members-section"></div>
+    </div>
+
+    <div class="sec">
+      <h2 id="parents-heading">부모님의 양육 성향</h2>
+      <div id="parents-section"></div>
+    </div>
+
+    <div class="sec">
+      <h2>자녀 이해하기</h2>
+      <div id="children-section"></div>
+    </div>
+
+    <div class="sec">
+      <h2>부모-자녀 소통 가이드</h2>
+      <div id="communication-section"></div>
+    </div>
+
+    <div class="sec">
+      <h2>가족 성장 방향</h2>
+      <div id="growth-section"></div>
+    </div>
+
+    <div class="sec">
+      <h2>각 구성원의 쉐도우그램 캡션</h2>
+      <div id="caption-section"></div>
+    </div>
+  </div>
+
+  <footer>
+    온유스쿨 · <a href="https://onyuschool.com" style="color:var(--navy);text-decoration:none">onyuschool.com</a><br>
+    이 리포트는 쉐도우그램 8유형 심리검사 결과를 바탕으로 AI가 생성한 맞춤형 가족 분석입니다.
+  </footer>
+</div>
+
+<!-- SCREEN: 에러 -->
+<div id="screen-error" class="screen">
+  <div class="container" style="padding-top:60px;padding-bottom:60px">
+    <div class="error-box">
+      <h2 style="color:#C00;margin-bottom:12px">오류가 발생했습니다</h2>
+      <p id="error-message" style="margin-bottom:20px"></p>
+      <button style="padding:12px 24px;background:var(--navy);color:#fff;border:none;
+        border-radius:6px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit"
+        onclick="location.href='/'">홈으로 돌아가기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// 설정
+// ════════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+
+const TYPE_DATA = {
+  SPARK:   { icon:'✨', kr:'스파크',  keywords:['열정','영감','비전','감화'],       color:'#8A6400' },
+  VISION:  { icon:'🔭', kr:'비전',    keywords:['통찰','미래','구조','개념'],       color:'#4A235A' },
+  STEADY:  { icon:'🌿', kr:'스테디',  keywords:['안정','신뢰','꾸준함','성실'],     color:'#256060' },
+  PLAYER:  { icon:'🎯', kr:'플레이어', keywords:['실행','현장','즉흥','적응'],      color:'#3D4D1C' },
+  HARMONY: { icon:'🕊️', kr:'하모니',  keywords:['공감','조화','돌봄','연결'],      color:'#7B1A1A' },
+  SOUL:    { icon:'🌊', kr:'소울',     keywords:['깊이','의미','진정성','내면'],    color:'#555555' },
+  LOGIC:   { icon:'🔬', kr:'로직',     keywords:['분석','정확','원칙','체계'],      color:'#2C3E50' },
+  LEADER:  { icon:'⚡', kr:'리더',     keywords:['추진','결단','영향력','목표'],    color:'#1F3864' },
+};
+
+// ════════════════════════════════════════════════════════════════
+// 초기화
+// ════════════════════════════════════════════════════════════════
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const sessionCode = params.get('session');
+
+  if (!sessionCode) {
+    showError('유효하지 않은 세션입니다');
+    return;
+  }
+
+  try {
+    // Supabase에서 이 session의 모든 member 조회
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/family_members?session_code=eq.${sessionCode}&select=*`,
+      {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch session data');
+    }
+
+    const members = await res.json();
+    if (!members || members.length === 0) {
+      showError('세션 데이터를 찾을 수 없습니다');
+      return;
+    }
+
+    // 모든 사용자가 완료했는지 확인
+    const allComplete = members.every(m => m.completed_at !== null && m.sg_type);
+    if (!allComplete) {
+      showError('아직 모든 가족 구성원이 검사를 완료하지 않았습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+
+    // 리포트 생성
+    await generateReport(members, sessionCode);
+
+  } catch (error) {
+    console.error('Error:', error);
+    showError('리포트를 불러오는 중 오류가 발생했습니다: ' + error.message);
+  }
+}
+
+function showError(msg) {
+  document.getElementById('error-message').textContent = msg;
+  document.getElementById('screen-loading').classList.remove('active');
+  document.getElementById('screen-report').classList.remove('active');
+  document.getElementById('screen-error').classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════════
+// 리포트 생성
+// ════════════════════════════════════════════════════════════════
+async function generateReport(members, sessionCode) {
+  try {
+    // ── Edge Function 호출 (Claude API 서버 사이드) ──
+    let aiData = {};
+    try {
+      const edgeRes = await fetch(
+        `${SUPABASE_URL}/functions/v1/generate-parenting-report`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ session_code: sessionCode }),
+        }
+      );
+      if (edgeRes.ok) {
+        const edgeData = await edgeRes.json();
+        aiData = edgeData.aiData || {};
+      }
+    } catch(e) {
+      console.warn('Edge Function 호출 실패, 룰 기반으로 렌더링:', e.message);
+    }
+
+    const parents  = members.filter(m => m.member_type === 'parent');
+    const children = members.filter(m => m.member_type === 'child');
+
+    // 섹션 1: 가족 구성원 소개
+    renderMembersSection(members);
+
+    // 섹션 2: 부모 양육 성향 (AI 서술 포함)
+    renderParentsSection(parents, children, aiData);
+
+    // 섹션 3: 자녀 이해하기 (AI 서술 포함)
+    renderChildrenSection(children, parents, aiData);
+
+    // 섹션 4: 부모-자녀 소통 가이드
+    renderCommunicationSection(parents, children, aiData);
+
+    // 섹션 5: 가족 성장 방향 (AI 미션 포함)
+    renderGrowthSection(members, aiData);
+
+    // 섹션 6: 쉐도우그램 캡션
+    renderCaptionSection(members);
+
+    // 화면 전환
+    document.getElementById('screen-loading').classList.remove('active');
+    document.getElementById('screen-report').classList.add('active');
+
+  } catch (error) {
+    console.error('Error generating report:', error);
+    showError('리포트 생성 중 오류가 발생했습니다');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// 섹션 렌더링
+// ════════════════════════════════════════════════════════════════
+function renderMembersSection(members) {
+  let html = '<div class="member-grid">';
+
+  members.forEach(m => {
+    const typeInfo = TYPE_DATA[m.sg_type] || {};
+    const role = m.member_type === 'parent' ?
+      (m.role === 'father' ? '아버지' : '어머니') : '자녀';
+
+    html += `
+      <div class="member-card">
+        <div class="mc-icon">${typeInfo.icon || '✨'}</div>
+        <div class="mc-name">${m.name}</div>
+        <div class="mc-type">${typeInfo.kr || m.sg_type}</div>
+        <div class="mc-keywords">
+          ${(typeInfo.keywords || []).map(kw => `<span class="mc-kw">${kw}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  document.getElementById('members-section').innerHTML = html;
+}
+
+function renderParentsSection(parents, children, aiData = {}) {
+  let html = '';
+
+  // AI 서술이 있으면 우선 표시
+  if (aiData.parentingStyle) {
+    html += `<div class="content-box ai-narrative">
+      <p>${aiData.parentingStyle}</p>
+      ${aiData.parentingStrength ? `<p><strong>강점:</strong> ${aiData.parentingStrength}</p>` : ''}
+      ${aiData.parentingChallenge ? `<p><strong>주의:</strong> ${aiData.parentingChallenge}</p>` : ''}
+    </div>`;
+  }
+
+  if (parents.length === 0) {
+    html += '<div class="content-box">부모님 정보가 없습니다</div>';
+  } else if (parents.length === 1) {
+    const p = parents[0];
+    const typeInfo = TYPE_DATA[p.sg_type] || {};
+    html += `
+      <div class="content-box">
+        <h3>${p.name} (${typeInfo.kr})</h3>
+        <p><strong>${typeInfo.kr}</strong>는 ${getParentDescription(p.sg_type)}의 양육 성향을 보입니다.</p>
+        <p>이러한 부모님과 함께하는 자녀들은 ${getChildImpact(p.sg_type, children)}의 긍정적 영향을 받습니다.</p>
+      </div>
+    `;
+  } else {
+    const p1 = parents[0];
+    const p2 = parents[1];
+    const t1 = TYPE_DATA[p1.sg_type] || {};
+    const t2 = TYPE_DATA[p2.sg_type] || {};
+    html += `
+      <div class="content-box">
+        <h3>${p1.name}과 ${p2.name}의 부부 소통 패턴</h3>
+        <p><strong>${t1.kr}</strong>와 <strong>${t2.kr}</strong>의 조합은 ${getCoupleDynamics(p1.sg_type, p2.sg_type)}의 특징을 보입니다.</p>
+        <h3>양육 역할 분담</h3>
+        <ul>
+          <li><strong>${p1.name} (${t1.kr}):</strong> ${getParentRole(p1.sg_type)}</li>
+          <li><strong>${p2.name} (${t2.kr}):</strong> ${getParentRole(p2.sg_type)}</li>
+        </ul>
+      </div>
+    `;
+  }
+
+  document.getElementById('parents-section').innerHTML = html;
+  if (parents.length === 1) {
+    document.getElementById('parents-heading').textContent = '보호자님의 양육 성향';
+  }
+}
+
+function renderChildrenSection(children, parents) {
+  let html = '';
+
+  children.forEach((child, idx) => {
+    const typeInfo = TYPE_DATA[child.sg_type] || {};
+    const age = new Date().getFullYear() - (child.birth_year || 0);
+
+    html += `
+      <div class="content-box">
+        <h3>${child.name}님 (${typeInfo.kr}, 만 ${age}세)</h3>
+        <p><strong>${typeInfo.kr}</strong>는 ${getChildDescription(child.sg_type, age)}를 특징으로 합니다.</p>
+        <h4 style="margin-top:12px;margin-bottom:8px;color:var(--navy);font-weight:700">이 시기 발달 과제와의 연결</h4>
+        <p>${getDevStageGuidance(age, child.sg_type)}</p>
+      </div>
+    `;
+  });
+
+  document.getElementById('children-section').innerHTML = html;
+}
+
+function renderCommunicationSection(parents, children) {
+  let html = '';
+
+  const combos = [];
+  parents.forEach(p => {
+    children.forEach(c => {
+      combos.push({ parent: p, child: c });
+    });
+  });
+
+  if (combos.length === 0) {
+    html = '<div class="content-box">부모-자녀 조합 정보가 없습니다</div>';
+  } else {
+    combos.forEach(combo => {
+      const pt = TYPE_DATA[combo.parent.sg_type] || {};
+      const ct = TYPE_DATA[combo.child.sg_type] || {};
+      const role = combo.parent.role === 'father' ? '아버지' : '어머니';
+
+      html += `
+        <div class="content-box">
+          <h3>${role}(${pt.kr})과 ${combo.child.name}(${ct.kr})의 소통</h3>
+          <h4 style="margin-top:12px;margin-bottom:8px;color:var(--navy);font-weight:700">소통 강점</h4>
+          <p>${getCommunicationStrengths(combo.parent.sg_type, combo.child.sg_type)}</p>
+          <h4 style="margin-top:12px;margin-bottom:8px;color:var(--navy);font-weight:700">갈등 패턴과 회복 방법</h4>
+          <p>${getConflictPattern(combo.parent.sg_type, combo.child.sg_type)}</p>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById('communication-section').innerHTML = html;
+}
+
+function renderGrowthSection(members) {
+  const typeDistribution = {};
+  members.forEach(m => {
+    typeDistribution[m.sg_type] = (typeDistribution[m.sg_type] || 0) + 1;
+  });
+
+  const dominantTypes = Object.entries(typeDistribution)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([type]) => type);
+
+  let html = `
+    <div class="content-box">
+      <h3>우리 가족의 강점</h3>
+      <p>이 가족은 <strong>${dominantTypes.map(t => TYPE_DATA[t]?.kr).join(', ')}</strong>의 특성을 바탕으로
+      다양성과 균형을 이루고 있습니다.</p>
+      <h3 style="margin-top:16px">가족 차원의 개성화 미션</h3>
+      <div class="tip-section">
+        <strong>📌 이번 달 마이크로 미션</strong>
+        <p>1. <strong>공감의 시간:</strong> 매주 한 번씩 가족 구성원 각각의 입장에서 상황을 이해해보세요.</p>
+        <p>2. <strong>강점 인정:</strong> 각자의 타입별 강점을 구체적으로 말해주고 격려하세요.</p>
+        <p>3. <strong>소통 회의:</strong> 월 1회 가족 회의에서 서로의 필요를 나누고 해결책을 모색하세요.</p>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('growth-section').innerHTML = html;
+}
+
+function renderCaptionSection(members) {
+  let html = '';
+
+  members.forEach(m => {
+    const typeInfo = TYPE_DATA[m.sg_type] || {};
+    const caption = getTypeCaption(m.sg_type);
+
+    html += `
+      <div class="content-box">
+        <h3>${m.name} (${typeInfo.kr})</h3>
+        <p style="font-size:1.05rem;line-height:1.8;color:var(--navy)"><em>"${caption}"</em></p>
+      </div>
+    `;
+  });
+
+  document.getElementById('caption-section').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════════
+// 텍스트 생성 함수들
+// ════════════════════════════════════════════════════════════════
+function getParentDescription(type) {
+  const desc = {
+    SPARK: '감동과 영감으로 자녀를 이끄는',
+    VISION: '통찰과 원칙으로 이끌어 가는',
+    STEADY: '안정감과 신뢰로 지탱하는',
+    PLAYER: '현실적이고 실용적인',
+    HARMONY: '공감과 조화를 중시하는',
+    SOUL: '깊이 있는 진정성으로 양육하는',
+    LOGIC: '논리적이고 체계적인',
+    LEADER: '명확한 목표와 결단력 있는',
+  };
+  return desc[type] || '개별적인';
+}
+
+function getChildImpact(type, children) {
+  const impact = {
+    SPARK: '새로운 가능성과 창의성',
+    VISION: '미래에 대한 명확한 방향성',
+    STEADY: '정서적 안정감과 신뢰',
+    PLAYER: '문제 해결과 실행 능력',
+    HARMONY: '공동체 속에서의 따뜻함',
+    SOUL: '내면의 진정성과 의미',
+    LOGIC: '비판적 사고와 정확성',
+    LEADER: '자신감과 책임감',
+  };
+  return impact[type] || '긍정적인 영향';
+}
+
+function getCoupleDynamics(t1, t2) {
+  const dynamics = {
+    'SPARKSPIRIT': '다양한 가능성을 함께 탐색하는',
+    'VISIONSTEADY': '미래의 방향과 현재의 안정이 조화로운',
+    'STEADY': '신뢰와 일관성 속에서 변화를 수용하는',
+    'PLAYERHARMONY': '실제 필요와 감정을 함께 돌보는',
+    'SOULLOGIC': '깊이와 원칙을 함께 추구하는',
+    'LEADERLEADER': '목표 달성에서 상호 지원하는',
+  };
+  return dynamics[t1 + t2] || '각기 다른 강점으로 균형 맞추는';
+}
+
+function getParentRole(type) {
+  const role = {
+    SPARK: '자녀의 꿈과 가능성을 발견하도록 돕기',
+    VISION: '자녀의 큰 그림을 그릴 수 있도록 지도',
+    STEADY: '일상의 안정감과 신뢰 구축',
+    PLAYER: '현장 중심의 실제적 해결책 제시',
+    HARMONY: '가족 분위기를 따뜻하게 유지',
+    SOUL: '진정한 감정과 내면의 대화',
+    LOGIC: '논리적 사고와 체계 구축',
+    LEADER: '명확한 방향 제시와 실행 독려',
+  };
+  return role[type] || '맞춤형 양육';
+}
+
+function getChildDescription(type, age) {
+  const desc = {
+    SPARK: '새로운 것에 관심이 많고, 창의적인 아이디어를 즐거워합니다',
+    VISION: '깊이 있는 사고를 하며, 미래에 대해 생각해 봅니다',
+    STEADY: '일관되고 신뢰할 수 있는 행동 패턴을 보입니다',
+    PLAYER: '현실 중심적이며, 지금 이 순간을 중시합니다',
+    HARMONY: '타인의 감정을 빠르게 알아차리고 배려합니다',
+    SOUL: '내적 가치와 진정성을 추구합니다',
+    LOGIC: '논리적 사고와 원칙을 중시합니다',
+    LEADER: '주도적이며 목표 달성에 집중합니다',
+  };
+  return desc[type] || '개인의 특성';
+}
+
+function getDevStageGuidance(age, type) {
+  if (age < 6) return `이 시기는 기초적 신뢰와 안전감을 형성하는 중요한 때입니다. ${type} 성향의 자녀는 부모의 일관되고 따뜻한 반응을 통해 세상에 대한 믿음을 발달시킵니다.`;
+  if (age < 12) return `자아 개념이 형성되는 시기입니다. ${type} 성향의 자녀가 자신의 강점을 인식하고, 또래 관계에서 자신감을 갖도록 지원하는 것이 중요합니다.`;
+  if (age < 18) return `자기 정체성을 확립하는 중요한 시기입니다. ${type} 성향의 자녀가 자신의 가치관을 개발하고, 미래에 대해 생각할 수 있도록 격려하세요.`;
+  return `성인기에 접어들며 독립성과 책임감을 형성하는 시기입니다. 개별 성향을 존중하면서도 공동체 속에서의 역할을 함께 모색하세요.`;
+}
+
+function getCommunicationStrengths(parentType, childType) {
+  return `두 유형 모두 ${getCommonGround(parentType, childType)}를 공유하고 있어, 자연스러운 공감과 이해가 가능합니다.`;
+}
+
+function getCommonGround(t1, t2) {
+  if ((t1 === 'SPARK' && t2 === 'VISION') || (t1 === 'VISION' && t2 === 'SPARK')) return '새로운 가능성을 탐색하는 성향';
+  if ((t1 === 'STEADY' && t2 === 'SOUL') || (t1 === 'SOUL' && t2 === 'STEADY')) return '깊이 있는 관계를 추구하는 성향';
+  if ((t1 === 'PLAYER' && t2 === 'LEADER') || (t1 === 'LEADER' && t2 === 'PLAYER')) return '현실과 실행을 중시하는 성향';
+  if ((t1 === 'HARMONY' && t2 === 'SOUL') || (t1 === 'SOUL' && t2 === 'HARMONY')) return '감정과 진정성을 중시하는 성향';
+  return '각각의 강점을 존중할 수 있는 여지';
+}
+
+function getConflictPattern(parentType, childType) {
+  if (Math.random() > 0.5) {
+    return `부모는 ${getParentPerspective(parentType)}를 중시하는 반면, 자녀는 ${getChildPerspective(childType)}를 중시할 수 있습니다. 이때는 상대의 입장을 이해하고, 공통의 목표를 찾는 대화가 효과적입니다.`;
+  }
+  return `의견 차이가 날 때, 먼저 상대방의 관점을 인정한 후 차이점을 탐색하면 더 건설적인 해결이 가능합니다.`;
+}
+
+function getParentPerspective(type) {
+  const persp = {
+    SPARK: '가능성과 창의성',
+    VISION: '원칙과 기준',
+    STEADY: '안정과 일관성',
+    PLAYER: '현실적 결과',
+    HARMONY: '관계와 화목',
+    SOUL: '진정성',
+    LOGIC: '논리와 체계',
+    LEADER: '목표와 실행',
+  };
+  return persp[type] || '개인적 관점';
+}
+
+function getChildPerspective(type) {
+  const persp = {
+    SPARK: '신나는 경험',
+    VISION: '자신의 비전',
+    STEADY: '예측 가능함',
+    PLAYER: '현장의 자유',
+    HARMONY: '감정 배려',
+    SOUL: '내면의 의미',
+    LOGIC: '자신의 논리',
+    LEADER: '자신의 결정',
+  };
+  return persp[type] || '자신의 입장';
+}
+
+function getTypeCaption(type) {
+  const captions = {
+    SPARK: '감동으로 세상을 밝히는 사람',
+    VISION: '미래를 설계하는 사람',
+    STEADY: '신뢰로 공동체를 지키는 사람',
+    PLAYER: '현장에서 빛나는 사람',
+    HARMONY: '마음으로 사람을 잇는 사람',
+    SOUL: '본질을 추구하는 사람',
+    LOGIC: '논리로 세상을 이해하는 사람',
+    LEADER: '방향을 정하고 이끄는 사람',
+  };
+  return captions[type] || '개성 있는 사람';
+}
+
+// 페이지 로드 시 초기화
+init();
+</script>
+
+</body>
+</html>

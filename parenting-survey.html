@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자녀양육 검사 — 온유스쿨</title>
+<style>
+:root{
+  --navy:#1A3055;--teal:#256060;--gold:#8A6400;
+  --bg:#F5F3EE;--white:#FFF;--gray:#333;
+  --mid:#666;--light:#999;--border:#DDD;--green:#8FC49A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:15px;line-height:1.7;background:var(--bg);color:var(--gray)}
+.screen{display:none}.screen.active{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.container{max-width:820px;margin:0 auto;padding:0 20px}
+/* topbar */
+.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo span{color:var(--green)}
+/* section */
+.sec{padding:40px 0 56px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:30px 26px}
+/* error screen */
+.error-box{background:#FFE8E8;border:1px solid #FF9999;border-radius:10px;padding:24px;
+  text-align:center;margin-bottom:24px}
+.error-box h3{color:#C00;margin-bottom:8px}
+/* quiz */
+.quiz-header{background:var(--navy);color:#fff;padding:16px 26px;border-radius:10px 10px 0 0;
+  margin:-30px -26px 0}
+.quiz-header-user{font-size:.85rem;color:rgba(255,255,255,.73);margin-bottom:6px}
+.quiz-header-user strong{color:#fff;font-weight:800}
+.quiz-prog{background:rgba(255,255,255,.2);border-radius:10px;height:4px;margin-top:12px;overflow:hidden}
+.quiz-prog-fill{background:#fff;height:100%;transition:width .3s}
+.quiz-content{padding:30px 26px}
+.q-badge{display:inline-block;background:rgba(26,48,85,.08);color:var(--navy);
+  font-size:.75rem;font-weight:800;padding:4px 10px;border-radius:6px;margin-bottom:12px}
+.q-num{font-size:.85rem;color:var(--light)}
+.q-text{font-size:1.15rem;font-weight:700;color:var(--navy);margin:12px 0 24px;line-height:1.5}
+.scale-list{list-style:none;margin-bottom:32px}
+.scale-item{display:flex;gap:10px;margin-bottom:12px;cursor:pointer}
+.scale-radio{width:20px;height:20px;border:2px solid var(--border);border-radius:50%;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,background .2s}
+.scale-item input[type="radio"]:checked ~ .scale-radio{
+  border-color:var(--navy);background:var(--navy)}
+.scale-item input[type="radio"]:checked ~ .scale-radio::after{
+  content:'✓';color:#fff;font-weight:700;font-size:.85rem}
+.scale-item input[type="radio"]{display:none}
+.scale-text{flex:1;font-size:.95rem;color:var(--gray);padding-top:2px}
+.quiz-btns{display:flex;gap:12px}
+.btn-q{flex:1;padding:14px;border-radius:8px;border:none;font-size:.95rem;
+  font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-prev{background:transparent;border:1.5px solid var(--border);color:var(--mid)}
+.btn-prev:hover{border-color:var(--navy);color:var(--navy)}
+.btn-next{background:var(--navy);color:#fff}
+.btn-next:hover{background:#102540}
+.btn-next:disabled{background:var(--border);color:var(--light);cursor:default}
+/* result */
+.result-header{text-align:center;padding:24px 26px;background:linear-gradient(135deg,var(--navy) 0%,#1E4070 100%);
+  color:#fff;border-radius:10px 10px 0 0;margin:-30px -26px 0}
+.result-icon{font-size:2.8rem;margin-bottom:12px}
+.result-type{font-size:1.6rem;font-weight:800;margin-bottom:6px}
+.result-keywords{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.kw{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);
+  color:#fff;padding:6px 12px;border-radius:16px;font-size:.8rem;font-weight:700}
+.result-content{padding:30px 26px}
+.result-note{background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
+  padding:12px 15px;font-size:.85rem;color:#7A6000;margin-bottom:18px;line-height:1.65}
+.result-actions{display:flex;gap:12px;margin-top:24px}
+.btn-p{flex:1;padding:14px;background:var(--navy);color:#fff;border:none;
+  border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:background .2s;text-decoration:none;display:flex;align-items:center;
+  justify-content:center}
+.btn-p:hover{background:#102540}
+/* spinner */
+.spinner{display:flex;align-items:center;justify-content:center;min-height:300px}
+.spinner-ring{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--navy);
+  border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
+  text-align:center;font-size:.73rem;color:var(--light)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="https://onyuschool.com">ONYUSCHOOL <span>쉐도우그램</span></a>
+</div>
+
+<!-- SCREEN: 로딩 -->
+<div id="screen-loading" class="screen active">
+  <div class="container"><div class="sec">
+    <div class="card">
+      <div class="spinner">
+        <div class="spinner-ring"></div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- SCREEN: 에러 -->
+<div id="screen-error" class="screen">
+  <div class="container"><div class="sec">
+    <div class="card">
+      <div class="error-box">
+        <h3>오류가 발생했습니다</h3>
+        <p id="error-message"></p>
+      </div>
+      <button class="btn-p" onclick="location.href='/'">홈으로 돌아가기</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- SCREEN: 검사 -->
+<div id="screen-survey" class="screen">
+  <div class="container"><div class="sec">
+    <div class="card">
+      <div class="quiz-header">
+        <div class="quiz-header-user">
+          <span id="user-role">검사 중</span><strong id="user-name"></strong>
+        </div>
+        <div class="quiz-prog">
+          <div class="quiz-prog-fill" id="prog-fill"></div>
+        </div>
+      </div>
+      <div class="quiz-content">
+        <div class="q-badge">
+          <span class="q-num">Q<span id="q-num">1</span></span> · <span id="q-badge">질문</span>
+        </div>
+        <div class="q-text" id="q-text">질문이 로드되지 않았습니다</div>
+        <ul class="scale-list" id="scale-list"></ul>
+        <div class="quiz-btns">
+          <button class="btn-q btn-prev" id="btn-prev" onclick="prevQ()" style="display:none">← 이전</button>
+          <button class="btn-q btn-next" id="btn-next" onclick="nextQ()">다음 →</button>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- SCREEN: 결과 -->
+<div id="screen-result" class="screen">
+  <div class="container"><div class="sec">
+    <div class="card">
+      <div class="result-header">
+        <div class="result-icon" id="result-icon">✨</div>
+        <div class="result-type" id="result-type">유형명</div>
+        <div class="result-keywords" id="result-keywords"></div>
+      </div>
+      <div class="result-content">
+        <div class="result-note">
+          <strong>📌 전체 리포트는 가족 모두가 검사를 완료한 후 발송됩니다.</strong><br>
+          모든 가족 구성원이 검사를 완료하면, 자동으로 맞춤형 가족 리포트 페이지가 활성화되고
+          신청자 이메일로도 리포트가 발송됩니다.
+        </div>
+
+        <div id="report-link-box" style="display:none">
+          <div style="background:#F0F7F4;border:1px solid rgba(37,96,96,.28);border-radius:10px;padding:16px 18px;margin:16px 0">
+            <div style="font-size:.74rem;font-weight:800;letter-spacing:.04em;margin-bottom:7px;color:var(--teal)">통합 리포트</div>
+            <div style="font-size:.78rem;font-weight:600;word-break:break-all;
+              background:#fff;border:1px solid var(--border);border-radius:6px;padding:9px 11px;margin-bottom:9px"
+              id="report-url"></div>
+            <div style="display:flex;gap:7px">
+              <button class="btn-cp" onclick="copyReportLink()">링크 복사</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn-p" onclick="checkAllComplete()">✓ 리포트 확인</button>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<footer>
+  온유스쿨 · <a href="https://onyuschool.com" style="color:var(--navy);text-decoration:none">onyuschool.com</a>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// 설정
+// ════════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+
+const QUESTIONS = [
+  { dim:'Ne', text:'새로운 아이디어가 떠오르면 바로 이야기하고 싶다' },
+  { dim:'Ne', text:'여러 가능성을 동시에 탐색하는 것이 즐겁다' },
+  { dim:'Ne', text:'대화할수록 새로운 연결고리가 보인다' },
+  { dim:'Ne', text:'뻔한 방법보다 새로운 접근을 시도하고 싶다' },
+  { dim:'Ni', text:'말하지 않아도 상황의 큰 그림이 보인다' },
+  { dim:'Ni', text:'어떤 일이 어떻게 될지 미리 느껴질 때가 많다' },
+  { dim:'Ni', text:'한 가지에 깊이 집중할 때 가장 명확하게 생각된다' },
+  { dim:'Ni', text:'미래의 패턴이나 방향이 직관적으로 느껴진다' },
+  { dim:'Si', text:'과거에 잘 됐던 방식을 신뢰하고 따르는 편이다' },
+  { dim:'Si', text:'예측 가능한 루틴이 있을 때 안정감을 느낀다' },
+  { dim:'Si', text:'세부 사항과 구체적인 사실을 잘 기억한다' },
+  { dim:'Si', text:'신중하게 확인하고 검증한 뒤에 결정한다' },
+  { dim:'Se', text:'지금 이 순간의 경험이 가장 중요하다' },
+  { dim:'Se', text:'현재 일어나는 일에 즉각 반응하고 행동한다' },
+  { dim:'Se', text:'몸으로 직접 경험해야 가장 잘 배운다' },
+  { dim:'Se', text:'보고 듣고 느끼는 감각 정보에 즉각 몰입된다' },
+  { dim:'Fe', text:'주변 분위기가 불편하면 나도 불편해진다' },
+  { dim:'Fe', text:'모두가 조화롭게 지내는 것이 중요하다' },
+  { dim:'Fe', text:'상대방의 감정 상태를 금방 알아챈다' },
+  { dim:'Fe', text:'그룹의 분위기를 좋게 만들기 위해 노력한다' },
+  { dim:'Fi', text:'내 가치관과 맞지 않으면 아무리 좋아도 거부감이 든다' },
+  { dim:'Fi', text:'감정을 혼자 처리하고 나서야 나눌 수 있다' },
+  { dim:'Fi', text:'진정성 없는 관계보다 혼자가 낫다' },
+  { dim:'Fi', text:'내가 중요하게 여기는 것에 대해서는 타협하지 않는다' },
+  { dim:'Ti', text:'어떤 주장이든 논리적 근거를 따진다' },
+  { dim:'Ti', text:'내 머릿속에 일관된 원리 체계가 있다' },
+  { dim:'Ti', text:'모순이나 오류를 발견하면 짚고 넘어가야 한다' },
+  { dim:'Ti', text:'감정보다 논리가 더 신뢰할 수 있는 판단 기준이다' },
+  { dim:'Te', text:'목표를 정하면 효율적인 실행 방법을 즉시 찾는다' },
+  { dim:'Te', text:'감정보다 결과가 더 중요하다' },
+  { dim:'Te', text:'체계와 기준이 있어야 팀이 제대로 돌아간다' },
+  { dim:'Te', text:'계획대로 진행되지 않으면 바로 수정하고 싶다' },
+];
+
+const DIM_LABEL = {
+  Ne:'가능성 탐색', Ni:'통찰·직관',
+  Si:'안정·기억',  Se:'현재 감각',
+  Fe:'조화·공감',  Fi:'진심·가치',
+  Ti:'논리·분석',  Te:'실행·결과',
+};
+const DIM_TYPE = {
+  Ne:'SPARK', Ni:'VISION', Si:'STEADY', Se:'PLAYER',
+  Fe:'HARMONY', Fi:'SOUL', Ti:'LOGIC', Te:'LEADER',
+};
+const SCALE_TEXT = ['전혀 그렇지 않다', '그렇지 않다', '보통이다', '그렇다', '매우 그렇다'];
+
+const TYPE_DATA = {
+  SPARK:   { icon:'✨', kr:'스파크',  keywords:['열정','영감','비전','감화'],       color:'#8A6400' },
+  VISION:  { icon:'🔭', kr:'비전',    keywords:['통찰','미래','구조','개념'],       color:'#4A235A' },
+  STEADY:  { icon:'🌿', kr:'스테디',  keywords:['안정','신뢰','꾸준함','성실'],     color:'#256060' },
+  PLAYER:  { icon:'🎯', kr:'플레이어', keywords:['실행','현장','즉흥','적응'],      color:'#3D4D1C' },
+  HARMONY: { icon:'🕊️', kr:'하모니',  keywords:['공감','조화','돌봄','연결'],      color:'#7B1A1A' },
+  SOUL:    { icon:'🌊', kr:'소울',     keywords:['깊이','의미','진정성','내면'],    color:'#555555' },
+  LOGIC:   { icon:'🔬', kr:'로직',     keywords:['분석','정확','원칙','체계'],      color:'#2C3E50' },
+  LEADER:  { icon:'⚡', kr:'리더',     keywords:['추진','결단','영향력','목표'],    color:'#1F3864' },
+};
+
+// ════════════════════════════════════════════════════════════════
+// 상태
+// ════════════════════════════════════════════════════════════════
+let cur = 0;
+const ans = Array(28).fill(null);
+let surveyToken = null;
+let memberData = null;
+let sessionCode = null;
+
+// ════════════════════════════════════════════════════════════════
+// 초기화
+// ════════════════════════════════════════════════════════════════
+async function init() {
+  const params = new URLSearchParams(location.search);
+  surveyToken = params.get('token');
+
+  if (!surveyToken) {
+    showError('유효하지 않은 링크입니다');
+    return;
+  }
+
+  try {
+    // Supabase에서 member 조회
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/family_members?survey_token=eq.${surveyToken}`,
+      {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch member data');
+    }
+
+    const data = await res.json();
+    if (!data || data.length === 0) {
+      showError('회원 정보를 찾을 수 없습니다');
+      return;
+    }
+
+    memberData = data[0];
+    sessionCode = memberData.session_code;
+
+    // UI 설정
+    document.getElementById('user-name').textContent = memberData.name;
+    const roleText = memberData.role === 'father' ? '아버지' :
+                     memberData.role === 'mother' ? '어머니' :
+                     memberData.role.startsWith('child_') ? '자녀' : '검사자';
+    document.getElementById('user-role').textContent = roleText + '님의';
+
+    showScreen('survey');
+    renderQ();
+
+  } catch (error) {
+    console.error('Error:', error);
+    showError('데이터를 불러오는 중 오류가 발생했습니다');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// 화면 전환
+// ════════════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  document.getElementById('error-message').textContent = msg;
+  showScreen('error');
+}
+
+// ════════════════════════════════════════════════════════════════
+// 검사 렌더링
+// ════════════════════════════════════════════════════════════════
+function renderQ() {
+  const q = QUESTIONS[cur];
+
+  document.getElementById('q-num').textContent = cur + 1;
+  document.getElementById('q-badge').textContent = 'Q' + (cur + 1) + ' · ' + (DIM_LABEL[q.dim] || q.dim);
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('prog-fill').style.width = ((cur + 1) / 28 * 100).toFixed(1) + '%';
+
+  const list = document.getElementById('scale-list');
+  list.innerHTML = '';
+  SCALE_TEXT.forEach((txt, i) => {
+    const v = i + 1;
+    const li = document.createElement('li');
+    li.className = 'scale-item';
+    const id = 'opt_' + cur + '_' + v;
+    const checked = ans[cur] === v ? 'checked' : '';
+    li.innerHTML = `
+      <input type="radio" id="${id}" name="scale" value="${v}" ${checked}
+        onchange="ans[${cur}]=${v};updateBtnState()">
+      <div class="scale-radio"></div>
+      <label class="scale-text" for="${id}">${txt}</label>
+    `;
+    list.appendChild(li);
+  });
+
+  updateBtnState();
+}
+
+function updateBtnState() {
+  const prevBtn = document.getElementById('btn-prev');
+  const nextBtn = document.getElementById('btn-next');
+
+  prevBtn.style.display = cur > 0 ? 'block' : 'none';
+  nextBtn.disabled = ans[cur] === null;
+}
+
+function prevQ() {
+  if (cur > 0) {
+    cur--;
+    renderQ();
+  }
+}
+
+function nextQ() {
+  if (ans[cur] === null) return;
+
+  if (cur < 27) {
+    cur++;
+    renderQ();
+  } else {
+    // 완료
+    submitSurvey();
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// 결과 계산
+// ════════════════════════════════════════════════════════════════
+function calcType() {
+  const scores = {};
+  'Ne Ni Si Se Fe Fi Ti Te'.split(' ').forEach(d => scores[d] = 0);
+
+  QUESTIONS.forEach((q, idx) => {
+    scores[q.dim] += ans[idx] || 0;
+  });
+
+  return scores;
+}
+
+// ════════════════════════════════════════════════════════════════
+// 제출
+// ════════════════════════════════════════════════════════════════
+async function submitSurvey() {
+  try {
+    const dimScores = calcType();
+    const sgType = determineSgType(dimScores);
+
+    // UPDATE family_members
+    const updateRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/family_members?survey_token=eq.${surveyToken}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          sg_type: sgType,
+          dim_scores: dimScores,
+          answers: ans,
+          completed_at: new Date().toISOString()
+        })
+      }
+    );
+
+    if (!updateRes.ok) {
+      throw new Error('Failed to submit survey');
+    }
+
+    // 결과 화면 표시
+    showResult(sgType, dimScores);
+
+  } catch (error) {
+    console.error('Error:', error);
+    showError('검사 결과를 저장하는 중 오류가 발생했습니다');
+  }
+}
+
+function determineSgType(scores) {
+  // 간단한 로직: 각 유형별로 그룹화
+  const group1 = (scores.Ne || 0) + (scores.Ni || 0);
+  const group2 = (scores.Si || 0) + (scores.Se || 0);
+  const group3 = (scores.Fe || 0) + (scores.Fi || 0);
+  const group4 = (scores.Ti || 0) + (scores.Te || 0);
+
+  let type = 'SPARK';
+  const combos = [
+    { dims: ['Ne', 'Fe'], type: 'SPARK' },
+    { dims: ['Ni', 'Fe'], type: 'VISION' },
+    { dims: ['Si', 'Fe'], type: 'STEADY' },
+    { dims: ['Se', 'Fe'], type: 'PLAYER' },
+    { dims: ['Fe', 'Fi'], type: 'HARMONY' },
+    { dims: ['Fi', 'Ne'], type: 'SOUL' },
+    { dims: ['Ti', 'Ni'], type: 'LOGIC' },
+    { dims: ['Te', 'Ne'], type: 'LEADER' },
+  ];
+
+  let maxScore = 0;
+  combos.forEach(c => {
+    const s = (scores[c.dims[0]] || 0) + (scores[c.dims[1]] || 0);
+    if (s > maxScore) {
+      maxScore = s;
+      type = c.type;
+    }
+  });
+
+  return type;
+}
+
+// ════════════════════════════════════════════════════════════════
+// 결과 표시
+// ════════════════════════════════════════════════════════════════
+function showResult(sgType, scores) {
+  const typeInfo = TYPE_DATA[sgType] || TYPE_DATA.SPARK;
+
+  document.getElementById('result-icon').textContent = typeInfo.icon;
+  document.getElementById('result-type').textContent = typeInfo.kr;
+
+  const kws = document.getElementById('result-keywords');
+  kws.innerHTML = typeInfo.keywords.map(kw => `<div class="kw">${kw}</div>`).join('');
+
+  showScreen('result');
+
+  // 모든 완료 여부 체크
+  checkAllComplete();
+}
+
+// ════════════════════════════════════════════════════════════════
+// 전체 완료 여부 체크
+// ════════════════════════════════════════════════════════════════
+async function checkAllComplete() {
+  try {
+    // 이 session의 모든 member 조회
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/family_members?session_code=eq.${sessionCode}`,
+      {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+
+    if (!res.ok) throw new Error('Failed to fetch members');
+
+    const members = await res.json();
+    const allComplete = members.every(m => m.completed_at !== null);
+
+    if (allComplete) {
+      const reportUrl = `${window.location.origin}/parenting-report.html?session=${sessionCode}`;
+      document.getElementById('report-link-box').style.display = 'block';
+      document.getElementById('report-url').textContent = reportUrl;
+    }
+
+  } catch (error) {
+    console.error('Error checking completion:', error);
+  }
+}
+
+function copyReportLink() {
+  const url = document.getElementById('report-url').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    alert('링크가 복사되었습니다');
+  });
+}
+
+// 페이지 로드 시 초기화
+init();
+</script>
+
+</body>
+</html>
