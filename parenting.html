@@ -190,16 +190,59 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
       <div class="card-title">가족 구성 입력</div>
       <div class="card-sub">부모님과 자녀를 입력해 주세요</div>
 
-      <!-- 부모 입력 -->
+      <!-- 양육자 입력 -->
       <div class="fg">
-        <label class="fl">부모님 정보</label>
+        <label class="fl">양육자 정보 <small>제2양육자는 선택사항입니다</small></label>
       </div>
 
-      <div class="fam-items" id="parents-container"></div>
+      <!-- 제1양육자 (필수) -->
+      <div class="fam-item" style="margin-bottom:10px">
+        <div class="fam-item-info" style="flex:1">
+          <div class="fam-item-label">제1양육자 <span style="color:var(--teal);font-size:.7rem">*필수</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+            <input class="fi-short" type="text" id="carer1-name" placeholder="이름" maxlength="20">
+            <select class="fi-short" id="carer1-rel" onchange="onCarerRelChange(1)">
+              <option value="">관계 선택</option>
+              <option>아버지</option>
+              <option>어머니</option>
+              <option>할아버지</option>
+              <option>할머니</option>
+              <option>고모 / 이모</option>
+              <option>삼촌</option>
+              <option>위탁부모</option>
+              <option>그룹홈 보호자</option>
+              <option value="기타">기타 (직접입력)</option>
+            </select>
+          </div>
+          <div id="carer1-etc-wrap" style="display:none;margin-top:6px">
+            <input class="fi-short" type="text" id="carer1-etc" placeholder="관계를 직접 입력해 주세요" maxlength="20">
+          </div>
+        </div>
+      </div>
 
-      <div class="checkbox-wrap">
-        <input type="checkbox" id="single-parent" onchange="onSingleParent()">
-        <label for="single-parent">한부모 가정이에요</label>
+      <!-- 제2양육자 (선택) -->
+      <div class="fam-item" style="margin-bottom:10px">
+        <div class="fam-item-info" style="flex:1">
+          <div class="fam-item-label">제2양육자 <span style="color:var(--light);font-size:.7rem">선택</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+            <input class="fi-short" type="text" id="carer2-name" placeholder="이름 (없으면 비워두세요)" maxlength="20">
+            <select class="fi-short" id="carer2-rel" onchange="onCarerRelChange(2)">
+              <option value="">관계 선택</option>
+              <option>아버지</option>
+              <option>어머니</option>
+              <option>할아버지</option>
+              <option>할머니</option>
+              <option>고모 / 이모</option>
+              <option>삼촌</option>
+              <option>위탁부모</option>
+              <option>그룹홈 보호자</option>
+              <option value="기타">기타 (직접입력)</option>
+            </select>
+          </div>
+          <div id="carer2-etc-wrap" style="display:none;margin-top:6px">
+            <input class="fi-short" type="text" id="carer2-etc" placeholder="관계를 직접 입력해 주세요" maxlength="20">
+          </div>
+        </div>
       </div>
 
       <!-- 자녀 입력 -->
@@ -324,45 +367,20 @@ function showToast(msg) {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 부모 관리
+// 양육자 관리
 // ════════════════════════════════════════════════════════════════
-function onSingleParent() {
-  const isSingle = document.getElementById('single-parent').checked;
-  renderParents();
+function onCarerRelChange(num) {
+  const sel = document.getElementById(`carer${num}-rel`);
+  const wrap = document.getElementById(`carer${num}-etc-wrap`);
+  if (wrap) wrap.style.display = sel.value === '기타' ? 'block' : 'none';
 }
 
-function renderParents() {
-  const isSingle = document.getElementById('single-parent').checked;
-  const container = document.getElementById('parents-container');
-  container.innerHTML = '';
-
-  if (!isSingle) {
-    // 부모 둘 다
-    container.innerHTML = `
-      <div class="fam-item">
-        <div class="fam-item-info">
-          <div class="fam-item-label">아버지</div>
-          <input class="fi-short" type="text" id="father-name" placeholder="이름 (선택)">
-        </div>
-      </div>
-      <div class="fam-item">
-        <div class="fam-item-info">
-          <div class="fam-item-label">어머니</div>
-          <input class="fi-short" type="text" id="mother-name" placeholder="이름 (선택)">
-        </div>
-      </div>
-    `;
-  } else {
-    // 한부모
-    container.innerHTML = `
-      <div class="fam-item">
-        <div class="fam-item-info">
-          <div class="fam-item-label">보호자</div>
-          <input class="fi-short" type="text" id="father-name" placeholder="이름 (선택)">
-        </div>
-      </div>
-    `;
-  }
+function getCarerData(num) {
+  const name = document.getElementById(`carer${num}-name`)?.value.trim() || '';
+  const relSel = document.getElementById(`carer${num}-rel`)?.value || '';
+  const relEtc = document.getElementById(`carer${num}-etc`)?.value.trim() || '';
+  const rel = relSel === '기타' ? relEtc : relSel;
+  return name ? { name, rel } : null;
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -447,23 +465,25 @@ function addChild() {
 // 화면 전환 로직
 // ════════════════════════════════════════════════════════════════
 function goPayment() {
-  const father = document.getElementById('father-name')?.value.trim() || null;
-  const mother = document.getElementById('mother-name')?.value.trim() || null;
-  const isSingle = document.getElementById('single-parent').checked;
+  const carer1 = getCarerData(1);
+  const carer2 = getCarerData(2);
 
-  if (!isSingle && !father && !mother) {
-    showToast('부모님 정보를 최소 한 명 이상 입력해 주세요');
-    return;
+  // 제1양육자 필수
+  if (!carer1) {
+    showToast('제1양육자 이름을 입력해 주세요'); return;
   }
-  if (isSingle && !father) {
-    showToast('보호자 이름을 입력해 주세요');
-    return;
+  if (!carer1.rel) {
+    showToast('제1양육자의 관계를 선택해 주세요'); return;
   }
 
-  // 자녀 데이터 유효성 검사
+  // 제2양육자 입력한 경우 관계도 필수
+  if (carer2 && !carer2.rel) {
+    showToast('제2양육자의 관계를 선택해 주세요'); return;
+  }
+
+  // 자녀 유효성
   if (familyData.children.length === 0) {
-    showToast('자녀를 최소 1명 이상 추가해 주세요');
-    return;
+    showToast('자녀를 최소 1명 이상 추가해 주세요'); return;
   }
   for (let i = 0; i < familyData.children.length; i++) {
     const c = familyData.children[i];
@@ -472,8 +492,11 @@ function goPayment() {
     if (!c.birth_year) { showToast(`자녀 ${i+1}의 출생연도를 입력해 주세요`); return; }
   }
 
-  familyData.father = isSingle ? null : father;
-  familyData.mother = isSingle ? null : mother;
+  familyData.carer1 = carer1;
+  familyData.carer2 = carer2 || null;
+  // 하위 호환 (saveFamilyToSupabase에서 사용)
+  familyData.father = carer1.name;
+  familyData.mother = carer2?.name || null;
 
   showScreen('payment');
 }
@@ -533,26 +556,28 @@ async function saveFamilyToSupabase() {
     // 2. family_members 구성 (토큰 미리 생성해서 저장)
     const members = [];
 
-    if (familyData.father) {
+    // 제1양육자 (필수)
+    if (familyData.carer1) {
       members.push({
         session_id: sessionId,
         session_code: sessionCode,
         member_type: 'parent',
-        name: familyData.father,
-        gender: 'M',
-        role: 'father',
+        name: familyData.carer1.name,
+        gender: null,
+        role: familyData.carer1.rel || '양육자1',
         survey_token: randomCode(12)
       });
     }
 
-    if (familyData.mother) {
+    // 제2양육자 (선택)
+    if (familyData.carer2) {
       members.push({
         session_id: sessionId,
         session_code: sessionCode,
         member_type: 'parent',
-        name: familyData.mother,
-        gender: 'F',
-        role: 'mother',
+        name: familyData.carer2.name,
+        gender: null,
+        role: familyData.carer2.rel || '양육자2',
         survey_token: randomCode(12)
       });
     }
@@ -622,7 +647,6 @@ function renderLinksScreen() {
 
   const members = familyData.savedMembers || [];
   const applicantName = familyData.applicant?.name || '';
-  const roleLabel = { father:'아버지', mother:'어머니' };
   let childIdx = 0;
 
   if (members.length === 0) {
@@ -631,10 +655,10 @@ function renderLinksScreen() {
   }
 
   members.forEach(m => {
+    // 부모는 role(관계명) 그대로 표시, 자녀는 자녀1/2...
     const label = m.member_type === 'parent'
-      ? (roleLabel[m.role] || m.role)
+      ? m.role
       : `자녀${++childIdx}`;
-    // 신청자 이름과 일치하면 본인
     const isSelf = m.name === applicantName;
     container.innerHTML += createLinkBox(label, m.name, m.survey_token, isSelf);
   });
