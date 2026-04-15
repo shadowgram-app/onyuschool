@@ -424,9 +424,27 @@ async function init() {
         document.querySelector('.result-body, #report-body').prepend(banner);
     }
 
-    // viewer/viral 모드: API 호출 없이 룰 기반으로만 렌더링
-    // 원본 제작자만 API 비용 1회 소모, 공유받은 사람은 0원
-    const codeForAPI = (isViewer || isViral) ? null : sessionCode;
+    // 세션 상태 확인 — 이미 reported면 API 재호출 없이 룰 기반 렌더링
+    let sessionStatus = 'new';
+    try {
+      const sessRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/family_sessions?code=eq.${sessionCode}&select=status`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      if (sessRes.ok) {
+        const sessData = await sessRes.json();
+        sessionStatus = sessData?.[0]?.status || 'new';
+      }
+    } catch(e) {}
+
+    // viewer/viral 모드 또는 이미 reported 세션: API 재호출 없이 룰 기반만 사용
+    const alreadyReported = sessionStatus === 'reported';
+    const codeForAPI = (isViewer || isViral || alreadyReported) ? null : sessionCode;
+
+    if (alreadyReported && !isViewer && !isViral) {
+      if (loadingSub) loadingSub.innerHTML = '저장된 리포트를 불러오는 중... 🌿<br><span style="font-size:.75rem;color:var(--light)">이미 생성된 리포트입니다</span>';
+    }
+
     await generateReport(completedMembers, codeForAPI);
 
   } catch (error) {
