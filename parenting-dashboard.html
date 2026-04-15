@@ -359,19 +359,31 @@ async function sendOtp() {
 }
 
 // Supabase Edge Function 또는 Apps Script로 이메일 발송
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRW_pIe2_VnEXRmDSE7NGWAR7jeQpZwx8PGJd7wudns2NVTzHApLmXOpXOAgjD4Hk1HA/exec';
+
 async function sendOtpEmail(email, otp) {
+  // 1차: Supabase Edge Function (Resend 도메인 인증 후 활성화)
   try {
-    // Supabase Edge Function 사용
-    await fetch(`${SB_URL}/functions/v1/send-otp`, {
+    const r = await fetch(`${SB_URL}/functions/v1/send-otp`, {
       method: 'POST',
       headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY,
                  'Content-Type': 'application/json' },
       body: JSON.stringify({ email, otp }),
     });
+    const d = await r.json();
+    if (d.ok) { toast('📧 인증코드가 발송되었습니다'); return; }
+  } catch(e) { /* 폴백 */ }
+
+  // 2차: Apps Script (Gmail 직접 발송)
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ type: 'send_otp', email, otp }),
+    });
     toast('📧 인증코드가 발송되었습니다');
   } catch(e) {
-    // Edge Function 없을 경우 코드 직접 표시 (베타)
-    toast(`🔑 인증코드: ${otp} (베타: 직접 표시)`);
+    toast(`🔑 인증코드: ${otp}`);
   }
 }
 
