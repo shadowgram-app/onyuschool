@@ -263,14 +263,19 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
       <span style="color:var(--teal);font-weight:700">"너희 가족도 해봐! 💚"</span> 메시지를 전달해요
     </p>
     <div class="share-card viral-card" id="viral-card-preview">
-      <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
+      <div class="sc-brand">ONYUSCHOOL · 쉐도우그램 자녀양육클래스</div>
       <div class="sc-title" id="viral-title">우리 가족 유형 나왔어요! ✨</div>
-      <div class="sc-members" id="viral-members" style="margin-bottom:14px"></div>
-      <div class="sc-quote" id="viral-quote" style="margin-bottom:16px">"서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요"</div>
-      <div style="background:rgba(143,196,154,.15);border-radius:10px;padding:12px;text-align:center">
-        <div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:4px">너희 가족은 어떤 유형이야? 🤔</div>
-        <div style="font-size:.85rem;font-weight:800;color:#fff">온유스쿨에서 무료 검사해봐 →</div>
-      </div>
+      <!-- 멤버 칩 + 유형 한줄 설명 -->
+      <div id="viral-members" style="margin-bottom:12px"></div>
+      <!-- 자랑 문구 -->
+      <div class="sc-quote" id="viral-quote" style="margin-bottom:14px">"서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요"</div>
+      <!-- 자녀양육 매칭 포인트 -->
+      <div id="viral-parenting-hook" style="background:rgba(255,255,255,.08);border-radius:10px;padding:11px 12px;margin-bottom:12px;font-size:.78rem;color:rgba(255,255,255,.85);line-height:1.65"></div>
+      <!-- CTA -->
+      <a href="https://onyuschool.com/parenting.html" target="_blank"
+        style="display:block;background:var(--green);color:var(--navy);font-size:.85rem;font-weight:800;padding:12px;border-radius:10px;text-align:center;text-decoration:none">
+        👨‍👩‍👧‍👦 우리 가족 쉐도우그램 자녀양육클래스 →
+      </a>
     </div>
     <div class="share-actions" style="margin-top:12px">
       <button class="share-act-btn" onclick="shareKakao('viral')">💬 카카오톡</button>
@@ -302,15 +307,24 @@ const SUPABASE_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
 
 const TYPE_DATA = {
-  SPARK:   { icon:'✨', kr:'스파크',  keywords:['열정','영감','비전','감화'],       color:'#8A6400' },
-  VISION:  { icon:'🔭', kr:'비전',    keywords:['통찰','미래','구조','개념'],       color:'#4A235A' },
-  STEADY:  { icon:'🌿', kr:'스테디',  keywords:['안정','신뢰','꾸준함','성실'],     color:'#256060' },
-  PLAYER:  { icon:'🎯', kr:'플레이어', keywords:['실행','현장','즉흥','적응'],      color:'#3D4D1C' },
-  HARMONY: { icon:'🕊️', kr:'하모니',  keywords:['공감','조화','돌봄','연결'],      color:'#7B1A1A' },
-  SOUL:    { icon:'🌊', kr:'소울',     keywords:['깊이','의미','진정성','내면'],    color:'#555555' },
-  LOGIC:   { icon:'🔬', kr:'로직',     keywords:['분석','정확','원칙','체계'],      color:'#2C3E50' },
-  LEADER:  { icon:'⚡', kr:'리더',     keywords:['추진','결단','영향력','목표'],    color:'#1F3864' },
+  SPARK:   { icon:'✨', kr:'스파크',   en:'SPARK',  keywords:['열정','영감','비전','감화'],       color:'#8A6400' },
+  VISION:  { icon:'🔭', kr:'비전',     en:'VISION', keywords:['통찰','미래','구조','개념'],       color:'#4A235A' },
+  STEADY:  { icon:'🌿', kr:'스테디',   en:'STEADY', keywords:['안정','신뢰','꾸준함','성실'],     color:'#256060' },
+  PLAYER:  { icon:'🎯', kr:'플레이어', en:'PLAYER', keywords:['실행','현장','즉흥','적응'],       color:'#3D4D1C' },
+  HARMONY: { icon:'🕊️', kr:'하모니',  en:'HARMONY',keywords:['공감','조화','돌봄','연결'],      color:'#7B1A1A' },
+  SOUL:    { icon:'🌊', kr:'소울',     en:'SOUL',   keywords:['깊이','의미','진정성','내면'],    color:'#555555' },
+  LOGIC:   { icon:'🔬', kr:'로직',     en:'LOGIC',  keywords:['분석','정확','원칙','체계'],      color:'#2C3E50' },
+  LEADER:  { icon:'⚡', kr:'리더',     en:'LEADER', keywords:['추진','결단','영향력','목표'],    color:'#1F3864' },
 };
+// 유형 이름 병기 헬퍼: "SPARK 스파크" 또는 아이들/어르신용 "스파크(SPARK)"
+function typeLabel(sgType, ageOrRole) {
+  const td = TYPE_DATA[sgType] || {};
+  if (!td.kr) return sgType;
+  // 어르신(부모 중 60대+) 또는 어린이(12세 이하)는 한글 먼저
+  if (ageOrRole === 'child_young' || ageOrRole === 'senior') return `${td.kr}(${td.en||sgType})`;
+  // 기본: 영문 + 한글
+  return `${td.en||sgType} ${td.kr}`;
+}
 
 const TYPE_RADAR = {
   SPARK:   [5,2,1,3,2,1,2,2],
@@ -486,7 +500,7 @@ function renderMembersSection(members) {
       <div class="member-card">
         <div class="mc-icon">${typeInfo.icon || '✨'}</div>
         <div class="mc-name">${m.name}</div>
-        <div class="mc-type">${typeInfo.kr || m.sg_type}</div>
+        <div class="mc-type">${typeInfo.en||m.sg_type} <span style="font-size:.75rem;font-weight:600;opacity:.75">${typeInfo.kr||''}</span></div>
         <div class="mc-keywords">
           ${(typeInfo.keywords || []).map(kw => `<span class="mc-kw">${kw}</span>`).join('')}
         </div>
@@ -820,7 +834,7 @@ function renderCaptionSection(members, aiData = {}) {
 
     html += `
       <div class="content-box">
-        <h3>${m.name} (${typeInfo.kr}, ${role})</h3>
+        <h3>${m.name} <span style="font-size:.85rem;font-weight:600;color:var(--mid)">${typeInfo.en||m.sg_type} ${typeInfo.kr||''} · ${role}</span></h3>
 
         <p style="font-size:1.05rem;line-height:1.85;color:var(--navy);font-style:italic;margin-bottom:12px;padding:14px;background:rgba(37,96,96,.05);border-radius:8px">
           "${shadowCaption}"
@@ -1783,28 +1797,47 @@ function switchShareTab(tab) {
 // 바이럴 카드 빌드
 function buildViralCard(members) {
   const completed = members.filter(m => m.sg_type);
-  // 유형 칩
+  // 멤버 칩 — 유형 영/한 병기
   const el = document.getElementById('viral-members');
   el.innerHTML = '';
   completed.forEach(m => {
     const t = TYPE_DATA[m.sg_type] || {};
     const chip = document.createElement('div');
     chip.className = 'sc-member-chip';
-    chip.textContent = `${t.icon||'✨'} ${m.name} · ${t.kr||m.sg_type}`;
+    // 영어+한글 병기: "✨ 민철 · SPARK 스파크"
+    chip.textContent = `${t.icon||'✨'} ${m.name} · ${t.en||m.sg_type} ${t.kr||''}`;
     el.appendChild(chip);
   });
-  // 자랑 메시지 동적 생성
-  const types = completed.map(m => TYPE_DATA[m.sg_type]?.kr || m.sg_type);
-  const viralQuotes = [
-    '서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요',
-    '우리 가족이 왜 그랬는지 드디어 알았어요 😂',
-    '검사하고 나서 가족 대화가 달라졌어요!',
-    '아이 마음을 이제야 이해했어요 🥹',
+
+  // 타이틀
+  const parents  = completed.filter(m => m.member_type === 'parent');
+  const children = completed.filter(m => m.member_type === 'child');
+  const childCount = children.length;
+  document.getElementById('viral-title').innerHTML =
+    `우리 가족 유형 알아냈어요! ✨<br><span style="font-size:.78rem;font-weight:500;opacity:.75">${completed.length}명 모두 검사 완료</span>`;
+
+  // 자랑 문구 — 자녀 수에 따라
+  const quotesByChild = [
+    '"검사하고 나서 남편이랑 대화가 완전 달라졌어요 😊"',
+    '"아이가 왜 그랬는지 드디어 이해됐어요 🥹"',
+    `"아이 ${childCount}명이랑 같이 했더니 서로를 이해하게 됐어요"`,
+    '"우리 가족이 왜 맨날 그 패턴으로 싸웠는지 알겠더라고요 😂"',
   ];
   document.getElementById('viral-quote').textContent =
-    '"' + viralQuotes[completed.length % viralQuotes.length] + '"';
-  document.getElementById('viral-title').innerHTML =
-    `우리 가족 유형 나왔어요! ✨<br><span style="font-size:.85rem;font-weight:600;opacity:.8">${types.join(' · ')}</span>`;
+    quotesByChild[Math.min(childCount, quotesByChild.length - 1)];
+
+  // 자녀양육 매칭 포인트 — 부모+자녀 조합 기반
+  const hookEl = document.getElementById('viral-parenting-hook');
+  if (hookEl) {
+    if (parents.length > 0 && children.length > 0) {
+      const pt = TYPE_DATA[parents[0].sg_type] || {};
+      const ct = TYPE_DATA[children[0].sg_type] || {};
+      hookEl.innerHTML = `💡 <strong>${parents[0].name}(${pt.en||''} ${pt.kr||''})</strong>와 <strong>${children[0].name}(${ct.en||''} ${ct.kr||''})</strong>의 양육 매칭 분석 포함<br>
+        <span style="opacity:.8">→ 자녀 유형별 칭찬법·갈등 해결법이 리포트에 담겨 있어요</span>`;
+    } else {
+      hookEl.innerHTML = `💡 각 유형별 양육 스타일·자녀 이해법·가족 미션이 담긴 AI 리포트`;
+    }
+  }
 }
 
 async function copyShareLink(mode) {
