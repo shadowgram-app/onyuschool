@@ -113,16 +113,37 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .p-beta{display:inline-block;background:rgba(143,196,154,.2);border:1px solid var(--green);
   color:var(--teal);font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:5px;margin-left:6px}
 /* links result */
-.lnk-box{border-radius:10px;padding:16px 18px;margin:16px 0}
-.lnk-box.survey{background:#F0F7F4;border:1.5px solid rgba(37,96,96,.28)}
-.lnk-label{font-size:.74rem;font-weight:800;letter-spacing:.04em;margin-bottom:7px}
-.lnk-box.survey .lnk-label{color:var(--teal)}
-.lnk-url{font-size:.78rem;font-weight:600;word-break:break-all;
-  background:#fff;border:1px solid var(--border);border-radius:6px;padding:9px 11px;margin-bottom:9px}
-.lnk-acts{display:flex;gap:7px}
-.btn-cp{padding:8px 16px;background:var(--teal);color:#fff;border:none;border-radius:6px;
+.lnk-box{border-radius:10px;padding:16px 18px;margin:12px 0;border:1.5px solid var(--border)}
+.lnk-box.is-self{background:#EEF3FF;border-color:rgba(26,48,85,.3)}
+.lnk-box.is-other{background:#F0F7F4;border-color:rgba(37,96,96,.28)}
+.lnk-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.lnk-label{font-size:.8rem;font-weight:800;letter-spacing:.04em}
+.lnk-box.is-self .lnk-label{color:var(--navy)}
+.lnk-box.is-other .lnk-label{color:var(--teal)}
+.self-badge{font-size:.65rem;background:var(--navy);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
+.lnk-url{font-size:.75rem;font-weight:600;word-break:break-all;
+  background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:10px;color:var(--mid)}
+.lnk-acts{display:flex;gap:7px;flex-wrap:wrap}
+.btn-cp{padding:8px 14px;background:var(--teal);color:#fff;border:none;border-radius:6px;
   font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
 .btn-cp:hover{background:#1A4848}
+.btn-self-start{padding:9px 18px;background:var(--navy);color:#fff;border:none;border-radius:6px;
+  font-size:.82rem;font-weight:800;cursor:pointer;font-family:inherit;transition:background .2s;text-decoration:none;display:inline-block}
+.btn-self-start:hover{background:#102540}
+.btn-kakao{padding:8px 14px;background:#FEE500;color:#3C1E1E;border:none;border-radius:6px;
+  font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s}
+.btn-kakao:hover{opacity:.85}
+/* 유형 직접 선택 */
+.type-select-wrap{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.type-select-label{font-size:.72rem;color:var(--mid);margin-bottom:6px;font-weight:600}
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.type-chip{padding:6px 4px;border:1.5px solid var(--border);border-radius:7px;
+  font-size:.68rem;font-weight:700;cursor:pointer;text-align:center;background:#fff;
+  transition:all .16s;color:var(--mid)}
+.type-chip:hover{border-color:var(--navy);color:var(--navy)}
+.type-chip.selected{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn-confirm-type{margin-top:8px;width:100%;padding:9px;background:var(--teal);color:#fff;
+  border:none;border-radius:6px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit}
 /* toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
   background:#222;color:#fff;padding:9px 22px;border-radius:24px;font-size:.83rem;
@@ -584,42 +605,147 @@ async function saveFamilyToSupabase() {
 // ════════════════════════════════════════════════════════════════
 // 링크 화면
 // ════════════════════════════════════════════════════════════════
+const TYPES_LIST = [
+  {code:'STEADY', icon:'🌿', kr:'스테디'},
+  {code:'SPARK',  icon:'✨', kr:'스파크'},
+  {code:'PLAYER', icon:'🎯', kr:'플레이어'},
+  {code:'VISION', icon:'🔭', kr:'비전'},
+  {code:'LOGIC',  icon:'🔬', kr:'로직'},
+  {code:'HARMONY',icon:'🕊️', kr:'하모니'},
+  {code:'LEADER', icon:'⚡', kr:'리더'},
+  {code:'SOUL',   icon:'🌊', kr:'소울'},
+];
+
 function renderLinksScreen() {
   const container = document.getElementById('links-container');
   container.innerHTML = '';
 
   const members = familyData.savedMembers || [];
+  const applicantName = familyData.applicant?.name || '';
   const roleLabel = { father:'아버지', mother:'어머니' };
+  let childIdx = 0;
 
-  members.forEach((m, idx) => {
-    const label = m.member_type === 'parent'
-      ? (roleLabel[m.role] || m.role)
-      : `자녀${members.filter(x=>x.member_type==='child').indexOf(m)+1}`;
-    container.innerHTML += createLinkBox(label, m.name, m.survey_token);
-  });
-
-  // 링크가 없으면 안내
   if (members.length === 0) {
     container.innerHTML = '<p style="color:var(--light)">구성원 정보가 없습니다.</p>';
+    return;
+  }
+
+  members.forEach(m => {
+    const label = m.member_type === 'parent'
+      ? (roleLabel[m.role] || m.role)
+      : `자녀${++childIdx}`;
+    // 신청자 이름과 일치하면 본인
+    const isSelf = m.name === applicantName;
+    container.innerHTML += createLinkBox(label, m.name, m.survey_token, isSelf);
+  });
+}
+
+function createLinkBox(role, name, token, isSelf) {
+  const url = `${window.location.origin}/parenting-survey.html?token=${token}`;
+  const kakaoUrl = `https://open.kakao.com/o/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(name+'님의 쉐도우그램 유형 검사 링크입니다 🌿')}`;
+
+  // 유형 선택 칩 (본인 전용)
+  const typeChips = TYPES_LIST.map(t =>
+    `<div class="type-chip" onclick="selectType(this,'${token}','${t.code}')">${t.icon} ${t.kr}</div>`
+  ).join('');
+
+  if (isSelf) {
+    return `
+      <div class="lnk-box is-self" id="box-${token}">
+        <div class="lnk-header">
+          <span class="lnk-label">${role} · ${name}</span>
+          <span class="self-badge">나 (신청자)</span>
+        </div>
+        <div class="lnk-acts">
+          <a class="btn-self-start" href="${url}" target="_blank">내 검사 시작하기 →</a>
+        </div>
+        <div class="type-select-wrap">
+          <div class="type-select-label">이미 유형을 알고 있다면 직접 선택하세요 (검사 생략)</div>
+          <div class="type-grid">${typeChips}</div>
+          <button class="btn-confirm-type" style="display:none" id="confirm-${token}"
+            onclick="confirmType('${token}')">이 유형으로 등록하기</button>
+        </div>
+      </div>`;
+  } else {
+    return `
+      <div class="lnk-box is-other" id="box-${token}">
+        <div class="lnk-header">
+          <span class="lnk-label">${role} · ${name}</span>
+        </div>
+        <div class="lnk-url">${url}</div>
+        <div class="lnk-acts">
+          <button class="btn-cp" onclick="copyToClipboard('${url}')">🔗 링크 복사</button>
+          <button class="btn-kakao" onclick="shareKakao('${url}','${name}')">💬 카카오 공유</button>
+        </div>
+      </div>`;
   }
 }
 
-function createLinkBox(role, name, token) {
-  const url = `${window.location.origin}/parenting-survey.html?token=${token}`;
-  return `
-    <div class="lnk-box survey">
-      <div class="lnk-label">${role} · ${name}</div>
-      <div class="lnk-url">${url}</div>
-      <div class="lnk-acts">
-        <button class="btn-cp" onclick="copyToClipboard('${url}')">링크 복사</button>
-      </div>
-    </div>
-  `;
+// ── 유형 직접 선택 (본인용) ──
+let selectedTypeMap = {};
+
+function selectType(el, token, code) {
+  // 같은 박스 내 칩 모두 해제 후 선택
+  el.closest('.type-grid').querySelectorAll('.type-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTypeMap[token] = code;
+  document.getElementById('confirm-' + token).style.display = 'block';
+}
+
+async function confirmType(token) {
+  const code = selectedTypeMap[token];
+  if (!code) return;
+
+  const btn = document.getElementById('confirm-' + token);
+  btn.disabled = true;
+  btn.textContent = '등록 중...';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/family_members?survey_token=eq.${token}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        sg_type: code,
+        completed_at: new Date().toISOString(),
+        dim_scores: {},
+        answers: []
+      })
+    });
+
+    if (res.ok) {
+      const box = document.getElementById('box-' + token);
+      box.style.opacity = '.6';
+      box.innerHTML = box.innerHTML.replace('type-select-wrap', 'type-select-wrap" style="display:none');
+      box.querySelector('.lnk-header').insertAdjacentHTML('beforeend',
+        `<span style="font-size:.75rem;color:var(--teal);font-weight:700;margin-left:8px">✅ ${code} 등록 완료</span>`);
+      showToast('✅ 유형 등록 완료!');
+    }
+  } catch(e) {
+    showToast('오류: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = '이 유형으로 등록하기';
+  }
+}
+
+// ── 카카오 공유 ──
+function shareKakao(url, name) {
+  // 카카오 SDK 없을 때는 클립보드 복사로 폴백
+  const msg = `${name}님, 쉐도우그램 유형 검사 링크를 보내드립니다 🌿\n${url}`;
+  if (navigator.share) {
+    navigator.share({ title: '쉐도우그램 유형 검사', text: msg, url });
+  } else {
+    navigator.clipboard.writeText(msg).then(() => showToast('📋 카카오 공유 메시지가 복사됐습니다!'));
+  }
 }
 
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).then(() => {
-    showToast('링크가 복사되었습니다');
+    showToast('🔗 링크가 복사되었습니다');
   });
 }
 
