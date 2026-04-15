@@ -352,33 +352,60 @@ function renderChildren() {
   container.innerHTML = '';
 
   familyData.children.forEach((child, idx) => {
-    const html = `
-      <div class="fam-item" id="child-${idx}">
-        <div class="fam-item-info" style="flex:1">
-          <div class="child-add-grid">
-            <input class="fi-short" type="text" placeholder="이름"
-              value="${child.name}" onchange="updateChild(${idx}, 'name', this.value)">
-            <select class="sel-short" onchange="updateChild(${idx}, 'gender', this.value)">
-              <option value="">성별</option>
-              <option value="M" ${child.gender === 'M' ? 'selected' : ''}>남</option>
-              <option value="F" ${child.gender === 'F' ? 'selected' : ''}>여</option>
-              <option value="other" ${child.gender === 'other' ? 'selected' : ''}>기타</option>
-            </select>
-            <input class="fi-short" type="number" placeholder="출생연도"
-              value="${child.birth_year || ''}" onchange="updateChild(${idx}, 'birth_year', this.value)">
-          </div>
-        </div>
-        <button class="fam-item-del" onclick="removeChild(${idx})">×</button>
-      </div>
-    `;
-    container.innerHTML += html;
-  });
-}
+    const item = document.createElement('div');
+    item.className = 'fam-item';
+    item.id = 'child-' + idx;
 
-function updateChild(idx, key, value) {
-  if (familyData.children[idx]) {
-    familyData.children[idx][key] = value;
-  }
+    // 이름 입력
+    const nameInput = document.createElement('input');
+    nameInput.className = 'fi-short';
+    nameInput.type = 'text';
+    nameInput.placeholder = '이름';
+    nameInput.value = child.name || '';
+    nameInput.addEventListener('input', e => { familyData.children[idx].name = e.target.value; });
+
+    // 성별 선택
+    const genderSel = document.createElement('select');
+    genderSel.className = 'sel-short';
+    ['', 'M', 'F', 'other'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = v; opt.textContent = ['성별', '남', '여', '기타'][i];
+      if (v === child.gender) opt.selected = true;
+      genderSel.appendChild(opt);
+    });
+    genderSel.addEventListener('change', e => { familyData.children[idx].gender = e.target.value; });
+
+    // 출생연도 입력
+    const yearInput = document.createElement('input');
+    yearInput.className = 'fi-short';
+    yearInput.type = 'number';
+    yearInput.placeholder = '출생연도';
+    yearInput.min = '1990';
+    yearInput.max = new Date().getFullYear().toString();
+    yearInput.value = child.birth_year || '';
+    yearInput.addEventListener('input', e => { familyData.children[idx].birth_year = e.target.value; });
+
+    // 삭제 버튼
+    const delBtn = document.createElement('button');
+    delBtn.className = 'fam-item-del';
+    delBtn.textContent = '×';
+    delBtn.addEventListener('click', () => removeChild(idx));
+
+    const grid = document.createElement('div');
+    grid.className = 'child-add-grid';
+    grid.appendChild(nameInput);
+    grid.appendChild(genderSel);
+    grid.appendChild(yearInput);
+
+    const info = document.createElement('div');
+    info.className = 'fam-item-info';
+    info.style.flex = '1';
+    info.appendChild(grid);
+
+    item.appendChild(info);
+    item.appendChild(delBtn);
+    container.appendChild(item);
+  });
 }
 
 function removeChild(idx) {
@@ -412,19 +439,20 @@ function goPayment() {
     return;
   }
 
-  const validChildren = familyData.children.filter(c => c.name && c.gender && c.birth_year);
-  if (validChildren.length === 0) {
-    showToast('자녀를 최소 1명 이상 입력해 주세요');
+  // 자녀 데이터 유효성 검사
+  if (familyData.children.length === 0) {
+    showToast('자녀를 최소 1명 이상 추가해 주세요');
     return;
   }
-  if (validChildren.length !== familyData.children.length) {
-    showToast('모든 자녀의 이름, 성별, 출생연도를 입력해 주세요');
-    return;
+  for (let i = 0; i < familyData.children.length; i++) {
+    const c = familyData.children[i];
+    if (!c.name)       { showToast(`자녀 ${i+1}의 이름을 입력해 주세요`); return; }
+    if (!c.gender)     { showToast(`자녀 ${i+1}의 성별을 선택해 주세요`); return; }
+    if (!c.birth_year) { showToast(`자녀 ${i+1}의 출생연도를 입력해 주세요`); return; }
   }
 
   familyData.father = isSingle ? null : father;
   familyData.mother = isSingle ? null : mother;
-  familyData.children = validChildren;
 
   showScreen('payment');
 }
