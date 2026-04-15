@@ -206,25 +206,6 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
       <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px">리포트 생성</div>
       <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">쉐도우그램 철학 기반 AI 리포트 자동 생성</div>
 
-      <!-- API 키 입력 -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-title">⚡ AI 리포트 생성 (Claude API)</div>
-        <div style="font-size:.8rem;color:var(--mid);margin-bottom:12px;line-height:1.7">
-          Anthropic API 키를 입력하면 쉐도우그램 철학에 따라 팀·개인 서술을 자동 생성합니다.<br>
-          키 없이도 룰 기반 리포트는 생성 가능합니다.
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input type="password" id="api-key-input"
-            style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;
-              font-size:.85rem;font-family:inherit;outline:none;color:var(--gray)"
-            placeholder="sk-ant-api03-... (선택 사항)">
-          <button onclick="saveApiKey()"
-            style="padding:10px 18px;background:var(--teal);color:#fff;border:none;border-radius:8px;
-              font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap">저장</button>
-        </div>
-        <div style="font-size:.72rem;color:var(--light)">키는 브라우저에만 저장되며 외부로 전송되지 않습니다 (Anthropic API 직접 호출)</div>
-      </div>
-
       <!-- 생성 진행 상태 -->
       <div id="gen-progress" style="display:none;background:#F0F7F4;border:1px solid rgba(37,96,96,.25);
         border-radius:10px;padding:16px;margin-bottom:16px">
@@ -680,24 +661,12 @@ else document.getElementById('member-wrap').innerHTML =
   '<div class="empty"><div class="e-ico">⚠️</div>워크숍 코드가 없습니다.<br>올바른 링크로 접속해 주세요.</div>';
 
 // ══════════════════════════════════════════════
-//  리포트 엔진 연동
+//  리포트 엔진 — Edge Function 호출
+//  API 키는 Supabase 서버 환경변수에 보관
+//  브라우저에는 키가 전혀 노출되지 않음
 // ══════════════════════════════════════════════
 
-/* ── API 키 저장/로드 ── */
-function saveApiKey() {
-  const v = document.getElementById('api-key-input').value.trim();
-  if (!v) { showToast('API 키를 입력해 주세요.'); return; }
-  try { sessionStorage.setItem('sg_api_key', v); } catch(e) {}
-  showToast('✅ API 키가 저장되었습니다 (세션 동안 유지)');
-}
-function getApiKey() {
-  try { return sessionStorage.getItem('sg_api_key') || ''; } catch(e) { return ''; }
-}
-// 저장된 키 복원
-(function() {
-  const k = getApiKey();
-  if (k) document.getElementById('api-key-input').value = '••••••••••••••••';
-})();
+const EDGE_URL = `${SB_URL}/functions/v1/generate-report`;
 
 /* ── 진행 UI ── */
 function setProgress(text, pct) {
@@ -708,48 +677,135 @@ function setProgress(text, pct) {
 function hideProgress() {
   setTimeout(() => {
     document.getElementById('gen-progress').style.display = 'none';
-  }, 1500);
+  }, 1800);
 }
 
-/* ── 메인: 생성 & 다운로드 ── */
+/* ── 메인: Edge Function 호출 → 다운로드 ── */
 async function generateAndDownload(mode) {
   if (results.length === 0) { showToast('검사 완료된 인원이 없습니다.'); return; }
 
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    showToast('⚠️ API 키 없음 — 룰 기반 리포트로 생성합니다');
-  }
-
-  // 엔진 로드 확인
-  if (!window.ShadowgramEngine) {
-    showToast('❌ 엔진 로드 실패. 페이지를 새로고침해 주세요.');
-    return;
-  }
+  setProgress('서버에 리포트 생성 요청 중...', 15);
 
   try {
-    const report = await window.ShadowgramEngine.generateReport(
-      results,
-      wsData,
-      apiKey,
-      (text, pct) => setProgress(text, pct)
-    );
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+      },
+      body: JSON.stringify({ code: CODE, mode }),
+    });
+
+    setProgress('AI 서술 생성 중...', 55);
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || '서버 오류');
+    }
+
+    const data = await res.json();
+    setProgress('리포트 렌더링 중...', 85);
+
+    // 엔진의 룰 기반 데이터와 AI 서술 합성
+    if (!window.ShadowgramEngine) throw new Error('엔진 로드 실패');
+
+    const analysis = window.ShadowgramEngine.analyzeTeam(results);
+    const teamSkeleton = window.ShadowgramEngine.analyzeTeam
+      ? buildReportFromServer(data, analysis)
+      : null;
 
     if (mode === 'team' || mode === 'all') {
-      downloadTeamReportV2(report);
+      downloadTeamReportV2({ team: buildReportFromServer(data, analysis), analysis });
     }
     if (mode === 'individual' || mode === 'all') {
-      report.individuals.forEach((ind, i) => {
+      const indReports = buildIndividualsFromServer(data);
+      indReports.forEach((ind, i) => {
         setTimeout(() => downloadIndReportV2(ind), i * 500);
       });
     }
 
+    setProgress('완료!', 100);
     hideProgress();
-    showToast(`✅ 리포트 생성 완료 (${apiKey ? 'AI' : '룰 기반'})`);
+    showToast('✅ AI 리포트 생성 완료!');
+
   } catch(e) {
     hideProgress();
     console.error(e);
-    showToast('❌ 생성 오류: ' + e.message);
+
+    // Edge Function 미배포 시 룰 기반 폴백
+    if (e.message.includes('Failed to fetch') || e.message.includes('404')) {
+      showToast('⚠️ 서버 미연결 — 룰 기반으로 생성합니다');
+      await generateFallback(mode);
+    } else {
+      showToast('❌ 생성 오류: ' + e.message);
+    }
   }
+}
+
+/* ── 서버 응답 → 팀 리포트 객체 변환 ── */
+function buildReportFromServer(data, analysis) {
+  const TM = window.ShadowgramEngine.TYPE_MASTER;
+  return {
+    churchName: data.workshop?.church_name || CHURCH,
+    orgType: data.workshop?.product_type || '',
+    total: data.results?.length || 0,
+    typeDistribution: data.typeDistribution || [],
+    teamStrengths: (data.typeDistribution || []).slice(0,3).map(([t]) =>
+      `${TM[t]?.icon||''} ${TM[t]?.kr||t} — ${TM[t]?.strengths?.[0]||''}`
+    ),
+    synergyInsights: [],
+    vulnerabilities: [],
+    balanceWarning: null,
+    coworkStructure: (data.typeDistribution || []).slice(0,3).map(([t]) =>
+      TM[t]?.cowork ? `${TM[t].kr}의 약점은 ${TM[t].cowork.map(c=>TM[c]?.kr||c).join('·')}이 보완` : null
+    ).filter(Boolean),
+    // AI 서술
+    teamNarrative:   data.teamAI?.teamNarrative   || null,
+    teamShadow:      data.teamAI?.teamShadow       || null,
+    workshopOpening: data.teamAI?.workshopOpening  || null,
+  };
+}
+
+/* ── 서버 응답 → 개인 리포트 배열 변환 ── */
+function buildIndividualsFromServer(data) {
+  const TM = window.ShadowgramEngine.TYPE_MASTER;
+  return (data.results || []).map(r => {
+    const td = TM[r.sg_type] || {};
+    const aiData = (data.individualAI || []).find(a => a.name === r.name) || {};
+    return {
+      name: r.name,
+      role: r.role || '',
+      type: r.sg_type,
+      typeKr: td.kr || r.sg_type,
+      icon: td.icon || '🌿',
+      oneLiner: td.oneLiner || '',
+      keywords: td.keywords || [],
+      roleContext: r.role ? `${r.role}으로서` : '팀원으로서',
+      strengths: td.strengths || [],
+      shadows: td.shadows || [],
+      light: td.light || '',
+      shadow: td.shadow || '',
+      cowork: td.cowork || [],
+      missions: td.missions || [],
+      growth: td.growth || '',
+      personalNarrative: aiData.personalNarrative || `${r.role || '팀원'}으로서 ${td.oneLiner || ''}`,
+      shadowCaption: aiData.shadowCaption || td.caption || '',
+    };
+  });
+}
+
+/* ── 폴백: Edge Function 없을 때 룰 기반 생성 ── */
+async function generateFallback(mode) {
+  if (!window.ShadowgramEngine) return;
+  setProgress('룰 기반 리포트 생성 중...', 40);
+  const report = await window.ShadowgramEngine.generateReport(results, wsData, '', setProgress);
+  if (mode === 'team' || mode === 'all') downloadTeamReportV2(report);
+  if (mode === 'individual' || mode === 'all') {
+    report.individuals.forEach((ind, i) => setTimeout(() => downloadIndReportV2(ind), i*500));
+  }
+  setProgress('완료!', 100);
+  hideProgress();
 }
 
 /* ── 팀 리포트 HTML 생성 (엔진 버전) ── */
