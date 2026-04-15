@@ -140,7 +140,7 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
 <div id="screen-loading" class="screen active">
   <div class="container" style="padding-top:80px;padding-bottom:80px">
     <div style="text-align:center;margin-bottom:20px">
-      <h2 style="border:none;padding-bottom:0">리포트를 생성 중입니다</h2>
+      <h2 style="border:none;padding-bottom:0" id="loading-title">리포트를 불러오는 중입니다</h2>
     </div>
     <div class="spinner">
       <div class="spinner-ring"></div>
@@ -169,6 +169,11 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
     <div class="sec">
       <h2>부모-자녀 소통 가이드</h2>
       <div id="communication-section"></div>
+    </div>
+
+    <div class="sec">
+      <h2>형제·자매 관계</h2>
+      <div id="siblings-section"></div>
     </div>
 
     <div class="sec">
@@ -267,6 +272,17 @@ const TYPE_DATA = {
   LEADER:  { icon:'⚡', kr:'리더',     keywords:['추진','결단','영향력','목표'],    color:'#1F3864' },
 };
 
+const TYPE_RADAR = {
+  SPARK:   [5,2,1,3,2,1,2,2],
+  VISION:  [2,5,2,1,2,2,3,3],
+  STEADY:  [1,2,5,2,3,1,2,2],
+  PLAYER:  [2,1,2,5,1,2,2,3],
+  HARMONY: [2,2,3,2,5,3,1,1],
+  SOUL:    [2,2,2,1,3,5,2,1],
+  LOGIC:   [2,3,2,1,1,2,5,3],
+  LEADER:  [2,2,1,3,1,2,3,5],
+};
+
 // ════════════════════════════════════════════════════════════════
 // 초기화
 // ════════════════════════════════════════════════════════════════
@@ -277,7 +293,15 @@ let _shareSessionCode = '';
 async function init() {
   const params = new URLSearchParams(location.search);
   const sessionCode = params.get('session');
+  const isViewer = params.get('viewer') === '1'; // 공유 링크로 접근한 경우
   _shareSessionCode = sessionCode || '';
+  window._isViewerMode = isViewer; // generateReport에서 참조
+
+  // 로딩 타이틀 설정
+  const loadingTitle = document.getElementById('loading-title');
+  if (loadingTitle) {
+    loadingTitle.textContent = isViewer ? '가족 리포트를 불러오는 중...' : '리포트를 생성 중입니다';
+  }
 
   if (!sessionCode) {
     showError('유효하지 않은 세션입니다');
@@ -348,26 +372,29 @@ function showError(msg) {
 async function generateReport(members, sessionCode) {
   try {
     // ── Edge Function 호출 (Claude API 서버 사이드) ──
+    // viewer=1 파라미터로 접근한 공유 링크는 API 호출 없이 룰 기반만 사용
     let aiData = {};
-    try {
-      const edgeRes = await fetch(
-        `${SUPABASE_URL}/functions/v1/generate-parenting-report`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({ session_code: sessionCode }),
+    if (!window._isViewerMode) {
+      try {
+        const edgeRes = await fetch(
+          `${SUPABASE_URL}/functions/v1/generate-parenting-report`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ session_code: sessionCode }),
+          }
+        );
+        if (edgeRes.ok) {
+          const edgeData = await edgeRes.json();
+          aiData = edgeData.aiData || {};
         }
-      );
-      if (edgeRes.ok) {
-        const edgeData = await edgeRes.json();
-        aiData = edgeData.aiData || {};
+      } catch(e) {
+        console.warn('Edge Function 호출 실패, 룰 기반으로 렌더링:', e.message);
       }
-    } catch(e) {
-      console.warn('Edge Function 호출 실패, 룰 기반으로 렌더링:', e.message);
     }
 
     const parents  = members.filter(m => m.member_type === 'parent');
@@ -384,6 +411,9 @@ async function generateReport(members, sessionCode) {
 
     // 섹션 4: 부모-자녀 소통 가이드
     renderCommunicationSection(parents, children, aiData);
+
+    // 섹션 4-1: 형제·자매 관계
+    renderSiblingsSection(children, aiData);
 
     // 섹션 5: 가족 성장 방향 (AI 미션 포함)
     renderGrowthSection(members, aiData);
@@ -407,10 +437,10 @@ async function generateReport(members, sessionCode) {
 function renderMembersSection(members) {
   let html = '<div class="member-grid">';
 
-  members.forEach(m => {
+  members.forEach((m, idx) => {
     const typeInfo = TYPE_DATA[m.sg_type] || {};
     const role = m.member_type === 'parent' ?
-      (m.role === 'father' ? '아버지' : '어머니') : '자녀';
+      (m.role || '양육자') : '자녀';
 
     html += `
       <div class="member-card">
@@ -420,12 +450,25 @@ function renderMembersSection(members) {
         <div class="mc-keywords">
           ${(typeInfo.keywords || []).map(kw => `<span class="mc-kw">${kw}</span>`).join('')}
         </div>
+        <div style="margin-top:12px;text-align:center">
+          <canvas id="radar-${idx}" width="200" height="200" style="max-width:100%;"></canvas>
+        </div>
       </div>
     `;
   });
 
   html += '</div>';
   document.getElementById('members-section').innerHTML = html;
+
+  // 레이더 차트 렌더링
+  members.forEach((m, idx) => {
+    const canvas = document.getElementById(`radar-${idx}`);
+    if (canvas && m.sg_type && TYPE_RADAR[m.sg_type]) {
+      const typeInfo = TYPE_DATA[m.sg_type] || {};
+      const color = typeInfo.color || '#000';
+      drawRadar(canvas, TYPE_RADAR[m.sg_type], color);
+    }
+  });
 }
 
 function renderParentsSection(parents, children, aiData = {}) {
@@ -577,7 +620,7 @@ function renderCommunicationSection(parents, children, aiData = {}) {
     combos.forEach((combo, idx) => {
       const pt = TYPE_DATA[combo.parent.sg_type] || {};
       const ct = TYPE_DATA[combo.child.sg_type] || {};
-      const role = combo.parent.role === 'father' ? '아버지' : '어머니';
+      const role = combo.parent.role || '양육자';
 
       // AI 서술 조회
       const comboAI = (aiData.parentChildGuides || []).find(g =>
@@ -668,13 +711,62 @@ function renderGrowthSection(members, aiData = {}) {
   document.getElementById('growth-section').innerHTML = html;
 }
 
+function drawRadar(canvas, scores, color) {
+  const dims = ['Ne','Ni','Si','Se','Fe','Fi','Ti','Te'];
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width/2, cy = canvas.height/2;
+  const r = Math.min(cx,cy) - 24;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // 배경 그리드
+  for(let lvl=1;lvl<=5;lvl++){
+    ctx.beginPath();
+    for(let i=0;i<8;i++){
+      const angle = (i/8)*2*Math.PI - Math.PI/2;
+      const x = cx + r*(lvl/5)*Math.cos(angle);
+      const y = cy + r*(lvl/5)*Math.sin(angle);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='rgba(0,0,0,0.08)';
+    ctx.stroke();
+  }
+  // 축
+  for(let i=0;i<8;i++){
+    const angle=(i/8)*2*Math.PI-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+r*Math.cos(angle),cy+r*Math.sin(angle));
+    ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.stroke();
+    // 레이블
+    const lx=cx+(r+14)*Math.cos(angle), ly=cy+(r+14)*Math.sin(angle);
+    ctx.fillStyle='#666';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(dims[i],lx,ly);
+  }
+  // 데이터 영역
+  ctx.beginPath();
+  scores.forEach((s,i)=>{
+    const angle=(i/8)*2*Math.PI-Math.PI/2;
+    const x=cx+r*(s/5)*Math.cos(angle), y=cy+r*(s/5)*Math.sin(angle);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle=color+'33';ctx.fill();
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+  // 포인트
+  scores.forEach((s,i)=>{
+    const angle=(i/8)*2*Math.PI-Math.PI/2;
+    const x=cx+r*(s/5)*Math.cos(angle), y=cy+r*(s/5)*Math.sin(angle);
+    ctx.beginPath();ctx.arc(x,y,3,0,2*Math.PI);
+    ctx.fillStyle=color;ctx.fill();
+  });
+}
+
 function renderCaptionSection(members, aiData = {}) {
   let html = '';
 
   members.forEach(m => {
     const typeInfo = TYPE_DATA[m.sg_type] || {};
     const role = m.member_type === 'parent' ?
-      (m.role === 'father' ? '아버지' : '어머니') :
+      (m.role || '양육자') :
       `${new Date().getFullYear() - (m.birth_year || 0)}세 자녀`;
 
     // 개인 AI 캡션 조회
@@ -1229,6 +1321,109 @@ function getConflictScript(parentType, childType) {
 }
 
 // ════════════════════════════════════════════════════════════════
+// 섹션 4-1: 형제·자매 관계 헬퍼
+// ════════════════════════════════════════════════════════════════
+function getSiblingSynergy(t1, t2) {
+  const synergies = {
+    'SPARKSPARK': '새로운 것에 함께 관심을 가지고, 서로를 영감으로 자극합니다.',
+    'SPARKSTEADY': '한 명이 아이디어를 내고 다른 한 명이 이를 현실화하여 좋은 팀을 이룹니다.',
+    'SPARKPLAYER': '즉흥성과 새로움을 함께 즐기며 함께 모험할 수 있습니다.',
+    'SPARKHARMONY': '한 명의 열정이 다른 한 명의 따뜻함과 만나 가족을 밝게 합니다.',
+    'SPARKLOGIC': '창의적 아이디어와 논리적 분석이 만나 균형 잡힌 결정을 합니다.',
+    'VISIONVISION': '같은 수준의 통찰력으로 깊이 있는 대화를 나누고 함께 성장합니다.',
+    'VISIONSTEADY': '미래의 계획과 현재의 안정이 만나 방향 있는 움직임을 합니다.',
+    'STEADYSTEADY': '신뢰와 일관성이 강해서 형제/자매 간 깊은 유대가 형성됩니다.',
+    'STEADYPLAYER': '한 명의 신뢰성이 다른 한 명의 유연성을 보완하여 균형을 이룹니다.',
+    'PLAYERPLAYER': '현장에서의 빠른 판단과 재미를 함께 추구하며 친밀합니다.',
+    'HARMONYHARMONY': '감정을 깊게 공유하여 매우 따뜻한 형제/자매 관계를 만듭니다.',
+    'HARMONYSOUH': '감정의 깊이와 따뜻함이 만나 서로에게 큰 지지가 됩니다.',
+    'SOULSOUL': '삶의 의미와 내면을 깊게 이해하며 정신적으로 가까워집니다.',
+    'LOGICLOGIC': '논리적 사고가 일치해서 효율적이고 명확한 소통이 가능합니다.',
+    'LEADERLEADER': '두 명 모두 주도적이어서 함께 목표를 향해 나아갑니다.',
+  };
+  const key = [t1, t2].sort().join('');
+  return synergies[key] || '각각의 강점을 존중하는 형제/자매 관계입니다.';
+}
+
+function getSiblingConflict(t1, t2) {
+  const conflicts = {
+    'SPARKSPARK': '너무 많은 아이디어가 나오면서 실행이 엉망이 될 수 있습니다.',
+    'SPARKSTEADY': '한 명은 변화를 원하고 다른 한 명은 안정을 원해서 충돌할 수 있습니다.',
+    'SPARKPLAYER': '한 명은 장기 계획을 원하고 다른 한 명은 지금 당장을 원해서 답답해합니다.',
+    'VISIONSTEADY': '높은 기준과 변화 거부 사이에서 서로를 답답해합니다.',
+    'VISIONPLAYER': '장기 계획과 현장 중심 사이의 충돌로 방향이 흔들릴 수 있습니다.',
+    'STEADYPLAYER': '신뢰와 규칙을 원하는 한 명과 자유를 원하는 한 명이 충돌합니다.',
+    'HARMONYLOGIC': '감정과 논리의 충돌로 서로를 이해하기 어려울 수 있습니다.',
+    'HARMONYSOUH': '감정 중심으로만 가다 보면 현실적 문제 해결이 어려워질 수 있습니다.',
+    'LEADERSOUH': '주도권 추구와 내면 추구 사이의 갈등으로 거리감이 생길 수 있습니다.',
+    'LEADERSPARK': '한 명이 통제하려 하고 다른 한 명은 자유를 원해서 충돌합니다.',
+  };
+  const key = [t1, t2].sort().join('');
+  return conflicts[key] || '관점의 차이로 가끔 충돌이 생길 수 있습니다.';
+}
+
+function getSiblingCare(t1, t2) {
+  const care = {
+    'SPARKSPARK': '부모가 실행 계획을 함께 세워서 둘 다 마무리할 수 있도록 도와주세요.',
+    'SPARKSTEADY': '한 명에게는 새로운 도전을 격려하고, 다른 한 명에게는 변화의 필요성을 설득해주세요.',
+    'SPARKPLAYER': '장기 계획도 중요하지만 현재의 즐거움도 있다는 것을 함께 배우도록 하세요.',
+    'SPARKHARMONY': '둘 다 상대의 강점을 인정하는 말을 자주 해주세요.',
+    'VISIONSTEADY': '새로운 도전과 현재의 안정 사이에서 "함께 천천히"라는 메시지를 전달하세요.',
+    'VISIONPLAYER': '"둘 다 옳다"는 메시지로 서로의 관점을 존중하도록 격려하세요.',
+    'STEADYPLAYER': '자유와 안정 사이의 균형을 찾는 방법을 함께 탐색하세요.',
+    'STEADYSOUH': '변화 속에서도 기본 신뢰는 유지된다는 것을 강조해주세요.',
+    'HARMONYLOGIC': '"감정도 중요하고 논리도 중요하다"는 메시지로 둘 다 귀하게 여기세요.',
+    'HARMONYSOUH': '감정 표현도 좋지만 현실적 행동도 함께 필요하다고 알려주세요.',
+    'LEADERSOUH': '"주도권도 중요하지만 깊이도 중요하다"는 양쪽의 가치를 인정하세요.',
+    'LEADERSPARK': '한 명의 통제력과 다른 한 명의 창의성이 함께 일할 수 있도록 중재하세요.',
+  };
+  const key = [t1, t2].sort().join('');
+  return care[key] || '서로의 차이를 존중하고 함께하는 시간을 가지세요.';
+}
+
+function renderSiblingsSection(children, aiData) {
+  const sectEl = document.getElementById('siblings-section');
+
+  if (children.length < 2) {
+    sectEl.style.display = 'none';
+    return;
+  }
+
+  let html = '';
+  for (let i = 0; i < children.length - 1; i++) {
+    for (let j = i + 1; j < children.length; j++) {
+      const c1 = children[i];
+      const c2 = children[j];
+      const t1 = TYPE_DATA[c1.sg_type] || {};
+      const t2 = TYPE_DATA[c2.sg_type] || {};
+
+      const synergy = getSiblingSynergy(c1.sg_type, c2.sg_type);
+      const conflict = getSiblingConflict(c1.sg_type, c2.sg_type);
+      const care = getSiblingCare(c1.sg_type, c2.sg_type);
+
+      html += `
+        <div class="content-box">
+          <h3>👭 ${c1.name}(${t1.kr})과 ${c2.name}(${t2.kr})</h3>
+
+          <h4 style="margin-top:14px;margin-bottom:8px;color:var(--navy);font-weight:700">시너지 포인트</h4>
+          <p style="font-size:.9rem;color:var(--mid);line-height:1.7">${synergy}</p>
+
+          <h4 style="margin-top:12px;margin-bottom:8px;color:var(--navy);font-weight:700">갈등 포인트</h4>
+          <p style="font-size:.9rem;color:var(--mid);line-height:1.7">${conflict}</p>
+
+          <h4 style="margin-top:12px;margin-bottom:8px;color:var(--navy);font-weight:700">부모의 배려 팁</h4>
+          <div class="tip-section">
+            <p style="font-size:.9rem;color:#7A6000;line-height:1.7">${care}</p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  sectEl.innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════════════════
 // 섹션 5: 가족 성장 방향 헬퍼
 // ════════════════════════════════════════════════════════════════
 function getFamilyStrengths(dominantTypes) {
@@ -1365,18 +1560,23 @@ function buildShareCard(members) {
   }
 }
 
+// 공유용 URL 생성 (viewer=1 붙여서 API 재호출 방지)
+function getShareUrl() {
+  const base = location.origin + location.pathname;
+  const session = _shareSessionCode;
+  return `${base}?session=${session}&viewer=1`;
+}
+
 async function copyShareLink() {
-  const url = location.href;
+  const url = getShareUrl();
   try {
     await navigator.clipboard.writeText(url);
-    // 버튼 피드백
     const btn = event.currentTarget;
     const orig = btn.innerHTML;
     btn.innerHTML = '✅ 복사됐어요!';
     btn.style.borderColor = '#4CAF50';
     setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; }, 2000);
   } catch (e) {
-    // fallback
     const ta = document.createElement('textarea');
     ta.value = url;
     ta.style.position = 'fixed';
@@ -1390,12 +1590,11 @@ async function copyShareLink() {
 }
 
 function shareKakao() {
-  const url = location.href;
+  const url = getShareUrl();
   const members = _shareMembers.filter(m => m.sg_type);
   const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr || m.sg_type}(${m.name})`).join(', ');
   const text = `우리 가족 쉐도우그램 결과: ${memberText}\n\n서로를 더 깊이 이해하게 됐어요 💚\n\n👉 ${url}`;
 
-  // Kakao SDK가 있으면 사용, 없으면 URL scheme
   if (window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized()) {
     window.Kakao.Link.sendDefault({
       objectType: 'feed',
@@ -1408,11 +1607,9 @@ function shareKakao() {
       buttons: [{ title: '결과 보기', link: { mobileWebUrl: url, webUrl: url } }]
     });
   } else {
-    // 카카오톡 URL scheme fallback
     const kakaoUrl = 'kakaotalk://msg/send?text=' + encodeURIComponent(text);
     window.location.href = kakaoUrl;
     setTimeout(() => {
-      // 앱이 없으면 웹 공유로 폴백
       if (navigator.share) {
         navigator.share({ title: '우리 가족 쉐도우그램 결과', text: memberText, url: url });
       } else {
@@ -1423,7 +1620,7 @@ function shareKakao() {
 }
 
 function shareNative() {
-  const url = location.href;
+  const url = getShareUrl();
   const members = _shareMembers.filter(m => m.sg_type);
   const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr || m.sg_type}(${m.name})`).join(', ');
 
@@ -1441,13 +1638,12 @@ function shareNative() {
 }
 
 function shareInstagram() {
-  // 인스타그램은 직접 공유 API가 없으므로 이미지 저장 안내
   const overlay = document.getElementById('share-overlay');
   overlay.classList.remove('open');
   document.body.style.overflow = '';
 
   setTimeout(() => {
-    alert('📸 인스타그램 공유 방법\n\n1. 화면을 캡처하세요 (전원 + 볼륨 down)\n2. 캡처 이미지를 인스타 스토리에 올리세요\n3. 링크 스티커에 아래 주소를 붙여넣으세요:\n\n' + location.href);
+    alert('📸 인스타그램 공유 방법\n\n1. 화면을 캡처하세요 (전원 + 볼륨 down)\n2. 캡처 이미지를 인스타 스토리에 올리세요\n3. 링크 스티커에 아래 주소를 붙여넣으세요:\n\n' + getShareUrl());
   }, 300);
 }
 
