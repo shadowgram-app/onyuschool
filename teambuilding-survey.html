@@ -826,11 +826,14 @@ let uName = '', uRole = '', uGroup = '';
 
 // URL 파라미터
 const params       = new URLSearchParams(location.search);
-const churchName   = params.get('church')   || '';
-const workshopCode = params.get('code')     || '';
-const orgType      = params.get('org_type') || ''; // staff | leadership | teachers | sunday | custom
+const churchName   = params.get('church')      || '';
+const workshopCode = params.get('code')        || '';
+const orgType      = params.get('org_type')    || '';
 const wsTitle      = decodeURIComponent(params.get('title') || '');
-const deptParam    = params.get('dept')     || ''; // 주일학교 부서
+const deptParam    = params.get('dept')        || ''; // 주일학교 부서
+const memberTypeP  = params.get('member_type') || ''; // student | teacher | leader
+const gradeParam   = params.get('grade')       || ''; // 초1~초6, 중1~3, 고1~3
+const officerRole  = decodeURIComponent(params.get('officer_role') || ''); // 임원 역할
 
 if (churchName) document.getElementById('topbar-church').textContent = churchName;
 

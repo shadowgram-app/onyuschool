@@ -161,7 +161,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
       <div class="login-title">인증코드 입력</div>
       <div class="login-sub" id="li-otp-desc">입력한 이메일로 발송된 6자리 코드를 입력해 주세요</div>
       <div class="otp-wrap">
-        <input class="otp-input" type="text" maxlength="1" id="li-otp-0" oninput="liOtpInput(0)" onkeydown="liOtpKey(event,0)">
+        <input class="otp-input" type="text" inputmode="numeric" maxlength="1" id="li-otp-0" oninput="liOtpInput(0)" onkeydown="liOtpKey(event,0)" onpaste="liOtpPaste(event,0)">
         <input class="otp-input" type="text" maxlength="1" id="li-otp-1" oninput="liOtpInput(1)" onkeydown="liOtpKey(event,1)">
         <input class="otp-input" type="text" maxlength="1" id="li-otp-2" oninput="liOtpInput(2)" onkeydown="liOtpKey(event,2)">
         <input class="otp-input" type="text" maxlength="1" id="li-otp-3" oninput="liOtpInput(3)" onkeydown="liOtpKey(event,3)">
@@ -740,8 +740,15 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-3nT7SfFWU8uE
 let liEmail = '', liOtp = '', liTimer = null;
 
 async function liSendOtp() {
+  const sendBtn = document.querySelector('#login-step-email .login-btn');
+  if (sendBtn && sendBtn.disabled) return; // 중복 클릭 방지
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '발송 중...'; }
+
   const email = document.getElementById('li-email').value.trim();
-  if (!email || !email.includes('@')) { showToast('이메일을 정확히 입력해 주세요'); return; }
+  if (!email || !email.includes('@')) {
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '인증코드 받기'; }
+    showToast('이메일을 정확히 입력해 주세요'); return;
+  }
 
   // DB에서 해당 이메일의 워크숍 존재 여부 확인
   const r = await fetch(
@@ -774,6 +781,8 @@ async function liSendOtp() {
     showToast('📧 인증코드가 발송되었습니다');
   } catch(e) { showToast('🔑 인증코드: ' + liOtp); }
 
+  if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '인증코드 받기'; }
+
   document.getElementById('li-otp-desc').textContent = liEmail + '로 발송된 6자리 코드를 입력해 주세요';
   document.getElementById('login-step-email').style.display = 'none';
   document.getElementById('login-step-otp').style.display   = 'block';
@@ -791,6 +800,18 @@ function liOtpInput(idx) {
 function liOtpKey(e, idx) {
   if (e.key === 'Backspace' && !document.getElementById(`li-otp-${idx}`).value && idx > 0)
     document.getElementById(`li-otp-${idx-1}`).focus();
+}
+function liOtpPaste(e, startIdx) {
+  e.preventDefault();
+  const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+  paste.split('').forEach((ch, i) => {
+    const el = document.getElementById(`li-otp-${startIdx + i}`);
+    if (el) el.value = ch;
+  });
+  const nextIdx = Math.min(startIdx + paste.length, 5);
+  document.getElementById(`li-otp-${nextIdx}`)?.focus();
+  document.getElementById('li-btn-verify').disabled =
+    ![0,1,2,3,4,5].every(i => document.getElementById(`li-otp-${i}`).value);
 }
 function liGetOtp() { return [0,1,2,3,4,5].map(i => document.getElementById(`li-otp-${i}`).value).join(''); }
 
