@@ -122,12 +122,14 @@ async function generateFamilyReport(members: any[], apiKey: string): Promise<Rec
 3. 개성화 훈련 — "더 많이"가 아닌 "내려놓음과 균형"으로 성장
 4. 8유형: 스파크(Ne)·비전(Ni)·스테디(Si)·플레이어(Se)·하모니(Fe)·소울(Fi)·로직(Ti)·리더(Te)
 
-[작성 원칙]
-- 유형 조합의 구체적 역동 서술 (일반론 금지)
-- 부모-자녀 실제 갈등 상황을 상상해서 묘사
-- 가정에서 내일 바로 쓸 수 있는 구체적 언어 예시 포함
-- 판단이 아닌 이해의 언어, 따뜻하지만 날카로운 통찰
-- 반드시 JSON만 응답 (설명 텍스트 금지)`
+[절대 규칙 — 반드시 지킬 것]
+- 모든 문장에서 "이 부모", "한 부모", "다른 부모", "이 아이", "이 유형" 같은 익명 표현 절대 금지
+- 반드시 실제 이름을 사용하여 서술 (예: "민철님의 스파크 기질이", "은율이가 힘들어하는 상황은")
+- "부모의 창의성"이 아니라 "민철님의 창의성", "자녀의 안정감"이 아니라 "은율이의 안정감"처럼 구체적으로
+- 일반론·뻔한 표현 절대 금지 (예: "서로를 이해하는 것이 중요합니다" 같은 표현 금지)
+- 실제 가정에서 일어날 법한 구체적 장면 묘사 필수
+- 바로 쓸 수 있는 실제 대화 문장 예시 포함
+- 반드시 JSON만 응답 (설명 텍스트 절대 금지)`
 
   // ─── 1. 부모 양육 성향 ───
   if (parents.length === 1) {
@@ -137,16 +139,19 @@ async function generateFamilyReport(members: any[], apiKey: string): Promise<Rec
 
     const raw1 = await callClaude(SYSTEM, `
 [양육자 정보]
-${p.name}(${p.role}): ${td.kr} — 빛:${td.light} / 그림자:${td.shadow}
+이름: ${p.name} / 역할: ${p.role} / 유형: ${td.kr}
+빛: ${td.light} / 그림자: ${td.shadow}
 자녀: ${childTypes}
 
-[질문] 이 ${td.kr} 유형 양육자의 구체적 양육 패턴을 분석해주세요.
-- 이 유형이 자녀에게 자주 하는 말투/행동 패턴
-- 자녀가 느끼는 이 부모의 빛과 그림자
-- 이 유형 부모의 자녀와의 관계에서 반복되는 갈등 시나리오
-- 내일 당장 실천할 소통 개선 방법 2가지 (구체적 언어 예시 포함)
+⚠️ 모든 문장에서 반드시 "${p.name}"이라는 이름을 사용하세요. "이 부모", "이 유형" 절대 금지.
 
-JSON: {"parentingStyle": "3~4문장 서술", "parentingStrength": "2~3문장", "parentingChallenge": "2~3문장", "parentingTips": ["팁1 (예시 대화 포함)", "팁2 (예시 대화 포함)"]}`, apiKey)
+${p.name}님의 ${td.kr} 기질이 양육에서 어떻게 드러나는지 분석:
+- ${p.name}님이 자녀에게 자주 하는 말투·행동 (실제 장면 묘사)
+- ${p.name}님의 빛이 자녀에게 어떻게 전달되는가 (구체적 순간)
+- ${p.name}님의 그림자가 자녀와의 관계에서 반복되는 갈등 패턴
+- ${p.name}님이 내일 바로 실천할 소통 방법 2가지 (실제 대화 문장 포함)
+
+JSON: {"parentingStyle":"${p.name}님 이름 포함 3~4문장","parentingStrength":"${p.name}님 이름 포함 2~3문장","parentingChallenge":"${p.name}님 이름 포함 2~3문장","parentingTips":["${p.name}님 팁1 (대화예시포함)","${p.name}님 팁2 (대화예시포함)"]}`, apiKey)
 
     const parsed1 = parseJSON(raw1)
     if (parsed1) Object.assign(result, parsed1)
@@ -162,13 +167,20 @@ ${p1.name}(${p1.role}): ${t1.kr} — 빛:${t1.light} / 그림자:${t1.shadow}
 ${p2.name}(${p2.role}): ${t2.kr} — 빛:${t2.light} / 그림자:${t2.shadow}
 자녀: ${childTypes}
 
-[질문] 이 두 양육자의 조합이 만들어내는 가족 역동을 분석해주세요.
-- ${t1.kr}×${t2.kr} 부부의 양육 시너지 — 어떤 순간에 환상의 팀이 되는가
-- 두 유형의 그림자가 충돌할 때 자녀에게 미치는 영향
-- 자녀 앞에서 서로 다른 메시지를 줄 때 구체적 시나리오
-- 부부가 함께 성장하기 위한 핵심 통찰 1가지
+⚠️ 모든 문장에서 반드시 "${p1.name}", "${p2.name}" 이름을 명시하세요. "한 부모", "다른 부모", "이 유형" 절대 금지.
 
-JSON: {"coupleDynamics": "3~4문장 서술", "coupleStrength": "2~3문장", "coupleChallenge": "2~3문장", "parentingStyle": "각 부모의 역할 분담 2~3문장"}`, apiKey)
+${p1.name}님(${t1.kr})과 ${p2.name}님(${t2.kr})의 부부 양육 역동 분석:
+- ${p1.name}님의 ${t1.light}와 ${p2.name}님의 ${t2.light}가 만나 시너지를 내는 구체적 장면
+- ${p1.name}님의 그림자(${t1.shadow})와 ${p2.name}님의 그림자(${t2.shadow})가 충돌할 때 자녀에게 미치는 영향
+- ${p1.name}님과 ${p2.name}님이 자녀 앞에서 엇갈린 메시지를 줄 때의 실제 시나리오
+- 두 분이 함께 성장하기 위한 핵심 통찰 1가지 (이름 명시)
+
+JSON: {
+  "coupleDynamics": "${p1.name}님과 ${p2.name}님 이름 포함 3~4문장",
+  "coupleStrength": "이름 포함 2~3문장 (시너지 장면)",
+  "coupleChallenge": "이름 포함 2~3문장 (충돌 패턴)",
+  "parentingStyle": "${p1.name}님 역할 + ${p2.name}님 역할 각각 명시 2~3문장"
+}`, apiKey)
 
     const parsed1 = parseJSON(raw1)
     if (parsed1) Object.assign(result, parsed1)
@@ -184,25 +196,28 @@ JSON: {"coupleDynamics": "3~4문장 서술", "coupleStrength": "2~3문장", "cou
 
     const raw2 = await callClaude(SYSTEM, `
 [자녀 정보]
-이름: ${child.name} / 유형: ${td.kr}(${child.sg_type}) / ${age ? age+'세' : ''}
+이름: ${child.name} / 유형: ${td.kr} / ${age ? age+'세' : ''}
 발달 단계: ${devStage}
 빛: ${td.light} / 그림자: ${td.shadow}
-부모 유형: ${parentInfo}
+부모: ${parentInfo}
 
-[질문] 이 ${td.kr} 아이를 부모가 진짜 이해하도록 도와주세요.
-- 이 아이가 왜 그렇게 행동하는지 (유형의 주기능으로 설명)
-- 이 나이와 발달 단계에서 특히 나타나는 패턴
-- 부모가 자주 오해하는 이 아이의 행동 1가지와 진짜 의미
-- 효과적인 칭찬 방법 2가지 (실제 사용할 수 있는 문장)
-- 이 아이가 힘들어하는 상황 2가지
-- 부모가 기억할 실천 팁 2가지
+⚠️ 모든 문장에서 반드시 "${child.name}"이라는 이름을 사용하세요. "이 아이", "이 유형의 아이" 절대 금지.
+⚠️ ${td.kr} 유형의 구체적 특성(${td.light}, ${td.shadow})을 반드시 내용에 녹여내세요. 유형과 무관한 일반론 금지.
+
+${child.name}의 ${td.kr} 기질 이해:
+- ${child.name}가 왜 그런 행동을 하는지 — ${td.kr}의 주기능(${td.light})으로 설명 (구체적 장면)
+- ${age ? age+'세' : ''} ${devStage.split('—')[0]}에서 ${td.kr} 기질이 어떻게 드러나는가
+- ${child.name}의 행동 중 부모가 가장 자주 오해하는 것 1가지 + ${td.kr} 관점에서의 진짜 의미
+- ${child.name}에게 효과적인 칭찬 방법 2가지 — ${td.kr} 유형에 맞는 실제 문장
+- ${child.name}가 특히 힘들어하는 상황 2가지 — ${td.shadow}와 연결해서
+- ${parentInfo}가 ${child.name}와 소통할 때 기억할 실천 팁 2가지
 
 JSON: {
   "name": "${child.name}",
-  "communicationStyle": "2~3문장",
-  "praiseMethod": ["칭찬 문장 예시1", "칭찬 문장 예시2"],
-  "challenges": ["힘든 상황1", "힘든 상황2"],
-  "parentTips": ["팁1 (구체적 행동 포함)", "팁2 (구체적 행동 포함)"]
+  "communicationStyle": "${child.name} 이름 포함, ${td.kr} 특성 반영 2~3문장",
+  "praiseMethod": ["${child.name}에게 바로 쓸 수 있는 칭찬 문장1", "칭찬 문장2"],
+  "challenges": ["${child.name}가 힘들어하는 구체적 상황1", "상황2"],
+  "parentTips": ["${child.name}와 소통 팁1 (구체적 행동+문장)", "팁2"]
 }`, apiKey)
 
     const parsed2 = parseJSON(raw2)
@@ -222,17 +237,26 @@ JSON: {
 부모: ${parent.name}(${parent.role}) — ${pt.kr} / 빛:${pt.light} / 그림자:${pt.shadow}
 자녀: ${child.name}${age ? `(${age}세)` : ''} — ${ct.kr} / 빛:${ct.light} / 그림자:${ct.shadow}
 
-[질문] ${pt.kr} 부모와 ${ct.kr} 자녀의 관계 역동을 분석해주세요.
-- 이 두 유형이 자연스럽게 통하는 순간 (구체적 장면)
-- 이 두 유형이 충돌하는 전형적인 상황 (구체적 장면)
-- 갈등 상황에서 부모가 쓸 수 있는 실제 대화 스크립트 (한 문장)
+⚠️ 반드시 "${parent.name}"과 "${child.name}" 이름을 모든 문장에 명시하세요. "부모", "자녀" 같은 익명 표현 절대 금지.
+⚠️ ${pt.kr}의 특성(${pt.light}/${pt.shadow})과 ${ct.kr}의 특성(${ct.light}/${ct.shadow})이 만나는 구체적 역동을 서술하세요. 유형과 무관한 일반론 절대 금지.
+
+${parent.name}(${pt.kr})과 ${child.name}(${ct.kr})의 관계 역동:
+
+[시너지] ${parent.name}의 ${pt.light}와 ${child.name}의 ${ct.light}가 자연스럽게 맞닿는 순간 2가지
+→ 각각 집에서 일어날 법한 구체적 장면으로 묘사
+
+[갈등] ${parent.name}의 ${pt.shadow}와 ${child.name}의 ${ct.shadow}가 부딪히는 전형적 상황 2가지
+→ 각각 "저녁 식사 중", "숙제 시간에" 같은 실제 가정 상황으로 묘사
+
+[해결 스크립트] 갈등이 생겼을 때 ${parent.name}가 ${child.name}에게 실제로 말할 수 있는 한 문장
+→ ${pt.kr} 특성을 살리되 ${ct.kr}의 마음을 열 수 있는 말
 
 JSON: {
   "parentName": "${parent.name}",
   "childName": "${child.name}",
-  "synergy": ["시너지1 (구체적 장면)", "시너지2"],
-  "conflicts": ["갈등1 (구체적 상황)", "갈등2"],
-  "resolutionScript": "갈등 시 쓸 수 있는 실제 대화 문장 (따옴표 없이)"
+  "synergy": ["${parent.name}와 ${child.name} 이름 포함 시너지 장면1", "시너지 장면2"],
+  "conflicts": ["${parent.name}와 ${child.name} 이름 포함 갈등 상황1", "갈등 상황2"],
+  "resolutionScript": "${parent.name}가 ${child.name}에게 실제로 하는 대화 문장"
 }`, apiKey)
 
       const parsed3 = parseJSON(raw3)
@@ -241,21 +265,32 @@ JSON: {
   }
 
   // ─── 4. 가족 성장 + 미션 ───
+  const familyNames = members.map(m => m.name).join(', ')
   const raw4 = await callClaude(SYSTEM, `
 [가족 구성]
 ${memberLines}
 
-[질문] 이 가족 전체의 집단적 빛과 그림자, 그리고 성장 방향을 분석해주세요.
-- 이 가족이 함께 만들어내는 집단적 강점 3가지
-- 이 가족이 반복적으로 겪는 집단적 그림자 패턴 2가지
-- 이번 주 가족이 함께 할 수 있는 마이크로 미션 3가지 (10분 내, 집에서 가능)
-- 이 가족이 1개월 후 달라질 모습 (구체적 장면 묘사)
+⚠️ 강점·그림자·미션 모두 가족 구성원 이름(${familyNames})을 명시하세요. "이 가족", "가족 구성원" 같은 익명 표현 절대 금지.
+⚠️ 각 유형의 구체적 특성에서 도출된 내용이어야 합니다. 일반론("서로 이해하는 것이 중요") 절대 금지.
+
+이 가족의 유형 조합이 만들어내는 집단 역동:
+
+[강점 3가지] 각 구성원 이름과 유형 특성이 어우러져 만들어내는 이 가족만의 강점
+→ 예: "${familyNames.split(',')[0]}님의 ~과 ~의 ~이 만나 ~한다"
+
+[집단적 그림자 2가지] 이 유형 조합에서 반복적으로 나타나는 갈등 패턴
+→ 특정 구성원 이름을 언급하며 실제 가정 상황으로 묘사
+
+[마이크로 미션 3가지] 각 미션에 특정 구성원 이름 포함, 10분 내 집에서 실천 가능
+→ 예: "${familyNames.split(',')[0]}님이 ~에게 ~ 해보기"
+
+[1개월 후] 이 가족이 미션을 실천했을 때의 구체적 변화 장면 (이름 명시)
 
 JSON: {
-  "familyStrengths": ["강점1", "강점2", "강점3"],
-  "familyShadows": ["그림자1", "그림자2"],
-  "familyMissions": ["미션1", "미션2", "미션3"],
-  "monthlyChange": "1개월 후 변화 2~3문장"
+  "familyStrengths": ["이름 포함 강점1", "이름 포함 강점2", "이름 포함 강점3"],
+  "familyShadows": ["이름 포함 그림자 패턴1", "이름 포함 그림자 패턴2"],
+  "familyMissions": ["이름 포함 미션1", "이름 포함 미션2", "이름 포함 미션3"],
+  "monthlyChange": "이름 포함 1개월 후 변화 장면 2~3문장"
 }`, apiKey)
 
   const parsed4 = parseJSON(raw4)
@@ -266,22 +301,33 @@ JSON: {
   for (const member of members) {
     const td = TYPE_META[member.sg_type] || {}
 
+    const otherNames = members.filter(m => m.name !== member.name).map(m => `${m.name}(${TYPE_META[m.sg_type]?.kr||m.sg_type})`).join(', ')
     const raw5 = await callClaude(SYSTEM, `
 [구성원 정보]
 이름: ${member.name}(${member.role}) / 유형: ${td.kr}
 빛: ${td.light} / 그림자: ${td.shadow}
-기본 캡션 참고: "${td.caption}"
+캡션 참고: "${td.caption}"
+가족 내 다른 구성원: ${otherNames}
 
-[질문] 이 분의 개인 쉐도우그램을 작성해주세요.
-- 이 유형이 가족 안에서 맡는 자연스러운 역할
-- 빛과 그림자 요약 (가족 관계 맥락에서)
-- 이 분만을 위한 마이크로 미션 2가지
+⚠️ 반드시 "${member.name}"이라는 이름을 모든 문장에 사용하세요. "이 분", "이 유형" 절대 금지.
+⚠️ ${td.kr}의 구체적 특성(빛:${td.light} / 그림자:${td.shadow})을 반드시 내용에 녹여내세요.
+
+${member.name}(${td.kr})의 개인 쉐도우그램:
+
+[캡션] ${member.name}의 빛(${td.light})과 그림자(${td.shadow})를 담은 시적이고 날카로운 한 문장
+→ 참고 캡션보다 더 ${member.name}의 가족 맥락에 맞게
+
+[빛과 그림자 요약] ${member.name}가 가족 안에서 빛날 때와 그림자가 드러날 때의 구체적 모습
+→ ${otherNames}와의 관계 맥락에서 서술
+
+[마이크로 미션 2가지] ${member.name}가 내일 바로 실천할 수 있는 개인 미션
+→ ${td.kr}의 그림자를 인식하고 개성화 방향으로 나아가는 행동
 
 JSON: {
   "name": "${member.name}",
-  "shadowCaption": "이 사람의 빛과 그림자를 담은 한 문장 (시적이고 날카롭게)",
-  "lightShadowSummary": "가족 맥락에서의 빛과 그림자 2~3문장",
-  "microMissions": ["미션1 (내일 바로 실천 가능)", "미션2"]
+  "shadowCaption": "${member.name} 이름 포함 시적 한 문장",
+  "lightShadowSummary": "${member.name} 이름 포함, 가족 맥락 2~3문장",
+  "microMissions": ["${member.name}의 내일 실천 미션1 (구체적 행동)", "미션2"]
 }`, apiKey)
 
     const parsed5 = parseJSON(raw5)
