@@ -28,12 +28,14 @@ function doPost(e) {
 
     let result;
     switch (type) {
-      case 'pastor_quick':    result = handlePastorQuick(data);   break; // 원스탑 신속 신청 (이름+이메일만)
-      case 'check_submit':    result = handleCheckSubmit(data);   break;
-      case 'pastor_apply':    result = handlePastorApply(data);   break; // 상세 신청 (기존 호환)
-      case 'seminar':         result = handleSeminar(data);       break;
-      case 'subscribe':       result = handleSubscribe(data);     break;
-      default:                result = { ok: false, msg: '알 수 없는 type: ' + type };
+      case 'pastor_quick':        result = handlePastorQuick(data);       break;
+      case 'check_submit':        result = handleCheckSubmit(data);       break;
+      case 'pastor_apply':        result = handlePastorApply(data);       break;
+      case 'seminar':             result = handleSeminar(data);           break;
+      case 'subscribe':           result = handleSubscribe(data);         break;
+      // ── Supabase Webhook (팀빌딩 / 자녀양육) ──
+      case 'supabase_webhook':    result = handleSupabaseWebhook(data);   break;
+      default:                    result = { ok: false, msg: '알 수 없는 type: ' + type };
     }
 
     return ContentService
@@ -466,5 +468,128 @@ function formatDate(isoString) {
     return Utilities.formatDate(d, 'Asia/Seoul', 'yyyy-MM-dd HH:mm:ss');
   } catch(e) {
     return isoString || '';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// Supabase Webhook 핸들러
+// ── 팀빌딩 워크숍 · 자녀양육 클래스 결과를 구글 시트에 기록 ──
+//
+// Supabase 설정 방법:
+//  1. Supabase Dashboard → Database → Webhooks
+//  2. "Create a new webhook" 클릭
+//  3. Name: sync-to-sheets
+//  4. Table: survey_results (팀빌딩) 또는 family_members (자녀양육)
+//  5. Events: INSERT
+//  6. HTTP Request → POST → URL: 이 Apps Script 웹앱 URL
+//  7. HTTP Headers: Content-Type: application/json
+//  8. HTTP Body (팀빌딩):
+//     {"type":"supabase_webhook","source":"teambuilding","record":{{record}}}
+//  9. HTTP Body (자녀양육):
+//     {"type":"supabase_webhook","source":"parenting","record":{{record}}}
+// ══════════════════════════════════════════════════════════════
+
+function handleSupabaseWebhook(data) {
+  const source = data.source || 'unknown';
+  const record = data.record || {};
+
+  if (source === 'teambuilding') {
+    return handleTeambuildingRecord(record);
+  } else if (source === 'parenting') {
+    return handleParentingRecord(record);
+  }
+  return { ok: false, msg: '알 수 없는 source: ' + source };
+}
+
+// ── 팀빌딩 검사 결과 기록 ──
+function handleTeambuildingRecord(record) {
+  const ss    = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = getOrCreateSheet(ss, '팀빌딩_검사결과');
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      '완료일시', '교회코드', '이름', '소속', '그룹',
+      '쉐도우그램유형', '주요기능점수'
+    ]);
+    // 헤더 굵게
+    sheet.getRange(1, 1, 1, 7).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+
+  const scores = record.dim_scores || {};
+  const topScore = Object.entries(scores)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([k, v]) => `${k}:${v.toFixed(1)}`)
+    .join(', ');
+
+  sheet.appendRow([
+    formatDate(record.submitted_at || new Date().toISOString()),
+    record.workshop_code || '',
+    record.name || '',
+    record.role || '',
+    record.group_type === 'L' ? '리더십' : record.group_type === 'T' ? '교사팀' : record.group_type || '',
+    record.sg_type || '',
+    topScore,
+  ]);
+
+  // 관리자 알림 (선택 — 많을 경우 주석 처리)
+  // notifyAdmin(
+  //   `[온유스쿨 팀빌딩] 검사 완료 — ${record.name}(${record.sg_type})`,
+  //   `교회코드: ${record.workshop_code}\n이름: ${record.name}\n유형: ${record.sg_type}\n소속: ${record.role}`
+  // );
+
+  return { ok: true, msg: '팀빌딩 기록 완료' };
+}
+
+// ── 자녀양육 가족 구성원 기록 ──
+function handleParentingRecord(record) {
+  const ss    = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = getOrCreateSheet(ss, '자녀양육_검사결과');
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      '완료일시', '세션코드', '이름', '역할', '유형',
+      '출생연도', '성별'
+    ]);
+    sheet.getRange(1, 1, 1, 7).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+
+  sheet.appendRow([
+    formatDate(record.completed_at || new Date().toISOString()),
+    record.session_code || '',
+    record.name || '',
+    record.role || '',
+    record.sg_type || '',
+    record.birth_year || '',
+    record.gender || '',
+  ]);
+
+  // 가족 전원 완료 알림 체크 (세션별 집계)
+  checkFamilyComplete(ss, record.session_code);
+
+  return { ok: true, msg: '자녀양육 기록 완료' };
+}
+
+// ── 가족 전원 완료 시 관리자 알림 ──
+function checkFamilyComplete(ss, sessionCode) {
+  try {
+    const sheet = ss.getSheetByName('자녀양육_검사결과');
+    if (!sheet) return;
+
+    const data = sheet.getDataRange().getValues();
+    const sessionRows = data.slice(1).filter(r => r[1] === sessionCode);
+
+    // 같은 세션에서 2명 이상 완료 시 알림 (가족 최소 구성)
+    if (sessionRows.length >= 2) {
+      const names = sessionRows.map(r => `${r[2]}(${r[3]||''} · ${r[4]||'검사중'})` ).join(', ');
+      notifyAdmin(
+        `[온유스쿨 자녀양육] 가족 검사 진행 중 — ${sessionCode}`,
+        `세션: ${sessionCode}\n완료 인원: ${sessionRows.length}명\n구성원: ${names}\n\n리포트 확인: https://onyuschool.com/parenting-report.html?session=${sessionCode}`
+      );
+    }
+  } catch(e) {
+    Logger.log('가족 완료 체크 실패: ' + e.message);
   }
 }
