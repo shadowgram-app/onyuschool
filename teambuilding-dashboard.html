@@ -1064,57 +1064,144 @@ async function generateFallback(mode) {
 function downloadTeamReportV2(report) {
   const { team, analysis } = report;
   const church = team.churchName || CHURCH;
+  const TM = window.ShadowgramEngine?.TYPE_MASTER || TYPE_DATA;
 
+  // 섹션 1: 팀 유형 분포 (카드 디자인 개선)
   const typeRows = team.typeDistribution.map(([t, n]) => {
-    const td = window.ShadowgramEngine.TYPE_MASTER[t] || {};
+    const td = TM[t] || {};
     const pct = Math.round(n / results.length * 100);
     const members = results.filter(r => r.sg_type === t);
+    const typeDescription = {
+      SPARK: '새로운 가능성과 영감을 제시하는 역할',
+      VISION: '전략적 방향과 통찰을 제공하는 역할',
+      STEADY: '신뢰와 안정감을 구축하는 역할',
+      PLAYER: '현장 감각과 즉시 행동의 역할',
+      HARMONY: '관계와 공감을 담당하는 역할',
+      SOUL: '깊이 있는 의미를 찾는 역할',
+      LOGIC: '논리적 분석과 체계를 담당하는 역할',
+      LEADER: '결단력 있는 리더십의 역할',
+    };
     return `
     <div style="margin-bottom:22px;padding:20px;border:1px solid #DDD;border-radius:12px;
-      border-left:5px solid ${td.color||'#AAA'}">
+      border-left:5px solid ${td.color||'#AAA'};background:#FAFAFA">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <span style="font-size:1.5rem">${td.icon||''}</span>
-        <strong style="color:${td.color};font-size:1.05rem">${t} (${td.kr||''})</strong>
+        <div style="flex:1">
+          <strong style="color:${td.color};font-size:1.05rem;display:block">${t} (${td.kr||''})</strong>
+          <div style="font-size:.8rem;color:#666;margin-top:2px">${typeDescription[t] || ''}</div>
+        </div>
         <span style="background:${td.color}18;color:${td.color};font-size:.75rem;
-          font-weight:700;padding:3px 10px;border-radius:10px;margin-left:auto">${n}명 (${pct}%)</span>
+          font-weight:700;padding:4px 12px;border-radius:10px;white-space:nowrap">${n}명 (${pct}%)</span>
       </div>
-      <div style="font-size:.82rem;color:#666;margin-bottom:6px">
-        키워드: ${(td.keywords||[]).join(' · ')}
+      <div style="font-size:.81rem;color:#666;margin-bottom:8px">
+        <strong>키워드:</strong> ${(td.keywords||[]).join(' · ')}
       </div>
-      <div style="font-size:.83rem;color:#333;margin-bottom:6px">
-        <strong style="color:${td.color}">강점</strong>: ${(td.strengths||[]).slice(0,2).join(' / ')}
+      <div style="font-size:.82rem;color:#333;margin-bottom:8px">
+        <strong style="color:${td.color}">강점:</strong> ${(td.strengths||[]).slice(0,2).join(' / ')}
       </div>
-      <div style="font-size:.83rem;color:#555;margin-bottom:10px">
-        <strong>주의</strong>: ${(td.shadows||[]).slice(0,1)[0]||''}
+      <div style="font-size:.81rem;color:#666;margin-bottom:12px">
+        <strong>특성:</strong> ${(td.shadows||[]).slice(0,1)[0]||''}
       </div>
       <div>
-        <span style="font-size:.75rem;font-weight:700;color:#999;display:block;margin-bottom:5px">참여자</span>
+        <span style="font-size:.75rem;font-weight:700;color:#999;display:block;margin-bottom:6px">팀 구성원</span>
         ${members.map(r =>
           `<span style="display:inline-block;background:#F0F0F0;border-radius:5px;
-            padding:3px 10px;font-size:.75rem;margin:2px 2px">${r.name} (${r.role||'—'})</span>`
+            padding:4px 11px;font-size:.75rem;margin:2px 2px;color:#333">${r.name}</span>`
         ).join('')}
       </div>
     </div>`;
   }).join('');
 
+  // 섹션 3: 유형별 소통 가이드
+  const typeGuideRows = team.typeDistribution.map(([t]) => {
+    const td = TM[t] || {};
+    const typeCommunicationGuides = {
+      SPARK: ['새로운 아이디어를 제시하거나 피드백을 줄 때는 먼저 가능성과 잠재력을 인정해주세요', '열정이 떨어지면 에너지 회복 시간을 존중해주세요', '구체적인 마무리까지 함께 확인하는 것이 중요합니다'],
+      VISION: ['전략과 기준을 존중하되, 감정적 공감도 함께 표현해주세요', '높은 기준 때문에 과로해하지 않도록 격려가 필요합니다', '깊이 있는 질문과 의견 교환을 통해 더 나은 결정을 함께 만드세요'],
+      STEADY: ['일관되고 예측 가능한 소통이 신뢰를 만듭니다', '변화가 필요할 때는 이유를 충분히 설명하고 함께 준비하세요', '이들의 신뢰할 수 있는 노력과 꾸준함을 자주 인정해주세요'],
+      PLAYER: ['현장의 즉시 필요와 그들의 빠른 판단을 존중하세요', '위기 상황에서 그들의 적응력과 행동력을 신뢰하세요', '장기 계획도 함께 공유하면 더 나은 전략이 나옵니다'],
+      HARMONY: ['관계와 감정을 먼저 확인하면서 소통을 시작하세요', '그들의 공감 능력으로 팀 분위기가 한층 따뜻해진다는 것을 인정해주세요', '갈등을 피하려는 경향이 있으니 진솔한 대화를 자주 나누세요'],
+      SOUL: ['깊이 있는 의미와 진정성을 중심으로 소통하세요', '겉으로만 드러나는 것이 아닌 본질적인 대화를 나누세요', '그들의 통찰력을 팀의 방향 결정에 반영해주세요'],
+      LOGIC: ['논리적이고 체계적인 설명이 설득력을 만듭니다', '감정적 호소보다는 근거와 원칙을 중심으로 소통하세요', '그들의 정확한 분석과 완벽주의가 팀의 질을 높인다는 것을 인정해주세요'],
+      LEADER: ['명확한 목표와 권한을 제시하세요', '그들의 리더십과 결단력을 팀에서 활용하되, 다른 의견도 함께 고려하세요', '성과를 구체적으로 인정하고 영향력을 긍정적으로 인도하세요'],
+    };
+    const challenges = {
+      SPARK: '마무리 미흡으로 인한 신뢰 저하 / 에너지 편차로 인한 일관성 부족',
+      VISION: '높은 기준이 과도한 압박이 될 수 있음 / 감정적 거리감 형성',
+      STEADY: '변화 거부로 인한 성장 정체 / 의견 부족으로 인한 자신감 부족',
+      PLAYER: '장기 계획 부족 / 감정 표현 미흡으로 인한 관계 단절',
+      HARMONY: '경계 부족으로 인한 에너지 소진 / 갈등 회피로 인한 문제 해결 지연',
+      SOUL: '공적 리더십의 불편함 / 실행력 부족으로 인한 계획 지연',
+      LOGIC: '감정 연결 부족으로 인한 관계 거리감 / 완벽주의로 인한 번아웃',
+      LEADER: '권위주의적 경향 / 타인의 의견 무시 위험',
+    };
+    const strengths = {
+      SPARK: '새로운 가능성을 보고 팀을 영감으로 이끌 수 있습니다',
+      VISION: '전략적 방향을 제시하고 구조적으로 생각할 수 있습니다',
+      STEADY: '신뢰할 수 있는 역할을 담당하고 팀을 지탱할 수 있습니다',
+      PLAYER: '현장 감각으로 빠르게 대응하고 위기를 해결할 수 있습니다',
+      HARMONY: '감정 공감으로 팀 분위기를 따뜻하게 만들 수 있습니다',
+      SOUL: '깊이 있는 통찰로 팀의 진정한 방향을 찾을 수 있습니다',
+      LOGIC: '논리적 분석으로 정확한 결정을 돕고 질을 높일 수 있습니다',
+      LEADER: '결단력 있게 리드하고 목표 달성으로 이끌 수 있습니다',
+    };
+
+    const guides = typeCommunicationGuides[t] || [];
+    return `
+    <h3 style="color:#256060;font-size:.95rem;font-weight:700;margin-top:18px;margin-bottom:12px">
+      ${td.icon} ${t} (${td.kr})을 가진 팀원과 소통하는 법
+    </h3>
+    <div style="background:#FAFAFA;border:1px solid #EEE;border-radius:10px;padding:16px;margin-bottom:14px">
+      <div style="font-size:.82rem;color:#333;line-height:1.8;margin-bottom:12px">
+        ${guides.map((g, i) => `<div style="margin-bottom:6px"><strong>${i+1}.</strong> ${g}</div>`).join('')}
+      </div>
+      <div style="border-top:1px solid #E0E0E0;padding-top:10px;margin-top:10px">
+        <p style="font-size:.8rem;color:#666;margin-bottom:4px"><strong>주의:</strong> ${challenges[t] || ''}</p>
+        <p style="font-size:.8rem;color:#256060;margin-bottom:0"><strong>역할:</strong> ${strengths[t] || ''}</p>
+      </div>
+    </div>`;
+  }).join('');
+
+  // 섹션 4: 동역 구조 매트릭스 & 역할 분담
+  const roleSuggestions = (() => {
+    const typeCount = {};
+    results.forEach(r => { typeCount[r.sg_type] = (typeCount[r.sg_type] || 0) + 1; });
+    const leaders = Object.entries(typeCount).sort((a, b) => b[1] - a[1]);
+
+    let suggestion = '<p style="font-size:.85rem;color:#333;line-height:1.8">이 팀의 유형 구성을 고려한 역할 분담 제안입니다:</p><ul style="margin-left:20px;font-size:.82rem;color:#555;line-height:1.8">';
+    suggestion += '<li><strong>의사결정 주도:</strong> ' + (leaders[0] ? TM[leaders[0][0]]?.kr + ' 성향 팀원' : '전략적 사고의 팀원') + '</li>';
+    suggestion += '<li><strong>실행·추진:</strong> ' + (leaders[1] ? TM[leaders[1][0]]?.kr + ' 성향 팀원' : '현장 감각의 팀원') + '</li>';
+    suggestion += '<li><strong>관계·조화:</strong> HARMONY 또는 HARMONY 성향에 가까운 팀원</li>';
+    suggestion += '<li><strong>분석·검토:</strong> LOGIC 또는 논리적 팀원</li>';
+    suggestion += '</ul>';
+    return suggestion;
+  })();
+
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${team.churchName} 팀 리포트 — 온유스쿨 쉐도우그램</title>
 <style>
-body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:780px;
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:800px;
   margin:0 auto;padding:28px 20px;color:#333;line-height:1.75}
 h1{font-size:1.4rem;color:#1A3055;margin-bottom:4px}
-h2{font-size:1rem;color:#256060;border-bottom:2px solid #256060;padding-bottom:6px;margin:28px 0 16px}
+h2{font-size:1.05rem;color:#256060;border-bottom:2px solid #256060;padding-bottom:8px;margin:28px 0 18px;font-weight:800}
+h3{font-size:.95rem;color:#333;margin-bottom:12px;font-weight:700}
 .meta{font-size:.8rem;color:#999;margin-bottom:8px}
 .narrative{background:#F0F7F4;border-left:4px solid #256060;padding:16px 18px;
-  border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.88rem;line-height:1.8;color:#333}
+  border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.87rem;line-height:1.8;color:#333}
 .shadow-box{background:#FDF0F0;border-left:4px solid #7B1A1A;padding:14px 18px;
   border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.85rem;line-height:1.8;color:#555}
 .opening{background:#F8F7F3;border:1px solid #DDD;border-radius:10px;padding:16px 18px;
-  margin-bottom:24px;font-size:.88rem;color:#444;font-style:italic}
-.cowork-list{list-style:none;padding:0}
-.cowork-list li{padding:6px 0;border-bottom:1px solid #F0EDE6;font-size:.83rem;color:#555}
+  margin-bottom:24px;font-size:.87rem;color:#444;font-style:italic;line-height:1.8}
+.cowork-list{list-style:none;padding:0;margin:0}
+.cowork-list li{padding:8px 0;border-bottom:1px solid #F0EDE6;font-size:.82rem;color:#555}
 .cowork-list li:last-child{border-bottom:none}
+.workshop-guide{background:#FFF8E6;border:1px solid #E8D8A0;border-radius:10px;padding:16px 18px;
+  margin-bottom:16px;font-size:.85rem;color:#7A6000;line-height:1.8}
+.member-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:.82rem}
+.member-table th{background:#256060;color:#fff;padding:8px 10px;text-align:left;font-weight:700;border:none}
+.member-table td{padding:8px 10px;border-bottom:1px solid #EEE;color:#555}
+.member-table tr:nth-child(even) td{background:#FAFAFA}
 footer{margin-top:40px;padding:14px;background:#F5F3EE;border-radius:8px;
   font-size:.75rem;color:#999;text-align:center}
 @media print{body{padding:0}}
@@ -1132,11 +1219,17 @@ ${typeRows}
 
 ${team.teamNarrative ? `
 <h2>🌿 팀 소통 구조 분석</h2>
-<div class="narrative">${team.teamNarrative}</div>` : ''}
+<div class="narrative">
+  ${team.teamNarrative}
+  ${team.teamStrengths?.length ? `<p style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(37,96,96,.2)"><strong>팀 강점:</strong> ${team.teamStrengths.slice(0, 3).join(' / ')}</p>` : ''}
+</div>` : ''}
 
 ${team.teamShadow ? `
 <h2>🌑 팀이 주의해야 할 그림자</h2>
 <div class="shadow-box">${team.teamShadow}</div>` : ''}
+
+<h2>💬 유형별 소통 가이드</h2>
+${typeGuideRows}
 
 ${team.coworkStructure?.length ? `
 <h2>🤝 동역 구조 제안</h2>
@@ -1144,11 +1237,59 @@ ${team.coworkStructure?.length ? `
   ${team.coworkStructure.map(s => `<li>• ${s}</li>`).join('')}
 </ul>` : ''}
 
-${team.vulnerabilities?.length ? `
-<h2>⚠️ 취약 영역</h2>
-<ul class="cowork-list">
-  ${team.vulnerabilities.map(s => `<li>• ${s}</li>`).join('')}
-</ul>` : ''}
+<h2>👥 역할 분담 제안</h2>
+<div class="workshop-guide">
+  ${roleSuggestions}
+</div>
+
+<h2>📋 워크숍 준비 가이드</h2>
+<div class="workshop-guide">
+  <strong>워크숍 오프닝 멘트</strong>
+  <p style="margin-top:8px;margin-bottom:0">"오늘 우리는 함께 우리 팀을 더 깊이 이해하는 시간을 갖겠습니다. 쉐도우그램 8유형을 통해 각자의 강점을 발견하고, 함께 소통하는 방법을 배웁니다. 서로 다른 관점이 모여 더 나은 팀을 만든다는 것을 함께 경험해보겠습니다."</p>
+</div>
+
+<div style="background:#F0F7F4;border:1px solid #B8E6D8;border-radius:10px;padding:16px 18px;margin-bottom:16px;font-size:.83rem;color:#256060;line-height:1.8">
+  <strong>예상 역동과 주의사항:</strong>
+  <ul style="margin-left:20px;margin-top:8px;margin-bottom:0">
+    <li>유형별 시각 차이로 인한 의견 충돌이 있을 수 있으니, 다양성을 존중하는 분위기 조성이 중요합니다</li>
+    <li>HARMONY 유형이 분위기를 맞추려 할 수 있으니, 솔직한 의견 표현을 격려하세요</li>
+    <li>LEADER 유형이 주도하려 할 수 있으니, 모든 목소리가 들리도록 공간을 만드세요</li>
+  </ul>
+</div>
+
+<div style="background:#FFF8E6;border:1px solid #E8D8A0;border-radius:10px;padding:16px 18px;font-size:.83rem;color:#7A6000;line-height:1.8">
+  <strong>퍼실리테이터 팁:</strong>
+  <ul style="margin-left:20px;margin-top:8px;margin-bottom:0">
+    <li>각 유형의 강점을 먼저 칭찬하면 팀 분위기가 긍정적으로 변합니다</li>
+    <li>현장의 빠른 대응(PLAYER)과 장기 계획(VISION)의 균형을 강조하세요</li>
+    <li>워크숍 종료 시 "우리 팀의 다양성이 우리의 강점"이라는 메시지를 반복하세요</li>
+  </ul>
+</div>
+
+<h2>👤 팀 구성원 요약</h2>
+<table class="member-table">
+  <thead>
+    <tr>
+      <th>이름</th>
+      <th>역할</th>
+      <th>유형</th>
+      <th>주요 강점</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${results.map(r => {
+      const td = TM[r.sg_type] || {};
+      const mainStrength = (td.strengths || [])[0]?.split('—')[0]?.trim() || '개별 강점';
+      return `<tr>
+        <td><strong>${r.name}</strong></td>
+        <td>${r.role || '—'}</td>
+        <td><span style="display:inline-block;background:${td.color}18;color:${td.color};
+          padding:2px 8px;border-radius:4px;font-weight:700">${td.icon||''} ${r.sg_type}</span></td>
+        <td style="font-size:.8rem">${mainStrength}</td>
+      </tr>`;
+    }).join('')}
+  </tbody>
+</table>
 
 <footer>온유스쿨 쉐도우그램 · onyuschool.com · "소통을 회복하는 8가지 언어"</footer>
 </body></html>`;

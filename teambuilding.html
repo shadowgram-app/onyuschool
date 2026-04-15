@@ -176,6 +176,20 @@ footer strong{color:var(--navy)}
       <div class="hc"><span class="cn">베타</span><span class="cl">무료 체험</span></div>
     </div>
     <button class="btn-hero" onclick="showScreen('select')">클래스 선택하기 →</button>
+
+    <!-- 재접속 버튼 -->
+    <div style="margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <a href="teambuilding-dashboard.html"
+        style="display:inline-flex;align-items:center;gap:8px;
+          background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);
+          color:#fff;padding:11px 24px;border-radius:10px;font-size:.9rem;font-weight:700;
+          text-decoration:none;backdrop-filter:blur(4px);transition:background .2s"
+        onmouseover="this.style.background='rgba(255,255,255,.25)'"
+        onmouseout="this.style.background='rgba(255,255,255,.15)'">
+        📊 기존 워크숍 대시보드 재접속
+      </a>
+      <span style="font-size:.75rem;color:rgba(255,255,255,.45)">신청 시 이메일로 로그인</span>
+    </div>
   </div>
 </div>
 
@@ -201,6 +215,11 @@ footer strong{color:var(--navy)}
           <div class="cls-icon">📚</div>
           <div class="cls-name">교사팀</div>
           <div class="cls-desc">담당교역자 · 부장<br>총무 · 회계 · 교사</div>
+        </div>
+        <div class="cls-card" id="cls-sunday" onclick="selectClass('sunday')">
+          <div class="cls-icon">✝️</div>
+          <div class="cls-name">주일학교</div>
+          <div class="cls-desc">초등부·중고등부·대학부·청년부<br>부서별 맞춤 검사 문항</div>
         </div>
         <div class="cls-card" id="cls-custom" onclick="selectClass('custom')">
           <div class="cls-icon">✏️</div>
@@ -276,6 +295,24 @@ footer strong{color:var(--navy)}
       </div>
 
       <hr class="f-divider">
+
+      <!-- 주일학교 부서 선택 -->
+      <div class="fg" id="dept-select-wrap" style="display:none">
+        <label class="fl" for="sel-dept">부서</label>
+        <select class="fi" id="sel-dept" onchange="changeDept()">
+          <option value="">선택해 주세요</option>
+          <option value="초등부">초등부</option>
+          <option value="중등부">중등부</option>
+          <option value="고등부">고등부</option>
+          <option value="대학부">대학부</option>
+          <option value="청년부">청년부</option>
+          <option value="기타">기타 (직접입력)</option>
+        </select>
+        <div id="dept-etc-wrap" style="display:none;margin-top:8px">
+          <input class="fi" type="text" id="inp-dept-etc"
+            placeholder="부서명을 직접 입력해 주세요" maxlength="20">
+        </div>
+      </div>
 
       <div class="fg">
         <label class="fl">팀 구성원 직분 <small>(해당 직분을 모두 선택)</small></label>
@@ -390,13 +427,17 @@ const ORG = {
     name: '교사팀',
     roles: ['담당교역자', '부장', '총무', '회계', '교사', '기타'],
   },
+  sunday: {
+    name: '주일학교',
+    roles: ['담당교역자', '부장', '교사', '기타'],
+  },
   custom: {
     name: '', // 직접 입력
     roles: ['기타'],
   },
 };
 
-let selCls = null, cnt = 10, wCode = '';
+let selCls = null, selDept = '', cnt = 10, wCode = '';
 const selRoles = new Set();
 
 /* ── 화면 전환 ── */
@@ -456,6 +497,18 @@ function goToSetup() {
   const y = new Date().getFullYear();
   document.getElementById('inp-title').placeholder =
     `예: ${y} 교회 ${orgName} 소통 워크숍`;
+
+  // 주일학교 부서 선택 토글
+  const deptWrap = document.getElementById('dept-select-wrap');
+  if (selCls === 'sunday') {
+    deptWrap.style.display = 'block';
+    selDept = '';
+    document.getElementById('sel-dept').value = '';
+  } else {
+    deptWrap.style.display = 'none';
+    selDept = '';
+  }
+
   showScreen('setup');
 }
 
@@ -483,6 +536,19 @@ function togRole(el, v) {
   }
 }
 
+/* ── 주일학교 부서 선택 ── */
+function changeDept() {
+  const val = document.getElementById('sel-dept').value;
+  selDept = val;
+  const etcWrap = document.getElementById('dept-etc-wrap');
+  if (val === '기타') {
+    etcWrap.style.display = 'block';
+  } else {
+    etcWrap.style.display = 'none';
+    document.getElementById('inp-dept-etc').value = '';
+  }
+}
+
 /* ── 코드 생성 ── */
 function genCode(church) {
   const s = church.replace(/\s+/g,'').slice(0,6);
@@ -501,6 +567,18 @@ async function createWorkshop() {
   if (!church) { toast('교회 이름을 입력해 주세요.'); return; }
   if (!leader) { toast('담당자 이름을 입력해 주세요.'); return; }
   if (!email)  { toast('담당자 이메일을 입력해 주세요.'); return; }
+
+  // 주일학교 부서 검증
+  if (selCls === 'sunday') {
+    let dept = selDept;
+    if (dept === '기타') {
+      dept = document.getElementById('inp-dept-etc').value.trim();
+      if (!dept) { toast('부서명을 입력해 주세요.'); return; }
+    } else if (!dept) {
+      toast('부서를 선택해 주세요.'); return;
+    }
+    selDept = dept;
+  }
 
   const btn = document.getElementById('btn-create');
   btn.disabled = true; btn.textContent = '생성 중...';
@@ -543,7 +621,10 @@ async function createWorkshop() {
   btn.disabled = false; btn.textContent = '🔗 전용 링크 생성하기';
 
   /* 결과 화면 */
-  const su = `${SITE}/teambuilding-survey.html?church=${encodeURIComponent(church)}&code=${wCode}&org_type=${selCls}&title=${encodeURIComponent(title||'')}`;
+  let su = `${SITE}/teambuilding-survey.html?church=${encodeURIComponent(church)}&code=${wCode}&org_type=${selCls}&title=${encodeURIComponent(title||'')}`;
+  if (selCls === 'sunday' && selDept) {
+    su += `&dept=${encodeURIComponent(selDept)}`;
+  }
   const du = `${SITE}/teambuilding-dashboard.html?code=${wCode}&church=${encodeURIComponent(church)}`;
   document.getElementById('d-church').textContent  = church;
   document.getElementById('d-class').textContent   = ORG[selCls].name;

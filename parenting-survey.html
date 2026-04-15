@@ -29,6 +29,31 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .error-box{background:#FFE8E8;border:1px solid #FF9999;border-radius:10px;padding:24px;
   text-align:center;margin-bottom:24px}
 .error-box h3{color:#C00;margin-bottom:8px}
+/* intro screen */
+.intro-title{font-size:1.3rem;font-weight:700;color:var(--navy);margin-bottom:12px}
+.intro-subtitle{font-size:.95rem;color:var(--mid);margin-bottom:28px;line-height:1.6}
+.intro-buttons{display:flex;flex-direction:column;gap:12px}
+.btn-intro{padding:16px;background:var(--navy);color:#fff;border:none;border-radius:8px;
+  font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+.btn-intro:hover{background:#102540}
+.btn-intro-alt{background:transparent;border:1.5px solid var(--border);color:var(--mid)}
+.btn-intro-alt:hover{border-color:var(--navy);color:var(--navy)}
+/* 8유형 선택 그리드 */
+.type-select-wrap{display:none;margin-top:24px}
+.type-select-label{font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:16px}
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:600px){.type-grid{grid-template-columns:repeat(2,1fr)}}
+.type-card{border:1.5px solid var(--border);border-radius:10px;padding:16px;text-align:center;
+  cursor:pointer;transition:all .2s;background:var(--white)}
+.type-card:hover{border-color:var(--navy);background:rgba(26,48,85,.03)}
+.type-card.selected{border-color:var(--navy);background:rgba(26,48,85,.1);box-shadow:0 2px 8px rgba(26,48,85,.1)}
+.type-card-icon{font-size:2rem;margin-bottom:6px}
+.type-card-name{font-size:.85rem;font-weight:700;color:var(--navy);margin-bottom:4px}
+.type-card-keywords{font-size:.7rem;color:var(--light);line-height:1.4}
+.type-select-btn{padding:14px;background:var(--navy);color:#fff;border:none;border-radius:8px;
+  font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s;width:100%}
+.type-select-btn:hover{background:#102540}
+.type-select-btn:disabled{background:var(--border);color:var(--light);cursor:default}
 /* quiz */
 .quiz-header{background:var(--navy);color:#fff;padding:16px 26px;border-radius:10px 10px 0 0;
   margin:-30px -26px 0}
@@ -52,6 +77,15 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   content:'✓';color:#fff;font-weight:700;font-size:.85rem}
 .scale-item input[type="radio"]{display:none}
 .scale-text{flex:1;font-size:.95rem;color:var(--gray);padding-top:2px}
+/* A/B 카드 */
+.ab-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.ab-card{border:1.5px solid var(--border);border-radius:10px;padding:18px;text-align:center;
+  cursor:pointer;transition:all .2s;background:var(--white);min-height:100px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center}
+.ab-card:hover{border-color:var(--navy);background:rgba(26,48,85,.03)}
+.ab-card.selected{border-color:var(--navy);background:rgba(26,48,85,.1);box-shadow:0 2px 8px rgba(26,48,85,.1)}
+.ab-card-label{font-size:.75rem;color:var(--light);font-weight:700;margin-bottom:8px}
+.ab-card-text{font-size:.95rem;color:var(--gray);line-height:1.5;font-weight:500}
 .quiz-btns{display:flex;gap:12px}
 .btn-q{flex:1;padding:14px;border-radius:8px;border:none;font-size:.95rem;
   font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
@@ -112,6 +146,30 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
         <p id="error-message"></p>
       </div>
       <button class="btn-p" onclick="location.href='/'">홈으로 돌아가기</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- SCREEN: 인트로 (유형 직접 선택 또는 검사 시작) -->
+<div id="screen-intro" class="screen">
+  <div class="container"><div class="sec">
+    <div class="card">
+      <div style="margin-bottom:24px">
+        <div class="intro-title"><span id="intro-name"></span>님 안녕하세요!</div>
+        <div class="intro-subtitle">검사를 시작하기 전에 — 이미 쉐도우그램 유형을 알고 계신가요?</div>
+      </div>
+
+      <div class="intro-buttons" id="intro-buttons">
+        <button class="btn-intro" onclick="startTypeSelect()">이미 유형을 알아요 →</button>
+        <button class="btn-intro btn-intro-alt" onclick="startSurvey()">처음이에요 — 검사 시작 →</button>
+      </div>
+
+      <!-- 8유형 선택 그리드 (숨겨짐, startTypeSelect() 시 표시) -->
+      <div class="type-select-wrap" id="type-select-wrap">
+        <div class="type-select-label">쉐도우그램 유형을 선택하세요</div>
+        <div class="type-grid" id="type-grid"></div>
+        <button class="type-select-btn" id="btn-select-type" onclick="selectTypeSubmit()" disabled>이 유형으로 등록</button>
+      </div>
     </div>
   </div></div>
 </div>
@@ -234,6 +292,92 @@ const QUESTIONS = [
   { dim:'Te', text:'계획대로 진행되지 않으면 바로 수정하고 싶다' },
 ];
 
+// 초등용 28문항 (만 7~12세)
+const CHILD_Q_ELEM = [
+  { dim:'Ne', a:'친구에게 이미 알고 있는 놀이를 하자고 한다', b:'친구에게 새로운 놀이를 만들어 보자고 한다' },
+  { dim:'Ne', a:'한 가지를 끝까지 해야 마음이 편하다', b:'여러 가지를 동시에 해보는 게 즐겁다' },
+  { dim:'Ne', a:'이야기할 때 정해진 순서대로 말한다', b:'이야기하다 보면 새로운 생각이 계속 떠오른다' },
+  { dim:'Ne', a:'해본 것 중에서 제일 잘 하는 방법을 쓴다', b:'새로운 방법을 시도해 보는 게 더 재밌다' },
+
+  { dim:'Ni', a:'눈에 보이는 것만 믿는 편이다', b:'왠지 어떻게 될지 미리 느껴질 때가 있다' },
+  { dim:'Ni', a:'지금 당장 일어나는 일이 더 중요하다', b:'나중에 어떻게 될지 미리 생각하는 편이다' },
+  { dim:'Ni', a:'여러 가지를 한꺼번에 생각하는 게 편하다', b:'한 가지에 푹 빠져서 생각할 때가 더 잘 풀린다' },
+  { dim:'Ni', a:'상황을 있는 그대로 본다', b:'상황 뒤에 숨은 의미를 생각해 보고 싶다' },
+
+  { dim:'Si', a:'새로운 방법을 써보고 싶다', b:'전에 잘 됐던 방법을 쓰는 게 마음 편하다' },
+  { dim:'Si', a:'매일 다른 일이 생겨야 재밌다', b:'매일 비슷하게 정해진 순서대로 하면 편하다' },
+  { dim:'Si', a:'큰 그림만 기억하면 된다', b:'숫자나 날짜 같은 작은 것들도 잘 기억한다' },
+  { dim:'Si', a:'일단 해보고 나중에 고친다', b:'충분히 확인한 다음에 시작한다' },
+
+  { dim:'Se', a:'나중을 위해 지금을 참는 편이다', b:'지금 이 순간이 제일 중요하다' },
+  { dim:'Se', a:'생각하고 나서 행동한다', b:'몸이 먼저 움직이고 나중에 생각한다' },
+  { dim:'Se', a:'책이나 설명을 읽으면 잘 이해된다', b:'직접 해봐야 제대로 알 수 있다' },
+  { dim:'Se', a:'조용히 앉아서 하는 활동이 좋다', b:'뛰고 만지고 경험하는 활동이 좋다' },
+
+  { dim:'Fe', a:'친구가 기분이 나빠도 내 기분에는 별 영향이 없다', b:'친구가 기분이 나쁘면 나도 덩달아 안 좋다' },
+  { dim:'Fe', a:'모두가 잘 지내는 것보다 내가 원하는 게 더 중요하다', b:'모두가 사이좋게 지내는 게 제일 중요하다' },
+  { dim:'Fe', a:'친구 기분이 어떤지 잘 모를 때가 있다', b:'친구 기분이 어떤지 표정만 봐도 알 수 있다' },
+  { dim:'Fe', a:'분위기가 좀 어색해도 그냥 둔다', b:'분위기가 어색하면 먼저 웃기거나 말을 걸어서 풀어준다' },
+
+  { dim:'Fi', a:'재미있으면 내 생각과 달라도 그냥 한다', b:'재미있어도 내 마음에 안 맞으면 하기 싫다' },
+  { dim:'Fi', a:'속상한 걸 바로 말할 수 있다', b:'속상해도 혼자 생각하고 나서야 말할 수 있다' },
+  { dim:'Fi', a:'친한 척 해도 친구가 아니면 괜찮다', b:'진짜 친하지 않은 관계는 오히려 불편하다' },
+  { dim:'Fi', a:'중요한 건 바꿀 수 있다', b:'내가 중요하게 생각하는 건 절대 바꾸기 싫다' },
+
+  { dim:'Ti', a:'왜 그런지 이유는 몰라도 그냥 넘어간다', b:'왜 그런지 이유를 꼭 알아야 직성이 풀린다' },
+  { dim:'Ti', a:'여러 방법 중 하나면 충분하다', b:'머릿속에 내 나름의 규칙이 있다' },
+  { dim:'Ti', a:'틀린 게 있어도 그냥 둔다', b:'틀린 게 보이면 말해줘야 한다' },
+  { dim:'Ti', a:'기분이 좋으면 맞는 것 같다', b:'기분보다 이치에 맞아야 믿을 수 있다' },
+
+  { dim:'Te', a:'목표보다 과정이 더 중요하다', b:'목표가 정해지면 어떻게 해야 할지 바로 떠오른다' },
+  { dim:'Te', a:'결과보다 느낌이 더 중요하다', b:'어떻게 됐는지 결과가 더 중요하다' },
+  { dim:'Te', a:'규칙이 없어도 알아서 잘 된다', b:'규칙이 있어야 일이 제대로 된다' },
+  { dim:'Te', a:'계획이 바뀌어도 그냥 흘러가는 대로 한다', b:'계획이 바뀌면 바로 새 계획을 만들고 싶다' },
+];
+
+// 중고등용 28문항 (만 13세 이상)
+const CHILD_Q_TEEN = [
+  { dim:'Ne', a:'검증된 방법을 쓰는 게 더 안전하다', b:'새로운 방법을 시도해보는 게 더 설레인다' },
+  { dim:'Ne', a:'한 가지에 집중하는 편이다', b:'동시에 여러 가능성을 탐색하는 게 재밌다' },
+  { dim:'Ne', a:'대화할 때 한 주제에 집중한다', b:'대화하다 보면 새로운 생각이 계속 이어진다' },
+  { dim:'Ne', a:'익숙한 방식이 편하다', b:'새로운 접근을 시도하고 싶다' },
+
+  { dim:'Ni', a:'눈에 보이는 사실을 더 중요하게 본다', b:'말하지 않아도 상황의 흐름이 느껴진다' },
+  { dim:'Ni', a:'지금 상황이 더 중요하다', b:'나중에 어떻게 될지 미리 감이 온다' },
+  { dim:'Ni', a:'여러 가지를 넓게 보는 게 좋다', b:'하나에 깊이 집중할 때 가장 명확하다' },
+  { dim:'Ni', a:'상황을 있는 그대로 받아들인다', b:'상황 뒤에 숨겨진 패턴이나 의미가 보인다' },
+
+  { dim:'Si', a:'새로운 방식이 더 흥미롭다', b:'한 번 잘 됐던 방식을 믿고 따르는 편이다' },
+  { dim:'Si', a:'변화가 있어야 활력이 생긴다', b:'예측 가능한 루틴이 있으면 안정된다' },
+  { dim:'Si', a:'큰 흐름만 기억하면 된다', b:'세부 사항과 사실들을 잘 기억한다' },
+  { dim:'Si', a:'일단 시작하고 수정해 나간다', b:'충분히 확인하고 검증한 뒤에 결정한다' },
+
+  { dim:'Se', a:'미래를 위해 지금을 준비한다', b:'지금 이 순간의 경험이 가장 중요하다' },
+  { dim:'Se', a:'생각하고 나서 움직인다', b:'상황에 즉각적으로 반응하고 행동한다' },
+  { dim:'Se', a:'설명이나 이론으로 이해한다', b:'직접 해봐야 제대로 배울 수 있다' },
+  { dim:'Se', a:'조용한 활동이 더 편하다', b:'몸으로 직접 경험하는 게 더 잘 맞는다' },
+
+  { dim:'Fe', a:'분위기가 어색해도 크게 신경 쓰지 않는다', b:'주변 분위기가 불편하면 나도 불편하다' },
+  { dim:'Fe', a:'모두의 기분보다 내 의견이 더 중요하다', b:'모두가 조화롭게 지내는 게 중요하다' },
+  { dim:'Fe', a:'상대 감정이 잘 파악되지 않는다', b:'상대방 감정 상태를 금방 알아챈다' },
+  { dim:'Fe', a:'그룹 분위기는 알아서 풀린다', b:'그룹 분위기를 좋게 만들려고 노력한다' },
+
+  { dim:'Fi', a:'가치관이 달라도 같이 할 수 있다', b:'내 가치관과 맞지 않으면 거부감이 든다' },
+  { dim:'Fi', a:'감정을 바로 표현하는 편이다', b:'감정을 혼자 정리하고 나서야 나눌 수 있다' },
+  { dim:'Fi', a:'형식적인 관계도 편하다', b:'진정성 없는 관계보다 혼자가 낫다' },
+  { dim:'Fi', a:'상황에 따라 유연하게 바뀔 수 있다', b:'내가 중요하게 여기는 것에는 타협하지 않는다' },
+
+  { dim:'Ti', a:'이유를 몰라도 넘어갈 수 있다', b:'어떤 주장이든 논리적 근거를 따진다' },
+  { dim:'Ti', a:'그때그때 판단한다', b:'머릿속에 일관된 원리와 체계가 있다' },
+  { dim:'Ti', a:'오류가 있어도 지나칠 수 있다', b:'모순이나 오류를 발견하면 짚고 넘어가야 한다' },
+  { dim:'Ti', a:'감정적으로 옳다고 느껴지면 믿는다', b:'감정보다 논리가 더 신뢰할 수 있는 기준이다' },
+
+  { dim:'Te', a:'목표보다 과정이 더 의미 있다', b:'목표를 정하면 효율적인 방법을 즉시 찾는다' },
+  { dim:'Te', a:'느낌과 분위기가 더 중요하다', b:'결과가 어떻게 됐는지가 더 중요하다' },
+  { dim:'Te', a:'자유롭게 흘러가는 게 좋다', b:'체계와 기준이 있어야 일이 제대로 된다' },
+  { dim:'Te', a:'계획이 바뀌면 새로운 흐름을 따른다', b:'계획대로 되지 않으면 바로 수정하고 싶다' },
+];
+
 const DIM_LABEL = {
   Ne:'가능성 탐색', Ni:'통찰·직관',
   Si:'안정·기억',  Se:'현재 감각',
@@ -265,6 +409,9 @@ const ans = Array(28).fill(null);
 let surveyToken = null;
 let memberData = null;
 let sessionCode = null;
+let currentQuestions = QUESTIONS;
+let isChildABMode = false;
+let selectedType = null;
 
 // ════════════════════════════════════════════════════════════════
 // 초기화
@@ -305,13 +452,14 @@ async function init() {
 
     // UI 설정
     document.getElementById('user-name').textContent = memberData.name;
+    document.getElementById('intro-name').textContent = memberData.name;
     const roleText = memberData.role === 'father' ? '아버지' :
                      memberData.role === 'mother' ? '어머니' :
                      memberData.role.startsWith('child_') ? '자녀' : '검사자';
     document.getElementById('user-role').textContent = roleText + '님의';
 
-    showScreen('survey');
-    renderQ();
+    // intro 화면으로 전환
+    showScreen('intro');
 
   } catch (error) {
     console.error('Error:', error);
@@ -334,32 +482,143 @@ function showError(msg) {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 검사 렌더링
+// intro 화면 - 유형 선택 그리드 렌더링
+// ════════════════════════════════════════════════════════════════
+function renderTypeGrid() {
+  const grid = document.getElementById('type-grid');
+  grid.innerHTML = '';
+
+  const types = ['SPARK', 'VISION', 'STEADY', 'PLAYER', 'HARMONY', 'SOUL', 'LOGIC', 'LEADER'];
+  types.forEach(type => {
+    const info = TYPE_DATA[type];
+    const div = document.createElement('div');
+    div.className = 'type-card' + (selectedType === type ? ' selected' : '');
+    div.onclick = () => selectType(type);
+    div.innerHTML = `
+      <div class="type-card-icon">${info.icon}</div>
+      <div class="type-card-name">${info.kr}</div>
+      <div class="type-card-keywords">${info.keywords.join(', ')}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function selectType(type) {
+  selectedType = type;
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  event.target.closest('.type-card').classList.add('selected');
+  document.getElementById('btn-select-type').disabled = false;
+}
+
+function startTypeSelect() {
+  document.getElementById('intro-buttons').style.display = 'none';
+  document.getElementById('type-select-wrap').style.display = 'block';
+  renderTypeGrid();
+}
+
+function startSurvey() {
+  // 자녀 여부 확인 후 문항 선택
+  if (memberData.member_type === 'child') {
+    // 자녀용 A/B 문항 선택 (나이에 따라)
+    const age = new Date().getFullYear() - (memberData.birth_year || 0);
+    currentQuestions = age >= 13 ? CHILD_Q_TEEN : CHILD_Q_ELEM;
+    isChildABMode = true;
+  } else {
+    // 성인용 5점 척도
+    currentQuestions = QUESTIONS;
+    isChildABMode = false;
+  }
+
+  cur = 0;
+  ans.fill(null);
+  showScreen('survey');
+  renderQ();
+}
+
+// ════════════════════════════════════════════════════════════════
+// 유형 직접 선택 제출
+// ════════════════════════════════════════════════════════════════
+async function selectTypeSubmit() {
+  if (!selectedType) return;
+
+  try {
+    const updateRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/family_members?survey_token=eq.${surveyToken}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          sg_type: selectedType,
+          completed_at: new Date().toISOString()
+        })
+      }
+    );
+
+    if (!updateRes.ok) {
+      throw new Error('Failed to submit type selection');
+    }
+
+    // 결과 화면 표시
+    showResult(selectedType, {});
+
+  } catch (error) {
+    console.error('Error:', error);
+    showError('유형 등록 중 오류가 발생했습니다');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// 검사 렌더링 (5점 척도 또는 A/B)
 // ════════════════════════════════════════════════════════════════
 function renderQ() {
-  const q = QUESTIONS[cur];
+  const q = currentQuestions[cur];
 
   document.getElementById('q-num').textContent = cur + 1;
   document.getElementById('q-badge').textContent = 'Q' + (cur + 1) + ' · ' + (DIM_LABEL[q.dim] || q.dim);
-  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-text').textContent = isChildABMode ? '' : q.text;
   document.getElementById('prog-fill').style.width = ((cur + 1) / 28 * 100).toFixed(1) + '%';
 
   const list = document.getElementById('scale-list');
   list.innerHTML = '';
-  SCALE_TEXT.forEach((txt, i) => {
-    const v = i + 1;
-    const li = document.createElement('li');
-    li.className = 'scale-item';
-    const id = 'opt_' + cur + '_' + v;
-    const checked = ans[cur] === v ? 'checked' : '';
-    li.innerHTML = `
-      <input type="radio" id="${id}" name="scale" value="${v}" ${checked}
-        onchange="ans[${cur}]=${v};updateBtnState()">
-      <div class="scale-radio"></div>
-      <label class="scale-text" for="${id}">${txt}</label>
-    `;
-    list.appendChild(li);
-  });
+
+  if (isChildABMode) {
+    // A/B 카드 렌더링
+    const abWrap = document.createElement('div');
+    abWrap.className = 'ab-wrap';
+
+    ['a', 'b'].forEach(option => {
+      const card = document.createElement('div');
+      card.className = 'ab-card' + (ans[cur] === (option === 'a' ? 1 : 5) ? ' selected' : '');
+      card.onclick = () => { ans[cur] = option === 'a' ? 1 : 5; renderQ(); };
+      card.innerHTML = `
+        <div class="ab-card-label">${option.toUpperCase()}</div>
+        <div class="ab-card-text">${q[option]}</div>
+      `;
+      abWrap.appendChild(card);
+    });
+
+    list.appendChild(abWrap);
+  } else {
+    // 5점 척도 렌더링
+    SCALE_TEXT.forEach((txt, i) => {
+      const v = i + 1;
+      const li = document.createElement('li');
+      li.className = 'scale-item';
+      const id = 'opt_' + cur + '_' + v;
+      const checked = ans[cur] === v ? 'checked' : '';
+      li.innerHTML = `
+        <input type="radio" id="${id}" name="scale" value="${v}" ${checked}
+          onchange="ans[${cur}]=${v};updateBtnState()">
+        <div class="scale-radio"></div>
+        <label class="scale-text" for="${id}">${txt}</label>
+      `;
+      list.appendChild(li);
+    });
+  }
 
   updateBtnState();
 }
@@ -398,8 +657,9 @@ function calcType() {
   const scores = {};
   'Ne Ni Si Se Fe Fi Ti Te'.split(' ').forEach(d => scores[d] = 0);
 
-  QUESTIONS.forEach((q, idx) => {
-    scores[q.dim] += ans[idx] || 0;
+  currentQuestions.forEach((q, idx) => {
+    const val = ans[idx] || 0;
+    scores[q.dim] += val;
   });
 
   return scores;
