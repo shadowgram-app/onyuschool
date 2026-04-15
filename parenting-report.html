@@ -207,15 +207,25 @@ async function init() {
       return;
     }
 
-    // 모든 사용자가 완료했는지 확인
-    const allComplete = members.every(m => m.completed_at !== null && m.sg_type);
-    if (!allComplete) {
-      showError('아직 모든 가족 구성원이 검사를 완료하지 않았습니다. 잠시 후 다시 시도해 주세요.');
+    // 완료된 구성원만 필터링 (미완료자 있어도 리포트 생성 가능)
+    const completedMembers = members.filter(m => m.completed_at && m.sg_type);
+    if (completedMembers.length === 0) {
+      showError('아직 검사를 완료한 가족 구성원이 없습니다. 검사 링크를 공유해 주세요.');
       return;
     }
 
-    // 리포트 생성
-    await generateReport(members, sessionCode);
+    const waiting = members.filter(m => !m.completed_at || !m.sg_type);
+    if (waiting.length > 0) {
+      // 미완료자 있음 — 배너 표시 후 계속
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#7A6000;';
+      banner.innerHTML = `⏳ <strong>${waiting.map(m=>m.name).join(', ')}님</strong>이 아직 검사 중입니다. 완료 후 새로고침하면 전체 리포트가 업데이트됩니다.`;
+      document.querySelector('.result-body, #report-body') &&
+        document.querySelector('.result-body, #report-body').prepend(banner);
+    }
+
+    // 완료된 구성원으로만 리포트 생성
+    await generateReport(completedMembers, sessionCode);
 
   } catch (error) {
     console.error('Error:', error);

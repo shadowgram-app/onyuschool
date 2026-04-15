@@ -153,26 +153,29 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
         <div class="result-keywords" id="result-keywords"></div>
       </div>
       <div class="result-content">
-        <div class="result-note">
-          <strong>📌 전체 리포트는 가족 모두가 검사를 완료한 후 발송됩니다.</strong><br>
-          모든 가족 구성원이 검사를 완료하면, 자동으로 맞춤형 가족 리포트 페이지가 활성화되고
-          신청자 이메일로도 리포트가 발송됩니다.
+        <!-- 완료 현황 -->
+        <div id="family-status-box" style="background:#F8F7F3;border:1px solid var(--border);
+          border-radius:10px;padding:16px 18px;margin:16px 0;font-size:.84rem">
+          <div style="font-weight:700;color:var(--navy);margin-bottom:8px">👨‍👩‍👧 가족 검사 현황</div>
+          <div id="family-status-list">확인 중...</div>
         </div>
 
-        <div id="report-link-box" style="display:none">
-          <div style="background:#F0F7F4;border:1px solid rgba(37,96,96,.28);border-radius:10px;padding:16px 18px;margin:16px 0">
-            <div style="font-size:.74rem;font-weight:800;letter-spacing:.04em;margin-bottom:7px;color:var(--teal)">통합 리포트</div>
-            <div style="font-size:.78rem;font-weight:600;word-break:break-all;
-              background:#fff;border:1px solid var(--border);border-radius:6px;padding:9px 11px;margin-bottom:9px"
-              id="report-url"></div>
-            <div style="display:flex;gap:7px">
-              <button class="btn-cp" onclick="copyReportLink()">링크 복사</button>
-            </div>
-          </div>
+        <!-- 리포트 링크 (완료된 사람 있으면 바로 표시) -->
+        <div id="report-link-box" style="display:none;background:#F0F7F4;border:1.5px solid rgba(37,96,96,.28);
+          border-radius:10px;padding:16px 18px;margin:12px 0">
+          <div style="font-size:.74rem;font-weight:800;letter-spacing:.04em;margin-bottom:10px;color:var(--teal)"
+            id="report-box-label">📊 가족 리포트</div>
+          <a id="report-link-btn" href="#" target="_blank"
+            style="display:block;width:100%;padding:13px;background:var(--teal);color:#fff;
+              border-radius:8px;text-align:center;font-weight:800;font-size:.9rem;text-decoration:none;
+              margin-bottom:8px">
+            가족 리포트 보기 →
+          </a>
+          <div style="font-size:.75rem;color:var(--light);text-align:center" id="report-incomplete-note"></div>
         </div>
 
-        <div class="result-actions">
-          <button class="btn-p" onclick="checkAllComplete()">✓ 리포트 확인</button>
+        <div class="result-actions" style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+          <button class="btn-p" id="btn-check-report" onclick="checkAllComplete()">현황 새로고침</button>
         </div>
       </div>
     </div>
@@ -486,42 +489,100 @@ function showResult(sgType, scores) {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 전체 완료 여부 체크
+// 가족 현황 체크 + 리포트 링크 표시
 // ════════════════════════════════════════════════════════════════
 async function checkAllComplete() {
-  try {
-    // 이 session의 모든 member 조회
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/family_members?session_code=eq.${sessionCode}`,
-      {
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      }
-    );
+  if (!sessionCode) return;
 
-    if (!res.ok) throw new Error('Failed to fetch members');
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/family_members?session_code=eq.${sessionCode}&select=name,role,sg_type,completed_at&order=created_at.asc`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    if (!res.ok) throw new Error('조회 실패');
 
     const members = await res.json();
-    const allComplete = members.every(m => m.completed_at !== null);
+    const done    = members.filter(m => m.completed_at && m.sg_type);
+    const waiting = members.filter(m => !m.completed_at || !m.sg_type);
+    const allDone = waiting.length === 0;
 
-    if (allComplete) {
+    // 현황 목록 렌더링
+    const TYPE_KR = {SPARK:'스파크',VISION:'비전',STEADY:'스테디',PLAYER:'플레이어',
+                     HARMONY:'하모니',SOUL:'소울',LOGIC:'로직',LEADER:'리더'};
+    const TYPE_ICON = {SPARK:'✨',VISION:'🔭',STEADY:'🌿',PLAYER:'🎯',
+                       HARMONY:'🕊️',SOUL:'🌊',LOGIC:'🔬',LEADER:'⚡'};
+    const ROLE_KR = {father:'아버지',mother:'어머니',child_1:'자녀1',child_2:'자녀2',child_3:'자녀3',child_4:'자녀4'};
+
+    document.getElementById('family-status-list').innerHTML = members.map(m => {
+      const roleLbl = ROLE_KR[m.role] || m.role;
+      if (m.completed_at && m.sg_type) {
+        return `<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #F0EDE6">
+          <span style="color:var(--teal)">✅</span>
+          <span style="font-weight:600">${m.name}</span>
+          <span style="color:var(--light);font-size:.75rem">(${roleLbl})</span>
+          <span style="margin-left:auto;font-size:.78rem;font-weight:700">${TYPE_ICON[m.sg_type]||''} ${TYPE_KR[m.sg_type]||m.sg_type}</span>
+        </div>`;
+      } else {
+        return `<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #F0EDE6">
+          <span style="color:var(--light)">⏳</span>
+          <span style="font-weight:600">${m.name}</span>
+          <span style="color:var(--light);font-size:.75rem">(${roleLbl})</span>
+          <span style="margin-left:auto;font-size:.75rem;color:var(--light)">대기 중</span>
+        </div>`;
+      }
+    }).join('');
+
+    // 완료자 1명 이상이면 리포트 링크 표시
+    if (done.length > 0) {
       const reportUrl = `${window.location.origin}/parenting-report.html?session=${sessionCode}`;
       document.getElementById('report-link-box').style.display = 'block';
-      document.getElementById('report-url').textContent = reportUrl;
+      document.getElementById('report-link-btn').href = reportUrl;
+
+      if (allDone) {
+        document.getElementById('report-box-label').textContent = '🎉 전원 완료! 가족 리포트 준비됨';
+        document.getElementById('report-incomplete-note').textContent = '';
+      } else {
+        document.getElementById('report-box-label').textContent = `📊 가족 리포트 (${done.length}/${members.length}명 완료)`;
+        document.getElementById('report-incomplete-note').textContent =
+          `${waiting.map(m=>m.name).join(', ')}님이 아직 검사 중입니다. 지금도 리포트를 볼 수 있어요.`;
+      }
     }
 
-  } catch (error) {
-    console.error('Error checking completion:', error);
+    // 완료 시 관리자에게 알림 (Apps Script 연동)
+    notifyAdminOnComplete(members, done);
+
+  } catch (e) {
+    console.error('현황 체크 오류:', e.message);
   }
 }
 
-function copyReportLink() {
-  const url = document.getElementById('report-url').textContent;
-  navigator.clipboard.writeText(url).then(() => {
-    alert('링크가 복사되었습니다');
-  });
+// ── 관리자 알림 (Apps Script → Google Sheets + 이메일) ──
+async function notifyAdminOnComplete(members, done) {
+  // Apps Script URL이 설정되어 있으면 전송
+  const APPS_SCRIPT_URL = ''; // TODO: Apps Script 웹앱 URL 입력
+  if (!APPS_SCRIPT_URL) return;
+
+  // 방금 본인이 완료한 경우만 전송 (중복 방지)
+  const me = members.find(m => m.name === memberData?.name);
+  if (!me || !me.completed_at) return;
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'supabase_webhook',
+        source: 'parenting',
+        record: me,
+        session_summary: {
+          session_code: sessionCode,
+          total: members.length,
+          done: done.length,
+          all_complete: done.length === members.length,
+        }
+      })
+    });
+  } catch(e) { /* 알림 실패해도 검사 결과에 영향 없음 */ }
 }
 
 // 페이지 로드 시 초기화
