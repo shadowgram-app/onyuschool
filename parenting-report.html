@@ -193,15 +193,32 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
     </div>
   </div>
 
-  <!-- 공유 버튼 -->
-  <div style="padding:36px 20px;text-align:center;background:linear-gradient(to bottom,var(--bg),#EEE9E0)">
-    <p style="font-size:.9rem;color:var(--mid);margin-bottom:16px;line-height:1.7">
-      우리 가족 유형 결과를 주변에 알려주세요 😊<br>
-      <small style="color:var(--light)">공유하면 더 많은 가족이 서로를 이해할 수 있어요</small>
-    </p>
-    <button class="btn-share-family" onclick="openShareModal()">
-      🌿 우리 가족 결과 공유하기
-    </button>
+  <!-- 공유 버튼 2개 -->
+  <div style="padding:36px 20px 40px;background:linear-gradient(to bottom,var(--bg),#EEE9E0)">
+    <!-- 버튼 1: 가족과 공유 -->
+    <div style="text-align:center;margin-bottom:20px">
+      <p style="font-size:.85rem;color:var(--mid);margin-bottom:10px;line-height:1.6">
+        가족 구성원에게 전체 리포트를 공유하세요
+      </p>
+      <button class="btn-share-family" style="background:linear-gradient(135deg,#256060,#1A4055);box-shadow:0 4px 20px rgba(37,96,96,.35)" onclick="openFamilyShare()">
+        👨‍👩‍👧‍👦 가족과 리포트 공유하기
+      </button>
+    </div>
+    <!-- 구분선 -->
+    <div style="display:flex;align-items:center;gap:12px;margin:0 auto 20px;max-width:340px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <span style="font-size:.75rem;color:var(--light)">또는</span>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+    <!-- 버튼 2: 지인에게 자랑 -->
+    <div style="text-align:center">
+      <p style="font-size:.85rem;color:var(--mid);margin-bottom:10px;line-height:1.6">
+        지인들에게 우리 가족을 자랑하고 검사를 권해보세요 😊
+      </p>
+      <button class="btn-share-family" style="background:linear-gradient(135deg,#FF6B9D,#FF8E53)" onclick="openViralShare()">
+        📣 지인에게 우리 가족 자랑하기
+      </button>
+    </div>
   </div>
 
   <footer>
@@ -210,64 +227,57 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
   </footer>
 </div>
 
-<!-- 공유 모달 -->
-<div class="share-overlay" id="share-overlay" onclick="closeShareModal(event)">
+<!-- 모달 1: 가족과 리포트 공유 -->
+<div class="share-overlay" id="modal-family" onclick="closeModal('family',event)">
   <div class="share-modal">
-    <button class="share-close" onclick="closeShareModal()">×</button>
+    <button class="share-close" onclick="closeModal('family')">×</button>
     <div class="share-handle"></div>
-
-    <!-- 탭 -->
-    <div class="share-tabs">
-      <button class="share-tab active" id="tab-family" onclick="switchShareTab('family')">👨‍👩‍👧‍👦 가족과 공유</button>
-      <button class="share-tab" id="tab-viral" onclick="switchShareTab('viral')">📣 지인에게 자랑</button>
+    <div class="share-modal-title">👨‍👩‍👧‍👦 가족과 리포트 공유하기</div>
+    <p style="font-size:.78rem;color:var(--mid);text-align:center;margin:-6px 0 14px;line-height:1.6">
+      링크를 받은 가족은 분석 결과를 바로 볼 수 있어요<br>
+      <span style="color:var(--light);font-size:.73rem">추가 비용 없이 리포트 그대로 열람</span>
+    </p>
+    <div class="share-card" id="share-card-preview">
+      <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
+      <div class="sc-title" id="sc-title">우리 가족의 소통 유형을<br>알았어요! 🌿</div>
+      <div class="sc-sub" id="sc-sub">쉐도우그램 8유형으로 가족을 이해하다</div>
+      <div class="sc-members" id="sc-members"></div>
+      <div class="sc-quote" id="sc-quote">"빛을 보고 끌렸는데, 그림자를 보고 갈등한다"<br>— 우리 가족도 서로의 빛을 발견했어요</div>
     </div>
-
-    <!-- ── 탭 1: 가족 공유 (리포트 전체) ── -->
-    <div id="share-panel-family">
-      <p style="font-size:.8rem;color:var(--mid);text-align:center;margin-bottom:14px;line-height:1.6">
-        가족 구성원에게 전체 리포트를 공유합니다<br>
-        <span style="color:var(--light);font-size:.75rem">링크를 받은 가족은 분석 결과를 바로 볼 수 있어요</span>
-      </p>
-      <!-- 공유 카드 미리보기 -->
-      <div class="share-card" id="share-card-preview">
-        <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
-        <div class="sc-title" id="sc-title">우리 가족의 소통 유형을<br>알았어요! 🌿</div>
-        <div class="sc-sub" id="sc-sub">쉐도우그램 8유형으로 가족을 이해하다</div>
-        <div class="sc-members" id="sc-members"></div>
-        <div class="sc-quote" id="sc-quote">"빛을 보고 끌렸는데, 그림자를 보고 갈등한다"<br>— 우리 가족도 서로의 빛을 발견했어요</div>
-      </div>
-      <div class="share-actions" style="margin-top:12px">
-        <button class="share-act-btn" onclick="shareKakao('family')">💬 카카오톡</button>
-        <button class="share-act-btn" onclick="shareNative('family')">📤 다른 앱으로</button>
-        <button class="share-act-btn" style="grid-column:span 2" onclick="copyShareLink('family')">🔗 리포트 링크 복사</button>
-      </div>
+    <div class="share-actions" style="margin-top:12px">
+      <button class="share-act-btn" onclick="shareKakao('family')">💬 카카오톡</button>
+      <button class="share-act-btn" onclick="shareNative('family')">📤 다른 앱으로</button>
+      <button class="share-act-btn" style="grid-column:span 2" onclick="copyShareLink('family')">🔗 리포트 링크 복사</button>
     </div>
+  </div>
+</div>
 
-    <!-- ── 탭 2: 지인 자랑 (바이럴 랜딩) ── -->
-    <div id="share-panel-viral" style="display:none">
-      <p style="font-size:.8rem;color:var(--mid);text-align:center;margin-bottom:14px;line-height:1.6">
-        지인들에게 우리 가족 유형을 자랑하고<br>
-        <span style="color:var(--teal);font-weight:700">너희도 해봐! 💚</span> 메시지를 전달해요
-      </p>
-      <!-- 바이럴 카드 -->
-      <div class="share-card viral-card" id="viral-card-preview">
-        <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
-        <div class="sc-title" id="viral-title">우리 가족 유형 알아냈어요! ✨</div>
-        <div class="sc-members" id="viral-members" style="margin-bottom:14px"></div>
-        <div class="sc-quote" id="viral-quote" style="margin-bottom:16px">"서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요"</div>
-        <div style="background:rgba(143,196,154,.15);border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:6px">너희 가족은 어떤 유형이야? 🤔</div>
-          <div style="font-size:.85rem;font-weight:800;color:#fff">온유스쿨 쉐도우그램에서 무료 검사해봐 →</div>
-        </div>
-      </div>
-      <div class="share-actions" style="margin-top:12px">
-        <button class="share-act-btn" onclick="shareKakao('viral')">💬 카카오톡</button>
-        <button class="share-act-btn" onclick="shareNative('viral')">📤 다른 앱으로</button>
-        <button class="share-act-btn" onclick="copyShareLink('viral')">🔗 링크 복사</button>
-        <button class="share-act-btn" onclick="shareInstagram()">📸 이미지</button>
+<!-- 모달 2: 지인에게 자랑 -->
+<div class="share-overlay" id="modal-viral" onclick="closeModal('viral',event)">
+  <div class="share-modal">
+    <button class="share-close" onclick="closeModal('viral')">×</button>
+    <div class="share-handle"></div>
+    <div class="share-modal-title">📣 지인에게 우리 가족 자랑하기</div>
+    <p style="font-size:.78rem;color:var(--mid);text-align:center;margin:-6px 0 14px;line-height:1.6">
+      우리 가족 유형을 자랑하고<br>
+      <span style="color:var(--teal);font-weight:700">"너희 가족도 해봐! 💚"</span> 메시지를 전달해요
+    </p>
+    <div class="share-card viral-card" id="viral-card-preview">
+      <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
+      <div class="sc-title" id="viral-title">우리 가족 유형 나왔어요! ✨</div>
+      <div class="sc-members" id="viral-members" style="margin-bottom:14px"></div>
+      <div class="sc-quote" id="viral-quote" style="margin-bottom:16px">"서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요"</div>
+      <div style="background:rgba(143,196,154,.15);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:4px">너희 가족은 어떤 유형이야? 🤔</div>
+        <div style="font-size:.85rem;font-weight:800;color:#fff">온유스쿨에서 무료 검사해봐 →</div>
       </div>
     </div>
-
+    <div class="share-actions" style="margin-top:12px">
+      <button class="share-act-btn" onclick="shareKakao('viral')">💬 카카오톡</button>
+      <button class="share-act-btn" onclick="shareNative('viral')">📤 다른 앱으로</button>
+      <button class="share-act-btn" onclick="copyShareLink('viral')">🔗 링크 복사</button>
+      <button class="share-act-btn" onclick="shareInstagram()">📸 이미지</button>
+    </div>
   </div>
 </div>
 
@@ -481,7 +491,7 @@ function renderMembersSection(members) {
           ${(typeInfo.keywords || []).map(kw => `<span class="mc-kw">${kw}</span>`).join('')}
         </div>
         <div style="margin-top:12px;text-align:center">
-          <canvas id="radar-${idx}" width="200" height="200" style="max-width:100%;"></canvas>
+          <canvas id="radar-${idx}" width="220" height="220" style="max-width:100%;display:block;margin:0 auto 4px;"></canvas>
         </div>
       </div>
     `;
@@ -742,7 +752,7 @@ function renderGrowthSection(members, aiData = {}) {
 }
 
 function drawRadar(canvas, scores, color) {
-  const dims = ['Ne','Ni','Si','Se','Fe','Fi','Ti','Te'];
+  const dims = ['영감','통찰','안정','현장','공감','진심','논리','추진'];
   const ctx = canvas.getContext('2d');
   const cx = canvas.width/2, cy = canvas.height/2;
   const r = Math.min(cx,cy) - 24;
@@ -767,8 +777,8 @@ function drawRadar(canvas, scores, color) {
     ctx.lineTo(cx+r*Math.cos(angle),cy+r*Math.sin(angle));
     ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.stroke();
     // 레이블
-    const lx=cx+(r+14)*Math.cos(angle), ly=cy+(r+14)*Math.sin(angle);
-    ctx.fillStyle='#666';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    const lx=cx+(r+18)*Math.cos(angle), ly=cy+(r+18)*Math.sin(angle);
+    ctx.fillStyle='#555';ctx.font='bold 10px "Apple SD Gothic Neo","Noto Sans KR",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(dims[i],lx,ly);
   }
   // 데이터 영역
@@ -1550,20 +1560,31 @@ function getIndividualMissions(type) {
 // ════════════════════════════════════════════════════════════════
 // 공유 기능
 // ════════════════════════════════════════════════════════════════
-function openShareModal() {
+// 가족 공유 모달 열기
+function openFamilyShare() {
   buildShareCard(_shareMembers);
-  // 항상 가족 탭으로 초기화
-  switchShareTab('family');
-  document.getElementById('share-overlay').classList.add('open');
+  document.getElementById('modal-family').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function closeShareModal(event) {
-  // 오버레이 배경 클릭 또는 X 버튼 클릭 시 닫기
-  if (event && event.target !== document.getElementById('share-overlay') && event.type !== 'click') return;
-  document.getElementById('share-overlay').classList.remove('open');
+// 지인 자랑 모달 열기
+function openViralShare() {
+  buildViralCard(_shareMembers);
+  document.getElementById('modal-viral').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// 모달 닫기 (id: 'family' 또는 'viral')
+function closeModal(id, event) {
+  const el = document.getElementById('modal-' + id);
+  if (event && event.target !== el) return;
+  el.classList.remove('open');
   document.body.style.overflow = '';
 }
+
+// 하위 호환 (구버전 링크 대응)
+function openShareModal() { openFamilyShare(); }
+function closeShareModal(event) { closeModal('family', event); }
 
 function buildShareCard(members) {
   const completedMembers = members.filter(m => m.sg_type);
