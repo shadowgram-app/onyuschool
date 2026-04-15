@@ -669,10 +669,21 @@ function toast(msg, dur=2800) {
 //  초기화 — 이미 로그인 상태 복원
 // ══════════════════════════════════
 (async function init() {
-  // 세션 저장소에서 이메일 복원
-  const savedEmail = sessionStorage.getItem('sg_auth_email');
+  const savedEmail  = sessionStorage.getItem('sg_auth_email');
+  const familyCode  = sessionStorage.getItem('sg_family_session'); // parenting.html에서 저장
 
-  // URL로 직접 접속 (이메일 파라미터)
+  // ── 신청 직후 바로 대시보드 진입 (이메일 입력 없이) ──
+  if (familyCode && savedEmail) {
+    verifiedEmail = savedEmail;
+    setAuthHeader(savedEmail);
+    await loadDash(familyCode);
+    showScreen('dash');
+    // 한 번 사용 후 제거 (다음 방문 시 세션 목록 표시)
+    sessionStorage.removeItem('sg_family_session');
+    return;
+  }
+
+  // URL로 직접 접속 (이메일+세션 파라미터)
   if (directEmail && directSession) {
     verifiedEmail = directEmail;
     setAuthHeader(directEmail);
@@ -681,6 +692,7 @@ function toast(msg, dur=2800) {
     return;
   }
 
+  // 이전에 로그인한 이메일 있으면 세션 목록 표시
   if (savedEmail) {
     verifiedEmail = savedEmail;
     setAuthHeader(savedEmail);

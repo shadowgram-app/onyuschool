@@ -652,6 +652,12 @@ async function saveFamilyToSupabase() {
     }
 
     // 3. 링크 생성 화면으로
+    // 세션 정보 저장 → 대시보드 바로가기 시 이메일 입력 없이 진입
+    try {
+      sessionStorage.setItem('sg_auth_email', familyData.applicant.email);
+      sessionStorage.setItem('sg_family_session', sessionCode);
+    } catch(e) {}
+
     renderLinksScreen();
     showScreen('complete');
 
