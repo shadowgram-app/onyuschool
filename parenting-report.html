@@ -424,28 +424,34 @@ async function init() {
         document.querySelector('.result-body, #report-body').prepend(banner);
     }
 
-    // 세션 상태 확인 — 이미 reported면 API 재호출 없이 룰 기반 렌더링
+    // 세션 상태 + 저장된 report_data 확인
     let sessionStatus = 'new';
+    let savedAiData = null;
     try {
       const sessRes = await fetch(
-        `${SUPABASE_URL}/rest/v1/family_sessions?code=eq.${sessionCode}&select=status`,
+        `${SUPABASE_URL}/rest/v1/family_sessions?code=eq.${sessionCode}&select=status,report_data`,
         { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
       );
       if (sessRes.ok) {
         const sessData = await sessRes.json();
         sessionStatus = sessData?.[0]?.status || 'new';
+        savedAiData   = sessData?.[0]?.report_data || null;
       }
     } catch(e) {}
 
-    // viewer/viral 모드 또는 이미 reported 세션: API 재호출 없이 룰 기반만 사용
     const alreadyReported = sessionStatus === 'reported';
-    const codeForAPI = (isViewer || isViral || alreadyReported) ? null : sessionCode;
 
-    if (alreadyReported && !isViewer && !isViral) {
-      if (loadingSub) loadingSub.innerHTML = '저장된 리포트를 불러오는 중... 🌿<br><span style="font-size:.75rem;color:var(--light)">이미 생성된 리포트입니다</span>';
+    if (alreadyReported && savedAiData) {
+      // ✅ DB에 저장된 데이터로 즉시 렌더링 — API 0원
+      if (loadingSub) loadingSub.innerHTML = '저장된 리포트를 불러오는 중... 🌿';
+      await generateReport(completedMembers, null, savedAiData);
+    } else if (isViewer || isViral || alreadyReported) {
+      // viewer/viral 또는 reported인데 데이터 없으면 룰 기반
+      await generateReport(completedMembers, null);
+    } else {
+      // 새 세션 — API 호출해서 생성
+      await generateReport(completedMembers, sessionCode);
     }
-
-    await generateReport(completedMembers, codeForAPI);
 
   } catch (error) {
     console.error('Error:', error);
@@ -463,12 +469,13 @@ function showError(msg) {
 // ════════════════════════════════════════════════════════════════
 // 리포트 생성
 // ════════════════════════════════════════════════════════════════
-async function generateReport(members, sessionCode) {
+async function generateReport(members, sessionCode, preloadedAiData) {
   try {
-    // ── Edge Function 호출 (Claude API 서버 사이드) ──
-    // sessionCode가 null이면 viewer/viral 모드 → API 완전 미호출 (비용 0)
-    let aiData = {};
-    if (sessionCode) {
+    // ── Edge Function 호출 또는 저장된 데이터 사용 ──
+    // preloadedAiData: DB에 저장된 데이터 (재접속 시)
+    // sessionCode=null: viewer/viral 모드 → API 미호출
+    let aiData = preloadedAiData || {};
+    if (!preloadedAiData && sessionCode) {
       try {
         const edgeRes = await fetch(
           `${SUPABASE_URL}/functions/v1/generate-parenting-report`,

@@ -444,10 +444,10 @@ serve(async (req) => {
     // AI 리포트 생성
     const aiData = await generateFamilyReport(completed, ANTHROPIC_KEY, supabase)
 
-    // 세션 상태 업데이트
+    // 세션 상태 + aiData 저장 (1회만 생성, 이후 DB에서 로드)
     await supabase
       .from('family_sessions')
-      .update({ status: 'reported' })
+      .update({ status: 'reported', report_data: aiData })
       .eq('code', session_code)
 
     return new Response(
