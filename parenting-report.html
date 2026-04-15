@@ -69,6 +69,12 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .share-act-btn.kakao{background:#FEE500;border-color:#FEE500;color:#3C1E1E}
 .share-act-btn.kakao:hover{background:#F0D800}
 .share-modal-title{font-size:.92rem;font-weight:800;color:var(--navy);margin-bottom:14px;text-align:center}
+/* 공유 탭 */
+.share-tabs{display:flex;gap:6px;margin-bottom:16px;background:#F5F3EE;border-radius:10px;padding:4px}
+.share-tab{flex:1;padding:9px 8px;border:none;background:transparent;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;color:var(--mid);transition:all .18s;white-space:nowrap}
+.share-tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+/* 바이럴 카드 특이 스타일 */
+.viral-card{background:linear-gradient(145deg,#1A3055 0%,#0E4040 60%,#1A3035 100%)}
 .share-close{position:absolute;top:20px;right:20px;background:none;border:none;
   font-size:1.4rem;cursor:pointer;color:var(--light);line-height:1}
 /* section */
@@ -209,35 +215,59 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
   <div class="share-modal">
     <button class="share-close" onclick="closeShareModal()">×</button>
     <div class="share-handle"></div>
-    <div class="share-modal-title">📤 우리 가족 결과 공유하기</div>
 
-    <!-- 공유 카드 미리보기 -->
-    <div class="share-card" id="share-card-preview">
-      <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
-      <div class="sc-title" id="sc-title">우리 가족의 소통 유형을<br>알았어요! 🌿</div>
-      <div class="sc-sub" id="sc-sub">쉐도우그램 8유형으로 가족을 이해하다</div>
-      <div class="sc-members" id="sc-members"></div>
-      <div class="sc-quote" id="sc-quote">"빛을 보고 끌렸는데, 그림자를 보고 갈등한다"<br>— 우리 가족도 서로의 빛을 발견했어요</div>
-      <a href="https://onyuschool.com/parenting.html" class="sc-cta" target="_blank">
-        👨‍👩‍👧‍👦 우리 가족도 테스트해보기 →
-      </a>
+    <!-- 탭 -->
+    <div class="share-tabs">
+      <button class="share-tab active" id="tab-family" onclick="switchShareTab('family')">👨‍👩‍👧‍👦 가족과 공유</button>
+      <button class="share-tab" id="tab-viral" onclick="switchShareTab('viral')">📣 지인에게 자랑</button>
     </div>
 
-    <!-- 공유 액션 -->
-    <div class="share-actions">
-      <button class="share-act-btn" onclick="shareKakao()">
-        💬 카카오톡 공유
-      </button>
-      <button class="share-act-btn" onclick="shareNative()">
-        📤 다른 앱으로
-      </button>
-      <button class="share-act-btn" onclick="copyShareLink()">
-        🔗 링크 복사
-      </button>
-      <button class="share-act-btn" onclick="shareInstagram()">
-        📸 이미지 저장
-      </button>
+    <!-- ── 탭 1: 가족 공유 (리포트 전체) ── -->
+    <div id="share-panel-family">
+      <p style="font-size:.8rem;color:var(--mid);text-align:center;margin-bottom:14px;line-height:1.6">
+        가족 구성원에게 전체 리포트를 공유합니다<br>
+        <span style="color:var(--light);font-size:.75rem">링크를 받은 가족은 분석 결과를 바로 볼 수 있어요</span>
+      </p>
+      <!-- 공유 카드 미리보기 -->
+      <div class="share-card" id="share-card-preview">
+        <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
+        <div class="sc-title" id="sc-title">우리 가족의 소통 유형을<br>알았어요! 🌿</div>
+        <div class="sc-sub" id="sc-sub">쉐도우그램 8유형으로 가족을 이해하다</div>
+        <div class="sc-members" id="sc-members"></div>
+        <div class="sc-quote" id="sc-quote">"빛을 보고 끌렸는데, 그림자를 보고 갈등한다"<br>— 우리 가족도 서로의 빛을 발견했어요</div>
+      </div>
+      <div class="share-actions" style="margin-top:12px">
+        <button class="share-act-btn" onclick="shareKakao('family')">💬 카카오톡</button>
+        <button class="share-act-btn" onclick="shareNative('family')">📤 다른 앱으로</button>
+        <button class="share-act-btn" style="grid-column:span 2" onclick="copyShareLink('family')">🔗 리포트 링크 복사</button>
+      </div>
     </div>
+
+    <!-- ── 탭 2: 지인 자랑 (바이럴 랜딩) ── -->
+    <div id="share-panel-viral" style="display:none">
+      <p style="font-size:.8rem;color:var(--mid);text-align:center;margin-bottom:14px;line-height:1.6">
+        지인들에게 우리 가족 유형을 자랑하고<br>
+        <span style="color:var(--teal);font-weight:700">너희도 해봐! 💚</span> 메시지를 전달해요
+      </p>
+      <!-- 바이럴 카드 -->
+      <div class="share-card viral-card" id="viral-card-preview">
+        <div class="sc-brand">ONYUSCHOOL · 쉐도우그램</div>
+        <div class="sc-title" id="viral-title">우리 가족 유형 알아냈어요! ✨</div>
+        <div class="sc-members" id="viral-members" style="margin-bottom:14px"></div>
+        <div class="sc-quote" id="viral-quote" style="margin-bottom:16px">"서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요"</div>
+        <div style="background:rgba(143,196,154,.15);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:6px">너희 가족은 어떤 유형이야? 🤔</div>
+          <div style="font-size:.85rem;font-weight:800;color:#fff">온유스쿨 쉐도우그램에서 무료 검사해봐 →</div>
+        </div>
+      </div>
+      <div class="share-actions" style="margin-top:12px">
+        <button class="share-act-btn" onclick="shareKakao('viral')">💬 카카오톡</button>
+        <button class="share-act-btn" onclick="shareNative('viral')">📤 다른 앱으로</button>
+        <button class="share-act-btn" onclick="copyShareLink('viral')">🔗 링크 복사</button>
+        <button class="share-act-btn" onclick="shareInstagram()">📸 이미지</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1522,6 +1552,8 @@ function getIndividualMissions(type) {
 // ════════════════════════════════════════════════════════════════
 function openShareModal() {
   buildShareCard(_shareMembers);
+  // 항상 가족 탭으로 초기화
+  switchShareTab('family');
   document.getElementById('share-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -1560,15 +1592,56 @@ function buildShareCard(members) {
   }
 }
 
-// 공유용 URL 생성 (viewer=1 붙여서 API 재호출 방지)
-function getShareUrl() {
+// ── 공유 URL 헬퍼 ──
+function getShareUrl(mode) {
   const base = location.origin + location.pathname;
   const session = _shareSessionCode;
+  if (mode === 'viral') {
+    // 지인 자랑: 랜딩 페이지로 유도 (신규 가입 유도)
+    return `${base.replace('parenting-report.html','parenting.html')}`;
+  }
+  // 가족 공유: 리포트 직접 열기 (API 재호출 없음)
   return `${base}?session=${session}&viewer=1`;
 }
 
-async function copyShareLink() {
-  const url = getShareUrl();
+// 탭 전환
+function switchShareTab(tab) {
+  document.getElementById('tab-family').classList.toggle('active', tab === 'family');
+  document.getElementById('tab-viral').classList.toggle('active', tab === 'viral');
+  document.getElementById('share-panel-family').style.display = tab === 'family' ? '' : 'none';
+  document.getElementById('share-panel-viral').style.display  = tab === 'viral'  ? '' : 'none';
+  if (tab === 'viral') buildViralCard(_shareMembers);
+}
+
+// 바이럴 카드 빌드
+function buildViralCard(members) {
+  const completed = members.filter(m => m.sg_type);
+  // 유형 칩
+  const el = document.getElementById('viral-members');
+  el.innerHTML = '';
+  completed.forEach(m => {
+    const t = TYPE_DATA[m.sg_type] || {};
+    const chip = document.createElement('div');
+    chip.className = 'sc-member-chip';
+    chip.textContent = `${t.icon||'✨'} ${m.name} · ${t.kr||m.sg_type}`;
+    el.appendChild(chip);
+  });
+  // 자랑 메시지 동적 생성
+  const types = completed.map(m => TYPE_DATA[m.sg_type]?.kr || m.sg_type);
+  const viralQuotes = [
+    '서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요',
+    '우리 가족이 왜 그랬는지 드디어 알았어요 😂',
+    '검사하고 나서 가족 대화가 달라졌어요!',
+    '아이 마음을 이제야 이해했어요 🥹',
+  ];
+  document.getElementById('viral-quote').textContent =
+    '"' + viralQuotes[completed.length % viralQuotes.length] + '"';
+  document.getElementById('viral-title').innerHTML =
+    `우리 가족 유형 나왔어요! ✨<br><span style="font-size:.85rem;font-weight:600;opacity:.8">${types.join(' · ')}</span>`;
+}
+
+async function copyShareLink(mode) {
+  const url = getShareUrl(mode);
   try {
     await navigator.clipboard.writeText(url);
     const btn = event.currentTarget;
@@ -1579,61 +1652,63 @@ async function copyShareLink() {
   } catch (e) {
     const ta = document.createElement('textarea');
     ta.value = url;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
     alert('링크가 복사됐어요! 📋\n' + url);
   }
 }
 
-function shareKakao() {
-  const url = getShareUrl();
+function shareKakao(mode) {
+  const url = getShareUrl(mode);
   const members = _shareMembers.filter(m => m.sg_type);
-  const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr || m.sg_type}(${m.name})`).join(', ');
-  const text = `우리 가족 쉐도우그램 결과: ${memberText}\n\n서로를 더 깊이 이해하게 됐어요 💚\n\n👉 ${url}`;
+  const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr||m.sg_type}(${m.name})`).join(', ');
+
+  let title, desc, text;
+  if (mode === 'viral') {
+    title = `우리 가족 유형 나왔어요! ${memberText}`;
+    desc  = '서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요 😊\n너희 가족도 한번 해봐!';
+    text  = `[온유스쿨 쉐도우그램]\n\n우리 가족 유형: ${memberText}\n\n"서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요 😊"\n\n너희 가족도 해봐! 👇\n${url}`;
+  } else {
+    title = '우리 가족 쉐도우그램 결과';
+    desc  = memberText + '\n서로를 더 깊이 이해하게 됐어요 💚';
+    text  = `우리 가족 결과: ${memberText}\n\n리포트 보기 👇\n${url}`;
+  }
 
   if (window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized()) {
     window.Kakao.Link.sendDefault({
       objectType: 'feed',
-      content: {
-        title: '우리 가족 쉐도우그램 결과',
-        description: memberText + '\n서로를 더 깊이 이해하게 됐어요',
+      content: { title, description: desc,
         imageUrl: 'https://onyuschool.com/og-image.png',
         link: { mobileWebUrl: url, webUrl: url }
       },
-      buttons: [{ title: '결과 보기', link: { mobileWebUrl: url, webUrl: url } }]
+      buttons: [{ title: mode === 'viral' ? '검사 해보기 →' : '리포트 보기 →',
+        link: { mobileWebUrl: url, webUrl: url } }]
     });
   } else {
-    const kakaoUrl = 'kakaotalk://msg/send?text=' + encodeURIComponent(text);
-    window.location.href = kakaoUrl;
+    window.location.href = 'kakaotalk://msg/send?text=' + encodeURIComponent(text);
     setTimeout(() => {
-      if (navigator.share) {
-        navigator.share({ title: '우리 가족 쉐도우그램 결과', text: memberText, url: url });
-      } else {
-        copyShareLink();
-      }
+      navigator.share ? navigator.share({ title, text: desc, url }) : copyShareLink(mode);
     }, 1000);
   }
 }
 
-function shareNative() {
-  const url = getShareUrl();
+function shareNative(mode) {
+  const url = getShareUrl(mode);
   const members = _shareMembers.filter(m => m.sg_type);
-  const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr || m.sg_type}(${m.name})`).join(', ');
+  const memberText = members.map(m => `${TYPE_DATA[m.sg_type]?.kr||m.sg_type}(${m.name})`).join(', ');
+
+  const isViral = mode === 'viral';
+  const title = isViral ? `우리 가족 유형 나왔어요! 🌿` : '우리 가족 쉐도우그램 결과';
+  const text  = isViral
+    ? `우리 가족: ${memberText}\n\n"서로 달라서 갈등했는데, 이유를 알고나니 이해됐어요 😊"\n\n너희 가족도 해봐!`
+    : `우리 가족 유형: ${memberText}\n쉐도우그램으로 서로를 이해했어요!`;
 
   if (navigator.share) {
-    navigator.share({
-      title: '우리 가족 쉐도우그램 결과 🌿',
-      text: `우리 가족 유형: ${memberText}\n쉐도우그램으로 서로를 이해했어요!`,
-      url: url
-    }).catch(err => {
-      if (err.name !== 'AbortError') copyShareLink();
-    });
+    navigator.share({ title, text, url })
+      .catch(err => { if (err.name !== 'AbortError') copyShareLink(mode); });
   } else {
-    copyShareLink();
+    copyShareLink(mode);
   }
 }
 
@@ -1641,9 +1716,9 @@ function shareInstagram() {
   const overlay = document.getElementById('share-overlay');
   overlay.classList.remove('open');
   document.body.style.overflow = '';
-
+  const url = getShareUrl('viral');
   setTimeout(() => {
-    alert('📸 인스타그램 공유 방법\n\n1. 화면을 캡처하세요 (전원 + 볼륨 down)\n2. 캡처 이미지를 인스타 스토리에 올리세요\n3. 링크 스티커에 아래 주소를 붙여넣으세요:\n\n' + getShareUrl());
+    alert('📸 인스타그램 공유 방법\n\n1. 화면을 캡처하세요 (전원 + 볼륨 down)\n2. 캡처 이미지를 인스타 스토리에 올리세요\n3. 링크 스티커에 아래 주소를 붙여넣으세요:\n\n' + url);
   }, 300);
 }
 
