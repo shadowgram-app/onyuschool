@@ -379,6 +379,28 @@
       color: var(--gold); padding: 4px 12px;
       border-radius: 20px; letter-spacing: 0.05em;
     }
+    .hw-btn {
+      background: rgba(122,92,30,0.08); border: 1px solid rgba(122,92,30,0.2);
+      border-radius: 8px; width: 36px; height: 36px;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 5px; cursor: pointer; flex-shrink: 0;
+      transition: background .2s; margin-right: 12px;
+    }
+    .hw-btn:hover { background: rgba(122,92,30,0.15); }
+    .hw-btn span { display: block; width: 16px; height: 2px; background: var(--gold); border-radius: 2px; transition: all .25s; }
+    .hw-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hw-btn.open span:nth-child(2) { opacity: 0; }
+    .hw-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .hw-overlay { position: fixed; inset: 0; z-index: 9998; background: rgba(0,0,0,0); pointer-events: none; transition: background .3s; }
+    .hw-overlay.open { background: rgba(0,0,0,0.4); pointer-events: all; }
+    .hw-drawer { position: fixed; top: 0; left: -280px; bottom: 0; z-index: 9999; width: 260px; background: #FFFFFF; border-right: 1px solid rgba(122,92,30,0.18); display: flex; flex-direction: column; transition: left .3s cubic-bezier(.4,0,.2,1); box-shadow: 4px 0 24px rgba(0,0,0,0.08); }
+    .hw-drawer.open { left: 0; }
+    .hw-drawer-head { padding: 44px 22px 16px; border-bottom: 1px solid rgba(122,92,30,0.10); display: flex; align-items: center; justify-content: space-between; }
+    .hw-drawer-logo { font-size: 12px; letter-spacing: 2px; font-weight: 700; color: var(--gold); }
+    .hw-close-btn { background: none; border: none; color: #AAA; font-size: 20px; cursor: pointer; padding: 4px 8px; line-height: 1; }
+    .hw-item { display: flex; align-items: center; gap: 13px; padding: 15px 22px; color: #7A7570; text-decoration: none; font-size: 14px; font-weight: 500; transition: background .18s, color .18s; border-bottom: 1px solid rgba(0,0,0,0.04); }
+    .hw-item:hover, .hw-item.active-page { background: rgba(122,92,30,0.06); color: var(--gold); }
+    .hw-item-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
 
     /* ── HERO ── */
     .hero {
@@ -437,9 +459,25 @@
 
 <!-- NAV -->
 <nav class="gnav">
+  <button class="hw-btn" id="hw-btn" onclick="hwToggle()" aria-label="메뉴"><span></span><span></span><span></span></button>
   <a class="gnav-logo" href="https://onyuschool.com"><span class="s1">ONYU</span><span class="s2">SCHOOL</span></a>
   <span class="gnav-badge">퍼스트클래스</span>
 </nav>
+
+<!-- OVERLAY -->
+<div class="hw-overlay" id="hw-overlay" onclick="hwClose()"></div>
+<!-- DRAWER -->
+<div class="hw-drawer" id="hw-drawer">
+  <div class="hw-drawer-head">
+    <div class="hw-drawer-logo">ONYUSCHOOL</div>
+    <button class="hw-close-btn" onclick="hwClose()">✕</button>
+  </div>
+  <a class="hw-item" href="https://onyuschool.com"><span class="hw-item-icon">🏠</span>홈</a>
+  <a class="hw-item active-page" href="firstclass-quiz.html"><span class="hw-item-icon">🌟</span>퍼스트클래스</a>
+  <a class="hw-item" href="coupleclass.html"><span class="hw-item-icon">💑</span>부부클래스</a>
+  <a class="hw-item" href="온유스쿨_목회자_체험판.html"><span class="hw-item-icon">✝</span>목회자 과정</a>
+  <a class="hw-item" href="teambuilding.html"><span class="hw-item-icon">🌿</span>팀빌딩 클래스</a>
+</div>
 
 <!-- HERO -->
 <div class="hero">
@@ -487,6 +525,7 @@
   <p class="result-label">나의 소통 유형 · ONYUSCHOOL</p>
   <div class="result-type-name" id="res-type"></div>
   <p class="result-function" id="res-function"></p>
+  <p class="result-code" id="res-code"></p>
 
   <!-- Score bars -->
   <div class="score-bars">
@@ -528,102 +567,38 @@
     </div>
   </div>
 
-  <!-- CTA + 설문 -->
+  <!-- CTA -->
   <div class="cta-box">
     <p class="cta-box-label" id="res-cta-label">온유스쿨 퍼스트클래스 · 전체 리포트</p>
     <h2 class="cta-box-title" id="res-cta-title"></h2>
     <p class="cta-box-sub" id="res-cta-sub"></p>
 
-    <!-- 설문 폼 -->
-    <div id="survey-form" style="margin-top:20px; text-align:left;">
-      <p style="font-size:13px; color:var(--silver); text-align:center; margin-bottom:18px; line-height:1.8;">
-        간단한 정보를 남겨주시면 <strong style="color:var(--gold);">리포트와 온유스쿨 안내서</strong>를 바로 받으실 수 있습니다.
+    <a id="res-cta-btn" href="온유스쿨_목회자_체험판.html" class="btn-buy">전체 리포트 신청하기 →</a>
+
+    <!-- 공유 -->
+    <div style="margin-top:24px;">
+      <p style="font-size:12px;color:var(--silver);text-align:center;margin:0 0 12px;letter-spacing:0.08em;font-weight:700;">
+        ✦ 공유하기 — 지인에게도 알려주세요
       </p>
-
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">이름</label>
-        <input id="sv-name" type="text" placeholder="홍길동" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
+      <div class="share-grid">
+        <button class="share-btn btn-kakao" id="btn-kakao-share" onclick="shareKakao()">💬 카카오 공유</button>
+        <a class="share-btn btn-facebook" id="btn-facebook-share" href="#" target="_blank" rel="noopener">📘 페이스북</a>
       </div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">교회명</label>
-        <input id="sv-church" type="text" placeholder="○○교회" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
-      </div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">직분</label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          <label id="pos-1" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
-            <input type="radio" name="position" value="담임목사" style="display:none;"> 담임목사
-          </label>
-          <label id="pos-2" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
-            <input type="radio" name="position" value="부교역자" style="display:none;"> 부교역자
-          </label>
-          <label id="pos-3" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
-            <input type="radio" name="position" value="사모" style="display:none;"> 사모
-          </label>
-          <label id="pos-4" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.2s;">
-            <input type="radio" name="position" value="중직자" style="display:none;"> 중직자
-          </label>
-        </div>
-      </div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">이메일</label>
-        <input id="sv-contact" type="email" placeholder="email@church.com" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
-      </div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:5px;">소감 한 줄</label>
-        <input id="sv-comment" type="text" placeholder="진단해보니 어땠나요?" style="width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;outline:none;">
-      </div>
-      <div style="margin-bottom:14px;">
-        <label style="font-size:12px;font-weight:700;color:var(--silver);display:block;margin-bottom:8px;">온유스쿨을 통해 기대하는 효과 (복수 선택)</label>
-        <div style="display:flex;flex-direction:column;gap:7px;">
-          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
-            <input type="checkbox" value="성도들의 개별적 특성을 고려한 목회 방향" style="margin-top:2px;accent-color:var(--gold);"> 성도 개개인의 특성을 이해하고 맞춤 목양
-          </label>
-          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
-            <input type="checkbox" value="자신의 유형에 맞는 목회적 방향성 설정" style="margin-top:2px;accent-color:var(--gold);"> 나 자신의 유형에 맞는 목회 방향성 찾기
-          </label>
-          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
-            <input type="checkbox" value="부부·가정 갈등 이해와 회복" style="margin-top:2px;accent-color:var(--gold);"> 부부·가정 내 갈등 이해와 관계 회복
-          </label>
-          <label class="expect-label" style="display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border:1px solid var(--border);padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;line-height:1.5;">
-            <input type="checkbox" value="교역자·평신도 리더십 팀 사역 강화" style="margin-top:2px;accent-color:var(--gold);"> 교역자·평신도 팀 사역 시너지 향상
-          </label>
-        </div>
-      </div>
-      <div style="margin-bottom:18px;">
-        <label style="display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--silver);cursor:pointer;line-height:1.6;">
-          <input id="sv-agree" type="checkbox" style="margin-top:2px;accent-color:var(--gold);flex-shrink:0;">
-          <span>[선택] 온유스쿨 오픈 소식 및 유용한 목양 콘텐츠 안내에 동의합니다.</span>
-        </label>
-      </div>
-
-      <button onclick="submitSurvey()" id="sv-btn" style="width:100%;background:var(--gold);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:background 0.2s;">
-        리포트 받기 →
-      </button>
+      <button class="share-btn btn-copy" id="btn-copy-link" onclick="copyQuizLink()" style="width:100%;margin-top:8px;">🔗 링크 복사하기</button>
     </div>
 
-    <!-- 제출 완료 + 다운로드 -->
-    <div id="survey-done" style="display:none; text-align:center; padding:8px 0;">
-      <div style="font-size:40px; margin-bottom:12px;">🙏</div>
-      <h3 style="font-size:18px;font-weight:900;color:var(--gold);margin-bottom:8px;">감사합니다!</h3>
-      <p style="font-size:13px;color:var(--silver);line-height:1.8;margin-bottom:24px;">
-        아래 버튼을 눌러 리포트와 안내서를 받아가세요.
-      </p>
+    <!-- 결과 저장 -->
+    <button class="share-btn btn-save" id="btn-save-link" onclick="saveMyLink()" style="width:100%;margin-top:8px;padding:10px;">🔖 내 결과 저장하기 (나중에 다시 확인)</button>
 
-      <button id="dl-report" onclick="downloadReport()" style="display:block;width:100%;background:var(--gold);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:800;margin-bottom:10px;box-sizing:border-box;cursor:pointer;font-family:inherit;">
-        📄 내 유형 리포트 전체 다운로드
-      </button>
-      <a href="/reports/온유스쿨_8유형_성도이해리포트.pdf" download style="display:block;width:100%;background:transparent;color:var(--gold);text-decoration:none;border:1.5px solid var(--gold);border-radius:12px;padding:14px;font-size:14px;font-weight:800;margin-bottom:20px;box-sizing:border-box;">
-        🌿 온유스쿨 8유형 안내서 다운로드
-      </a>
-
-      <!-- 링크 공유 (하나만) -->
-      <button onclick="shareQuizLink()" id="btn-copy-link" style="width:100%;background:transparent;border:1px solid rgba(154,122,46,0.35);color:var(--gold);border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
-        📤 검사 링크 공유하기
-      </button>
+    <div id="saved-link-box" style="display:none; margin-top:12px; background:rgba(154,122,46,0.08); border:1px solid rgba(154,122,46,0.3); border-radius:10px; padding:14px;">
+      <p style="font-size:11px; color:var(--silver); margin-bottom:8px; letter-spacing:1px;">📎 내 개인 링크 — 북마크나 메모에 저장하세요</p>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input id="saved-link-input" type="text" readonly style="flex:1; background:var(--bg2); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:6px; font-size:12px; font-family:monospace;"/>
+        <button onclick="copyLink()" style="background:var(--gold); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; white-space:nowrap; letter-spacing:0.03em;">복사</button>
+      </div>
     </div>
 
-    <button class="btn-retry" onclick="restartQuiz()" style="margin-top:16px;">다시 진단하기</button>
+    <button class="btn-retry" onclick="restartQuiz()">다시 진단하기</button>
   </div>
 </div>
 
@@ -636,6 +611,10 @@
 </footer>
 
 <script>
+/* ── NAV ── */
+function hwToggle(){var b=document.getElementById('hw-btn'),d=document.getElementById('hw-drawer'),o=document.getElementById('hw-overlay'),op=d.classList.toggle('open');b.classList.toggle('open',op);o.classList.toggle('open',op);}
+function hwClose(){['hw-btn','hw-drawer','hw-overlay'].forEach(function(id){document.getElementById(id).classList.remove('open');});}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hwClose();});
 
 // ══════════════════════════════════════════════════════
 // CTA 링크 (유형별 — 추후 개별 리포트 링크로 교체)
@@ -807,7 +786,7 @@ const TYPES = {
     ls: '빛: 신뢰와 일관성 / 그림자: 자기 부정과 과도한 희생',
     mission: '<ol><li>이번 주 섬김 요청 중 정중히 거절해야 할 것 딱 1개를 "Not-To-Do"에 적어보세요.</li><li>오늘 누군가의 감사 표현에 "아니에요" 대신 "감사합니다"로만 대답해보세요.</li></ol>',
     preview: '패턴 1 · 루틴이 성역이 될 때\n변화가 왜 이렇게 두렵게 느껴지는지...\n\n패턴 2 · 신중함으로 위장한 두려움\n그림자가 위험 인식을 어떻게 왜곡하는지...\n\n패턴 3 · 수동적 저항\n자신도 모르게 변화를 막는 이유...\n\n패턴 4 · 과거에 대한 집착\n새로운 계절을 위해 놓아야 할 것들...',
-    ctaTitle: 'STEADY 유형 리포트',
+    ctaTitle: 'STEADY 유형 전체 리포트를 신청하세요.',
     ctaSub: '4가지 무의식 패턴과 성장 방향, 목회자/동역자 가이드가 담긴 전체 리포트입니다.',
   },
   SPARK: {
@@ -820,7 +799,7 @@ const TYPES = {
     ls: '빛: 영감과 열정 / 그림자: 소진과 인정 갈망',
     mission: '<ol><li>감정이 격해지는 순간 타이머 "24시간"을 설정하고, 그 전에는 중요한 메시지나 결정을 보류해보세요.</li><li>이번 주 시작한 프로젝트 1개의 "완료 기준"을 문장 하나로 적고 동역자와 공유해보세요.</li></ol>',
     preview: '패턴 1 · 결승선 직전의 포기\n왜 거의 완성된 것을 두고 떠나는지...\n\n패턴 2 · 창의성으로 위장한 분산\n진짜 영감과 완성 회피를 구분하는 법...\n\n패턴 3 · 시작에 중독되는 마음\n시작의 기쁨이 왜 이토록 강렬한지...\n\n패턴 4 · 유지 구조 만들기\nSPARK 유형이 지속할 수 있는 시스템...',
-    ctaTitle: 'SPARK 유형 리포트',
+    ctaTitle: 'SPARK 유형 전체 리포트를 신청하세요.',
     ctaSub: '완성하지 못하는 패턴을 극복하는 방법과 SPARK 유형 맞춤 성장 가이드입니다.',
   },
   PLAYER: {
@@ -833,7 +812,7 @@ const TYPES = {
     ls: '빛: 실행력과 현장감 / 그림자: 깊이 회피와 내면 방치',
     mission: '<ol><li>돌발 상황이 터졌을 때 즉각 개입하기 전에 타이머 5분을 맞추고 내 감정 상태만 관찰해보세요.</li><li>"3개월 후 이루고 싶은 것" 딱 한 문장을 적고 신뢰할 수 있는 동역자에게 보내보세요.</li></ol>',
     preview: '패턴 1 · 자신감으로 위장한 충동\n그림자가 위험 판단을 어떻게 왜곡하는지...\n\n패턴 2 · 현재가 미래를 삼킬 때\n왜 성과에 유효기간이 생기는지...\n\n패턴 3 · 패턴 인식의 맹점\n반복하는 사이클을 알아채는 법...\n\n패턴 4 · 내면 통합하기\nPLAYER 유형의 장기적 성장 방법...',
-    ctaTitle: 'PLAYER 유형 리포트',
+    ctaTitle: 'PLAYER 유형 전체 리포트를 신청하세요.',
     ctaSub: '지속성을 방해하는 4가지 패턴과 사역의 열매로 이어지는 성장 가이드입니다.',
   },
   VISION: {
@@ -846,7 +825,7 @@ const TYPES = {
     ls: '빛: 통찰과 전략 / 그림자: 고독한 확신과 관계 단절',
     mission: '<ol><li>반대 의견이 나왔을 때 즉각 방어하는 대신 "생각해보겠습니다"라고만 말하고 24시간 뒤 응답해보세요.</li><li>이번 주 성도 1명에게 업무 지시가 아닌 "안부 묻는 대화" 5분을 먼저 시작해보세요.</li></ol>',
     preview: '패턴 1 · 완벽한 비전의 마비\n야심찬 계획이 왜 종이에만 머무는지...\n\n패턴 2 · 현재로부터의 분리\n관계·재정·몸에서 멀어지는 이유...\n\n패턴 3 · 비전가의 고독\n이해받기 어려운 이유와 해법...\n\n패턴 4 · 통찰을 현실로\nVISION 유형이 결과를 만드는 방법...',
-    ctaTitle: 'VISION 유형 리포트',
+    ctaTitle: 'VISION 유형 전체 리포트를 신청하세요.',
     ctaSub: '내면의 비전을 공동체와 나누는 방법과 VISION 유형 목회자 가이드입니다.',
   },
   LOGIC: {
@@ -859,7 +838,7 @@ const TYPES = {
     ls: '빛: 논리와 정확성 / 그림자: 감정 억압과 연결 회피',
     mission: '<ol><li>오늘 성도가 어려움을 나눌 때, 해결책보다 "그랬군요, 많이 힘드셨겠네요"를 먼저 한 번 말해보세요.</li><li>설교나 성경공부에서 "결론 한 문장"을 가장 먼저 말하고 설명은 그 다음에 해보세요.</li></ol>',
     preview: '패턴 1 · 지적 방어막\n논리가 어떻게 연약함의 방패가 되는지...\n\n패턴 2 · 정확함이 치르는 관계 비용\n사람들이 왜 당신을 존경하면서 멀어지는지...\n\n패턴 3 · 고독이 패턴이 될 때\nLOGIC 유형이 연결을 방해하는 방식...\n\n패턴 4 · 감정 통합하기\n정밀함을 유지하며 연결하는 법...',
-    ctaTitle: 'LOGIC 유형 리포트',
+    ctaTitle: 'LOGIC 유형 전체 리포트를 신청하세요.',
     ctaSub: '감정과 이성을 통합하는 방법과 LOGIC 유형 목회자 소통 가이드입니다.',
   },
   HARMONY: {
@@ -872,7 +851,7 @@ const TYPES = {
     ls: '빛: 공감과 연결 / 그림자: 자기 소멸과 경계 붕괴',
     mission: '<ol><li>오늘 하루 누군가의 부탁에 "아니오"를 딱 한 번 말하고, 그 경험을 저녁에 한 문장으로 기록해보세요.</li><li>상담이나 심방 후 30분 내에 혼자만의 회복 시간(산책, 묵상)을 의무적으로 가져보세요.</li></ol>',
     preview: '패턴 1 · 아니오를 말하지 못하는 이유\n왜 타인의 평화를 위해 자신을 잃는지...\n\n패턴 2 · 통제 수단이 된 죄책감\n그림자가 내면 판단으로 나타나는 방식...\n\n패턴 3 · 돌봄 제공자의 소진\n왜 반복적으로 한계에 부딪히는지...\n\n패턴 4 · 건강한 경계 세우기\n공감을 유지하며 나를 지키는 법...',
-    ctaTitle: 'HARMONY 유형 리포트',
+    ctaTitle: 'HARMONY 유형 전체 리포트를 신청하세요.',
     ctaSub: '자신을 잃지 않고 돌보는 방법과 HARMONY 유형 목회자 회복 가이드입니다.',
   },
   LEADER: {
@@ -885,7 +864,7 @@ const TYPES = {
     ls: '빛: 추진력과 결단 / 그림자: 관계 소홀과 권위주의',
     mission: '<ol><li>이번 주 결정 사항 1개를 실행하기 전에 팀원 2명에게 "어떻게 생각해요?"를 묻고 그 대답을 기록해보세요.</li><li>느리게 반응하는 성도에게 답답함을 느낄 때, "이 사람의 속도가 나쁜 게 아니다"를 속으로 3번 말해보세요.</li></ol>',
     preview: '패턴 1 · 효율이 진정성을 삼킬 때\n결과 추구가 어떻게 나를 숨기는지...\n\n패턴 2 · 취약함 없는 리더십\n당신의 힘이 왜 동시에 고립을 만드는지...\n\n패턴 3 · 집행자의 공허함\n목표를 이뤄도 채워지지 않는 것...\n\n패턴 4 · 가치 기반 리더십\n진짜 소명과 연결되어 이끄는 법...',
-    ctaTitle: 'LEADER 유형 리포트',
+    ctaTitle: 'LEADER 유형 전체 리포트를 신청하세요.',
     ctaSub: '효율이 숨기고 있는 것을 발견하고, 더 지속 가능하게 이끄는 목회자 가이드입니다.',
   },
   SOUL: {
@@ -898,7 +877,7 @@ const TYPES = {
     ls: '빛: 진정성과 깊이 / 그림자: 고립과 감정 은폐',
     mission: '<ol><li>오늘 하루 내면에서 느낀 감정 하나를 가까운 동역자에게 말로 표현해보세요 (메시지도 괜찮습니다).</li><li>구체적인 마감이 있는 일 1개를 정하고 LEADER/LOGIC 유형에게 함께해달라고 요청해보세요.</li></ol>',
     preview: '패턴 1 · 깊이의 보이지 않음\n내면의 풍요가 왜 외부에 전달되지 않는지...\n\n패턴 2 · 실용 세계에 대한 저항\n그림자가 어떻게 회피와 미루기로 나타나는지...\n\n패턴 3 · 조용한 분노\n가치가 존중받지 못할 때 감정이 쌓이는 방식...\n\n패턴 4 · 깊이를 영향력으로\nSOUL 유형이 세상에 보이는 방법...',
-    ctaTitle: 'SOUL 유형 리포트',
+    ctaTitle: 'SOUL 유형 전체 리포트를 신청하세요.',
     ctaSub: '깊이를 실제 사역의 열매로 연결하는 방법과 SOUL 유형 목회자 성장 가이드입니다.',
   },
 };
@@ -1022,31 +1001,10 @@ function showResult(savedWinner) {
   rs.style.display = 'block';
   _currentType = winner;
 
-  // 유형 저장 (재방문 시 다운로드 링크 복원용)
-  try { localStorage.setItem('onyu_type', winner); } catch(e) {}
-
-  const dlBtn = document.getElementById('dl-report');
-  if (dlBtn) dlBtn.textContent = `📄 ${winner} 유형 리포트 전체 다운로드`;
-
-  // 설문 제출 여부 확인 — 이미 제출했으면 바로 다운로드 화면
-  try {
-    if (localStorage.getItem('onyu_survey_done') === '1') {
-      document.getElementById('survey-form').style.display = 'none';
-      document.getElementById('survey-done').style.display = 'block';
-    } else {
-      document.getElementById('survey-form').style.display = 'block';
-      document.getElementById('survey-done').style.display = 'none';
-      const svBtn = document.getElementById('sv-btn');
-      if (svBtn) { svBtn.disabled = false; svBtn.textContent = '리포트 받기 →'; }
-    }
-  } catch(e) {
-    document.getElementById('survey-form').style.display = 'block';
-    document.getElementById('survey-done').style.display = 'none';
-  }
-
   document.getElementById('res-type').textContent = winner;
   document.getElementById('res-type').style.color = data.color;
   document.getElementById('res-function').textContent = data.icon + '  ' + data.function;
+  document.getElementById('res-code').textContent = `코드: ${d[0]}${d[1]}${d[2]}${d[3]}`;
   document.getElementById('res-light-header').style.color = data.color;
   document.getElementById('res-light').textContent = data.light;
   document.getElementById('res-shadow').textContent = data.shadow;
@@ -1070,7 +1028,6 @@ function showResult(savedWinner) {
 
   window._shareMsg = shareMsg;
   window._shareUrl = SHARE_URL;
-  window._currentType = winner;
 
   // 결과 복원 배너
   if (savedWinner) {
@@ -1141,102 +1098,6 @@ function restartQuiz() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── 설문 제출 ──
-const FC_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdblOMfA6Ax_rkyeWQoCl2G6YiQBjFtvSXgNZFApogNZ7XMxsCqkdEaTf2X88Vddl13A/exec';
-
-// 직분 라디오 스타일
-document.querySelectorAll('input[name="position"]').forEach(radio => {
-  radio.addEventListener('change', function() {
-    document.querySelectorAll('input[name="position"]').forEach(r => {
-      r.closest('label').style.background = 'var(--bg2)';
-      r.closest('label').style.borderColor = 'var(--border)';
-      r.closest('label').style.color = 'var(--text)';
-    });
-    this.closest('label').style.background = 'rgba(154,122,46,0.12)';
-    this.closest('label').style.borderColor = 'var(--gold)';
-    this.closest('label').style.color = 'var(--gold)';
-  });
-});
-
-// ── 리포트 다운로드 (fetch blob 방식) ──
-async function downloadReport() {
-  const t = (window._currentType || localStorage.getItem('onyu_type') || '').toUpperCase();
-  if (!t) { alert('유형 진단 후 이용 가능합니다.'); return; }
-  const url = `온유스쿨_8유형_목회자리포트/온유스쿨_목회자리포트_${t}.pdf`;
-  const filename = `온유스쿨_목회자리포트_${t}.pdf`;
-  const btn = document.getElementById('dl-report');
-  btn.textContent = '⏳ 다운로드 중...';
-  btn.disabled = true;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('not ok');
-    const blob = await res.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = filename;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(blobUrl); a.remove(); }, 2000);
-    btn.textContent = `✅ ${t} 유형 리포트 다운로드 완료`;
-  } catch(e) {
-    // 폴백: 새 탭 열기
-    window.open(url, '_blank');
-    btn.textContent = `📄 ${t} 유형 리포트 전체 다운로드`;
-  }
-  btn.disabled = false;
-}
-
-async function submitSurvey() {
-  const name = document.getElementById('sv-name').value.trim();
-  const church = document.getElementById('sv-church').value.trim();
-  const contact = document.getElementById('sv-contact').value.trim();
-  if (!name || !church || !contact) {
-    alert('이름, 교회명, 이메일은 필수입니다.');
-    return;
-  }
-  const position = (document.querySelector('input[name="position"]:checked') || {}).value || '미선택';
-  const comment = document.getElementById('sv-comment').value.trim();
-  const expects = [...document.querySelectorAll('.expect-label input:checked')].map(c => c.value).join(' / ') || '미선택';
-  const agree = document.getElementById('sv-agree').checked ? '동의' : '미동의';
-  const myType = window._currentType || localStorage.getItem('onyu_type') || '';
-
-  const btn = document.getElementById('sv-btn');
-  btn.disabled = true; btn.textContent = '전송 중...';
-
-  const payload = {
-    sheet: '퍼스트클래스결과',
-    name, church, position, contact, comment, expects, agree,
-    type: myType
-  };
-
-  try {
-    await fetch(FC_SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch(e) {}
-
-  // 다운로드 링크 유형별 설정
-  const typeKey = myType.toUpperCase();
-  const reportMap = {
-    STEADY:'STEADY', SPARK:'SPARK', PLAYER:'PLAYER', VISION:'VISION',
-    LOGIC:'LOGIC', HARMONY:'HARMONY', LEADER:'LEADER', SOUL:'SOUL'
-  };
-  const t = reportMap[typeKey] || typeKey;
-  const dlBtn = document.getElementById('dl-report');
-  if (dlBtn) dlBtn.textContent = `📄 ${t} 유형 리포트 전체 다운로드`;
-
-  // 설문 제출 완료 기록
-  try { localStorage.setItem('onyu_survey_done', '1'); } catch(e) {}
-
-  // 완료 화면
-  document.getElementById('survey-form').style.display = 'none';
-  document.getElementById('survey-done').style.display = 'block';
-}
-
 // ── 공유 ──
 function shareKakao() {
   const msg = window._shareMsg || '온유스쿨 소통 유형 진단';
@@ -1254,24 +1115,7 @@ window.copyQuizLink = function() {
   navigator.clipboard && navigator.clipboard.writeText(url);
   const btn = document.getElementById('btn-copy-link');
   btn.textContent = '✅ 링크 복사 완료!';
-  setTimeout(() => btn.textContent = '📤 검사 링크 공유하기', 2000);
-};
-
-window.shareQuizLink = async function() {
-  const url = window._shareUrl || window.location.href;
-  const winner = window._currentType || localStorage.getItem('onyu_type') || '';
-  const text = winner ? `나는 온유스쿨 ${winner} 유형! 당신의 소통 유형은?` : '온유스쿨 소통 유형 진단';
-  const btn = document.getElementById('btn-copy-link');
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: '온유스쿨 소통 유형 진단', text, url });
-      return;
-    } catch(e) {}
-  }
-  // 폴백: 클립보드 복사
-  try { await navigator.clipboard.writeText(url); } catch(e) {}
-  btn.textContent = '✅ 링크 복사 완료!';
-  setTimeout(() => btn.textContent = '📤 검사 링크 공유하기', 2000);
+  setTimeout(() => btn.textContent = '🔗 링크 복사하기', 2000);
 };
 
 function saveMyLink() {
@@ -1320,6 +1164,7 @@ function checkSavedResult() {
 buildQuiz();
 updateProgress(0);
 checkSavedResult();
+document.addEventListener('keydown', e => { if(e.key==='Escape') hwClose(); });
 </script>
 </body>
 </html>
