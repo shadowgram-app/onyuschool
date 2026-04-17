@@ -179,142 +179,153 @@ const TYPE_META = {
     cowork:'HARMONY·SOUL이 관계·감정 보완' },
 };
 
-// ── 퍼실리테이션 워크숍 매뉴얼 생성 ──
-function buildWorkshopSteps(typeDistribution, teamNarrative, members) {
-  const topTypes = typeDistribution.slice(0,3).map(([t])=>t);
-  const topKr    = topTypes.map(t => TYPE_META[t]?.kr || t).join('·');
-  const allKr    = typeDistribution.map(([t]) => TYPE_META[t]?.kr || t).join('·');
-  const memberCount = members ? members.length : typeDistribution.reduce((s,[,n])=>s+n,0);
+// ── 퍼실리테이션 워크숍 매뉴얼 (하드코딩) ──
+const WS_MANUAL_HTML = '<div class="sec">'
+  + '<h2>🎯 퍼실리테이션 워크숍 매뉴얼</h2>'
+  + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">'
+  + '<div style="background:#1A3055;color:#fff;border-radius:8px;padding:9px 14px;font-size:.8rem;font-weight:700">⏱ 총 90분</div>'
+  + '<div style="background:#256060;color:#fff;border-radius:8px;padding:9px 14px;font-size:.8rem;font-weight:700">🧭 대화 기반 퍼실리테이션</div>'
+  + '<div style="background:#8A6400;color:#fff;border-radius:8px;padding:9px 14px;font-size:.8rem;font-weight:700">📋 사전 준비 포함</div>'
+  + '</div>'
 
-  return [
-    {
-      num:1, title:'사전 준비 — 워크숍 당일 30분 전',
-      time:'준비사항', isPrepStep: true,
-      purpose: '퍼실리테이터가 워크숍 시작 전 반드시 확인해야 할 항목입니다.',
-      checklist: [
-        '이 팀 리포트를 인쇄하거나 프로젝터에 띄워두기',
-        '각 팀원의 개인 리포트 링크를 미리 단체 채팅방에 공유해두기',
-        '화이트보드 또는 큰 종이 + 마커 준비',
-        '팀원 수만큼 유형 카드 또는 이름표 준비 (유형명 적어서)',
-        '타이머 앱 준비 (핸드폰 or 화면 타이머)',
-        '심리적 안전을 위한 규칙 카드 준비: "오늘 나눈 이야기는 이 자리에서만"',
-      ],
-      prepNote: `이 워크숍은 강의가 아닌 대화 기반 퍼실리테이션입니다. 퍼실리테이터는 답을 주는 사람이 아니라 질문을 던지고 공간을 만드는 사람입니다. 침묵이 와도 기다려주세요.`,
-    },
-    {
-      num:1, title:'오프닝 — 심리적 안전 만들기', time:'10분',
-      purpose: '참여자들이 편안하게 자신을 드러낼 수 있는 안전한 공간을 먼저 만듭니다.',
-      script: teamNarrative?.workshopOpening ||
-        `오늘 이 자리는 서로를 평가하거나 고치는 시간이 아닙니다. "나는 왜 이럴까?"를 함께 이해하는 시간입니다. 쉐도우그램은 우리가 가진 강점(빛)이 때로 팀의 그림자를 만든다는 것을 발견하는 여정입니다. 오늘 나누는 모든 이야기는 이 자리에서만 머물게 해주세요. 판단 없이, 이해로 들어주세요.`,
-      activity: `아이스브레이킹 질문 (2인 1조, 각 1분): "요즘 나를 가장 잘 설명하는 날씨는 무엇인가요? 그 이유는?" → 전체 공유 (각 10초)`,
-      tips: [
-        '웃음이 나와도 괜찮지만 특정 사람을 향한 웃음이 되지 않도록 주의하세요',
-        '처음에 침묵이 길면 퍼실리테이터가 먼저 자신의 답을 말해주세요',
-      ],
-    },
-    {
-      num:2, title:'내 유형 소개 — 이것이 나의 빛입니다', time:'20분',
-      purpose: `각자 자신의 유형을 팀에 소개하고, "내가 이 팀에 기여하는 고유한 방식"을 언어화합니다. 이 팀의 유형 분포: ${allKr}`,
-      script: `이제 각자 자신의 유형 리포트를 보면서 팀에 소개할 시간입니다. 틀린 소개는 없습니다. 가장 나답다고 느껴지는 부분을 골라서 말씀해주세요. 소개 형식은 이렇게 해봅시다.`,
-      activity: `순서대로 돌아가며 (1인 약 90초):\n"저는 [유형명]형입니다. 제가 이 팀에 자연스럽게 기여하는 것은 [강점 한 가지]입니다. 그리고 제가 가끔 팀에게 불편함을 줄 수 있는 부분은 [그림자 한 가지]입니다."\n→ 발표 후 다른 팀원들: "그 부분에서 당신이 빛났던 순간이 있어요!" 짧게 한 마디씩`,
-      tips: [
-        `유형이 같은 사람이 있다면 "같은 유형인데 다르게 드러나는 점"을 찾아보게 하세요`,
-        '자기 그림자를 말하기 어려워한다면 "혹시 팀원들이 도와줄 수 있을까요?" 로 넘겨도 됩니다',
-        '리포트를 읽으면서 "이건 아닌데"라는 반응이 나와도 괜찮습니다. "어떤 부분이 다르게 느껴지나요?"로 대화를 이어가세요',
-      ],
-    },
-    {
-      num:3, title:'그림자 탐구 — 빛이 강하면 그림자도 깊다', time:'20분',
-      purpose: '각자의 강점이 팀 내 긴장·갈등을 만드는 패턴을 안전하게 탐구합니다. 비판이 아닌 이해의 시간입니다.',
-      script: `우리가 팀에서 갈등을 만들 때, 대부분은 "나쁜 의도"가 아니라 "너무 강한 강점" 때문입니다. 스파크형이 너무 많은 아이디어를 쏟아낼 때, 스테디형이 변화를 너무 천천히 받아들일 때, 리더형이 너무 빠르게 결정을 내릴 때 — 이것이 그림자입니다. 지금부터 내 그림자가 팀에 어떤 영향을 주는지 솔직하게 나눠봅시다.`,
-      activity: `[짝 대화] 2인 1조 (가능하면 다른 유형끼리), 각 3분씩 교대:\n"내가 팀에서 ______할 때 (나의 강점 행동), 상대방 입장에서는 ______처럼 느껴질 수 있습니다. 그때 나에게 말해줬으면 하는 한마디는 '______'입니다."\n\n[전체 나눔] 각 짝에서 가장 의미 있었던 발견 한 가지씩 공유`,
-      tips: [
-        '누군가의 그림자를 지적하거나 사례를 드는 것은 하지 않도록 미리 안내하세요',
-        '"그래서 당신이 문제야"가 아닌 "그래서 우리가 어떻게 하면 좋을까요?"로 방향을 유지하세요',
-        '감정이 올라오는 사람이 있다면 잠깐 멈추고 "이 발견이 어떻게 느껴지나요?"로 공간을 주세요',
-      ],
-    },
-    {
-      num:4, title:'팀 강점 지도 — 우리는 어떻게 연결되어 있나', time:'15분',
-      purpose: '팀 다양성이 약점이 아닌 자원임을 시각화하고, 서로가 서로를 보완한다는 것을 체험합니다.',
-      script: `지금 이 팀에는 ${allKr} 유형이 함께 있습니다. 이 다양성이 곧 우리 팀의 슈퍼파워입니다. 각각 혼자로는 약할 수 있지만, 함께 연결되면 최강팀이 됩니다. 어떻게 연결되는지 지금 함께 그려봅시다.`,
-      activity: `화이트보드에 팀원 이름을 원형으로 배치합니다.\n각자 다른 유형의 팀원 1명을 선택해서 화살표를 그리며 말합니다:\n"[상대방 이름]님의 [강점]이 있어서 저는 [더 잘할 수 있는 것]을 합니다."\n→ 모든 연결이 그려지면 전체 지도를 사진으로 찍어 공유`,
-      tips: [
-        '화살표가 쏠리는 팀원이 없도록 퍼실리테이터가 균형을 맞춰주세요',
-        '연결이 잘 안 떠오르는 사람에게는 "○○님이 없었다면 우리 팀에서 무엇이 빠졌을까요?"로 물어보세요',
-      ],
-    },
-    {
-      num:5, title:'동역 계약 — 우리 팀만의 약속', time:'15분',
-      purpose: '오늘 발견한 것들을 실제 행동 변화로 연결합니다. 추상적 다짐이 아닌 구체적·실천적 약속을 만듭니다.',
-      script: `오늘 서로에 대해 새롭게 알게 된 것들이 있을 겁니다. 이제 이 이해를 우리가 매일 함께 일하는 방식에 어떻게 녹여낼 수 있을지 약속을 만들어봅시다. 거창하지 않아도 됩니다. 내일부터 바로 할 수 있는 작은 것이면 됩니다.`,
-      activity: `[개인] 포스트잇에 적기 (3분):\n"나는 [유형]형으로서, 앞으로 팀에서 [구체적 행동 한 가지]를 하겠습니다. 그리고 내가 [그림자 패턴]이 나올 때 팀원이 [이렇게] 말해줘도 됩니다."\n\n[팀 전체] 각자 발표 후 화이트보드에 붙이기 → 사진 찍어 단체 채팅방 공유\n\n[팀 약속문] 함께 완성하기:\n"우리 [팀/부서/교회]는 서로의 다름을 ___로 받아들이며, ___와 ___를 약속합니다."`,
-      tips: [
-        '약속이 너무 추상적이면 "그게 구체적으로 어떤 행동인가요?"로 구체화를 도와주세요',
-        '팀 약속문은 단체 채팅방에 고정 메시지로 올려두도록 제안하세요',
-      ],
-    },
-    {
-      num:6, title:'클로징 — 오늘의 선물', time:'10분',
-      purpose: '워크숍 경험을 정리하고, 서로에게 긍정적 피드백으로 마무리합니다. 감사와 따뜻함으로 끝내는 것이 중요합니다.',
-      script: `오늘 우리는 서로의 빛과 그림자를 함께 들여다봤습니다. 이것은 쉬운 일이 아닙니다. 오늘 이 자리에 함께해주신 모든 분들께 감사드립니다. 마지막으로 서로에게 한 가지 선물을 드리는 시간입니다.`,
-      activity: `순서대로 돌아가며 (자신의 왼쪽 사람에게):\n"[이름]님, 오늘 당신에게서 새롭게 발견한 것은 [___]입니다. 앞으로 우리 팀에서 당신의 [___]이 정말 필요할 것 같습니다. 감사합니다."\n\n→ 워크숍 종료 후 15분 이내: 퍼실리테이터가 단체 채팅방에 팀 강점 지도 사진 + 팀 약속문 공유`,
-      tips: [
-        '시간이 부족하면 활동을 줄여도 클로징은 반드시 하세요. 마무리가 인상을 결정합니다',
-        '눈물이 나거나 감정이 뭉클해지는 분위기가 오면 그 감동을 충분히 머물게 해주세요',
-        '워크숍 1주 후 짧은 체크인을 예약하도록 이 자리에서 일정을 잡으세요',
-      ],
-    },
-  ];
-}
+  // ── 사전 준비 ──
+  + '<div class="ws-step" style="border-color:rgba(37,96,96,.3);background:#F0F7F4">'
+  + '<div class="ws-header" style="background:rgba(37,96,96,.08)">'
+  + '<div class="ws-num" style="background:var(--teal)">📋</div>'
+  + '<div class="ws-header-info"><div class="ws-title">사전 준비 — 워크숍 당일 30분 전</div>'
+  + '<div class="ws-time">📌 필수 준비사항</div></div></div>'
+  + '<div class="ws-body">'
+  + '<div class="ws-purpose">퍼실리테이터가 워크숍 시작 전 반드시 확인해야 할 항목입니다.</div>'
+  + '<div class="ws-checklist"><div class="ws-checklist-label">✅ 체크리스트</div><ul>'
+  + '<li>이 팀 리포트를 인쇄하거나 프로젝터에 띄워두기</li>'
+  + '<li>각 팀원의 개인 리포트 링크를 미리 단체 채팅방에 공유해두기</li>'
+  + '<li>화이트보드 또는 큰 종이 + 마커 준비</li>'
+  + '<li>팀원 수만큼 유형 이름표 준비 (유형명 적어서)</li>'
+  + '<li>타이머 앱 준비 (핸드폰 or 화면 타이머)</li>'
+  + '<li>심리적 안전을 위한 규칙 안내: "오늘 나눈 이야기는 이 자리에서만"</li>'
+  + '</ul></div>'
+  + '<div style="margin-top:10px;background:rgba(37,96,96,.06);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:12px 14px;font-size:.84rem;color:#1A4A4A;line-height:1.8;font-style:italic">'
+  + '이 워크숍은 강의가 아닌 대화 기반 퍼실리테이션입니다. 퍼실리테이터는 답을 주는 사람이 아니라 질문을 던지고 공간을 만드는 사람입니다. 침묵이 와도 기다려주세요.'
+  + '</div></div></div>'
 
-// ── 워크숍 스텝 HTML 렌더 (백틱 중첩 방지용 별도 함수) ──
-function renderWsSteps(steps) {
-  return steps.map(function(s) {
-    if (s.isPrepStep) {
-      var checklistHtml = (s.checklist || []).map(function(c) { return '<li>' + c + '</li>'; }).join('');
-      return '<div class="ws-step" style="border-color:rgba(37,96,96,.3);background:#F0F7F4">'
-        + '<div class="ws-header" style="background:rgba(37,96,96,.08)">'
-        + '<div class="ws-num" style="background:var(--teal)">📋</div>'
-        + '<div class="ws-header-info">'
-        + '<div class="ws-title">' + s.title + '</div>'
-        + '<div class="ws-time">📌 필수 준비사항</div>'
-        + '</div></div>'
-        + '<div class="ws-body">'
-        + '<div class="ws-purpose">' + s.purpose + '</div>'
-        + '<div class="ws-checklist"><div class="ws-checklist-label">✅ 체크리스트</div><ul>' + checklistHtml + '</ul></div>'
-        + '<div style="margin-top:10px;background:rgba(37,96,96,.06);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:12px 14px;font-size:.84rem;color:#1A4A4A;line-height:1.8;font-style:italic">' + (s.prepNote || '') + '</div>'
-        + '</div></div>';
-    }
-    var tipsHtml = '';
-    if (s.tips && s.tips.length) {
-      tipsHtml = '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
-        + s.tips.map(function(t) { return '<li>' + t + '</li>'; }).join('')
-        + '</ul></div>';
-    }
-    var checklistHtml2 = '';
-    if (s.checklist && s.checklist.length) {
-      checklistHtml2 = '<div class="ws-checklist"><div class="ws-checklist-label">✅ 체크리스트</div><ul>'
-        + s.checklist.map(function(c) { return '<li>' + c + '</li>'; }).join('')
-        + '</ul></div>';
-    }
-    return '<div class="ws-step">'
-      + '<div class="ws-header">'
-      + '<div class="ws-num">' + s.num + '</div>'
-      + '<div class="ws-header-info">'
-      + '<div class="ws-title">' + s.title + '</div>'
-      + '<div class="ws-time">⏱ ' + s.time + '</div>'
-      + '</div></div>'
-      + '<div class="ws-body">'
-      + '<div class="ws-purpose">📌 ' + s.purpose + '</div>'
-      + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
-      + '<div class="ws-script">"' + s.script + '"</div></div>'
-      + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
-      + '<div class="ws-activity"><strong>활동:</strong> ' + (s.activity || '').replace(/\n/g, '<br>') + '</div></div>'
-      + tipsHtml + checklistHtml2
-      + '</div></div>';
-  }).join('');
-}
+  // ── Step 1 ──
+  + '<div class="ws-step"><div class="ws-header">'
+  + '<div class="ws-num">1</div>'
+  + '<div class="ws-header-info"><div class="ws-title">오프닝 — 심리적 안전 만들기</div>'
+  + '<div class="ws-time">⏱ 10분</div></div></div>'
+  + '<div class="ws-body">'
+  + '<div class="ws-purpose">📌 참여자들이 편안하게 자신을 드러낼 수 있는 안전한 공간을 먼저 만듭니다.</div>'
+  + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
+  + '<div class="ws-script">"오늘 이 자리는 서로를 평가하거나 고치는 시간이 아닙니다. \'나는 왜 이럴까?\'를 함께 이해하는 시간입니다. 쉐도우그램은 우리가 가진 강점(빛)이 때로 팀의 그림자를 만든다는 것을 발견하는 여정입니다. 오늘 나누는 모든 이야기는 이 자리에서만 머물게 해주세요. 판단 없이, 이해로 들어주세요."</div></div>'
+  + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
+  + '<div class="ws-activity"><strong>아이스브레이킹</strong> (2인 1조, 각 1분): "요즘 나를 가장 잘 설명하는 날씨는 무엇인가요? 그 이유는?" → 전체 공유 (각 10초)</div></div>'
+  + '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
+  + '<li>웃음이 나와도 괜찮지만 특정 사람을 향한 웃음이 되지 않도록 주의하세요</li>'
+  + '<li>처음에 침묵이 길면 퍼실리테이터가 먼저 자신의 답을 말해주세요</li>'
+  + '</ul></div></div></div>'
+
+  // ── Step 2 ──
+  + '<div class="ws-step"><div class="ws-header">'
+  + '<div class="ws-num">2</div>'
+  + '<div class="ws-header-info"><div class="ws-title">내 유형 소개 — 이것이 나의 빛입니다</div>'
+  + '<div class="ws-time">⏱ 20분</div></div></div>'
+  + '<div class="ws-body">'
+  + '<div class="ws-purpose">📌 각자 자신의 유형을 팀에 소개하고, "내가 이 팀에 기여하는 고유한 방식"을 언어화합니다.</div>'
+  + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
+  + '<div class="ws-script">"이제 각자 자신의 유형 리포트를 보면서 팀에 소개할 시간입니다. 틀린 소개는 없습니다. 가장 나답다고 느껴지는 부분을 골라서 말씀해주세요."</div></div>'
+  + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
+  + '<div class="ws-activity"><strong>순서대로 돌아가며</strong> (1인 약 90초):<br>"저는 [유형명]형입니다. 제가 이 팀에 자연스럽게 기여하는 것은 [강점 한 가지]입니다. 그리고 제가 가끔 팀에게 불편함을 줄 수 있는 부분은 [그림자 한 가지]입니다."<br>→ 발표 후 다른 팀원들: "그 부분에서 당신이 빛났던 순간이 있어요!" 짧게 한 마디씩</div></div>'
+  + '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
+  + '<li>유형이 같은 사람이 있다면 "같은 유형인데 다르게 드러나는 점"을 찾아보게 하세요</li>'
+  + '<li>자기 그림자를 말하기 어려워한다면 "혹시 팀원들이 도와줄 수 있을까요?"로 넘겨도 됩니다</li>'
+  + '<li>"이건 아닌데"라는 반응이 나와도 괜찮습니다. "어떤 부분이 다르게 느껴지나요?"로 대화를 이어가세요</li>'
+  + '</ul></div></div></div>'
+
+  // ── Step 3 ──
+  + '<div class="ws-step"><div class="ws-header">'
+  + '<div class="ws-num">3</div>'
+  + '<div class="ws-header-info"><div class="ws-title">그림자 탐구 — 빛이 강하면 그림자도 깊다</div>'
+  + '<div class="ws-time">⏱ 20분</div></div></div>'
+  + '<div class="ws-body">'
+  + '<div class="ws-purpose">📌 각자의 강점이 팀 내 긴장·갈등을 만드는 패턴을 안전하게 탐구합니다. 비판이 아닌 이해의 시간입니다.</div>'
+  + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
+  + '<div class="ws-script">"우리가 팀에서 갈등을 만들 때, 대부분은 나쁜 의도가 아니라 너무 강한 강점 때문입니다. 스파크형이 너무 많은 아이디어를 쏟아낼 때, 스테디형이 변화를 너무 천천히 받아들일 때, 리더형이 너무 빠르게 결정을 내릴 때 — 이것이 그림자입니다. 지금부터 내 그림자가 팀에 어떤 영향을 주는지 솔직하게 나눠봅시다."</div></div>'
+  + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
+  + '<div class="ws-activity"><strong>[짝 대화]</strong> 2인 1조 (가능하면 다른 유형끼리), 각 3분씩 교대:<br>"내가 팀에서 ______할 때 (나의 강점 행동), 상대방 입장에서는 ______처럼 느껴질 수 있습니다. 그때 나에게 말해줬으면 하는 한마디는 \'______\'입니다."<br><br><strong>[전체 나눔]</strong> 각 짝에서 가장 의미 있었던 발견 한 가지씩 공유</div></div>'
+  + '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
+  + '<li>누군가의 그림자를 지적하거나 사례를 드는 것은 하지 않도록 미리 안내하세요</li>'
+  + '<li>"그래서 당신이 문제야"가 아닌 "그래서 우리가 어떻게 하면 좋을까요?"로 방향을 유지하세요</li>'
+  + '<li>감정이 올라오는 사람이 있다면 잠깐 멈추고 "이 발견이 어떻게 느껴지나요?"로 공간을 주세요</li>'
+  + '</ul></div></div></div>'
+
+  // ── Step 4 ──
+  + '<div class="ws-step"><div class="ws-header">'
+  + '<div class="ws-num">4</div>'
+  + '<div class="ws-header-info"><div class="ws-title">팀 강점 지도 — 우리는 어떻게 연결되어 있나</div>'
+  + '<div class="ws-time">⏱ 15분</div></div></div>'
+  + '<div class="ws-body">'
+  + '<div class="ws-purpose">📌 팀 다양성이 약점이 아닌 자원임을 시각화하고, 서로가 서로를 보완한다는 것을 체험합니다.</div>'
+  + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
+  + '<div class="ws-script">"우리 팀의 다양한 유형은 각각 혼자로는 약할 수 있지만, 함께 연결되면 최강팀이 됩니다. 어떻게 연결되는지 지금 함께 그려봅시다."</div></div>'
+  + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
+  + '<div class="ws-activity">화이트보드에 팀원 이름을 원형으로 배치합니다.<br>각자 다른 유형의 팀원 1명을 선택해서 화살표를 그리며 말합니다:<br><strong>"[상대방 이름]님의 [강점]이 있어서 저는 [더 잘할 수 있는 것]을 합니다."</strong><br>→ 모든 연결이 그려지면 전체 지도를 사진으로 찍어 공유</div></div>'
+  + '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
+  + '<li>화살표가 특정 팀원에게 쏠리지 않도록 균형을 맞춰주세요</li>'
+  + '<li>연결이 잘 안 떠오르는 사람에게는 "○○님이 없었다면 우리 팀에서 무엇이 빠졌을까요?"로 물어보세요</li>'
+  + '</ul></div></div></div>'
+
+  // ── Step 5 ──
+  + '<div class="ws-step"><div class="ws-header">'
+  + '<div class="ws-num">5</div>'
+  + '<div class="ws-header-info"><div class="ws-title">동역 계약 — 우리 팀만의 약속</div>'
+  + '<div class="ws-time">⏱ 15분</div></div></div>'
+  + '<div class="ws-body">'
+  + '<div class="ws-purpose">📌 오늘 발견한 것들을 실제 행동 변화로 연결합니다. 추상적 다짐이 아닌 구체적·실천적 약속을 만듭니다.</div>'
+  + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
+  + '<div class="ws-script">"오늘 서로에 대해 새롭게 알게 된 것들이 있을 겁니다. 이제 이 이해를 매일 함께 일하는 방식에 녹여낼 수 있는 약속을 만들어봅시다. 거창하지 않아도 됩니다. 내일부터 바로 할 수 있는 작은 것이면 됩니다."</div></div>'
+  + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
+  + '<div class="ws-activity"><strong>[개인]</strong> 포스트잇에 적기 (3분):<br>"나는 [유형]형으로서, 앞으로 팀에서 [구체적 행동 한 가지]를 하겠습니다. 그리고 내가 [그림자 패턴]이 나올 때 팀원이 [이렇게] 말해줘도 됩니다."<br><br><strong>[팀 전체]</strong> 각자 발표 후 화이트보드에 붙이기 → 사진 찍어 단체 채팅방 공유<br><br><strong>[팀 약속문]</strong> 함께 완성하기:<br>"우리 팀은 서로의 다름을 ___로 받아들이며, ___와 ___를 약속합니다."</div></div>'
+  + '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
+  + '<li>약속이 너무 추상적이면 "그게 구체적으로 어떤 행동인가요?"로 구체화를 도와주세요</li>'
+  + '<li>팀 약속문은 단체 채팅방에 고정 메시지로 올려두도록 제안하세요</li>'
+  + '</ul></div></div></div>'
+
+  // ── Step 6 ──
+  + '<div class="ws-step"><div class="ws-header">'
+  + '<div class="ws-num">6</div>'
+  + '<div class="ws-header-info"><div class="ws-title">클로징 — 오늘의 선물</div>'
+  + '<div class="ws-time">⏱ 10분</div></div></div>'
+  + '<div class="ws-body">'
+  + '<div class="ws-purpose">📌 워크숍 경험을 정리하고, 서로에게 긍정적 피드백으로 마무리합니다. 감사와 따뜻함으로 끝내는 것이 중요합니다.</div>'
+  + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
+  + '<div class="ws-script">"오늘 우리는 서로의 빛과 그림자를 함께 들여다봤습니다. 이것은 쉬운 일이 아닙니다. 오늘 이 자리에 함께해주신 모든 분들께 감사드립니다. 마지막으로 서로에게 한 가지 선물을 드리는 시간입니다."</div></div>'
+  + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
+  + '<div class="ws-activity"><strong>순서대로 돌아가며</strong> (자신의 왼쪽 사람에게):<br>"[이름]님, 오늘 당신에게서 새롭게 발견한 것은 [___]입니다. 앞으로 우리 팀에서 당신의 [___]이 정말 필요할 것 같습니다. 감사합니다."<br><br>→ 워크숍 종료 후 15분 이내: 퍼실리테이터가 단체 채팅방에 팀 강점 지도 사진 + 팀 약속문 공유</div></div>'
+  + '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
+  + '<li>시간이 부족해도 클로징은 반드시 하세요. 마무리가 인상을 결정합니다</li>'
+  + '<li>눈물이 나거나 감동적인 분위기가 오면 그 감동을 충분히 머물게 해주세요</li>'
+  + '<li>워크숍 1주 후 짧은 체크인을 예약하도록 이 자리에서 일정을 잡으세요</li>'
+  + '</ul></div></div></div>'
+
+  // ── 주의사항 & 다음 단계 ──
+  + '</div>'
+  + '<div class="sec"><h2>📌 진행 주의사항</h2>'
+  + '<div class="card"><ul class="vuln-list">'
+  + '<li>유형 결과를 "이 사람은 원래 이런 사람"으로 고정하지 마세요. 유형은 경향성이지 운명이 아닙니다.</li>'
+  + '<li>그림자를 약점으로 공격하거나 비판하는 데 사용하지 마세요. 이해를 위한 도구입니다.</li>'
+  + '<li>소수 유형(1명만 있는 유형)이 소외감을 느끼지 않도록 특별히 배려해주세요.</li>'
+  + '<li>워크숍에서 나눈 개인적 이야기는 팀 내에서만 공유되어야 합니다 (심리적 안전).</li>'
+  + '<li>리포트는 전원 검사 완료 후 생성된 것이 가장 정확합니다. 이후 검사한 팀원은 반영되지 않습니다.</li>'
+  + '</ul></div>'
+  + '<div class="card" style="background:#F0F7F4;border-color:rgba(37,96,96,.3)">'
+  + '<div style="font-size:.9rem;font-weight:800;color:var(--teal);margin-bottom:8px">🌱 다음 단계 제안</div>'
+  + '<ul style="margin-left:18px;font-size:.88rem;line-height:1.9">'
+  + '<li>워크숍 1주 후 — 가장 기억에 남는 발견을 단체 채팅방에 공유</li>'
+  + '<li>1개월 후 — 팀 약속이 어떻게 지켜지고 있는지 짧은 체크인</li>'
+  + '<li>분기마다 — 새 팀원 합류 시 동일 과정 반복 (팀 문화 정착)</li>'
+  + '</ul></div></div>';
+
+
 
 async function init() {
   if (!CODE) {
@@ -366,7 +377,6 @@ function renderReport(data) {
     cowork: TYPE_META[t]?.cowork||''
   }));
 
-  const wsSteps = buildWorkshopSteps(typeDist, teamAI, members);
 
   const html = `
     <!-- 커버 -->
@@ -469,43 +479,14 @@ function renderReport(data) {
       </div>
     </div>
 
-    <!-- 퍼실리테이션 워크숍 매뉴얼 -->
-    <div class="sec">
-      <h2>🎯 퍼실리테이션 워크숍 매뉴얼</h2>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px">
-        <div style="background:#1A3055;color:#fff;border-radius:8px;padding:10px 16px;font-size:.82rem;font-weight:700">⏱ 총 90분</div>
-        <div style="background:#256060;color:#fff;border-radius:8px;padding:10px 16px;font-size:.82rem;font-weight:700">👥 ${memberCount}명</div>
-        <div style="background:#8A6400;color:#fff;border-radius:8px;padding:10px 16px;font-size:.82rem;font-weight:700">🧭 대화 기반 퍼실리테이션</div>
-      </div>
-      ${renderWsSteps(wsSteps)}
-    </div>
-
-    <!-- 주의사항 & 다음 단계 -->
-    <div class="sec">
-      <h2>📌 진행 주의사항</h2>
-      <div class="card">
-        <ul class="vuln-list">
-          <li>유형 결과를 "이 사람은 원래 이런 사람"으로 고정하지 마세요. 유형은 경향성이지 운명이 아닙니다.</li>
-          <li>그림자를 약점으로 공격하거나 비판하는 데 사용하지 마세요. 이해를 위한 도구입니다.</li>
-          <li>소수 유형(1명만 있는 유형)이 소외감을 느끼지 않도록 특별히 배려해주세요.</li>
-          <li>워크숍에서 나온 개인적 이야기는 팀 내에서만 공유되어야 합니다 (심리적 안전).</li>
-          <li>리포트는 전원 검사 완료 후 생성된 것이 가장 정확합니다. 이후 검사한 팀원은 반영되지 않습니다.</li>
-        </ul>
-      </div>
-      <div class="card" style="background:#F0F7F4;border-color:rgba(37,96,96,.3)">
-        <div style="font-size:.9rem;font-weight:800;color:var(--teal);margin-bottom:8px">🌱 다음 단계 제안</div>
-        <ul style="margin-left:18px;font-size:.88rem;line-height:1.9">
-          <li>워크숍 1주 후 — 가장 기억에 남는 발견을 단체 채팅방에 공유</li>
-          <li>1개월 후 — 팀 약속이 어떻게 지켜지고 있는지 짧은 체크인</li>
-          <li>분기마다 — 새 팀원 합류 시 동일 과정 반복 (팀 문화 정착)</li>
-        </ul>
-      </div>
-    </div>
   `;
 
   document.getElementById('loading-wrap').style.display = 'none';
   document.getElementById('report-wrap').style.display = 'block';
   document.getElementById('report-wrap').innerHTML = html;
+
+  // 퍼실리테이션 매뉴얼 + 주의사항 하드코딩으로 추가
+  document.getElementById('report-wrap').insertAdjacentHTML('beforeend', WS_MANUAL_HTML);
 }
 
 function downloadPDF() {
