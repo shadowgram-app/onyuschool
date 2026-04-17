@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀 리포트 — 온유스쿨 쉐도우그램</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --navy:#1A3055;--teal:#256060;--gold:#8A6400;
+  --bg:#F5F3EE;--white:#FFF;--gray:#333;--mid:#666;--light:#999;
+  --border:#DDD;--green:#8FC49A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:15px;line-height:1.7;background:var(--bg);color:var(--gray)}
+.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50}
+.topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo span{color:var(--green)}
+.btn-print{background:var(--green);color:var(--navy);padding:8px 16px;border-radius:6px;
+  border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-pdf{background:#C05000;color:#fff;padding:8px 16px;border-radius:6px;
+  border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;margin-left:8px}
+.btn-pdf:disabled{opacity:.6;cursor:not-allowed}
+.container{max-width:900px;margin:0 auto;padding:24px 20px}
+.sec{padding:36px 0;border-bottom:2px solid var(--border)}
+.sec:last-child{border-bottom:none}
+.sec h2{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:18px;
+  padding-bottom:10px;border-bottom:2px solid var(--teal)}
+.sec h3{font-size:1rem;font-weight:800;color:var(--navy);margin:16px 0 10px}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+/* 커버 */
+.cover{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);
+  border-radius:16px;padding:36px 28px;color:#fff;margin-bottom:28px;text-align:center}
+.cover-brand{font-size:.75rem;font-weight:800;letter-spacing:.15em;color:rgba(255,255,255,.55);margin-bottom:12px}
+.cover-church{font-size:1.8rem;font-weight:900;margin-bottom:6px}
+.cover-title{font-size:1rem;color:rgba(255,255,255,.75);margin-bottom:20px}
+.cover-stats{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+.cover-stat{text-align:center}
+.cover-stat .num{font-size:1.8rem;font-weight:900;color:var(--green)}
+.cover-stat .lbl{font-size:.75rem;color:rgba(255,255,255,.65)}
+/* 유형 분포 */
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.type-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;
+  padding:14px 10px;text-align:center}
+.tc-icon{font-size:1.8rem;margin-bottom:6px}
+.tc-type{font-size:.78rem;font-weight:800;color:var(--teal)}
+.tc-kr{font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:4px}
+.tc-count{font-size:1.2rem;font-weight:900;color:var(--gold)}
+.tc-bar{height:5px;background:#EEE;border-radius:3px;margin-top:8px;overflow:hidden}
+.tc-bar-fill{height:100%;background:var(--teal);border-radius:3px}
+/* AI 서술 박스 */
+.ai-box{background:linear-gradient(135deg,#1A3055,#256060);border-radius:12px;
+  padding:20px 22px;color:#fff;margin-bottom:14px}
+.ai-box .ai-lbl{font-size:.72rem;color:rgba(255,255,255,.5);font-weight:700;
+  letter-spacing:.1em;margin-bottom:8px}
+.ai-box p{font-size:.9rem;line-height:1.85;font-style:italic;color:rgba(255,255,255,.9)}
+.ai-shadow-box{background:linear-gradient(135deg,#3A1060,#5A2090)}
+/* 강점·취약 */
+.strength-list,.vuln-list{list-style:none;padding:0}
+.strength-list li,.vuln-list li{padding:9px 0;border-bottom:1px solid #F0EDE8;
+  font-size:.9rem;line-height:1.7;display:flex;gap:10px}
+.strength-list li:last-child,.vuln-list li:last-child{border-bottom:none}
+.strength-list li::before{content:'✦';color:var(--teal);flex-shrink:0;margin-top:2px}
+.vuln-list li::before{content:'△';color:var(--gold);flex-shrink:0;margin-top:2px}
+/* 동역 구조 */
+.cowork-table{width:100%;border-collapse:collapse}
+.cowork-table th{background:var(--navy);color:#fff;padding:10px 14px;
+  font-size:.82rem;text-align:left}
+.cowork-table td{padding:10px 14px;border-bottom:1px solid var(--border);
+  font-size:.85rem;vertical-align:top;line-height:1.65}
+.cowork-table tr:last-child td{border-bottom:none}
+/* 팀원 목록 */
+.member-row{display:flex;align-items:center;gap:14px;padding:12px 0;
+  border-bottom:1px solid #F0EDE8}
+.member-row:last-child{border-bottom:none}
+.mr-icon{font-size:1.6rem;width:40px;text-align:center;flex-shrink:0}
+.mr-info{flex:1}
+.mr-name{font-size:.92rem;font-weight:700;color:var(--navy)}
+.mr-meta{font-size:.78rem;color:var(--mid)}
+.mr-type{font-size:.8rem;font-weight:800;color:var(--teal)}
+/* 워크숍 섹션 */
+.ws-step{background:#fff;border:1px solid var(--border);border-radius:12px;
+  margin-bottom:16px;overflow:hidden}
+.ws-header{display:flex;align-items:center;gap:14px;padding:16px 18px;
+  background:linear-gradient(90deg,rgba(26,48,85,.04),transparent)}
+.ws-num{background:var(--gold);color:#fff;width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;
+  font-weight:800;flex-shrink:0}
+.ws-header-info{flex:1}
+.ws-title{font-size:.95rem;font-weight:800;color:var(--navy);margin-bottom:2px}
+.ws-time{font-size:.75rem;color:var(--gold);font-weight:700}
+.ws-body{padding:0 18px 16px}
+.ws-purpose{font-size:.82rem;color:var(--mid);line-height:1.7;margin-bottom:10px;
+  padding:8px 12px;background:#F8F6F0;border-radius:6px}
+.ws-script-wrap{margin-bottom:10px}
+.ws-script-label{font-size:.73rem;font-weight:800;color:var(--teal);letter-spacing:.06em;
+  margin-bottom:5px}
+.ws-script{background:rgba(37,96,96,.06);border-left:3px solid var(--teal);
+  border-radius:0 8px 8px 0;padding:12px 14px;font-size:.85rem;
+  font-style:italic;color:#1A4A4A;line-height:1.85}
+.ws-activity-wrap{margin-bottom:8px}
+.ws-activity-label{font-size:.73rem;font-weight:800;color:var(--gold);letter-spacing:.06em;
+  margin-bottom:5px}
+.ws-activity{background:#FFF8E6;border:1px solid #F0D890;border-radius:8px;
+  padding:12px 14px;font-size:.85rem;line-height:1.75}
+.ws-activity strong{color:var(--gold)}
+.ws-tips{margin-top:8px}
+.ws-tips-label{font-size:.73rem;font-weight:800;color:#8B1A1A;letter-spacing:.06em;margin-bottom:5px}
+.ws-tips ul{list-style:none;padding:0}
+.ws-tips ul li{font-size:.82rem;color:#6B1A1A;line-height:1.7;padding:3px 0;
+  padding-left:14px;position:relative}
+.ws-tips ul li::before{content:'⚠';position:absolute;left:0;font-size:.72rem}
+.ws-checklist{background:#F0F7F4;border:1px solid rgba(37,96,96,.2);border-radius:8px;
+  padding:12px 14px;margin-top:8px}
+.ws-checklist-label{font-size:.73rem;font-weight:800;color:var(--teal);letter-spacing:.06em;margin-bottom:6px}
+.ws-checklist ul{list-style:none;padding:0}
+.ws-checklist ul li{font-size:.82rem;color:var(--gray);line-height:1.7;padding:2px 0;
+  padding-left:20px;position:relative}
+.ws-checklist ul li::before{content:'☐';position:absolute;left:0;color:var(--teal)}
+.tag{display:inline-block;background:rgba(37,96,96,.1);color:var(--teal);
+  font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:4px;margin:2px}
+.loading-wrap{text-align:center;padding:80px 20px;color:var(--mid)}
+.spin{font-size:2.5rem;animation:spin 1.2s linear infinite;display:inline-block;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media print{.topbar,.btn-print{display:none}.sec{page-break-after:always}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="topbar-logo" href="#">온유스쿨 <span>쉐도우그램</span></a>
+  <div style="display:flex;align-items:center;gap:0">
+    <button class="btn-print" onclick="window.print()">🖨️ 인쇄</button>
+    <button class="btn-pdf" id="btn-pdf" onclick="downloadPDF()">📄 PDF 저장</button>
+  </div>
+</div>
+<div class="container">
+  <div id="loading-wrap" class="loading-wrap">
+    <div class="spin">🌿</div>
+    <div style="font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:8px">팀 리포트 불러오는 중...</div>
+    <div style="font-size:.85rem;color:var(--mid)">첫 생성 시 AI 서술 작성에 30~60초가 소요됩니다</div>
+  </div>
+  <div id="report-wrap" style="display:none"></div>
+</div>
+
+<script>
+const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+const EDGE_URL = `${SB_URL}/functions/v1/generate-report`;
+const sp = new URLSearchParams(location.search);
+const CODE   = sp.get('code') || '';
+const CHURCH = decodeURIComponent(sp.get('church') || '');
+
+const TYPE_META = {
+  SPARK:  { icon:'🔥', kr:'스파크',   fn:'Ne', color:'#E85A00',
+    strengths:['새로운 아이디어와 가능성 발견','팀에 활력과 창의성 제공','브레인스토밍 리더'],
+    cowork:'STEADY·LOGIC이 실행과 완성 보완' },
+  VISION: { icon:'🔮', kr:'비전',     fn:'Ni', color:'#5A3CB0',
+    strengths:['장기 전략과 방향 설정','복잡한 상황의 본질 파악','조용한 통찰'],
+    cowork:'PLAYER·LEADER가 실행력 보완' },
+  STEADY: { icon:'🌳', kr:'스테디',   fn:'Si', color:'#2D6B3A',
+    strengths:['신뢰와 일관성','세부 실행력','팀의 안전망'],
+    cowork:'SPARK·VISION이 창의성·방향 보완' },
+  PLAYER: { icon:'⚡', kr:'플레이어', fn:'Se', color:'#C05000',
+    strengths:['빠른 현장 실행','위기 대응력','즉각적 에너지'],
+    cowork:'VISION·SOUL이 깊이·의미 보완' },
+  HARMONY:{ icon:'🌸', kr:'하모니',   fn:'Fe', color:'#B03060',
+    strengths:['팀 분위기 관리','갈등 중재','공동체 결속'],
+    cowork:'LOGIC·LEADER가 분석·결단 보완' },
+  SOUL:   { icon:'🕯️', kr:'소울',     fn:'Fi', color:'#4A2080',
+    strengths:['진정성과 가치 기반','깊은 공감','도덕적 나침반'],
+    cowork:'LEADER·PLAYER가 실행력 보완' },
+  LOGIC:  { icon:'🔬', kr:'로직',     fn:'Ti', color:'#1A4080',
+    strengths:['정밀한 분석과 오류 발견','시스템 설계','전문성'],
+    cowork:'HARMONY·SOUL이 관계·공감 보완' },
+  LEADER: { icon:'👑', kr:'리더',     fn:'Te', color:'#1A3055',
+    strengths:['목표 추진력과 결단','조직화·구조화','성과 관리'],
+    cowork:'HARMONY·SOUL이 관계·감정 보완' },
+};
+
+// ── 퍼실리테이션 워크숍 매뉴얼 생성 ──
+function buildWorkshopSteps(typeDistribution, teamNarrative, members) {
+  const topTypes = typeDistribution.slice(0,3).map(([t])=>t);
+  const topKr    = topTypes.map(t => TYPE_META[t]?.kr || t).join('·');
+  const allKr    = typeDistribution.map(([t]) => TYPE_META[t]?.kr || t).join('·');
+  const memberCount = members ? members.length : typeDistribution.reduce((s,[,n])=>s+n,0);
+
+  return [
+    {
+      num:1, title:'사전 준비 — 워크숍 당일 30분 전',
+      time:'준비사항', isPrepStep: true,
+      purpose: '퍼실리테이터가 워크숍 시작 전 반드시 확인해야 할 항목입니다.',
+      checklist: [
+        '이 팀 리포트를 인쇄하거나 프로젝터에 띄워두기',
+        '각 팀원의 개인 리포트 링크를 미리 단체 채팅방에 공유해두기',
+        '화이트보드 또는 큰 종이 + 마커 준비',
+        '팀원 수만큼 유형 카드 또는 이름표 준비 (유형명 적어서)',
+        '타이머 앱 준비 (핸드폰 or 화면 타이머)',
+        '심리적 안전을 위한 규칙 카드 준비: "오늘 나눈 이야기는 이 자리에서만"',
+      ],
+      prepNote: `이 워크숍은 강의가 아닌 대화 기반 퍼실리테이션입니다. 퍼실리테이터는 답을 주는 사람이 아니라 질문을 던지고 공간을 만드는 사람입니다. 침묵이 와도 기다려주세요.`,
+    },
+    {
+      num:1, title:'오프닝 — 심리적 안전 만들기', time:'10분',
+      purpose: '참여자들이 편안하게 자신을 드러낼 수 있는 안전한 공간을 먼저 만듭니다.',
+      script: teamNarrative?.workshopOpening ||
+        `오늘 이 자리는 서로를 평가하거나 고치는 시간이 아닙니다. "나는 왜 이럴까?"를 함께 이해하는 시간입니다. 쉐도우그램은 우리가 가진 강점(빛)이 때로 팀의 그림자를 만든다는 것을 발견하는 여정입니다. 오늘 나누는 모든 이야기는 이 자리에서만 머물게 해주세요. 판단 없이, 이해로 들어주세요.`,
+      activity: `아이스브레이킹 질문 (2인 1조, 각 1분): "요즘 나를 가장 잘 설명하는 날씨는 무엇인가요? 그 이유는?" → 전체 공유 (각 10초)`,
+      tips: [
+        '웃음이 나와도 괜찮지만 특정 사람을 향한 웃음이 되지 않도록 주의하세요',
+        '처음에 침묵이 길면 퍼실리테이터가 먼저 자신의 답을 말해주세요',
+      ],
+    },
+    {
+      num:2, title:'내 유형 소개 — 이것이 나의 빛입니다', time:'20분',
+      purpose: `각자 자신의 유형을 팀에 소개하고, "내가 이 팀에 기여하는 고유한 방식"을 언어화합니다. 이 팀의 유형 분포: ${allKr}`,
+      script: `이제 각자 자신의 유형 리포트를 보면서 팀에 소개할 시간입니다. 틀린 소개는 없습니다. 가장 나답다고 느껴지는 부분을 골라서 말씀해주세요. 소개 형식은 이렇게 해봅시다.`,
+      activity: `순서대로 돌아가며 (1인 약 90초):\n"저는 [유형명]형입니다. 제가 이 팀에 자연스럽게 기여하는 것은 [강점 한 가지]입니다. 그리고 제가 가끔 팀에게 불편함을 줄 수 있는 부분은 [그림자 한 가지]입니다."\n→ 발표 후 다른 팀원들: "그 부분에서 당신이 빛났던 순간이 있어요!" 짧게 한 마디씩`,
+      tips: [
+        `유형이 같은 사람이 있다면 "같은 유형인데 다르게 드러나는 점"을 찾아보게 하세요`,
+        '자기 그림자를 말하기 어려워한다면 "혹시 팀원들이 도와줄 수 있을까요?" 로 넘겨도 됩니다',
+        '리포트를 읽으면서 "이건 아닌데"라는 반응이 나와도 괜찮습니다. "어떤 부분이 다르게 느껴지나요?"로 대화를 이어가세요',
+      ],
+    },
+    {
+      num:3, title:'그림자 탐구 — 빛이 강하면 그림자도 깊다', time:'20분',
+      purpose: '각자의 강점이 팀 내 긴장·갈등을 만드는 패턴을 안전하게 탐구합니다. 비판이 아닌 이해의 시간입니다.',
+      script: `우리가 팀에서 갈등을 만들 때, 대부분은 "나쁜 의도"가 아니라 "너무 강한 강점" 때문입니다. 스파크형이 너무 많은 아이디어를 쏟아낼 때, 스테디형이 변화를 너무 천천히 받아들일 때, 리더형이 너무 빠르게 결정을 내릴 때 — 이것이 그림자입니다. 지금부터 내 그림자가 팀에 어떤 영향을 주는지 솔직하게 나눠봅시다.`,
+      activity: `[짝 대화] 2인 1조 (가능하면 다른 유형끼리), 각 3분씩 교대:\n"내가 팀에서 ______할 때 (나의 강점 행동), 상대방 입장에서는 ______처럼 느껴질 수 있습니다. 그때 나에게 말해줬으면 하는 한마디는 '______'입니다."\n\n[전체 나눔] 각 짝에서 가장 의미 있었던 발견 한 가지씩 공유`,
+      tips: [
+        '누군가의 그림자를 지적하거나 사례를 드는 것은 하지 않도록 미리 안내하세요',
+        '"그래서 당신이 문제야"가 아닌 "그래서 우리가 어떻게 하면 좋을까요?"로 방향을 유지하세요',
+        '감정이 올라오는 사람이 있다면 잠깐 멈추고 "이 발견이 어떻게 느껴지나요?"로 공간을 주세요',
+      ],
+    },
+    {
+      num:4, title:'팀 강점 지도 — 우리는 어떻게 연결되어 있나', time:'15분',
+      purpose: '팀 다양성이 약점이 아닌 자원임을 시각화하고, 서로가 서로를 보완한다는 것을 체험합니다.',
+      script: `지금 이 팀에는 ${allKr} 유형이 함께 있습니다. 이 다양성이 곧 우리 팀의 슈퍼파워입니다. 각각 혼자로는 약할 수 있지만, 함께 연결되면 최강팀이 됩니다. 어떻게 연결되는지 지금 함께 그려봅시다.`,
+      activity: `화이트보드에 팀원 이름을 원형으로 배치합니다.\n각자 다른 유형의 팀원 1명을 선택해서 화살표를 그리며 말합니다:\n"[상대방 이름]님의 [강점]이 있어서 저는 [더 잘할 수 있는 것]을 합니다."\n→ 모든 연결이 그려지면 전체 지도를 사진으로 찍어 공유`,
+      tips: [
+        '화살표가 쏠리는 팀원이 없도록 퍼실리테이터가 균형을 맞춰주세요',
+        '연결이 잘 안 떠오르는 사람에게는 "○○님이 없었다면 우리 팀에서 무엇이 빠졌을까요?"로 물어보세요',
+      ],
+    },
+    {
+      num:5, title:'동역 계약 — 우리 팀만의 약속', time:'15분',
+      purpose: '오늘 발견한 것들을 실제 행동 변화로 연결합니다. 추상적 다짐이 아닌 구체적·실천적 약속을 만듭니다.',
+      script: `오늘 서로에 대해 새롭게 알게 된 것들이 있을 겁니다. 이제 이 이해를 우리가 매일 함께 일하는 방식에 어떻게 녹여낼 수 있을지 약속을 만들어봅시다. 거창하지 않아도 됩니다. 내일부터 바로 할 수 있는 작은 것이면 됩니다.`,
+      activity: `[개인] 포스트잇에 적기 (3분):\n"나는 [유형]형으로서, 앞으로 팀에서 [구체적 행동 한 가지]를 하겠습니다. 그리고 내가 [그림자 패턴]이 나올 때 팀원이 [이렇게] 말해줘도 됩니다."\n\n[팀 전체] 각자 발표 후 화이트보드에 붙이기 → 사진 찍어 단체 채팅방 공유\n\n[팀 약속문] 함께 완성하기:\n"우리 [팀/부서/교회]는 서로의 다름을 ___로 받아들이며, ___와 ___를 약속합니다."`,
+      tips: [
+        '약속이 너무 추상적이면 "그게 구체적으로 어떤 행동인가요?"로 구체화를 도와주세요',
+        '팀 약속문은 단체 채팅방에 고정 메시지로 올려두도록 제안하세요',
+      ],
+    },
+    {
+      num:6, title:'클로징 — 오늘의 선물', time:'10분',
+      purpose: '워크숍 경험을 정리하고, 서로에게 긍정적 피드백으로 마무리합니다. 감사와 따뜻함으로 끝내는 것이 중요합니다.',
+      script: `오늘 우리는 서로의 빛과 그림자를 함께 들여다봤습니다. 이것은 쉬운 일이 아닙니다. 오늘 이 자리에 함께해주신 모든 분들께 감사드립니다. 마지막으로 서로에게 한 가지 선물을 드리는 시간입니다.`,
+      activity: `순서대로 돌아가며 (자신의 왼쪽 사람에게):\n"[이름]님, 오늘 당신에게서 새롭게 발견한 것은 [___]입니다. 앞으로 우리 팀에서 당신의 [___]이 정말 필요할 것 같습니다. 감사합니다."\n\n→ 워크숍 종료 후 15분 이내: 퍼실리테이터가 단체 채팅방에 팀 강점 지도 사진 + 팀 약속문 공유`,
+      tips: [
+        '시간이 부족하면 활동을 줄여도 클로징은 반드시 하세요. 마무리가 인상을 결정합니다',
+        '눈물이 나거나 감정이 뭉클해지는 분위기가 오면 그 감동을 충분히 머물게 해주세요',
+        '워크숍 1주 후 짧은 체크인을 예약하도록 이 자리에서 일정을 잡으세요',
+      ],
+    },
+  ];
+}
+
+// ── 워크숍 스텝 HTML 렌더 (백틱 중첩 방지용 별도 함수) ──
+function renderWsSteps(steps) {
+  return steps.map(function(s) {
+    if (s.isPrepStep) {
+      var checklistHtml = (s.checklist || []).map(function(c) { return '<li>' + c + '</li>'; }).join('');
+      return '<div class="ws-step" style="border-color:rgba(37,96,96,.3);background:#F0F7F4">'
+        + '<div class="ws-header" style="background:rgba(37,96,96,.08)">'
+        + '<div class="ws-num" style="background:var(--teal)">📋</div>'
+        + '<div class="ws-header-info">'
+        + '<div class="ws-title">' + s.title + '</div>'
+        + '<div class="ws-time">📌 필수 준비사항</div>'
+        + '</div></div>'
+        + '<div class="ws-body">'
+        + '<div class="ws-purpose">' + s.purpose + '</div>'
+        + '<div class="ws-checklist"><div class="ws-checklist-label">✅ 체크리스트</div><ul>' + checklistHtml + '</ul></div>'
+        + '<div style="margin-top:10px;background:rgba(37,96,96,.06);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:12px 14px;font-size:.84rem;color:#1A4A4A;line-height:1.8;font-style:italic">' + (s.prepNote || '') + '</div>'
+        + '</div></div>';
+    }
+    var tipsHtml = '';
+    if (s.tips && s.tips.length) {
+      tipsHtml = '<div class="ws-tips"><div class="ws-tips-label">⚠️ 퍼실리테이터 주의사항</div><ul>'
+        + s.tips.map(function(t) { return '<li>' + t + '</li>'; }).join('')
+        + '</ul></div>';
+    }
+    var checklistHtml2 = '';
+    if (s.checklist && s.checklist.length) {
+      checklistHtml2 = '<div class="ws-checklist"><div class="ws-checklist-label">✅ 체크리스트</div><ul>'
+        + s.checklist.map(function(c) { return '<li>' + c + '</li>'; }).join('')
+        + '</ul></div>';
+    }
+    return '<div class="ws-step">'
+      + '<div class="ws-header">'
+      + '<div class="ws-num">' + s.num + '</div>'
+      + '<div class="ws-header-info">'
+      + '<div class="ws-title">' + s.title + '</div>'
+      + '<div class="ws-time">⏱ ' + s.time + '</div>'
+      + '</div></div>'
+      + '<div class="ws-body">'
+      + '<div class="ws-purpose">📌 ' + s.purpose + '</div>'
+      + '<div class="ws-script-wrap"><div class="ws-script-label">💬 진행자 스크립트</div>'
+      + '<div class="ws-script">"' + s.script + '"</div></div>'
+      + '<div class="ws-activity-wrap"><div class="ws-activity-label">🎯 활동</div>'
+      + '<div class="ws-activity"><strong>활동:</strong> ' + (s.activity || '').replace(/\n/g, '<br>') + '</div></div>'
+      + tipsHtml + checklistHtml2
+      + '</div></div>';
+  }).join('');
+}
+
+async function init() {
+  if (!CODE) {
+    document.getElementById('loading-wrap').innerHTML =
+      '<div style="color:var(--mid)">코드가 없습니다. 올바른 링크인지 확인하세요.</div>';
+    return;
+  }
+
+  try {
+    // sessionStorage 캐시 먼저 확인
+    let data = null;
+    const cached = sessionStorage.getItem('tb_report_data_' + CODE);
+    if (cached) {
+      try { data = JSON.parse(cached); } catch(e){}
+    }
+
+    if (!data) {
+      // Edge Function 호출 (DB 캐시 or 새 생성)
+      const res = await fetch(EDGE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
+        body: JSON.stringify({ code: CODE, mode: 'all' }),
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error || '서버 오류'); }
+      data = await res.json();
+      sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify(data));
+    }
+
+    renderReport(data);
+  } catch(e) {
+    document.getElementById('loading-wrap').innerHTML =
+      `<div style="color:#C00;font-size:.9rem">❌ 오류: ${e.message}</div>`;
+  }
+}
+
+function renderReport(data) {
+  const church  = data.workshop?.church_name || CHURCH || CODE;
+  const total   = (data.results || []).length;
+  const typeDist = data.typeDistribution || [];
+  const teamAI  = data.teamAI || null;
+  const members  = data.results || [];
+  const maxCount = typeDist[0]?.[1] || 1;
+
+  // 강점·동역 구조 rule-based
+  const topTypes = typeDist.slice(0,3).map(([t])=>t);
+  const teamStrengths = topTypes.flatMap(t => (TYPE_META[t]?.strengths||[]).slice(0,2));
+  const coworkMap = topTypes.map(t => ({
+    type: t, kr: TYPE_META[t]?.kr||t, icon: TYPE_META[t]?.icon||'•',
+    cowork: TYPE_META[t]?.cowork||''
+  }));
+
+  const wsSteps = buildWorkshopSteps(typeDist, teamAI, members);
+
+  const html = `
+    <!-- 커버 -->
+    <div class="cover">
+      <div class="cover-brand">온유스쿨 · 쉐도우그램 팀빌딩</div>
+      <div class="cover-church">${church}</div>
+      <div class="cover-title">팀 인사이트 리포트 & 퍼실리테이션 워크숍 가이드</div>
+      <div class="cover-stats">
+        <div class="cover-stat"><div class="num">${total}</div><div class="lbl">참여 팀원</div></div>
+        <div class="cover-stat"><div class="num">${typeDist.length}</div><div class="lbl">유형 다양성</div></div>
+        <div class="cover-stat"><div class="num">${typeDist[0]?.[0]||'-'}</div><div class="lbl">가장 많은 유형</div></div>
+      </div>
+    </div>
+
+    <!-- 팀 AI 서술 -->
+    ${teamAI?.teamNarrative ? `
+    <div class="sec">
+      <h2>🌿 우리 팀 이야기</h2>
+      <div class="ai-box">
+        <div class="ai-lbl">✨ AI 팀 서사</div>
+        <p>${teamAI.teamNarrative}</p>
+      </div>
+      ${teamAI.teamShadow ? `
+      <div class="ai-box ai-shadow-box">
+        <div class="ai-lbl">🌗 팀 그림자 패턴</div>
+        <p>${teamAI.teamShadow}</p>
+      </div>` : ''}
+    </div>` : ''}
+
+    <!-- 유형 분포 -->
+    <div class="sec">
+      <h2>📊 유형 분포 (${total}명)</h2>
+      <div class="type-grid">
+        ${typeDist.map(([t, n]) => {
+          const m = TYPE_META[t] || {};
+          const pct = Math.round(n / maxCount * 100);
+          return `
+          <div class="type-card">
+            <div class="tc-icon">${m.icon||'•'}</div>
+            <div class="tc-kr">${m.kr||t}</div>
+            <div class="tc-type">${t}</div>
+            <div class="tc-count">${n}명</div>
+            <div class="tc-bar"><div class="tc-bar-fill" style="width:${pct}%"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- 팀 강점 -->
+    <div class="sec">
+      <h2>💪 팀 강점</h2>
+      <div class="card">
+        <ul class="strength-list">
+          ${teamStrengths.map(s => `<li>${s}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+
+    <!-- 동역 구조 -->
+    <div class="sec">
+      <h2>🤝 동역 구조 — 유형별 역할 제안</h2>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="cowork-table">
+          <thead><tr><th>유형</th><th>이 팀에서의 강점</th><th>보완 파트너</th></tr></thead>
+          <tbody>
+            ${typeDist.map(([t]) => {
+              const m = TYPE_META[t] || {};
+              return `<tr>
+                <td><strong>${m.icon||''} ${m.kr||t}</strong><br><span style="font-size:.73rem;color:var(--light)">${t}·${m.fn||''}</span></td>
+                <td>${(m.strengths||[]).join(' / ')}</td>
+                <td style="font-size:.82rem;color:var(--mid)">${m.cowork||'-'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 팀원 목록 -->
+    <div class="sec">
+      <h2>👥 팀원 목록</h2>
+      <div class="card">
+        ${members.map(m => {
+          const meta = TYPE_META[m.sg_type] || {};
+          const indAI = (data.individualAI||[]).find(i=>i.name===m.name);
+          return `
+          <div class="member-row">
+            <div class="mr-icon">${meta.icon||'👤'}</div>
+            <div class="mr-info">
+              <div class="mr-name">${m.name}</div>
+              <div class="mr-meta">${m.role||'팀원'} · <span class="mr-type">${meta.kr||m.sg_type}</span></div>
+              ${indAI?.shadowCaption ? `<div style="font-size:.8rem;color:var(--mid);margin-top:4px;font-style:italic;line-height:1.6">"${indAI.shadowCaption}"</div>` : ''}
+            </div>
+            <a href="teambuilding-member.html?code=${CODE}&name=${encodeURIComponent(m.name)}"
+              target="_blank" style="font-size:.75rem;color:var(--teal);font-weight:700;
+              border:1px solid var(--teal);border-radius:6px;padding:4px 10px;
+              text-decoration:none;white-space:nowrap">개인 리포트 →</a>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- 퍼실리테이션 워크숍 매뉴얼 -->
+    <div class="sec">
+      <h2>🎯 퍼실리테이션 워크숍 매뉴얼</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+        <div style="background:#1A3055;color:#fff;border-radius:8px;padding:10px 16px;font-size:.82rem;font-weight:700">⏱ 총 90분</div>
+        <div style="background:#256060;color:#fff;border-radius:8px;padding:10px 16px;font-size:.82rem;font-weight:700">👥 ${memberCount}명</div>
+        <div style="background:#8A6400;color:#fff;border-radius:8px;padding:10px 16px;font-size:.82rem;font-weight:700">🧭 대화 기반 퍼실리테이션</div>
+      </div>
+      ${renderWsSteps(wsSteps)}
+    </div>
+
+    <!-- 주의사항 & 다음 단계 -->
+    <div class="sec">
+      <h2>📌 진행 주의사항</h2>
+      <div class="card">
+        <ul class="vuln-list">
+          <li>유형 결과를 "이 사람은 원래 이런 사람"으로 고정하지 마세요. 유형은 경향성이지 운명이 아닙니다.</li>
+          <li>그림자를 약점으로 공격하거나 비판하는 데 사용하지 마세요. 이해를 위한 도구입니다.</li>
+          <li>소수 유형(1명만 있는 유형)이 소외감을 느끼지 않도록 특별히 배려해주세요.</li>
+          <li>워크숍에서 나온 개인적 이야기는 팀 내에서만 공유되어야 합니다 (심리적 안전).</li>
+          <li>리포트는 전원 검사 완료 후 생성된 것이 가장 정확합니다. 이후 검사한 팀원은 반영되지 않습니다.</li>
+        </ul>
+      </div>
+      <div class="card" style="background:#F0F7F4;border-color:rgba(37,96,96,.3)">
+        <div style="font-size:.9rem;font-weight:800;color:var(--teal);margin-bottom:8px">🌱 다음 단계 제안</div>
+        <ul style="margin-left:18px;font-size:.88rem;line-height:1.9">
+          <li>워크숍 1주 후 — 가장 기억에 남는 발견을 단체 채팅방에 공유</li>
+          <li>1개월 후 — 팀 약속이 어떻게 지켜지고 있는지 짧은 체크인</li>
+          <li>분기마다 — 새 팀원 합류 시 동일 과정 반복 (팀 문화 정착)</li>
+        </ul>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('loading-wrap').style.display = 'none';
+  document.getElementById('report-wrap').style.display = 'block';
+  document.getElementById('report-wrap').innerHTML = html;
+}
+
+function downloadPDF() {
+  const btn = document.getElementById('btn-pdf');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = '⏳ 생성 중...';
+
+  const el = document.getElementById('report-wrap');
+  const church = CHURCH || CODE || '팀리포트';
+  const filename = `쉐도우그램_팀리포트_${church}.pdf`;
+
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename,
+    image: { type: 'jpeg', quality: 0.92 },
+    html2canvas: { scale: 1.8, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+  };
+
+  html2pdf().set(opt).from(el).save()
+    .then(() => {
+      btn.disabled = false;
+      btn.textContent = '📄 PDF 저장';
+    })
+    .catch(e => {
+      console.error('PDF error:', e);
+      btn.disabled = false;
+      btn.textContent = '📄 PDF 저장';
+      alert('PDF 생성 중 오류가 발생했습니다. 인쇄 버튼을 이용해주세요.');
+    });
+}
+
+init();
+</script>
+</body>
+</html>

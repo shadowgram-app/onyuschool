@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 쉐도우그램 — 팀빌딩</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --navy:#1A3055;--teal:#256060;--gold:#8A6400;
+  --bg:#F5F3EE;--white:#FFF;--gray:#333;--mid:#666;--light:#999;
+  --border:#DDD;--green:#8FC49A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:15px;line-height:1.7;background:var(--bg);color:var(--gray)}
+.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;justify-content:space-between}
+.btn-pdf{background:#C05000;color:#fff;padding:7px 14px;border-radius:6px;
+  border:none;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-pdf:disabled{opacity:.6;cursor:not-allowed}
+.topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo span{color:var(--green)}
+.container{max-width:680px;margin:0 auto;padding:20px}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);
+  border-radius:16px;padding:28px 24px;color:#fff;margin-bottom:24px;text-align:center}
+.hero-icon{font-size:3rem;margin-bottom:10px}
+.hero-type{font-size:1.6rem;font-weight:900;margin-bottom:4px}
+.hero-kr{font-size:1rem;color:rgba(255,255,255,.75);margin-bottom:12px}
+.hero-tagline{font-size:.88rem;color:rgba(255,255,255,.85);line-height:1.75;
+  border-top:1px solid rgba(255,255,255,.2);padding-top:14px;font-style:italic}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.card-title{font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px}
+.card-title .ico{font-size:1.3rem}
+.trait-list{list-style:none;padding:0}
+.trait-list li{padding:8px 0;border-bottom:1px solid #F0EDE8;font-size:.9rem;line-height:1.7;
+  display:flex;gap:10px}
+.trait-list li:last-child{border-bottom:none}
+.trait-list li::before{content:'✦';color:var(--teal);flex-shrink:0;margin-top:2px}
+.light-box{background:rgba(143,196,154,.12);border-left:4px solid var(--green);
+  border-radius:0 8px 8px 0;padding:14px 16px;margin:12px 0}
+.shadow-box{background:rgba(180,120,80,.08);border-left:4px solid #C08040;
+  border-radius:0 8px 8px 0;padding:14px 16px;margin:12px 0}
+.light-box h4{color:var(--teal);font-weight:800;font-size:.88rem;margin-bottom:6px}
+.shadow-box h4{color:#8B4513;font-weight:800;font-size:.88rem;margin-bottom:6px}
+.light-box p,.shadow-box p{font-size:.88rem;line-height:1.75}
+.tag{display:inline-block;background:rgba(37,96,96,.1);color:var(--teal);
+  font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:4px;margin:2px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.role-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:12px;text-align:center}
+.role-card .rc-icon{font-size:1.5rem;margin-bottom:4px}
+.role-card .rc-title{font-size:.8rem;font-weight:800;color:var(--navy);margin-bottom:2px}
+.role-card .rc-desc{font-size:.73rem;color:var(--mid);line-height:1.6}
+.growth-step{display:flex;gap:12px;align-items:flex-start;padding:10px 0;
+  border-bottom:1px solid #F0EDE8}
+.growth-step:last-child{border-bottom:none}
+.gs-num{background:var(--navy);color:#fff;width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0}
+.gs-text{font-size:.88rem;line-height:1.7}
+.ai-caption{background:linear-gradient(135deg,#1A3055,#256060);border-radius:10px;
+  padding:18px 20px;color:#fff;margin-bottom:16px}
+.ai-caption p{font-size:.88rem;line-height:1.8;font-style:italic;color:rgba(255,255,255,.9)}
+.ai-caption .ai-label{font-size:.72rem;color:rgba(255,255,255,.5);margin-bottom:8px;
+  font-weight:700;letter-spacing:.08em}
+.loading-wrap{text-align:center;padding:60px 20px;color:var(--mid)}
+.loading-wrap .spin{font-size:2rem;animation:spin 1.2s linear infinite;display:inline-block;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-wrap{text-align:center;padding:60px 20px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="topbar-logo" href="#">온유스쿨 <span>쉐도우그램</span></a>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:.8rem;color:rgba(255,255,255,.6)" id="top-church"></span>
+    <button class="btn-pdf" id="btn-pdf" onclick="downloadPDF()" style="display:none">📄 PDF 저장</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="loading-wrap" class="loading-wrap">
+    <div class="spin">🌿</div>
+    <div style="font-size:.95rem;font-weight:700;color:var(--navy)">개인 리포트 불러오는 중...</div>
+  </div>
+  <div id="report-wrap" style="display:none"></div>
+  <div id="error-wrap" class="error-wrap" style="display:none">
+    <div style="font-size:2rem;margin-bottom:12px">😔</div>
+    <div style="font-weight:700;color:var(--navy);margin-bottom:8px">리포트를 불러올 수 없습니다</div>
+    <div id="error-msg" style="font-size:.85rem;color:var(--mid)"></div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+const sp = new URLSearchParams(location.search);
+const CODE  = sp.get('code') || '';
+const NAME  = decodeURIComponent(sp.get('name') || '');
+
+document.getElementById('top-church').textContent = decodeURIComponent(sp.get('church')||'') || CODE;
+
+// ── 8유형 고유기능 상세 데이터 ──
+const TYPE_DETAIL = {
+  SPARK: {
+    icon:'🔥', kr:'스파크', fn:'Ne (외향직관)', color:'#E85A00',
+    tagline:'처음 보는 가능성을 가장 먼저 발견하는 사람',
+    traits: [
+      '아직 없는 것, 아직 일어나지 않은 것에 먼저 흥분합니다',
+      '하나의 주제에서 수십 개의 연결고리를 동시에 봅니다',
+      '새로운 사람·환경·아이디어를 만날 때 에너지가 급격히 올라갑니다',
+      '브레인스토밍·기획·아이디어 발산 단계에서 탁월합니다',
+      '시작의 설레임과 에너지로 주변 사람을 움직이는 힘이 있습니다',
+      '유연하고 즉흥적이어서 변화에 빠르게 적응합니다',
+      '다양한 분야에 호기심이 많아 폭넓은 지식을 가집니다',
+      '틀에 박힌 방식보다 새로운 접근을 본능적으로 선호합니다',
+      '"이거 어때?"라는 질문이 끊임없이 나오는 유형입니다',
+      '가능성을 볼 때 눈빛이 달라지고 말이 빨라집니다',
+      '영감을 받으면 즉시 행동하고 싶어지는 충동을 느낍니다',
+      '완성보다 시작과 탐색 자체에 더 큰 기쁨을 느낍니다',
+      '상상력이 풍부해 이야기·비유·시각화로 소통하는 것을 즐깁니다',
+      '경직된 분위기를 부드럽게 만드는 유머와 가벼움이 있습니다',
+      '열정이 전염성이 있어 주변에 활기를 불어넣습니다',
+      '지루하거나 반복적인 환경에서 빠르게 에너지가 소진됩니다',
+      '세부 실행보다 큰 그림과 방향에 자연스럽게 끌립니다',
+      '여러 프로젝트를 동시에 진행하는 것을 즐깁니다',
+      '한계를 먼저 보는 사람보다 가능성을 먼저 보는 사람입니다',
+      '아이디어가 꺾이거나 무시될 때 가장 큰 상처를 받습니다',
+    ],
+    light:'넘치는 영감과 창의적 에너지로 팀에 새로운 가능성을 열어줍니다',
+    shadow:'에너지 소진과 마무리 어려움 — 시작은 화려하지만 끝이 흐릿해질 수 있습니다',
+    teamRoles: [
+      { icon:'💡', title:'아이디어 뱅크', desc:'막힌 상황에서 새로운 관점과 아이디어를 쏟아냅니다' },
+      { icon:'🎯', title:'분위기 메이커', desc:'팀 에너지가 낮을 때 활기를 불어넣는 촉진자 역할' },
+      { icon:'🔍', title:'가능성 탐색가', desc:'새로운 기회·트렌드를 가장 먼저 발견하고 공유합니다' },
+      { icon:'🤝', title:'연결 브리지', desc:'서로 다른 분야를 연결하는 창의적 아이디어를 냅니다' },
+    ],
+    growthSteps: [
+      '한 프로젝트를 끝까지 완주하는 경험을 매달 한 번 만들어보세요',
+      '"이 아이디어를 실행하려면 첫 3단계가 뭐야?"를 스스로 물어보는 습관',
+      '팀원의 디테일 지향·완성 강박을 "나를 완성시켜주는 파트너"로 재정의',
+      '에너지가 떨어질 때를 미리 알아차리고 충전 루틴을 만들어두기',
+    ],
+  },
+  VISION: {
+    icon:'🔮', kr:'비전', fn:'Ni (내향직관)', color:'#5A3CB0',
+    tagline:'점들을 이어 아직 오지 않은 미래를 먼저 보는 사람',
+    traits: [
+      '겉에 드러나지 않는 패턴과 흐름을 직관적으로 감지합니다',
+      '복잡한 정보를 단 하나의 핵심으로 압축하는 능력이 있습니다',
+      '"이 방향이 맞아"라는 강한 내적 확신을 자주 경험합니다',
+      '장기적 관점으로 생각하고, 5년·10년 후를 자연스럽게 그립니다',
+      '깊이 있는 대화와 본질적 질문에서 에너지를 얻습니다',
+      '말보다 글·그림·상징으로 표현할 때 더 정확하게 전달됩니다',
+      '한 가지를 깊이 파고드는 집중력이 탁월합니다',
+      '직관이 논리보다 먼저 오는 경험을 자주 합니다',
+      '"왜 이게 중요한가"라는 본질적 의미를 끊임없이 묻습니다',
+      '남들이 놓친 연결고리를 발견하고 조용히 기록해둡니다',
+      '경계 설정이 분명하고 깊은 관계를 소수와만 맺습니다',
+      '자신의 직관이 틀렸을 때 강한 혼란을 경험합니다',
+      '아이디어를 말할 때 배경 설명 없이 결론부터 말해 오해받기도 합니다',
+      '홀로 있는 시간에서 가장 큰 통찰을 얻습니다',
+      '목표가 분명할 때 엄청난 집중력과 인내를 발휘합니다',
+      '의미 없다고 느끼는 일에는 에너지를 완전히 쏟지 못합니다',
+      '전략 수립·방향 설정·비전 제시 역할에서 빛납니다',
+      '사람들이 많고 시끄러운 환경에서 빠르게 지칩니다',
+      '결정이 느려 보이지만 한번 정하면 일관되게 밀어붙입니다',
+      '독창적 관점으로 당연히 여기는 것에 의문을 제기합니다',
+    ],
+    light:'깊은 통찰과 전략적 방향 설정으로 팀이 헤매지 않게 합니다',
+    shadow:'고독한 확신으로 고립될 수 있음 — 소통 없는 비전은 이해받기 어렵습니다',
+    teamRoles: [
+      { icon:'🧭', title:'방향 나침반', desc:'팀이 갈 방향을 먼저 내다보고 전략을 제시합니다' },
+      { icon:'🏛️', title:'깊이의 닻', desc:'표면적 문제 뒤의 본질적 원인을 찾아냅니다' },
+      { icon:'📐', title:'전략 설계자', desc:'장기 비전과 단계별 로드맵을 설계합니다' },
+      { icon:'💎', title:'품질 지킴이', desc:'방향성의 일관성과 원칙을 지키는 역할' },
+    ],
+    growthSteps: [
+      '"내 직관의 근거가 뭔지 3가지만 말해줄게"로 소통 연습하기',
+      '팀원에게 중간 단계 공유 습관 — 완성되지 않아도 나눠보기',
+      '내 비전에 동의하지 않는 사람의 이유를 먼저 충분히 듣기',
+      '1인의 통찰보다 팀의 집단지성이 더 나은 결과를 낸다는 것 믿기',
+    ],
+  },
+  STEADY: {
+    icon:'🌳', kr:'스테디', fn:'Si (내향감각)', color:'#2D6B3A',
+    tagline:'매일의 성실함으로 팀의 기둥을 만드는 사람',
+    traits: [
+      '검증된 방법과 쌓인 경험을 소중히 여깁니다',
+      '한번 맡은 일은 조용히, 끝까지 해냅니다',
+      '세부 사항과 정확성에서 탁월한 주의력을 발휘합니다',
+      '팀 내 역사·전통·원칙을 가장 잘 기억하고 지킵니다',
+      '변화에 신중하고, 새로운 것을 받아들이기 전에 충분히 검토합니다',
+      '안정적이고 예측 가능한 환경에서 최고 성과를 냅니다',
+      '약속을 지키는 것을 가장 중요한 덕목으로 여깁니다',
+      '루틴과 체계가 있을 때 심리적으로 편안합니다',
+      '갑작스러운 변경이나 취소에 스트레스를 크게 받습니다',
+      '오랫동안 관계를 유지하고 깊이 신뢰하는 사람이 적습니다',
+      '자신의 의견보다 팀의 분위기를 먼저 읽으려 합니다',
+      '칭찬받지 못해도 묵묵히 자기 자리를 지킵니다',
+      '과거 사례와 선례를 중요한 판단 기준으로 삼습니다',
+      '작은 것도 정성스럽게 챙기는 섬세함이 있습니다',
+      '기록·문서화·체계 정리 작업에서 뛰어납니다',
+      '신뢰가 쌓이는 데 시간이 걸리지만 한번 믿으면 끝까지 갑니다',
+      '"원래 이렇게 해왔어요"라는 말을 자주 합니다',
+      '갑작스러운 의사결정보다 충분한 논의 후 결정을 선호합니다',
+      '자기 희생을 당연히 여기다 번아웃으로 이어지는 경우가 있습니다',
+      '자신의 필요를 직접 말하기 어려워하는 경향이 있습니다',
+    ],
+    light:'신뢰와 일관성으로 팀의 안전망이 됩니다 — 말 없이 가장 중요한 일을 해냅니다',
+    shadow:'과도한 자기 희생과 변화 회피 — 쌓인 스트레스를 말하지 못해 갑자기 폭발할 수 있습니다',
+    teamRoles: [
+      { icon:'🏗️', title:'실행의 기초', desc:'계획을 묵묵히 실행하고 팀의 약속을 지켜냅니다' },
+      { icon:'📋', title:'시스템 지킴이', desc:'팀의 프로세스와 원칙을 유지하는 역할' },
+      { icon:'🕰️', title:'역사 수호자', desc:'팀의 과거 경험과 교훈을 기억하고 전달합니다' },
+      { icon:'⚓', title:'안정의 닻', desc:'혼란할 때 흔들리지 않는 기준점이 됩니다' },
+    ],
+    growthSteps: [
+      '"나 지금 힘들어"를 한 문장으로 말하는 연습을 매주 한 번씩',
+      '새로운 방법을 "딱 한 번만 시도해볼게"로 유연성 키우기',
+      '내 감정과 필요가 팀에게도 중요하다는 것 인식하기',
+      '자기 희생과 헌신의 한계를 미리 정해두고 지키기',
+    ],
+  },
+  PLAYER: {
+    icon:'⚡', kr:'플레이어', fn:'Se (외향감각)', color:'#C05000',
+    tagline:'지금 이 순간 가장 빠르게, 가장 실제적으로 움직이는 사람',
+    traits: [
+      '지금 여기, 현재에 완전히 집중하는 탁월한 능력이 있습니다',
+      '말보다 행동이 앞서고, 빠른 실행력이 강점입니다',
+      '현장 감각이 뛰어나 실제 상황에서 빠르게 판단합니다',
+      '에너지가 넘치고 몸을 움직이는 것을 즐깁니다',
+      '위기 상황에서 오히려 차분하게 해결사로 나섭니다',
+      '직접 해봐야 알 수 있는 체험 학습에 특화되어 있습니다',
+      '감각적인 것(맛·소리·시각·촉각)에 민감하게 반응합니다',
+      '즉흥적이고 유연하게 상황에 맞춰 변화합니다',
+      '장기 계획보다 단기 목표와 즉각적 성과에서 동기를 얻습니다',
+      '지루하거나 정적인 환경에서 에너지가 빠르게 떨어집니다',
+      '실수에서 빠르게 배우고 다시 일어서는 회복력이 있습니다',
+      '사람들 앞에서 솔직하고 직접적으로 말하는 편입니다',
+      '계획보다 실행이, 이론보다 실제가 더 중요합니다',
+      '새로운 경험·도전·모험에 자연스럽게 끌립니다',
+      '경쟁적 환경에서 더 뛰어난 성과를 냅니다',
+      '감정을 처리하는 데 시간이 걸리고, 내면 탐구를 어려워합니다',
+      '현재에 집중하다 장기적 결과를 고려하지 못하는 경우가 있습니다',
+      '몸이 바쁠 때 심리적으로 가장 안정적입니다',
+      '피드백이 즉각적이어야 동기가 유지됩니다',
+      '관계에서도 솔직한 표현과 즉각적 반응을 선호합니다',
+    ],
+    light:'빠른 실행력과 현장 감각으로 팀의 계획을 실제로 만들어냅니다',
+    shadow:'깊이 회피와 내면 방치 — 행동 뒤의 의미와 감정을 살피는 시간이 필요합니다',
+    teamRoles: [
+      { icon:'🚀', title:'실행 엔진', desc:'계획을 현실로 옮기는 추진력과 속도가 있습니다' },
+      { icon:'🏃', title:'위기 대응자', desc:'예상치 못한 상황에서 가장 빠르게 반응합니다' },
+      { icon:'🎪', title:'현장 전문가', desc:'이론보다 현장에서 답을 찾는 실전 감각' },
+      { icon:'⚡', title:'에너지 부스터', desc:'팀이 지칠 때 활력을 불어넣는 역할' },
+    ],
+    growthSteps: [
+      '하루 5분, 오늘 느낀 감정을 단어로 써보는 루틴 만들기',
+      '행동하기 전 "3가지 결과"를 먼저 상상하는 습관',
+      '팀의 장기 목표를 정기적으로 다시 읽어보기',
+      '"왜 이 일을 하는가"를 혼자 조용히 묻는 시간 갖기',
+    ],
+  },
+  HARMONY: {
+    icon:'🌸', kr:'하모니', fn:'Fe (외향감정)', color:'#B03060',
+    tagline:'모두의 감정을 먼저 읽고 팀을 하나로 엮는 사람',
+    traits: [
+      '방에 들어서자마자 분위기와 사람들의 감정 상태를 읽습니다',
+      '갈등을 싫어하고, 먼저 화해와 중재를 시도합니다',
+      '타인의 필요에 자연스럽게 반응하고 도우려 합니다',
+      '관계와 공동체에서 에너지를 얻습니다',
+      '따뜻하고 포용적인 분위기를 자연스럽게 만듭니다',
+      '사람들이 자신을 어떻게 보는지에 민감하게 반응합니다',
+      '집단의 화합을 위해 자신의 의견을 양보하는 경향이 있습니다',
+      '"다 같이 잘 지내는 것"이 가장 중요한 가치입니다',
+      '감사 표현, 축하, 위로의 말을 자연스럽게 건넵니다',
+      '누군가 소외되거나 아파하면 본능적으로 알아채고 다가갑니다',
+      '비판적 피드백을 줄 때 상대방의 감정을 먼저 고려합니다',
+      '팀 내 분열이나 냉랭한 분위기에서 가장 큰 스트레스를 받습니다',
+      '자신의 필요보다 남의 필요를 먼저 채우는 것에 익숙합니다',
+      '소속감과 연결감을 느낄 때 안정됩니다',
+      '감정적 공감 능력이 탁월해 상담·돌봄 역할에 자연스럽습니다',
+      '자신이 거절당하거나 무시당할 때 깊은 상처를 받습니다',
+      '팀의 분위기를 위해 자신의 진짜 감정을 숨기는 경향이 있습니다',
+      '인정받고 사랑받을 때 최고의 에너지가 나옵니다',
+      '너무 많은 사람의 감정을 동시에 돌보다 번아웃이 옵니다',
+      '경계(boundary) 설정이 약해 착취당할 위험이 있습니다',
+    ],
+    light:'공감과 연결의 힘으로 팀을 하나로 만들고 심리적 안전감을 만듭니다',
+    shadow:'자기 소멸과 경계 붕괴 — "내가 괜찮아야 팀이 괜찮다"는 역설을 기억하세요',
+    teamRoles: [
+      { icon:'💞', title:'팀 심장', desc:'팀의 감정 온도를 관리하고 심리적 안전감을 만듭니다' },
+      { icon:'🌉', title:'관계 브리지', desc:'갈등하는 팀원들 사이를 이어주는 중재자' },
+      { icon:'👐', title:'공동체 빌더', desc:'소속감과 연대감을 자연스럽게 형성합니다' },
+      { icon:'🎵', title:'분위기 조율자', desc:'팀 분위기가 무너질 때 조화롭게 되돌립니다' },
+    ],
+    growthSteps: [
+      '"나는 오늘 어떤 감정이야?"를 남보다 먼저 묻는 연습',
+      '"No"라고 말하는 연습 — 하루 한 번 작은 거절부터',
+      '내 의견이 팀에게도 중요하다는 것을 신뢰하기',
+      '자기 돌봄 없이 타인 돌봄은 지속될 수 없음을 인식하기',
+    ],
+  },
+  SOUL: {
+    icon:'🕯️', kr:'소울', fn:'Fi (내향감정)', color:'#4A2080',
+    tagline:'깊은 내면의 가치를 지키며 진정성으로 팀에 깊이를 더하는 사람',
+    traits: [
+      '자신의 내면 가치와 신념 체계가 매우 분명합니다',
+      '"이것이 옳은가?"를 끊임없이 내면에서 묻습니다',
+      '위선이나 가식에 본능적으로 불편함을 느낍니다',
+      '깊고 진실한 관계를 소수와 유지하는 것을 선호합니다',
+      '감정을 직접 표현하기보다 행동과 작품으로 드러냅니다',
+      '조용하지만 자신의 가치에 어긋나는 것에는 강하게 저항합니다',
+      '예술·글쓰기·음악 등 창의적 표현을 통해 내면을 드러냅니다',
+      '타인의 고통에 깊이 공감하고 함께 느끼는 능력이 있습니다',
+      '군중 속에서도 자신만의 독특한 시각을 유지합니다',
+      '자신만의 공간과 시간이 충분히 필요합니다',
+      '표면적 관계보다 깊이 있는 연결을 원합니다',
+      '타인에게 강요받는 것을 매우 싫어합니다',
+      '자신의 감정을 인식하는 것은 잘 하지만 표현하기는 어렵습니다',
+      '자기 성찰과 내면 여행에 많은 에너지를 씁니다',
+      '비판을 매우 개인적으로 받아들이는 경향이 있습니다',
+      '자신이 믿는 가치를 위해서라면 고통도 감수합니다',
+      '결정 시 논리보다 "내게 맞는가"라는 내면의 기준을 사용합니다',
+      '완벽주의적 성향으로 자신에게 가혹하게 대합니다',
+      '사람들에게 오해받거나 평가받는 것에 큰 상처를 받습니다',
+      '한번 신뢰가 무너지면 회복이 매우 어렵습니다',
+    ],
+    light:'깊은 진정성과 내면의 가치로 팀에 영적 깊이와 도덕적 나침반을 제공합니다',
+    shadow:'고립과 자기 은폐 — 아무도 나를 이해 못한다는 고립감에서 벗어나기',
+    teamRoles: [
+      { icon:'🎯', title:'가치 나침반', desc:'팀이 원칙을 잃을 때 조용히 방향을 상기시킵니다' },
+      { icon:'💜', title:'깊이의 원천', desc:'팀 관계에 진정성과 심도를 더합니다' },
+      { icon:'🌱', title:'양심의 목소리', desc:'불편한 진실을 부드럽게 말하는 용기가 있습니다' },
+      { icon:'🖌️', title:'창의적 표현가', desc:'언어 너머의 것을 작품과 행동으로 드러냅니다' },
+    ],
+    growthSteps: [
+      '내 감정을 짧은 문장으로 먼저 말해보는 연습 (완전하지 않아도 됩니다)',
+      '비판을 "공격"이 아닌 "데이터"로 받아들이는 시도',
+      '혼자 품고 있던 생각을 한 명에게만 먼저 나눠보기',
+      '팀에 기여하는 나의 깊이와 가치를 스스로 인정하기',
+    ],
+  },
+  LOGIC: {
+    icon:'🔬', kr:'로직', fn:'Ti (내향사고)', color:'#1A4080',
+    tagline:'정확한 분석과 논리로 팀의 오류를 잡아내는 사람',
+    traits: [
+      '"왜?"라는 질문이 멈추지 않습니다 — 이해가 될 때까지 파고듭니다',
+      '모든 것을 내면의 논리 체계로 분류하고 정리합니다',
+      '외부 권위보다 자신의 분석과 논리를 더 신뢰합니다',
+      '오류·모순·비일관성을 본능적으로 발견합니다',
+      '정확성과 명확성을 가장 중요한 커뮤니케이션 원칙으로 삼습니다',
+      '복잡한 시스템을 구조화하고 분해하는 능력이 탁월합니다',
+      '말보다 생각이 먼저이고, 충분히 생각한 후 말합니다',
+      '관계보다 진리와 정확성을 우선시하는 경향이 있습니다',
+      '자신의 지식 영역에서 깊은 전문성을 추구합니다',
+      '불필요한 사회적 형식이나 예의를 부담스러워합니다',
+      '감정적 호소보다 논리적 설명이 설득력이 있습니다',
+      '자신의 생각이 틀렸을 때 빠르게 수정할 준비가 되어 있습니다',
+      '남들이 그냥 넘어가는 것에서 문제를 발견합니다',
+      '정보를 공유하기 전에 충분히 검증하려 합니다',
+      '감정보다 데이터와 사실을 기반으로 결정합니다',
+      '타인의 감정을 읽고 배려하는 것이 자연스럽지 않습니다',
+      '독자적으로 문제를 해결하는 것을 선호합니다',
+      '자신의 분석에 대한 도전을 인신 공격으로 받아들이기도 합니다',
+      '팀워크보다 혼자 집중하는 시간에서 더 좋은 결과를 냅니다',
+      '지식과 논리가 없는 상황에서 불안감을 느낍니다',
+    ],
+    light:'정밀한 분석과 논리로 팀의 오류를 예방하고 의사결정의 질을 높입니다',
+    shadow:'감정 억압과 연결 회피 — 논리만으로 해결되지 않는 관계 영역이 있습니다',
+    teamRoles: [
+      { icon:'🔍', title:'오류 감지기', desc:'계획과 주장의 허점을 발견해 팀을 지킵니다' },
+      { icon:'⚙️', title:'시스템 설계자', desc:'복잡한 문제를 체계적으로 구조화합니다' },
+      { icon:'📊', title:'데이터 해석가', desc:'정보를 분석해 의사결정에 명확한 근거를 제공합니다' },
+      { icon:'🎯', title:'전문성 닻', desc:'깊은 전문 지식으로 팀의 신뢰도를 높입니다' },
+    ],
+    growthSteps: [
+      '상대방의 감정 상태를 먼저 확인하는 질문으로 대화 시작하기',
+      '"틀렸어" 대신 "내가 보기엔 이런 부분이 있어" 표현으로 바꿔보기',
+      '내 분석 결과를 공유할 때 감정적 배경도 함께 설명하기',
+      '논리로 설명되지 않아도 중요한 것들이 있음을 받아들이기',
+    ],
+  },
+  LEADER: {
+    icon:'👑', kr:'리더', fn:'Te (외향사고)', color:'#1A3055',
+    tagline:'목표를 향해 가장 효율적인 경로를 만드는 사람',
+    traits: [
+      '목표를 정하면 가장 효율적인 방법으로 바로 실행합니다',
+      '조직화·시스템화·구조화에서 자연스러운 탁월함이 드러납니다',
+      '필요할 때 빠르고 분명한 결정을 내립니다',
+      '"결과"와 "성과"로 모든 것을 평가하는 경향이 있습니다',
+      '역할·책임·기대치를 명확히 하는 것을 선호합니다',
+      '비효율·낭비·무질서에 본능적으로 불편함을 느낍니다',
+      '큰 그림과 목표를 항상 염두에 두고 세부 사항을 조율합니다',
+      '리더십을 자연스럽게 가져가고 팀을 이끄는 역할에 익숙합니다',
+      '외부 기준과 증거로 자신의 판단을 검증합니다',
+      '느리거나 우유부단한 사람을 답답해합니다',
+      '경쟁적 환경에서 강한 동기를 얻고 성과를 냅니다',
+      '감정보다 과제와 목표에 집중하는 경향이 있습니다',
+      '타인의 약점을 직접적으로 지적하는 경향이 있습니다',
+      '책임과 권위가 주어질 때 에너지가 올라갑니다',
+      '효율 앞에서 관계를 희생하는 결정을 내리기도 합니다',
+      '모호함·불확실성·방향 없음을 싫어합니다',
+      '자신의 취약성을 드러내는 것을 불편해합니다',
+      '성과를 내지 못하는 자신을 가장 용납하지 못합니다',
+      '통제할 수 없는 상황에서 강한 스트레스를 받습니다',
+      '타인의 자율성을 존중하는 것이 의식적인 노력이 필요합니다',
+    ],
+    light:'추진력과 결단력으로 팀을 움직이고 목표를 현실로 만들어냅니다',
+    shadow:'통제와 약함 혐오 — 성과만 아닌 사람을 보는 시선이 필요합니다',
+    teamRoles: [
+      { icon:'🚩', title:'목표 드라이버', desc:'팀을 목표 방향으로 명확하게 이끌어갑니다' },
+      { icon:'🏗️', title:'구조 설계자', desc:'팀의 역할·프로세스·체계를 만들고 최적화합니다' },
+      { icon:'⚡', title:'결단의 기둥', desc:'중요한 순간 망설임 없이 결정을 내립니다' },
+      { icon:'📈', title:'성과 관리자', desc:'팀의 목표 달성 여부를 지속적으로 점검합니다' },
+    ],
+    growthSteps: [
+      '"성과"보다 "과정"에서 팀원을 칭찬하는 연습',
+      '취약점을 한 명에게만 먼저 솔직하게 털어놓는 경험 쌓기',
+      '팀원이 자율적으로 결정하게 하고 기다리는 훈련',
+      '결과가 나쁠 때 자신을 학대하지 않는 자기 연민 연습',
+    ],
+  },
+};
+
+async function init() {
+  if (!CODE || !NAME) {
+    showError('잘못된 접근입니다. 올바른 링크인지 확인하세요.');
+    return;
+  }
+
+  try {
+    // DB에서 워크숍 report_data 조회
+    const wRes = await fetch(
+      `${SB_URL}/rest/v1/workshops?code=eq.${CODE}&select=report_data,church_name,status`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    const wsArr = await wRes.json();
+    const ws = wsArr?.[0];
+    if (ws?.church_name) document.getElementById('top-church').textContent = ws.church_name;
+
+    let memberData = null;
+
+    // report_data에서 본인 데이터 추출
+    if (ws?.report_data?.results) {
+      const found = ws.report_data.results.find(r => r.name === NAME);
+      if (found) {
+        const indAI = (ws.report_data.individualAI || []).find(i => i.name === NAME);
+        memberData = { ...found, aiData: indAI || null };
+      }
+    }
+
+    // report_data 없으면 survey_results에서 직접 조회
+    if (!memberData) {
+      const rRes = await fetch(
+        `${SB_URL}/rest/v1/survey_results?workshop_code=eq.${CODE}&name=eq.${encodeURIComponent(NAME)}&select=*&limit=1`,
+        { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+      );
+      const rArr = await rRes.json();
+      if (rArr?.[0]) memberData = { ...rArr[0], aiData: null };
+    }
+
+    if (!memberData) {
+      showError(`"${NAME}"님의 검사 결과를 찾을 수 없습니다.`);
+      return;
+    }
+
+    renderReport(memberData, ws);
+
+  } catch(e) {
+    showError('데이터를 불러오는 중 오류가 발생했습니다: ' + e.message);
+  }
+}
+
+function renderReport(member, ws) {
+  const d = TYPE_DETAIL[member.sg_type];
+  if (!d) { showError('유형 데이터를 찾을 수 없습니다 (' + member.sg_type + ')'); return; }
+
+  const aiCaption = member.aiData?.shadowCaption || null;
+  const aiNarrative = member.aiData?.personalNarrative || null;
+
+  const html = `
+    <!-- 히어로 헤더 -->
+    <div class="hero" style="background:linear-gradient(135deg,${d.color}CC 0%,${d.color}88 100%)">
+      <div class="hero-icon">${d.icon}</div>
+      <div class="hero-type">${member.name}님은 <strong>${d.kr}형</strong>입니다</div>
+      <div class="hero-kr">${d.fn}</div>
+      <div class="hero-tagline">"${d.tagline}"</div>
+    </div>
+
+    ${aiNarrative ? `
+    <div class="ai-caption">
+      <div class="ai-label">✨ AI 맞춤 서술 — ${member.role || '팀원'} 역할 기반</div>
+      <p>${aiNarrative}</p>
+    </div>` : ''}
+
+    ${aiCaption ? `
+    <div class="ai-caption" style="background:linear-gradient(135deg,#3A1060,#5A2090)">
+      <div class="ai-label">🌗 쉐도우그램 캡션</div>
+      <p>${aiCaption}</p>
+    </div>` : ''}
+
+    <!-- 고유기능 특성 -->
+    <div class="card">
+      <div class="card-title"><span class="ico">${d.icon}</span>${d.kr}형의 고유 특성 20</div>
+      <ul class="trait-list">
+        ${d.traits.map(t => `<li>${t}</li>`).join('')}
+      </ul>
+    </div>
+
+    <!-- 빛과 그림자 -->
+    <div class="card">
+      <div class="card-title"><span class="ico">🌗</span>빛과 그림자</div>
+      <div class="light-box">
+        <h4>🌟 빛 — 이 유형의 강점</h4>
+        <p>${d.light}</p>
+      </div>
+      <div class="shadow-box">
+        <h4>⚠️ 그림자 — 보완이 필요한 부분</h4>
+        <p>${d.shadow}</p>
+      </div>
+    </div>
+
+    <!-- 이 팀에서의 역할 -->
+    <div class="card">
+      <div class="card-title"><span class="ico">🤝</span>이 팀에서 ${member.name}님의 역할</div>
+      <div class="role-grid">
+        ${d.teamRoles.map(r => `
+        <div class="role-card">
+          <div class="rc-icon">${r.icon}</div>
+          <div class="rc-title">${r.title}</div>
+          <div class="rc-desc">${r.desc}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- 그림자 보완 성장 스텝 -->
+    <div class="card">
+      <div class="card-title"><span class="ico">🌱</span>그림자를 보완하는 성장 스텝</div>
+      ${d.growthSteps.map((s, i) => `
+      <div class="growth-step">
+        <div class="gs-num">${i+1}</div>
+        <div class="gs-text">${s}</div>
+      </div>`).join('')}
+    </div>
+
+    <!-- 유형 태그 -->
+    <div class="card" style="text-align:center;padding:16px">
+      <div style="font-size:.8rem;color:var(--mid);margin-bottom:8px">쉐도우그램 유형</div>
+      <span class="tag">${member.sg_type}</span>
+      <span class="tag">${d.fn}</span>
+      <span class="tag">${d.kr}형</span>
+      ${member.role ? `<span class="tag">${member.role}</span>` : ''}
+      <div style="margin-top:14px;font-size:.78rem;color:var(--light)">
+        온유스쿨 쉐도우그램 · ${ws?.church_name || ''} 팀빌딩
+      </div>
+    </div>
+  `;
+
+  document.getElementById('loading-wrap').style.display = 'none';
+  document.getElementById('report-wrap').style.display = 'block';
+  document.getElementById('report-wrap').innerHTML = html;
+
+  // PDF 버튼 표시 (리포트 로드 완료 후)
+  const pdfBtn = document.getElementById('btn-pdf');
+  if (pdfBtn) {
+    pdfBtn.style.display = 'block';
+    pdfBtn.setAttribute('data-name', member.name || NAME);
+    pdfBtn.setAttribute('data-type', d.kr || '');
+  }
+}
+
+function downloadPDF() {
+  const btn = document.getElementById('btn-pdf');
+  if (!btn) return;
+  const memberName = btn.getAttribute('data-name') || NAME || '팀원';
+  const typeName   = btn.getAttribute('data-type') || '';
+  btn.disabled = true;
+  btn.textContent = '⏳ 생성 중...';
+
+  const el = document.getElementById('report-wrap');
+  const filename = `쉐도우그램_개인리포트_${memberName}(${typeName}).pdf`;
+
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename,
+    image: { type: 'jpeg', quality: 0.92 },
+    html2canvas: { scale: 1.8, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+  };
+
+  html2pdf().set(opt).from(el).save()
+    .then(() => {
+      btn.disabled = false;
+      btn.textContent = '📄 PDF 저장';
+    })
+    .catch(e => {
+      console.error('PDF error:', e);
+      btn.disabled = false;
+      btn.textContent = '📄 PDF 저장';
+      alert('PDF 생성 중 오류가 발생했습니다.');
+    });
+}
+
+function showError(msg) {
+  document.getElementById('loading-wrap').style.display = 'none';
+  document.getElementById('error-wrap').style.display = 'block';
+  document.getElementById('error-msg').textContent = msg;
+}
+
+init();
+</script>
+</body>
+</html>
