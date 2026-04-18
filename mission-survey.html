@@ -269,7 +269,36 @@ body {
   word-break: keep-all;
 }
 
-/* 5점 척도 — 세로 배치, 큰 탭 */
+/* A/B 선택 카드 */
+.ab-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.ab-card {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: all .18s;
+  background: var(--white);
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--mid);
+  text-align: center;
+  line-height: 1.6;
+  word-break: keep-all;
+  -webkit-tap-highlight-color: transparent;
+}
+.ab-card:hover { border-color: var(--teal); }
+.ab-card.selected {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #fff;
+}
+
+/* 5점 척도 (미사용이지만 레이아웃 보존) */
 .scale-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 .scale-item input[type="radio"] { display: none; }
 .scale-item label {
@@ -499,8 +528,8 @@ body {
 
   <div class="intro-chips">
     <div class="intro-chip"><span class="cn">28</span><span class="cl">문항</span></div>
-    <div class="intro-chip"><span class="cn">5~7분</span><span class="cl">소요 시간</span></div>
-    <div class="intro-chip"><span class="cn">8가지</span><span class="cl">선교 역할</span></div>
+    <div class="intro-chip"><span class="cn">3~5분</span><span class="cl">소요 시간</span></div>
+    <div class="intro-chip"><span class="cn">A / B</span><span class="cl">둘 중 선택</span></div>
   </div>
 
   <form class="form-card" onsubmit="return false;">
@@ -653,40 +682,42 @@ body {
 // ══════════════════════════════════
 //  28문항 데이터
 // ══════════════════════════════════
+// A/B 선택형 28문항 — 청소년~청년 누구나 쉽게 대답 가능
 const QUESTIONS = [
-  { dim:'Ne', text:'새로운 아이디어가 떠오르면 바로 이야기하고 싶다' },
-  { dim:'Ne', text:'여러 가능성을 동시에 탐색하는 것이 즐겁다' },
-  { dim:'Ne', text:'대화할수록 새로운 연결고리가 보인다' },
-  { dim:'Ne', text:'뻔한 방법보다 새로운 접근을 시도하고 싶다' },
-  { dim:'Ni', text:'말하지 않아도 상황의 큰 그림이 보인다' },
-  { dim:'Ni', text:'어떤 일이 어떻게 될지 미리 느껴질 때가 많다' },
-  { dim:'Ni', text:'한 가지에 깊이 집중할 때 가장 명확하게 생각된다' },
-  { dim:'Ni', text:'미래의 패턴이나 방향이 직관적으로 느껴진다' },
-  { dim:'Si', text:'과거에 잘 됐던 방식을 신뢰하고 따르는 편이다' },
-  { dim:'Si', text:'예측 가능한 루틴이 있을 때 안정감을 느낀다' },
-  { dim:'Si', text:'세부 사항과 구체적인 사실을 잘 기억한다' },
-  { dim:'Si', text:'신중하게 확인하고 검증한 뒤에 결정한다' },
-  { dim:'Se', text:'지금 이 순간의 경험이 가장 중요하다' },
-  { dim:'Se', text:'현재 일어나는 일에 즉각 반응하고 행동한다' },
-  { dim:'Se', text:'몸으로 직접 경험해야 가장 잘 배운다' },
-  { dim:'Se', text:'보고 듣고 느끼는 감각 정보에 즉각 몰입된다' },
-  { dim:'Fe', text:'주변 분위기가 불편하면 나도 불편해진다' },
-  { dim:'Fe', text:'모두가 조화롭게 지내는 것이 중요하다' },
-  { dim:'Fe', text:'상대방의 감정 상태를 금방 알아챈다' },
-  { dim:'Fe', text:'그룹의 분위기를 좋게 만들기 위해 노력한다' },
-  { dim:'Fi', text:'내 가치관과 맞지 않으면 아무리 좋아도 거부감이 든다' },
-  { dim:'Fi', text:'감정을 혼자 처리하고 나서야 나눌 수 있다' },
-  { dim:'Fi', text:'진정성 없는 관계보다 혼자가 낫다' },
-  { dim:'Fi', text:'내가 중요하게 여기는 것에 대해서는 타협하지 않는다' },
-  { dim:'Ti', text:'어떤 주장이든 논리적 근거를 따진다' },
-  { dim:'Ti', text:'내 머릿속에 일관된 원리 체계가 있다' },
-  { dim:'Ti', text:'모순이나 오류를 발견하면 짚고 넘어가야 한다' },
-  { dim:'Ti', text:'감정보다 논리가 더 신뢰할 수 있는 판단 기준이다' },
-  { dim:'Te', text:'목표를 정하면 효율적인 실행 방법을 즉시 찾는다' },
-  { dim:'Te', text:'감정보다 결과가 더 중요하다' },
-  { dim:'Te', text:'체계와 기준이 있어야 팀이 제대로 돌아간다' },
-  { dim:'Te', text:'계획대로 진행되지 않으면 바로 수정하고 싶다' },
+  { dim:'Ne', a:'해봤던 방법으로 하는 게 편하다', b:'새로운 방법을 시도해보고 싶다' },
+  { dim:'Ne', a:'한 가지에 집중하는 편이다', b:'여러 가지를 동시에 해보는 게 재밌다' },
+  { dim:'Ne', a:'이야기할 때 한 주제에 집중한다', b:'이야기하다 보면 새로운 생각이 계속 떠오른다' },
+  { dim:'Ne', a:'검증된 방법이 더 안전하다', b:'새로운 접근을 시도해보는 게 더 설렌다' },
+  { dim:'Ni', a:'눈에 보이는 것을 더 믿는다', b:'왠지 어떻게 될지 미리 느껴질 때가 있다' },
+  { dim:'Ni', a:'지금 일어나는 일이 더 중요하다', b:'나중에 어떻게 될지 먼저 생각한다' },
+  { dim:'Ni', a:'여러 가지를 넓게 보는 게 좋다', b:'하나에 깊이 빠져서 생각하는 게 잘 맞는다' },
+  { dim:'Ni', a:'상황을 있는 그대로 본다', b:'상황 뒤에 숨은 의미가 궁금하다' },
+  { dim:'Si', a:'새로운 방식이 더 재밌다', b:'전에 잘 됐던 방법을 따르는 게 편하다' },
+  { dim:'Si', a:'매일 다른 게 있어야 좋다', b:'정해진 루틴이 있으면 안정된다' },
+  { dim:'Si', a:'큰 흐름만 기억하면 된다', b:'날짜·이름 같은 세부 사항을 잘 기억한다' },
+  { dim:'Si', a:'일단 해보고 나중에 고친다', b:'충분히 확인한 다음에 시작한다' },
+  { dim:'Se', a:'미래를 위해 지금을 준비한다', b:'지금 이 순간이 제일 중요하다' },
+  { dim:'Se', a:'생각하고 나서 행동한다', b:'몸이 먼저 움직이고 나중에 생각한다' },
+  { dim:'Se', a:'설명을 듣거나 읽으면 이해된다', b:'직접 해봐야 제대로 알 수 있다' },
+  { dim:'Se', a:'조용히 앉아서 하는 게 좋다', b:'뛰고 만지고 경험하는 게 더 좋다' },
+  { dim:'Fe', a:'다른 사람 기분이 나빠도 내 기분엔 별 영향 없다', b:'주변 분위기가 안 좋으면 나도 불편하다' },
+  { dim:'Fe', a:'내 의견이 더 중요하다', b:'모두가 사이좋게 지내는 게 더 중요하다' },
+  { dim:'Fe', a:'상대 기분을 잘 모를 때가 있다', b:'표정만 봐도 상대 기분을 알 수 있다' },
+  { dim:'Fe', a:'분위기가 어색해도 그냥 둔다', b:'어색하면 먼저 말을 걸어 풀어준다' },
+  { dim:'Fi', a:'재밌으면 내 생각과 달라도 그냥 한다', b:'마음에 안 맞으면 재밌어도 하기 싫다' },
+  { dim:'Fi', a:'속상한 걸 바로 말할 수 있다', b:'속상해도 혼자 정리한 뒤에야 말할 수 있다' },
+  { dim:'Fi', a:'형식적인 관계도 괜찮다', b:'진짜 마음이 통하지 않으면 차라리 혼자가 낫다' },
+  { dim:'Fi', a:'상황에 따라 유연하게 바꿀 수 있다', b:'내가 중요하다고 믿는 건 쉽게 바꾸기 싫다' },
+  { dim:'Ti', a:'이유를 몰라도 넘어갈 수 있다', b:'왜 그런지 이유를 꼭 알아야 한다' },
+  { dim:'Ti', a:'그때그때 판단한다', b:'내 나름의 규칙과 기준이 있다' },
+  { dim:'Ti', a:'틀린 게 있어도 그냥 둔다', b:'틀린 게 보이면 말해줘야 한다' },
+  { dim:'Ti', a:'기분이 좋으면 맞는 것 같다', b:'기분보다 이치에 맞아야 믿을 수 있다' },
+  { dim:'Te', a:'목표보다 과정이 더 의미 있다', b:'목표가 정해지면 어떻게 할지 바로 떠오른다' },
+  { dim:'Te', a:'느낌과 분위기가 더 중요하다', b:'결과가 어떻게 됐는지가 더 중요하다' },
+  { dim:'Te', a:'자유롭게 흘러가는 게 좋다', b:'규칙과 기준이 있어야 일이 된다' },
+  { dim:'Te', a:'계획이 바뀌면 그냥 흐름을 따른다', b:'계획이 바뀌면 바로 새 계획을 세우고 싶다' },
 ];
+const useAbMode = true; // A/B 선택형 모드
 
 const DIM_LABEL = {
   Ne:'가능성 탐색', Ni:'통찰·직관',
@@ -794,34 +825,37 @@ function renderQ() {
   document.getElementById('q-num').textContent = cur + 1;
   document.getElementById('q-badge').textContent = 'Q' + (cur + 1) + ' · ' + (DIM_LABEL[q.dim] || q.dim);
   document.getElementById('prog-fill').style.width = ((cur + 1) / 28 * 100).toFixed(1) + '%';
-  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-text').textContent = ''; // A/B 모드에서는 비움
 
   const list = document.getElementById('scale-list');
   list.innerHTML = '';
 
-  SCALE_TEXT.forEach((txt, i) => {
-    const v = i + 1;
-    const li = document.createElement('li');
-    li.className = 'scale-item';
-    const id = 'opt_' + cur + '_' + v;
-    li.innerHTML = `
-      <input type="radio" name="q_ans" id="${id}" value="${v}" ${ans[cur] === v ? 'checked' : ''}>
-      <label for="${id}">
-        <span class="scale-num">${v}</span>
-        ${txt}
-      </label>`;
-    li.querySelector('input').addEventListener('change', onAns);
-    list.appendChild(li);
-  });
+  // A/B 선택형 렌더링
+  const wrap = document.createElement('div');
+  wrap.className = 'ab-wrap';
+  wrap.innerHTML = `
+    <div class="ab-card ${ans[cur] === 1 ? 'selected' : ''}" onclick="clickAB(${cur}, 1, this)">
+      ${q.a}
+    </div>
+    <div class="ab-card ${ans[cur] === 5 ? 'selected' : ''}" onclick="clickAB(${cur}, 5, this)">
+      ${q.b}
+    </div>`;
+  list.appendChild(wrap);
 
   document.getElementById('btn-prev').disabled = cur === 0;
   syncNextBtn();
 }
 
-function onAns() {
-  const sel = document.querySelector('input[name="q_ans"]:checked');
-  if (sel) ans[cur] = parseInt(sel.value);
+function clickAB(idx, val, el) {
+  ans[idx] = val;
+  const parent = el.parentElement;
+  parent.querySelectorAll('.ab-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
   syncNextBtn();
+}
+
+function onAns() {
+  // A/B 모드에서는 clickAB 사용
 }
 
 function syncNextBtn() {
