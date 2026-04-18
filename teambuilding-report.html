@@ -610,6 +610,42 @@ const SURVEY_HTML = `
 
   <form id="survey-form" onsubmit="return submitSurvey(event)">
 
+    <!-- 응답자 정보 -->
+    <div class="survey-q" style="border-left:3px solid var(--navy);padding-left:14px;">
+      <div class="survey-q-label" style="margin-bottom:10px;">응답자 정보</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;">
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--navy);margin-bottom:4px;">이름</div>
+          <input class="survey-textarea" name="respondent_name" type="text"
+            placeholder="이름" style="min-height:auto;padding:10px 12px;" required>
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--navy);margin-bottom:4px;">직분</div>
+          <select name="respondent_position" class="survey-textarea"
+            style="min-height:auto;padding:10px 12px;appearance:auto;" required>
+            <option value="">선택</option>
+            <option value="담임목사">담임목사</option>
+            <option value="부목사">부목사</option>
+            <option value="전도사">전도사</option>
+            <option value="강도사">강도사</option>
+            <option value="장로">장로</option>
+            <option value="권사">권사</option>
+            <option value="집사">집사</option>
+            <option value="안수집사">안수집사</option>
+            <option value="청년">청년</option>
+            <option value="학생">학생</option>
+            <option value="성도">성도</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--navy);margin-bottom:4px;">이메일</div>
+        <input class="survey-textarea" name="respondent_email" type="email"
+          placeholder="예: pastor@church.com" style="min-height:auto;padding:10px 12px;" required>
+      </div>
+    </div>
+
     <!-- Q1: 활용도 -->
     <div class="survey-q">
       <div class="survey-q-label"><span class="q-num">1</span>쉐도우그램 팀 리포트가 팀 이해에 도움이 되었나요?</div>
@@ -797,6 +833,9 @@ async function submitSurvey(e) {
   const payload = {
     workshop_code: CODE,
     church_name: CHURCH || null,
+    respondent_name: fd.get('respondent_name')?.trim() || null,
+    respondent_position: fd.get('respondent_position') || null,
+    respondent_email: fd.get('respondent_email')?.trim() || null,
     q1_usefulness: parseInt(fd.get('q1_usefulness')) || null,
     q2_accuracy: parseInt(fd.get('q2_accuracy')) || null,
     q3_interest: fd.get('q3_interest') || null,
