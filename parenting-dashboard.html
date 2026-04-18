@@ -135,6 +135,37 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 
 footer{background:#F0F4F8;border-top:1px solid var(--border);padding:20px;
   text-align:center;font-size:.75rem;color:var(--light)}
+
+/* ── 수동추가 모달 ── */
+.add-modal-overlay{display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:20px}
+.add-modal-box{background:#fff;border-radius:16px;padding:28px 24px;
+  width:100%;max-width:440px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.add-modal-box label{font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:5px}
+.add-modal-box label span{font-weight:400;color:var(--light)}
+.add-input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.95rem;font-family:inherit;margin-bottom:12px;outline:none;transition:border-color .15s}
+.add-input:focus{border-color:var(--teal)}
+.add-select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.95rem;font-family:inherit;margin-bottom:12px;outline:none;background:#fff;
+  transition:border-color .15s;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center}
+.add-select:focus{border-color:var(--teal)}
+.sg-chip-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:18px}
+.sg-chip{padding:10px 12px;border-radius:8px;font-family:inherit;cursor:pointer;
+  border:1.5px solid var(--border);background:#fff;text-align:left;transition:all .15s;outline:none}
+.sg-chip.active{border-color:var(--teal);background:#E8F4F0}
+.sg-chip-name{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.sg-chip-name strong{font-size:.85rem}
+.sg-chip-mbti{font-size:.68rem;color:#AAA;letter-spacing:.01em}
+.add-error{color:#c0392b;font-size:.8rem;margin-bottom:10px;
+  display:none;background:#FFF0EE;border-radius:6px;padding:8px 12px}
+.add-banner{background:linear-gradient(135deg,#E8F4F0,#EEF3FF);border:1.5px dashed var(--teal);
+  border-radius:10px;padding:14px 18px;cursor:pointer;transition:all .2s;margin-bottom:14px;
+  text-align:center}
+.add-banner:hover{border-color:var(--navy);background:linear-gradient(135deg,#DCF0EB,#E4ECFF)}
 </style>
 </head>
 <body>
@@ -266,6 +297,12 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:20px;
       </div>
     </div>
 
+    <!-- 수동 추가 배너 -->
+    <div class="add-banner" onclick="openAddMember()">
+      <div style="font-size:.85rem;font-weight:800;color:var(--teal)">➕ 가족 구성원 수동 추가</div>
+      <div style="font-size:.73rem;color:var(--mid);margin-top:3px">MBTI를 아는 가족은 검사 없이 바로 유형 등록</div>
+    </div>
+
     <!-- 검사 링크 공유 박스 -->
     <div id="share-boxes"></div>
 
@@ -281,6 +318,75 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:20px;
   온유스쿨 쉐도우그램 · onyuschool.com · "소통을 회복하는 8가지 언어"
 </footer>
 <div class="toast" id="toast"></div>
+
+<!-- ══ 가족 구성원 수동 추가 모달 ══ -->
+<div id="add-member-modal" class="add-modal-overlay">
+  <div class="add-modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div>
+        <div style="font-size:1rem;font-weight:800;color:var(--navy)">가족 구성원 수동 추가</div>
+        <div style="font-size:.75rem;color:var(--light);margin-top:2px">MBTI를 아는 가족 · 검사 없이 바로 등록</div>
+      </div>
+      <button onclick="closeAddMember()"
+        style="background:none;border:none;font-size:1.4rem;color:var(--light);
+          cursor:pointer;padding:4px;line-height:1">×</button>
+    </div>
+
+    <!-- 이름 -->
+    <label>이름 *</label>
+    <input id="add-name" class="add-input" placeholder="예: 홍길동">
+
+    <!-- 구성원 유형 (부모/자녀) -->
+    <label>구성원 유형 *</label>
+    <select id="add-member-type" class="add-select" onchange="onMemberTypeChange()">
+      <option value="">선택해 주세요</option>
+      <option value="parent">부모</option>
+      <option value="child">자녀</option>
+    </select>
+
+    <!-- 역할 (부모: 아버지/어머니, 자녀: 자동 할당) -->
+    <div id="add-role-wrap" style="display:none">
+      <label>역할 *</label>
+      <select id="add-role" class="add-select">
+        <option value="">선택해 주세요</option>
+      </select>
+    </div>
+
+    <!-- 출생년도 (자녀일 때만) -->
+    <div id="add-birth-wrap" style="display:none">
+      <label>출생년도 <span>(자녀만 해당)</span></label>
+      <input id="add-birth-year" class="add-input" type="number" placeholder="예: 2015" min="1990" max="2026">
+    </div>
+
+    <!-- MBTI 자동매칭 -->
+    <label>MBTI 입력 <span>(선택 — 입력하면 유형 자동 선택)</span></label>
+    <input id="add-mbti" class="add-input" maxlength="4" placeholder="예: INFJ, ENTP, ISTJ ..."
+      oninput="dashMatchMbti(this.value)" style="text-transform:uppercase">
+    <div id="add-mbti-result"
+      style="font-size:.78rem;color:var(--teal);margin-bottom:14px;min-height:18px;line-height:1.5"></div>
+
+    <!-- 유형 칩 -->
+    <label>쉐도우그램 유형 * <span>— 해당 MBTI가 표시됩니다</span></label>
+    <div id="add-sg-chips" class="sg-chip-grid"></div>
+
+    <!-- 에러 -->
+    <div id="add-error" class="add-error"></div>
+
+    <!-- 버튼 -->
+    <div style="display:flex;gap:10px">
+      <button onclick="closeAddMember()"
+        style="flex:1;padding:12px;border:1.5px solid var(--border);background:#fff;
+          color:var(--mid);border-radius:8px;font-size:.88rem;font-family:inherit;cursor:pointer">
+        취소
+      </button>
+      <button id="add-submit-btn" onclick="submitAddMember()"
+        style="flex:2;padding:12px;background:var(--teal);color:#fff;border:none;
+          border-radius:8px;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer">
+        등록하기 →
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
 const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
@@ -590,6 +696,7 @@ async function loadDash(code) {
       { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
     );
     const members = await mRes.json() || [];
+    _existingMembers = members; // 수동추가 시 역할 중복 방지용
     const done    = members.filter(m => m.completed_at && m.sg_type);
     const waiting = members.filter(m => !m.completed_at || !m.sg_type);
     const pct     = members.length ? Math.round(done.length/members.length*100) : 0;
@@ -664,6 +771,176 @@ function toast(msg, dur=2800) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ══════════════════════════════════
+//  가족 구성원 수동 추가
+// ══════════════════════════════════
+const DASH_SG_ORDER = ['SPARK','VISION','STEADY','PLAYER','HARMONY','SOUL','LOGIC','LEADER'];
+const DASH_MBTI_TO_SG = {
+  ENFP:'SPARK',ESFP:'SPARK', INFJ:'VISION',INTJ:'VISION',
+  ISFJ:'STEADY',ISTJ:'STEADY', ESTP:'PLAYER',ENTP:'PLAYER',
+  INFP:'HARMONY',ISFP:'HARMONY', ENFJ:'SOUL',ESFJ:'SOUL',
+  INTP:'LOGIC',ISTP:'LOGIC', ENTJ:'LEADER',ESTJ:'LEADER',
+};
+const DASH_SG_MBTI = {
+  SPARK:'ENFP · ESFP', VISION:'INFJ · INTJ', STEADY:'ISFJ · ISTJ', PLAYER:'ESTP · ENTP',
+  HARMONY:'INFP · ISFP', SOUL:'ENFJ · ESFJ', LOGIC:'INTP · ISTP', LEADER:'ENTJ · ESTJ',
+};
+
+let dashSelectedSg = null;
+let _existingMembers = []; // loadDash에서 채워짐 — 역할 중복 방지
+
+function openAddMember() {
+  if (!currentSessionCode) { toast('세션을 먼저 선택해 주세요'); return; }
+  dashSelectedSg = null;
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-member-type').value = '';
+  document.getElementById('add-role-wrap').style.display = 'none';
+  document.getElementById('add-birth-wrap').style.display = 'none';
+  document.getElementById('add-mbti').value = '';
+  document.getElementById('add-mbti-result').textContent = '';
+  document.getElementById('add-error').style.display = 'none';
+  document.getElementById('add-submit-btn').textContent = '등록하기 →';
+  document.getElementById('add-submit-btn').disabled = false;
+  renderDashSgChips(null);
+  document.getElementById('add-member-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('add-name').focus(), 100);
+}
+
+function closeAddMember() {
+  document.getElementById('add-member-modal').style.display = 'none';
+}
+
+function onMemberTypeChange() {
+  const type = document.getElementById('add-member-type').value;
+  const roleWrap = document.getElementById('add-role-wrap');
+  const birthWrap = document.getElementById('add-birth-wrap');
+  const roleSel = document.getElementById('add-role');
+
+  if (!type) { roleWrap.style.display = 'none'; birthWrap.style.display = 'none'; return; }
+
+  roleWrap.style.display = 'block';
+  roleSel.innerHTML = '<option value="">선택해 주세요</option>';
+
+  const usedRoles = _existingMembers.map(m => m.role);
+
+  if (type === 'parent') {
+    birthWrap.style.display = 'none';
+    if (!usedRoles.includes('father')) roleSel.innerHTML += '<option value="father">아버지</option>';
+    if (!usedRoles.includes('mother')) roleSel.innerHTML += '<option value="mother">어머니</option>';
+  } else {
+    birthWrap.style.display = 'block';
+    for (let i = 1; i <= 4; i++) {
+      const role = 'child_' + i;
+      if (!usedRoles.includes(role)) roleSel.innerHTML += `<option value="${role}">자녀${i}</option>`;
+    }
+  }
+}
+
+function renderDashSgChips(active) {
+  const wrap = document.getElementById('add-sg-chips');
+  if (!wrap) return;
+  wrap.innerHTML = DASH_SG_ORDER.map(t => {
+    const sel = t === active;
+    return `<button type="button" class="sg-chip${sel?' active':''}" onclick="dashSelectSg('${t}')">
+      <div class="sg-chip-name">
+        <span>${TYPE_ICON[t]||''}</span>
+        <strong style="color:${sel?'#1A3055':'#333'}">${t}</strong>
+        <span style="color:#888;font-size:.78rem">${TYPE_KR[t]||''}</span>
+      </div>
+      <div class="sg-chip-mbti">${DASH_SG_MBTI[t]||''}</div>
+    </button>`;
+  }).join('');
+}
+
+function dashSelectSg(type) {
+  dashSelectedSg = type;
+  renderDashSgChips(type);
+}
+
+function dashMatchMbti(val) {
+  const upper = val.toUpperCase().trim();
+  const sg = DASH_MBTI_TO_SG[upper];
+  const el = document.getElementById('add-mbti-result');
+  if (sg) {
+    dashSelectSg(sg);
+    el.innerHTML = `✅ ${upper} → ${TYPE_ICON[sg]||''} <strong>${sg}</strong> (${TYPE_KR[sg]||sg}) 자동 매칭`;
+    el.style.color = '#256060';
+  } else if (upper.length === 4) {
+    el.textContent = '인식되지 않는 MBTI 유형입니다. 아래에서 직접 선택해 주세요.';
+    el.style.color = '#999';
+  } else {
+    el.textContent = '';
+  }
+}
+
+async function submitAddMember() {
+  const name = document.getElementById('add-name').value.trim();
+  const memberType = document.getElementById('add-member-type').value;
+  const role = document.getElementById('add-role').value;
+  const birthYear = document.getElementById('add-birth-year')?.value?.trim() || null;
+  const errEl = document.getElementById('add-error');
+  errEl.style.display = 'none';
+
+  if (!name) { errEl.textContent = '이름을 입력해 주세요.'; errEl.style.display='block'; return; }
+  if (!memberType) { errEl.textContent = '구성원 유형을 선택해 주세요.'; errEl.style.display='block'; return; }
+  if (!role) { errEl.textContent = '역할을 선택해 주세요.'; errEl.style.display='block'; return; }
+  if (!dashSelectedSg) { errEl.textContent = '쉐도우그램 유형을 선택해 주세요.'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('add-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  try {
+    // family_sessions의 id 조회
+    const sRes = await fetch(
+      `${SB_URL}/rest/v1/family_sessions?code=eq.${encodeURIComponent(currentSessionCode)}&select=id`,
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+    );
+    const sessions = await sRes.json();
+    const sessionId = sessions?.[0]?.id || null;
+
+    // survey_token 생성 (고유값)
+    const token = 'M' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+    const body = {
+      session_id: sessionId,
+      session_code: currentSessionCode,
+      name: name,
+      role: role,
+      member_type: memberType,
+      sg_type: dashSelectedSg,
+      survey_token: token,
+      completed_at: new Date().toISOString(),
+    };
+    if (memberType === 'child' && birthYear) {
+      body.birth_year = parseInt(birthYear);
+    }
+
+    const res = await fetch(`${SB_URL}/rest/v1/family_members`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) { throw new Error(await res.text()); }
+
+    closeAddMember();
+    toast(`✅ ${name}님(${TYPE_KR[dashSelectedSg]}) 등록 완료`);
+    await loadDash(currentSessionCode);
+  } catch(e) {
+    errEl.textContent = '저장 실패: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '등록하기 →';
+  }
 }
 
 // ══════════════════════════════════
