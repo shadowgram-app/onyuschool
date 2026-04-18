@@ -659,39 +659,44 @@ const SURVEY_HTML = `
       </div>
     </div>
 
-    <!-- Q4: 개인 리포트 내용 설명 후 가격 -->
+    <!-- Q4: 4종 리포트별 적정 가격 (주관식) -->
     <div class="survey-q">
-      <div class="survey-q-label"><span class="q-num">4</span>개인 리포트(나의 빛과 그림자 + 성장 로드맵)가 제공된다면, 적정 가격은?</div>
-      <div class="survey-price-group">
-        <input type="radio" name="q4_price_individual" value="free" id="q4_free" class="survey-radio" required>
-        <label for="q4_free" class="survey-radio-label">무료여야 함</label>
-        <input type="radio" name="q4_price_individual" value="3000" id="q4_3k" class="survey-radio">
-        <label for="q4_3k" class="survey-radio-label">3,000원</label>
-        <input type="radio" name="q4_price_individual" value="5000" id="q4_5k" class="survey-radio">
-        <label for="q4_5k" class="survey-radio-label">5,000원</label>
-        <input type="radio" name="q4_price_individual" value="10000" id="q4_10k" class="survey-radio">
-        <label for="q4_10k" class="survey-radio-label">10,000원</label>
+      <div class="survey-q-label"><span class="q-num">4</span>각 리포트의 적정 가격은 얼마라고 생각하시나요? (숫자만 입력, 원 단위)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--teal);margin-bottom:4px">
+            개인 리포트<br><span style="font-weight:400;color:var(--light);font-size:.7rem">나의 빛과 그림자 + 성장 로드맵</span>
+          </div>
+          <input class="survey-textarea" name="q4_price_individual" type="text" inputmode="numeric"
+            placeholder="예: 5000" style="min-height:auto;padding:10px 12px">
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--teal);margin-bottom:4px">
+            부부 리포트<br><span style="font-weight:400;color:var(--light);font-size:.7rem">64유형 궁합 + 소통 가이드</span>
+          </div>
+          <input class="survey-textarea" name="q4_price_couple" type="text" inputmode="numeric"
+            placeholder="예: 10000" style="min-height:auto;padding:10px 12px">
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--teal);margin-bottom:4px">
+            자녀양육 리포트<br><span style="font-weight:400;color:var(--light);font-size:.7rem">가족 유형 분석 + 양육 가이드</span>
+          </div>
+          <input class="survey-textarea" name="q4_price_parenting" type="text" inputmode="numeric"
+            placeholder="예: 15000" style="min-height:auto;padding:10px 12px">
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--teal);margin-bottom:4px">
+            팀빌딩 리포트 (10명 내외)<br><span style="font-weight:400;color:var(--light);font-size:.7rem">AI 팀 분석 + 워크숍 매뉴얼</span>
+          </div>
+          <input class="survey-textarea" name="q4_price_team" type="text" inputmode="numeric"
+            placeholder="예: 30000" style="min-height:auto;padding:10px 12px">
+        </div>
       </div>
     </div>
 
-    <!-- Q5: 팀+부부 리포트 가격 -->
+    <!-- Q5: 자유 의견 -->
     <div class="survey-q">
-      <div class="survey-q-label"><span class="q-num">5</span>팀 리포트(AI 분석 + 워크숍 가이드) 또는 부부 리포트(64유형 궁합 분석)의 적정 가격은?</div>
-      <div class="survey-price-group">
-        <input type="radio" name="q5_price_group" value="free" id="q5_free" class="survey-radio" required>
-        <label for="q5_free" class="survey-radio-label">무료여야 함</label>
-        <input type="radio" name="q5_price_group" value="10000" id="q5_10k" class="survey-radio">
-        <label for="q5_10k" class="survey-radio-label">10,000원</label>
-        <input type="radio" name="q5_price_group" value="20000" id="q5_20k" class="survey-radio">
-        <label for="q5_20k" class="survey-radio-label">20,000원</label>
-        <input type="radio" name="q5_price_group" value="30000" id="q5_30k" class="survey-radio">
-        <label for="q5_30k" class="survey-radio-label">30,000원 이상</label>
-      </div>
-    </div>
-
-    <!-- Q6: 자유 의견 -->
-    <div class="survey-q">
-      <div class="survey-q-label"><span class="q-num">6</span>기타 의견이나 개선 요청사항이 있으시면 자유롭게 적어주세요.</div>
+      <div class="survey-q-label"><span class="q-num">5</span>기타 의견이나 개선 요청사항이 있으시면 자유롭게 적어주세요.</div>
       <textarea class="survey-textarea" name="q6_feedback" placeholder="예: 이런 기능이 있으면 좋겠어요, 리포트에서 이 부분이 인상 깊었어요..."></textarea>
     </div>
 
@@ -720,8 +725,10 @@ async function submitSurvey(e) {
     q1_usefulness: parseInt(fd.get('q1_usefulness')) || null,
     q2_accuracy: parseInt(fd.get('q2_accuracy')) || null,
     q3_interest: fd.get('q3_interest') || null,
-    q4_price_individual: fd.get('q4_price_individual') || null,
-    q5_price_group: fd.get('q5_price_group') || null,
+    q4_price_individual: fd.get('q4_price_individual')?.trim() || null,
+    q4_price_couple: fd.get('q4_price_couple')?.trim() || null,
+    q4_price_parenting: fd.get('q4_price_parenting')?.trim() || null,
+    q4_price_team: fd.get('q4_price_team')?.trim() || null,
     q6_feedback: fd.get('q6_feedback')?.trim() || null,
     submitted_at: new Date().toISOString(),
   };

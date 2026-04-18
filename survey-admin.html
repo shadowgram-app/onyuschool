@@ -110,20 +110,11 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:20px;
       <div id="chart-interest" class="bar-chart"></div>
     </div>
 
-    <!-- 가격 분포 -->
+    <!-- 가격 응답 (4종 주관식) -->
     <div class="card">
-      <div class="card-title">적정 가격 응답</div>
-      <div class="card-sub">개인 리포트 (Q4) / 팀·부부 리포트 (Q5)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div>
-          <div style="font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:8px">개인 리포트</div>
-          <div id="chart-price-ind" class="bar-chart"></div>
-        </div>
-        <div>
-          <div style="font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:8px">팀/부부 리포트</div>
-          <div id="chart-price-grp" class="bar-chart"></div>
-        </div>
-      </div>
+      <div class="card-title">적정 가격 응답 (Q4)</div>
+      <div class="card-sub">4종 리포트별 주관식 입력 — 평균·중간값 표시</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="price-stats"></div>
     </div>
 
     <!-- 전체 응답 테이블 -->
@@ -133,7 +124,7 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:20px;
       <div style="overflow-x:auto">
         <table class="resp-table" id="resp-table">
           <thead><tr>
-            <th>일시</th><th>교회</th><th>활용도</th><th>신뢰도</th><th>관심</th><th>개인가격</th><th>팀가격</th><th>의견</th>
+            <th>일시</th><th>교회</th><th>활용도</th><th>신뢰도</th><th>관심</th><th>개인</th><th>부부</th><th>양육</th><th>팀빌딩</th><th>의견</th>
           </tr></thead>
           <tbody id="resp-tbody">
             <tr><td colspan="8" class="loading">불러오는 중...</td></tr>
@@ -199,17 +190,32 @@ function renderStats(rows) {
   rows.forEach(r => { if(r.q3_interest) interestCounts[r.q3_interest] = (interestCounts[r.q3_interest]||0)+1; });
   renderBarChart('chart-interest', interestCounts, interestMap, n, '#256060');
 
-  // 개인 리포트 가격 분포
-  const priceIndMap = { free: '무료', '3000': '3,000원', '5000': '5,000원', '10000': '10,000원' };
-  const priceIndCounts = {};
-  rows.forEach(r => { if(r.q4_price_individual) priceIndCounts[r.q4_price_individual] = (priceIndCounts[r.q4_price_individual]||0)+1; });
-  renderBarChart('chart-price-ind', priceIndCounts, priceIndMap, n, '#8A6400');
-
-  // 팀 리포트 가격 분포
-  const priceGrpMap = { free: '무료', '10000': '10,000원', '20000': '20,000원', '30000': '30,000원+' };
-  const priceGrpCounts = {};
-  rows.forEach(r => { if(r.q5_price_group) priceGrpCounts[r.q5_price_group] = (priceGrpCounts[r.q5_price_group]||0)+1; });
-  renderBarChart('chart-price-grp', priceGrpCounts, priceGrpMap, n, '#1A3055');
+  // 4종 리포트 가격 통계 (주관식 → 평균/중간값)
+  const priceFields = [
+    { key: 'q4_price_individual', label: '개인 리포트', color: '#256060' },
+    { key: 'q4_price_couple', label: '부부 리포트', color: '#8A6400' },
+    { key: 'q4_price_parenting', label: '자녀양육 리포트', color: '#7B1A1A' },
+    { key: 'q4_price_team', label: '팀빌딩 리포트', color: '#1A3055' },
+  ];
+  const priceStatsEl = document.getElementById('price-stats');
+  priceStatsEl.innerHTML = priceFields.map(f => {
+    const nums = rows.map(r => parseInt(r[f.key])).filter(v => !isNaN(v) && v > 0);
+    const avg = nums.length ? Math.round(nums.reduce((a,b)=>a+b,0)/nums.length) : '—';
+    const sorted = [...nums].sort((a,b)=>a-b);
+    const med = nums.length ? sorted[Math.floor(sorted.length/2)] : '—';
+    const min = nums.length ? sorted[0] : '—';
+    const max = nums.length ? sorted[sorted.length-1] : '—';
+    return `<div style="background:#F8F6F0;border-radius:10px;padding:14px">
+      <div style="font-size:.78rem;font-weight:800;color:${f.color};margin-bottom:8px">${f.label}</div>
+      <div style="font-size:1.3rem;font-weight:800;color:var(--navy)">${typeof avg==='number' ? avg.toLocaleString()+'원' : avg}</div>
+      <div style="font-size:.72rem;color:var(--light);margin-top:4px">
+        중간값 ${typeof med==='number' ? med.toLocaleString()+'원' : med} ·
+        최소 ${typeof min==='number' ? min.toLocaleString()+'원' : min} ~
+        최대 ${typeof max==='number' ? max.toLocaleString()+'원' : max} ·
+        ${nums.length}건
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderBarChart(containerId, counts, labelMap, total, color) {
@@ -231,18 +237,20 @@ function renderBarChart(containerId, counts, labelMap, total, color) {
 function renderTable(rows) {
   document.getElementById('table-sub').textContent = `총 ${rows.length}건`;
   const interestKr = { team:'팀', individual:'개인', couple:'부부', all:'전부' };
-  const priceKr = { free:'무료', '3000':'3천', '5000':'5천', '10000':'1만', '20000':'2만', '30000':'3만+' };
+  const fmtP = v => v ? (parseInt(v) ? parseInt(v).toLocaleString() : v) : '—';
 
   document.getElementById('resp-tbody').innerHTML = rows.length === 0
-    ? '<tr><td colspan="8" class="loading">아직 응답이 없습니다</td></tr>'
+    ? '<tr><td colspan="10" class="loading">아직 응답이 없습니다</td></tr>'
     : rows.map(r => `<tr>
         <td style="white-space:nowrap;font-size:.75rem">${fmtDate(r.submitted_at)}</td>
         <td>${r.church_name || '—'}</td>
         <td style="text-align:center;font-weight:700;color:var(--teal)">${r.q1_usefulness || '—'}</td>
         <td style="text-align:center;font-weight:700;color:var(--gold)">${r.q2_accuracy || '—'}</td>
         <td>${interestKr[r.q3_interest] || '—'}</td>
-        <td>${priceKr[r.q4_price_individual] || '—'}</td>
-        <td>${priceKr[r.q5_price_group] || '—'}</td>
+        <td style="text-align:right;font-size:.78rem">${fmtP(r.q4_price_individual)}</td>
+        <td style="text-align:right;font-size:.78rem">${fmtP(r.q4_price_couple)}</td>
+        <td style="text-align:right;font-size:.78rem">${fmtP(r.q4_price_parenting)}</td>
+        <td style="text-align:right;font-size:.78rem">${fmtP(r.q4_price_team)}</td>
         <td class="feedback-text">${r.q6_feedback || '—'}</td>
       </tr>`).join('');
 }

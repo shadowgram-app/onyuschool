@@ -81,8 +81,10 @@ CREATE TABLE IF NOT EXISTS survey_feedback (
   q1_usefulness       INT,                       -- 활용도 (1~5)
   q2_accuracy         INT,                       -- 신뢰도 (1~5)
   q3_interest         TEXT,                      -- 관심 서비스 (team/individual/couple/all)
-  q4_price_individual TEXT,                      -- 개인 리포트 적정 가격
-  q5_price_group      TEXT,                      -- 팀/부부 리포트 적정 가격
+  q4_price_individual TEXT,                      -- 개인 리포트 적정 가격 (주관식)
+  q4_price_couple     TEXT,                      -- 부부 리포트 적정 가격 (주관식)
+  q4_price_parenting  TEXT,                      -- 자녀양육 리포트 적정 가격 (주관식)
+  q4_price_team       TEXT,                      -- 팀빌딩 리포트 적정 가격 (주관식)
   q6_feedback         TEXT,                      -- 자유 의견
   submitted_at        TIMESTAMPTZ DEFAULT NOW(),
   created_at          TIMESTAMPTZ DEFAULT NOW()
