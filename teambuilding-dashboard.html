@@ -235,53 +235,26 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
         <div id="member-wrap"><div class="loading">⏳ 데이터 불러오는 중...</div></div>
       </div>
 
-      <!-- 직접 추가 모달 -->
-      <div id="add-member-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
-        z-index:1000;align-items:center;justify-content:center;padding:20px" class="modal-overlay">
-        <div style="background:#fff;border-radius:16px;padding:28px 24px;width:100%;max-width:420px;
-          box-shadow:0 20px 60px rgba(0,0,0,.2)">
-          <div style="font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:4px">팀원 직접 추가</div>
-          <div style="font-size:.78rem;color:var(--light);margin-bottom:20px">MBTI 또는 쉐도우그램 유형을 알고 있는 팀원을 직접 등록합니다</div>
-
-          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">이름 *</label>
-          <input id="add-name" placeholder="예: 홍길동"
-            style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
-              font-size:.95rem;font-family:inherit;margin-bottom:14px;outline:none">
-
-          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">직분 / 역할</label>
-          <input id="add-role" placeholder="예: 담임목사, 부목사, 전도사..."
-            style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
-              font-size:.95rem;font-family:inherit;margin-bottom:14px;outline:none">
-
-          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
-            MBTI 입력 <span style="font-weight:400;color:var(--light)">(선택 — 입력하면 유형 자동 선택)</span>
-          </label>
-          <input id="add-mbti" maxlength="4" placeholder="예: INFJ, ENTP ..."
-            oninput="dashMatchMbti(this.value)"
-            style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
-              font-size:.95rem;font-family:inherit;margin-bottom:4px;outline:none;text-transform:uppercase">
-          <div id="add-mbti-result" style="font-size:.78rem;color:var(--teal);margin-bottom:12px;min-height:16px"></div>
-
-          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:8px">
-            쉐도우그램 유형 선택 * <span style="font-weight:400;color:var(--light)">(MBTI가 작게 표시됩니다)</span>
-          </label>
-          <div id="add-sg-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:18px"></div>
-
-          <div id="add-error" style="color:#c0392b;font-size:.8rem;margin-bottom:10px;display:none"></div>
-          <div style="display:flex;gap:10px">
-            <button onclick="closeAddMember()"
-              style="flex:1;padding:12px;border:1.5px solid var(--border);background:#fff;
-                color:var(--mid);border-radius:8px;font-size:.9rem;font-family:inherit;cursor:pointer">
-              취소
-            </button>
-            <button id="add-submit-btn" onclick="submitAddMember()"
-              style="flex:2;padding:12px;background:var(--teal);color:#fff;border:none;
-                border-radius:8px;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer">
-              등록하기 →
-            </button>
+      <!-- 수동 추가 안내 배너 -->
+      <div style="background:#F0F8F5;border:1.5px solid rgba(37,96,96,.25);border-radius:10px;
+        padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-size:1.2rem">💡</span>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:.85rem;font-weight:700;color:var(--teal);margin-bottom:2px">
+            MBTI 유형을 아는 팀원은 검사 없이 직접 추가할 수 있습니다
+          </div>
+          <div style="font-size:.75rem;color:var(--mid)">
+            이름·직분·유형 선택만으로 바로 등록 → 리포트에 반영됩니다
           </div>
         </div>
+        <button onclick="openAddMember()"
+          style="background:var(--teal);color:#fff;border:none;border-radius:8px;
+            padding:9px 18px;font-size:.85rem;font-weight:700;cursor:pointer;
+            font-family:inherit;white-space:nowrap">
+          + 직접 추가하기
+        </button>
       </div>
+
     </div>
 
     <!-- ── PAGE: 유형 분포 ── -->
@@ -1557,5 +1530,89 @@ ${ind.shadowCaption ? `
 /* ── 초기화 ── */
 if (CODE) loadData();
 </script>
+
+<!-- ════════════════════════════════════
+     팀원 직접 추가 모달 (body 최상위 — z-index 확보)
+════════════════════════════════════ -->
+<div id="add-member-modal"
+  style="display:none;position:fixed;inset:0;z-index:9999;
+         background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;padding:28px 24px;
+    width:100%;max-width:440px;max-height:90vh;overflow-y:auto;
+    box-shadow:0 24px 64px rgba(0,0,0,.25)">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div>
+        <div style="font-size:1rem;font-weight:800;color:var(--navy)">팀원 직접 추가</div>
+        <div style="font-size:.75rem;color:var(--light);margin-top:2px">MBTI 아는 분 · 검사 없이 바로 등록</div>
+      </div>
+      <button onclick="closeAddMember()"
+        style="background:none;border:none;font-size:1.4rem;color:var(--light);
+          cursor:pointer;padding:4px;line-height:1">×</button>
+    </div>
+
+    <!-- 이름 -->
+    <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:5px">
+      이름 *
+    </label>
+    <input id="add-name" placeholder="예: 홍길동"
+      style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+        font-size:.95rem;font-family:inherit;margin-bottom:12px;outline:none;
+        transition:border-color .15s"
+      onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+
+    <!-- 직분 -->
+    <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:5px">
+      직분 / 역할
+    </label>
+    <input id="add-role" placeholder="예: 담임목사, 부목사, 전도사..."
+      style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+        font-size:.95rem;font-family:inherit;margin-bottom:12px;outline:none;
+        transition:border-color .15s"
+      onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+
+    <!-- MBTI 자동매칭 -->
+    <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:5px">
+      MBTI 입력 <span style="font-weight:400;color:var(--light)">(선택 — 입력하면 유형 자동 선택)</span>
+    </label>
+    <input id="add-mbti" maxlength="4" placeholder="예: INFJ, ENTP, ISTJ ..."
+      oninput="dashMatchMbti(this.value)"
+      style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+        font-size:.95rem;font-family:inherit;margin-bottom:4px;outline:none;text-transform:uppercase;
+        transition:border-color .15s"
+      onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+    <div id="add-mbti-result"
+      style="font-size:.78rem;color:var(--teal);margin-bottom:14px;min-height:18px;line-height:1.5"></div>
+
+    <!-- 유형 칩 -->
+    <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:8px">
+      쉐도우그램 유형 *
+      <span style="font-weight:400;color:var(--light)">— 해당 MBTI가 표시됩니다</span>
+    </label>
+    <div id="add-sg-chips"
+      style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:18px"></div>
+
+    <!-- 에러 -->
+    <div id="add-error"
+      style="color:#c0392b;font-size:.8rem;margin-bottom:10px;
+        display:none;background:#FFF0EE;border-radius:6px;padding:8px 12px"></div>
+
+    <!-- 버튼 -->
+    <div style="display:flex;gap:10px">
+      <button onclick="closeAddMember()"
+        style="flex:1;padding:12px;border:1.5px solid var(--border);background:#fff;
+          color:var(--mid);border-radius:8px;font-size:.88rem;font-family:inherit;cursor:pointer">
+        취소
+      </button>
+      <button id="add-submit-btn" onclick="submitAddMember()"
+        style="flex:2;padding:12px;background:var(--teal);color:#fff;border:none;
+          border-radius:8px;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer">
+        등록하기 →
+      </button>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
