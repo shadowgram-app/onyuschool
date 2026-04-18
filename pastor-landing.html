@@ -3,289 +3,502 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>온유스쿨 목회자 — 함께 지어져 가기 위해 온유를 배웁니다</title>
-  <meta name="description" content="함께 지어져 가기 위해 서로를 관찰하고 배려합니다. 온유스쿨 목회자 파트너십." />
+  <title>온유스쿨 쉐도우그램 — 교역자 팀빌딩 워크숍</title>
+  <meta name="description" content="교역자팀의 소통 언어를 발견합니다. 8유형 쉐도우그램 기반 90분 팀빌딩 워크숍 · 베타 무료 체험." />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --deep: #1A3A5C; --mid: #2D6A4F; --gold: #9A7A2E;
-      --gray: #666; --dk: #222; --lt: #F7F8FA; --line: #DDD; --white: #FFF;
-      --pastor: #2A1F3D;
+      --navy: #1A3055; --teal: #256060; --gold: #8A6400;
+      --green: #8FC49A; --bg: #F5F3EE; --white: #FFF;
+      --gray: #666; --dk: #222; --lt: #F7F8FA; --line: #DDD;
     }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',sans-serif; color: var(--dk); background: var(--white); line-height: 1.8; font-size: 15px; }
+    body { font-family: 'Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',sans-serif;
+      color: var(--dk); background: var(--white); line-height: 1.8; font-size: 15px; }
 
-    /* ── 네비 ── */
+    /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 200;
-      background: var(--white); border-bottom: 3px solid var(--pastor);
+      background: var(--navy); border-bottom: 3px solid var(--teal);
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 5%; height: 54px;
     }
-    .nav-brand { font-size: 1.05rem; font-weight: 800; color: var(--pastor); text-decoration: none; }
-    .nav-brand span { color: var(--gray); font-weight: 400; font-size: 0.72rem; margin-left: 6px; }
+    .nav-brand { font-size: 1rem; font-weight: 800; color: #fff; text-decoration: none; letter-spacing: .02em; }
+    .nav-brand span { color: var(--green); }
     .nav-right { display: flex; align-items: center; gap: 16px; }
-    .nav-general { font-size: 0.8rem; color: var(--gray); text-decoration: none; }
-    .nav-general:hover { color: var(--deep); }
-    .nav-tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 1.5px; background: var(--pastor); color: var(--white); padding: 4px 12px; }
+    .nav-link { font-size: 0.8rem; color: rgba(255,255,255,.65); text-decoration: none; }
+    .nav-link:hover { color: #fff; }
+    .nav-btn { font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;
+      background: var(--green); color: var(--navy); padding: 6px 14px;
+      text-decoration: none; transition: background .2s; }
+    .nav-btn:hover { background: #7AB88A; }
 
     /* ── HERO ── */
     #hero {
-      background: linear-gradient(160deg, #0f0a1e, var(--pastor) 50%, #1A3A5C);
-      padding: 64px 5% 56px; border-bottom: 4px solid var(--gold);
+      background: linear-gradient(160deg, var(--navy) 0%, #1E4070 50%, var(--teal) 100%);
+      padding: 72px 5% 64px; border-bottom: 4px solid var(--green);
     }
-    .hero-inner { max-width: 720px; margin: 0 auto; }
-    .hero-tag { display: inline-block; border: 1px solid rgba(255,255,255,0.3); font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; color: #C8B8E8; padding: 4px 12px; margin-bottom: 20px; }
-    .hero-title { font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1.25; margin-bottom: 16px; letter-spacing: -0.5px; }
-    .hero-title em { font-style: normal; color: #FFE08A; }
-    .hero-sub { font-size: 0.95rem; color: rgba(255,255,255,0.7); line-height: 1.9; margin-bottom: 32px; max-width: 560px; }
-    .hero-questions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 36px; }
-    .hq-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; background: rgba(255,255,255,0.06); border-left: 3px solid var(--gold); font-size: 0.9rem; color: rgba(255,255,255,0.85); line-height: 1.6; }
-    .hq-icon { flex-shrink: 0; font-size: 1rem; margin-top: 2px; }
+    .hero-inner { max-width: 760px; margin: 0 auto; }
+    .hero-tag { display: inline-block; border: 1px solid rgba(255,255,255,.3);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px;
+      color: var(--green); padding: 4px 14px; margin-bottom: 22px; text-transform: uppercase; }
+    .hero-title { font-size: 2.1rem; font-weight: 800; color: #fff;
+      line-height: 1.25; margin-bottom: 18px; letter-spacing: -0.5px; word-break: keep-all; }
+    .hero-title em { font-style: normal; color: var(--green); }
+    .hero-sub { font-size: 1rem; color: rgba(255,255,255,.75); line-height: 1.9;
+      margin-bottom: 36px; max-width: 560px; word-break: keep-all; }
+    .hero-cards { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+    .hc { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 160px; }
+    .hc-num { font-size: 1.4rem; font-weight: 800; color: var(--green); margin-bottom: 2px; }
+    .hc-label { font-size: 0.78rem; color: rgba(255,255,255,.65); }
     .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-primary { display: inline-block; padding: 13px 28px; background: var(--gold); color: var(--white); font-size: 0.93rem; font-weight: 700; text-decoration: none; border: none; cursor: pointer; font-family: inherit; transition: background 0.2s; }
-    .btn-primary:hover { background: #7a6020; }
-    .btn-ghost { display: inline-block; padding: 12px 24px; border: 1.5px solid rgba(255,255,255,0.4); color: var(--white); font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-    .btn-ghost:hover { background: rgba(255,255,255,0.08); }
+    .btn-cta { display: inline-block; padding: 16px 32px;
+      background: var(--green); color: var(--navy);
+      font-size: 1rem; font-weight: 800; text-decoration: none;
+      border-radius: 8px; transition: background .2s, transform .15s; border: none; cursor: pointer; font-family: inherit; }
+    .btn-cta:hover { background: #7AB88A; transform: translateY(-2px); }
+    .btn-ghost-w { display: inline-block; padding: 15px 24px;
+      border: 1.5px solid rgba(255,255,255,.4); color: rgba(255,255,255,.85);
+      font-size: 0.9rem; font-weight: 600; text-decoration: none;
+      border-radius: 8px; transition: all .2s; }
+    .btn-ghost-w:hover { background: rgba(255,255,255,.1); }
 
-    /* ── 공통 ── */
-    section { padding: 56px 5%; }
-    .inner { max-width: 720px; margin: 0 auto; }
-    .sec-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; color: var(--mid); text-transform: uppercase; margin-bottom: 8px; }
-    .sec-title { font-size: 1.45rem; font-weight: 700; color: var(--deep); margin-bottom: 6px; letter-spacing: -0.3px; }
-    .sec-sub { font-size: 0.88rem; color: var(--gray); line-height: 1.8; margin-bottom: 24px; }
-    .divider { border: none; border-top: 1px solid var(--line); margin: 0; }
+    /* ── 공통 섹션 ── */
+    section { padding: 64px 5%; }
+    .inner { max-width: 760px; margin: 0 auto; }
+    .sec-tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px;
+      color: var(--teal); text-transform: uppercase; margin-bottom: 8px; }
+    .sec-title { font-size: 1.5rem; font-weight: 800; color: var(--navy);
+      margin-bottom: 8px; letter-spacing: -0.3px; line-height: 1.3; }
+    .sec-sub { font-size: 0.9rem; color: var(--gray); line-height: 1.85; margin-bottom: 28px; }
+    hr.div { border: none; border-top: 1px solid var(--line); margin: 0; }
 
-    /* ── 활용 방법 ── */
-    #how { background: var(--lt); }
-    .how-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--line); }
-    .how-item { display: flex; gap: 20px; align-items: flex-start; padding: 24px 20px; border-bottom: 1px solid var(--line); background: var(--white); }
-    .how-item:last-child { border-bottom: none; }
-    .hi-num { width: 36px; height: 36px; flex-shrink: 0; background: var(--pastor); color: var(--white); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-    .hi-title { font-size: 0.97rem; font-weight: 700; color: var(--deep); margin-bottom: 5px; }
-    .hi-desc { font-size: 0.85rem; color: #444; line-height: 1.75; }
-    .hi-example { margin-top: 8px; padding: 8px 12px; background: var(--lt); border-left: 3px solid var(--gold); font-size: 0.82rem; color: #555; line-height: 1.6; font-style: italic; }
+    /* ── 공감 질문 ── */
+    #pain { background: var(--lt); }
+    .pain-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--line); }
+    .pain-item { display: flex; align-items: flex-start; gap: 16px;
+      padding: 20px 22px; border-bottom: 1px solid var(--line); background: var(--white); }
+    .pain-item:last-child { border-bottom: none; }
+    .pain-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .pain-text { font-size: 0.92rem; color: #444; line-height: 1.75; font-style: italic; }
 
-    /* ── 목회자 먼저 경험 ── */
-    #try { background: var(--white); }
-    .try-box { border: 1.5px solid var(--pastor); padding: 32px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
-    .tb-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: var(--pastor); margin-bottom: 10px; }
-    .tb-title { font-size: 1.1rem; font-weight: 700; color: var(--deep); margin-bottom: 10px; line-height: 1.4; }
-    .tb-desc { font-size: 0.87rem; color: #444; line-height: 1.8; }
-    .tb-right { display: flex; flex-direction: column; gap: 10px; }
-    .btn-pastor-test { display: block; text-align: center; padding: 13px; background: var(--pastor); color: var(--white); font-size: 0.9rem; font-weight: 700; text-decoration: none; transition: background 0.2s; }
-    .btn-pastor-test:hover { background: #1a0f2e; }
-    .tb-note { font-size: 0.78rem; color: var(--gray); text-align: center; line-height: 1.6; }
+    /* ── 솔루션 ── */
+    #solution { background: var(--white); }
+    .sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .sol-card { padding: 22px 20px; border: 1.5px solid var(--line); border-radius: 10px; }
+    .sol-card.featured { border-color: var(--teal); background: #F0F8F5; }
+    .sol-icon { font-size: 1.5rem; margin-bottom: 10px; }
+    .sol-title { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .sol-desc { font-size: 0.82rem; color: #555; line-height: 1.75; }
 
-    /* ── 포함 내용 ── */
-    #guide { background: var(--lt); }
-    .guide-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .guide-item { display: flex; gap: 12px; align-items: flex-start; padding: 16px; border: 1px solid var(--line); background: var(--white); }
-    .gi-icon { font-size: 1.2rem; flex-shrink: 0; }
-    .gi-title { font-size: 0.88rem; font-weight: 700; color: var(--deep); margin-bottom: 3px; }
-    .gi-desc { font-size: 0.8rem; color: #555; line-height: 1.6; }
+    /* ── 워크숍 흐름 ── */
+    #flow { background: var(--lt); }
+    .flow-list { display: flex; flex-direction: column; gap: 0;
+      border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .flow-item { display: flex; gap: 20px; align-items: flex-start;
+      padding: 22px 24px; border-bottom: 1px solid var(--line); background: var(--white); }
+    .flow-item:last-child { border-bottom: none; }
+    .flow-num { width: 36px; height: 36px; flex-shrink: 0; background: var(--teal);
+      color: #fff; font-size: 0.85rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .flow-time { font-size: 0.72rem; color: var(--teal); font-weight: 700;
+      letter-spacing: .05em; margin-bottom: 4px; }
+    .flow-title { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .flow-desc { font-size: 0.83rem; color: #555; line-height: 1.7; }
+
+    /* ── 8유형 미리보기 ── */
+    #types { background: var(--white); }
+    .type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .type-chip { padding: 14px 12px; text-align: center; border: 1.5px solid var(--line);
+      border-radius: 10px; }
+    .type-chip .t-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .type-chip .t-name { font-size: 0.88rem; font-weight: 800; color: var(--navy); }
+    .type-chip .t-kr { font-size: 0.72rem; color: var(--gray); margin-bottom: 4px; }
+    .type-chip .t-mbti { font-size: 0.65rem; color: #AAA; letter-spacing: .02em; }
+
+    /* ── 포함 항목 ── */
+    #includes { background: var(--lt); }
+    .inc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .inc-item { display: flex; gap: 14px; align-items: flex-start;
+      padding: 18px; background: var(--white); border: 1px solid var(--line); border-radius: 8px; }
+    .inc-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .inc-title { font-size: 0.9rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .inc-desc { font-size: 0.8rem; color: #555; line-height: 1.65; }
+    .inc-badge { display: inline-block; font-size: 0.65rem; font-weight: 700;
+      background: var(--green); color: var(--navy); padding: 1px 7px;
+      border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+
+    /* ── CTA 섹션 ── */
+    #cta { background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%); }
+    .cta-inner { max-width: 640px; margin: 0 auto; text-align: center; }
+    .cta-badge { display: inline-block; background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3); border-radius: 20px;
+      padding: 5px 16px; font-size: 0.75rem; color: var(--green);
+      font-weight: 700; letter-spacing: .08em; margin-bottom: 18px; }
+    .cta-title { font-size: 1.55rem; font-weight: 800; color: #fff;
+      line-height: 1.35; margin-bottom: 12px; word-break: keep-all; }
+    .cta-sub { font-size: 0.9rem; color: rgba(255,255,255,.7); margin-bottom: 32px; line-height: 1.8; }
+    .cta-note { margin-top: 18px; font-size: 0.78rem; color: rgba(255,255,255,.45); }
 
     /* ── 문의 ── */
-    #contact { background: var(--white); border-top: 1px solid var(--line); }
-    .contact-box { border: 1.5px solid var(--deep); padding: 32px 28px; display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+    #contact { background: var(--white); }
+    .contact-row { display: flex; gap: 32px; align-items: center; flex-wrap: wrap;
+      padding: 28px; border: 1.5px solid var(--navy); border-radius: 12px; }
     .ct-text { flex: 1; }
-    .ct-title { font-size: 1rem; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
-    .ct-desc { font-size: 0.87rem; color: #444; line-height: 1.8; }
+    .ct-name { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .ct-desc { font-size: 0.85rem; color: #555; line-height: 1.8; }
     .ct-btns { display: flex; flex-direction: column; gap: 8px; min-width: 180px; }
-    .btn-kakao { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: #FEE500; color: #3C1E1E; font-size: 0.88rem; font-weight: 700; text-decoration: none; transition: filter 0.2s; }
-    .btn-kakao:hover { filter: brightness(0.92); }
-    .btn-email { display: block; text-align: center; padding: 11px 20px; border: 1.5px solid var(--deep); color: var(--deep); font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-    .btn-email:hover { background: var(--deep); color: var(--white); }
+    .btn-kakao { display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 20px; background: #FEE500; color: #3C1E1E;
+      font-size: 0.88rem; font-weight: 700; text-decoration: none;
+      border-radius: 6px; transition: filter .2s; }
+    .btn-kakao:hover { filter: brightness(.92); }
+    .btn-email { display: block; text-align: center; padding: 11px 20px;
+      border: 1.5px solid var(--navy); color: var(--navy);
+      font-size: 0.85rem; font-weight: 600; text-decoration: none;
+      border-radius: 6px; transition: all .2s; }
+    .btn-email:hover { background: var(--navy); color: #fff; }
 
     /* ── 푸터 ── */
-    footer { background: var(--pastor); color: #9A8AB0; padding: 28px 5%; font-size: 0.8rem; line-height: 1.9; }
-    .f-inner { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    .f-brand { color: var(--white); font-weight: 700; }
-    footer a { color: #9A8AB0; text-decoration: none; }
-    footer a:hover { color: var(--white); }
+    footer { background: var(--navy); color: rgba(255,255,255,.45);
+      padding: 24px 5%; font-size: 0.78rem; line-height: 1.9; }
+    .f-inner { max-width: 760px; margin: 0 auto; display: flex;
+      justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .f-brand { color: #fff; font-weight: 700; }
+    footer a { color: rgba(255,255,255,.45); text-decoration: none; }
+    footer a:hover { color: #fff; }
     .f-links { display: flex; gap: 16px; }
-    .f-disclaimer { max-width: 720px; margin: 14px auto 0; padding-top: 12px; border-top: 1px solid #3A2F5A; font-size: 0.73rem; color: #5A4A7A; }
+    .f-copy { max-width: 760px; margin: 12px auto 0;
+      padding-top: 12px; border-top: 1px solid rgba(255,255,255,.1); font-size: 0.7rem; }
 
     /* ── 반응형 ── */
     @media (max-width: 640px) {
-      .hero-title { font-size: 1.6rem; }
-      .try-box { grid-template-columns: 1fr; }
-      .guide-list { grid-template-columns: 1fr; }
-      .contact-box { flex-direction: column; }
+      .hero-title { font-size: 1.65rem; }
+      .sol-grid { grid-template-columns: 1fr; }
+      .type-grid { grid-template-columns: repeat(2, 1fr); }
+      .inc-list { grid-template-columns: 1fr; }
+      .contact-row { flex-direction: column; }
+      .hero-cards { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-<!-- 네비 -->
+<!-- NAV -->
 <nav>
-  <a href="#" class="nav-brand">온유스쿨 <span>onyuschool.com</span></a>
+  <a href="home.html" class="nav-brand">온유스쿨 <span>onyuschool.com</span></a>
   <div class="nav-right">
-    <a href="teambuilding.html" class="nav-general">팀빌딩 클래스 →</a>
-    <a href="home2.html" class="nav-general">← 일반 성도 페이지</a>
-    <span class="nav-tag">PASTOR</span>
+    <a href="pastor.html" class="nav-link">목회자 개인 검사</a>
+    <a href="teambuilding.html" class="nav-btn">워크숍 시작 →</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
   <div class="hero-inner">
-    <div class="hero-tag">목회자 전용 안내 · PASTOR</div>
-    <h1 class="hero-title">함께 지어져 가는 교회<br><em>서로를 알 때 시작됩니다</em></h1>
+    <div class="hero-tag">Shadowgram · 교역자 팀빌딩</div>
+    <h1 class="hero-title">
+      교역자팀의<br>소통 언어를 발견합니다
+    </h1>
     <p class="hero-sub">
-      함께 지어져 가기 위해 서로를 관찰하고 배려합니다.<br>
-      온유스쿨이 성도를 이해하는 목회의 언어가 되겠습니다.
+      열심히 섬기는데 왜 엇갈릴까요.<br>
+      8유형 쉐도우그램으로 팀의 빛과 그림자를 함께 보는<br>
+      90분 워크숍입니다.
     </p>
-    <div class="hero-questions">
-      <div class="hq-item">
-        <span class="hq-icon">🤔</span>
-        "열심히 섬기다가 지쳐서 떠나는 성도, 왜 그럴까요?"
+    <div class="hero-cards">
+      <div class="hc">
+        <div class="hc-num">8</div>
+        <div class="hc-label">소통 유형</div>
       </div>
-      <div class="hq-item">
-        <span class="hq-icon">💬</span>
-        "같은 말인데 어떤 성도는 감동받고, 어떤 성도는 상처받습니다."
+      <div class="hc">
+        <div class="hc-num">90분</div>
+        <div class="hc-label">워크숍 구성</div>
       </div>
-      <div class="hq-item">
-        <span class="hq-icon">👫</span>
-        "부부 상담을 해도 근본 원인을 모르겠습니다."
+      <div class="hc">
+        <div class="hc-num">AI</div>
+        <div class="hc-label">팀 리포트 자동 생성</div>
+      </div>
+      <div class="hc">
+        <div class="hc-num">FREE</div>
+        <div class="hc-label">베타 무료 체험</div>
       </div>
     </div>
     <div class="hero-btns">
-      <a href="#try" class="btn-primary">목회자 검사 먼저 해보기</a>
-      <a href="#contact" class="btn-ghost">문의하기</a>
+      <a href="teambuilding.html" class="btn-cta">🌿 워크숍 신청하기 (무료)</a>
+      <a href="#flow" class="btn-ghost-w">워크숍 흐름 보기</a>
     </div>
   </div>
 </section>
 
-<hr class="divider" />
+<hr class="div" />
 
-<!-- 활용 방법 -->
-<section id="how">
+<!-- 공감 질문 -->
+<section id="pain">
   <div class="inner">
-    <div class="sec-label">How to Use</div>
-    <div class="sec-title">이렇게 활용하세요</div>
-    <div class="sec-sub">목회 현장에서 바로 쓸 수 있는 방법</div>
-    <div class="how-list">
-
-      <div class="how-item">
-        <div class="hi-num">1</div>
-        <div>
-          <div class="hi-title">목회상담 — 상담 전 리포트로 깊이 더하기</div>
-          <div class="hi-desc">상담 오시는 성도에게 미리 검사를 권해드리세요. 리포트를 보고 오시면 "왜 이러는지"가 아니라 "어떻게 도울지"로 바로 들어갈 수 있습니다.</div>
-          <div class="hi-example">"이 리포트 먼저 보시고 오시면 더 구체적인 이야기를 나눌 수 있을 것 같아요."</div>
-        </div>
+    <div class="sec-tag">왜 필요한가</div>
+    <div class="sec-title">이런 순간, 있지 않으셨나요</div>
+    <div class="sec-sub">교역자팀 안에서도 소통의 언어가 다릅니다.</div>
+    <div class="pain-list">
+      <div class="pain-item">
+        <span class="pain-icon">💬</span>
+        <div class="pain-text">"같은 비전을 품고 시작했는데, 회의 때마다 방향이 다른 것 같습니다."</div>
       </div>
-
-      <div class="how-item">
-        <div class="hi-num">2</div>
-        <div>
-          <div class="hi-title">소그룹 — 유형 나눔으로 관계 깊어지기</div>
-          <div class="hi-desc">소그룹에서 각자 유형을 나누는 것만으로 서로에 대한 이해가 달라집니다. 4주 나눔 가이드를 그대로 사용하시면 됩니다. 별도 준비 없이 진행 가능합니다.</div>
-          <div class="hi-example">1주: 유형 나눔 → 2주: 왼손 이야기 → 3주: 가족 유형 → 4주: 서로 세워주기</div>
-        </div>
+      <div class="pain-item">
+        <span class="pain-icon">🤔</span>
+        <div class="pain-text">"열심히 섬기는데 왜 저 분과는 자꾸 엇갈리는 걸까요."</div>
       </div>
-
-      <div class="how-item">
-        <div class="hi-num">3</div>
-        <div>
-          <div class="hi-title">부부·가족 사역 — 관계 리포트 연결</div>
-          <div class="hi-desc">개인 리포트를 받은 성도가 부부·자녀양육 리포트로 자연스럽게 이어갈 수 있습니다. 가정의 달, 부부 세미나, 결혼예비학교와 연계하기 좋습니다.</div>
-        </div>
+      <div class="pain-item">
+        <span class="pain-icon">😔</span>
+        <div class="pain-text">"열심히 하는 부교역자인데, 내가 뭘 힘들어하는지 모르겠습니다."</div>
       </div>
-
+      <div class="pain-item">
+        <span class="pain-icon">🌀</span>
+        <div class="pain-text">"담임목사님과 나는 사역 방식이 너무 다릅니다. 맞춰가야 할까요, 제 방식이 있을까요."</div>
+      </div>
     </div>
   </div>
 </section>
 
-<hr class="divider" />
+<hr class="div" />
 
-<!-- 목회자 먼저 경험 -->
-<section id="try">
+<!-- 솔루션 -->
+<section id="solution">
   <div class="inner">
-    <div class="sec-label">Try First</div>
-    <div class="sec-title">목회자가 먼저 경험하세요</div>
-    <div class="sec-sub">성도에게 권하기 전에 직접 해보시면 확신이 생깁니다.</div>
-    <div class="try-box">
-      <div>
-        <div class="tb-label">PASTOR EXCLUSIVE</div>
-        <div class="tb-title">목회자 소통스타일 검사<br>+ 목회자 리포트</div>
-        <div class="tb-desc">
-          목회 맥락의 문항으로 구성된 전용 검사입니다.<br>
-          내 소통스타일이 사역에서 어떻게 드러나는지,<br>
-          어떤 성도 유형과 시너지가 나는지 확인하세요.
-        </div>
+    <div class="sec-tag">Solution</div>
+    <div class="sec-title">쉐도우그램이 답합니다</div>
+    <div class="sec-sub">8유형은 소통의 주기능을 기준으로 나뉩니다. 갈등의 이유가 아니라, 서로를 이해하는 언어입니다.</div>
+    <div class="sol-grid">
+      <div class="sol-card featured">
+        <div class="sol-icon">🌿</div>
+        <div class="sol-title">빛과 그림자를 함께 봅니다</div>
+        <div class="sol-desc">강점(빛)이 과잉되면 그림자가 됩니다. 서로를 판단하는 게 아니라, 각자의 패턴을 이해하는 언어를 배웁니다.</div>
       </div>
-      <div class="tb-right">
-        <a href="pastor-trial.html" class="btn-pastor-test">무료 체험 패키지 신청하기</a>
-        <a href="pastor.html" class="btn-pastor-test" style="background:var(--deep); margin-top:0;">목회자 본인 검사만 하기</a>
-        <div class="tb-note">* 검사 결과는 본인 이메일로만 발송<br>약 7분 소요 · 완전 무료</div>
+      <div class="sol-card featured">
+        <div class="sol-icon">👥</div>
+        <div class="sol-title">팀 단위 분석</div>
+        <div class="sol-desc">개인 유형이 아닌 <strong>팀의 유형 조합</strong>을 봅니다. 우리 팀의 집단적 강점과 취약 영역을 AI 리포트로 확인하세요.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon">📋</div>
+        <div class="sol-title">검사 → 리포트 → 워크숍</div>
+        <div class="sol-desc">각자 링크로 검사 → 대시보드에서 현황 확인 → AI 팀 리포트 생성 → 퍼실리테이션 매뉴얼로 워크숍 진행.</div>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon">⚡</div>
+        <div class="sol-title">별도 강사 불필요</div>
+        <div class="sol-desc">퍼실리테이션 매뉴얼이 포함됩니다. 담임목사님이 직접 진행하시거나, 부목사님이 운영할 수 있습니다.</div>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="divider" />
+<hr class="div" />
 
-<!-- 포함 내용 -->
-<section id="guide">
+<!-- 8유형 -->
+<section id="types">
   <div class="inner">
-    <div class="sec-label">Included</div>
-    <div class="sec-title">교회 적용 시 제공되는 것들</div>
-    <div class="sec-sub">목사님이 따로 준비하실 것이 없도록 구성했습니다.</div>
-    <div class="guide-list">
-      <div class="guide-item">
-        <span class="gi-icon">📱</span>
+    <div class="sec-tag">8 Types</div>
+    <div class="sec-title">쉐도우그램 8유형</div>
+    <div class="sec-sub">16 MBTI 유형을 주기능 기준으로 8개로 묶습니다. 소통 패턴의 핵심이 같은 유형끼리 묶입니다.</div>
+    <div class="type-grid">
+      <div class="type-chip">
+        <div class="t-icon">🔥</div>
+        <div class="t-name">SPARK</div>
+        <div class="t-kr">스파크</div>
+        <div class="t-mbti">ENTP · ENFP</div>
+      </div>
+      <div class="type-chip">
+        <div class="t-icon">🔭</div>
+        <div class="t-name">VISION</div>
+        <div class="t-kr">비전</div>
+        <div class="t-mbti">INTJ · INFJ</div>
+      </div>
+      <div class="type-chip">
+        <div class="t-icon">🌿</div>
+        <div class="t-name">STEADY</div>
+        <div class="t-kr">스테디</div>
+        <div class="t-mbti">ISTJ · ISFJ</div>
+      </div>
+      <div class="type-chip">
+        <div class="t-icon">⚡</div>
+        <div class="t-name">PLAYER</div>
+        <div class="t-kr">플레이어</div>
+        <div class="t-mbti">ESTP · ESFP</div>
+      </div>
+      <div class="type-chip">
+        <div class="t-icon">🤝</div>
+        <div class="t-name">HARMONY</div>
+        <div class="t-kr">하모니</div>
+        <div class="t-mbti">ESFJ · ENFJ</div>
+      </div>
+      <div class="type-chip">
+        <div class="t-icon">🌙</div>
+        <div class="t-name">SOUL</div>
+        <div class="t-kr">소울</div>
+        <div class="t-mbti">INFP · ISFP</div>
+      </div>
+      <div class="type-chip">
+        <div class="t-icon">🔬</div>
+        <div class="t-name">LOGIC</div>
+        <div class="t-kr">로직</div>
+        <div class="t-mbti">INTP · ISTP</div>
+      </div>
+      <div class="type-chip">
+        <div class="t-icon">🏔️</div>
+        <div class="t-name">LEADER</div>
+        <div class="t-kr">리더</div>
+        <div class="t-mbti">ENTJ · ESTJ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div" />
+
+<!-- 워크숍 흐름 -->
+<section id="flow">
+  <div class="inner">
+    <div class="sec-tag">Workshop Flow</div>
+    <div class="sec-title">90분 워크숍은 이렇게 진행됩니다</div>
+    <div class="sec-sub">사전 검사 → 당일 워크숍 → AI 리포트 확인 순서입니다.</div>
+    <div class="flow-list">
+      <div class="flow-item">
+        <div class="flow-num">사전</div>
         <div>
-          <div class="gi-title">성도 배포용 카톡 문자 템플릿</div>
-          <div class="gi-desc">복사해서 바로 보내실 수 있는 문자 초안.</div>
+          <div class="flow-time">워크숍 1~3일 전</div>
+          <div class="flow-title">개별 검사 (10~12분)</div>
+          <div class="flow-desc">카카오톡 등으로 검사 링크 공유. 각자 스마트폰으로 28문항 검사 완료. MBTI 유형 아는 분은 직접 선택도 가능합니다.</div>
         </div>
       </div>
-      <div class="guide-item">
-        <span class="gi-icon">📋</span>
+      <div class="flow-item">
+        <div class="flow-num">①</div>
         <div>
-          <div class="gi-title">4주 소그룹 나눔 가이드</div>
-          <div class="gi-desc">주차별 나눔 질문과 진행 방법. 셀 리더에게 그대로 드리시면 됩니다.</div>
+          <div class="flow-time">0~20분</div>
+          <div class="flow-title">오프닝 — 쉐도우그램이란</div>
+          <div class="flow-desc">빛과 그림자 개념 소개. 판단이 아닌 이해의 언어로 접근하는 원칙 공유. AI 오프닝 멘트 활용 가능.</div>
         </div>
       </div>
-      <div class="guide-item">
-        <span class="gi-icon">📊</span>
+      <div class="flow-item">
+        <div class="flow-num">②</div>
         <div>
-          <div class="gi-title">교회 유형 분포 통계</div>
-          <div class="gi-desc">우리 교회에 어떤 유형이 몇 명인지 확인 가능. (개인 정보 비공개)</div>
+          <div class="flow-time">20~50분</div>
+          <div class="flow-title">팀 유형 분포 발표</div>
+          <div class="flow-desc">AI 생성 팀 서사 낭독. 우리 팀에 어떤 유형이 있는지, 조합의 강점과 주의할 점 함께 확인.</div>
         </div>
       </div>
-      <div class="guide-item">
-        <span class="gi-icon">🔗</span>
+      <div class="flow-item">
+        <div class="flow-num">③</div>
         <div>
-          <div class="gi-title">부부·자녀 리포트 자동 연결</div>
-          <div class="gi-desc">개인 리포트 내 링크로 부부·자녀양육 리포트 개별 구매로 연결됩니다.</div>
+          <div class="flow-time">50~80분</div>
+          <div class="flow-title">개인 캡션 나눔</div>
+          <div class="flow-desc">각자 AI 캡션을 읽고 공감·비공감 나눔. "내 빛이 그림자가 됐던 순간"을 팀에서 나눔.</div>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-num">④</div>
+        <div>
+          <div class="flow-time">80~90분</div>
+          <div class="flow-title">개성화 미션</div>
+          <div class="flow-desc">각 유형별 이번 주 한 가지 실천 미션 작성. 팀이 함께 기도로 마무리.</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="divider" />
+<hr class="div" />
+
+<!-- 포함 항목 -->
+<section id="includes">
+  <div class="inner">
+    <div class="sec-tag">Included</div>
+    <div class="sec-title">워크숍 신청 시 제공되는 것들</div>
+    <div class="sec-sub">목사님이 따로 준비하실 게 없도록 구성했습니다.</div>
+    <div class="inc-list">
+      <div class="inc-item">
+        <span class="inc-icon">🔗</span>
+        <div>
+          <div class="inc-title">전용 검사 링크 <span class="inc-badge">자동 생성</span></div>
+          <div class="inc-desc">워크숍 코드 기반 교역자 전용 링크. 카톡으로 바로 공유 가능.</div>
+        </div>
+      </div>
+      <div class="inc-item">
+        <span class="inc-icon">📊</span>
+        <div>
+          <div class="inc-title">실시간 대시보드 <span class="inc-badge">실시간</span></div>
+          <div class="inc-desc">누가 검사 완료했는지 대시보드에서 실시간 확인.</div>
+        </div>
+      </div>
+      <div class="inc-item">
+        <span class="inc-icon">🤖</span>
+        <div>
+          <div class="inc-title">AI 팀 리포트 <span class="inc-badge">자동 생성</span></div>
+          <div class="inc-desc">팀 서사·집단 그림자·오프닝 멘트. 전원 완료 후 버튼 클릭 한 번.</div>
+        </div>
+      </div>
+      <div class="inc-item">
+        <span class="inc-icon">🌿</span>
+        <div>
+          <div class="inc-title">AI 개인 캡션 <span class="inc-badge">팀원별</span></div>
+          <div class="inc-desc">팀원 한 명 한 명의 빛→그림자 서사. 팀원 공유 링크로 배포.</div>
+        </div>
+      </div>
+      <div class="inc-item">
+        <span class="inc-icon">📋</span>
+        <div>
+          <div class="inc-title">퍼실리테이션 매뉴얼 <span class="inc-badge">PDF</span></div>
+          <div class="inc-desc">90분 진행 가이드 + 단계별 발언 스크립트. 강사 없이 직접 운영 가능.</div>
+        </div>
+      </div>
+      <div class="inc-item">
+        <span class="inc-icon">👤</span>
+        <div>
+          <div class="inc-title">직접 입력 지원</div>
+          <div class="inc-desc">MBTI 유형을 아는 팀원은 검사 없이 직접 등록. 대시보드에서도 수동 추가 가능.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div" />
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner">
+    <div class="cta-badge">베타 무료 체험 · 인원 제한 없음</div>
+    <h2 class="cta-title">지금 신청하면<br>무료로 진행하실 수 있습니다</h2>
+    <p class="cta-sub">
+      베타 기간 동안 교역자팀 인원수 제한 없이 무료입니다.<br>
+      AI 리포트 생성까지 모든 기능을 그대로 사용하세요.
+    </p>
+    <a href="teambuilding.html" class="btn-cta" style="font-size:1.05rem;padding:18px 40px">
+      🌿 교역자 팀빌딩 시작하기 →
+    </a>
+    <div class="cta-note">신청 후 즉시 검사 링크 발급 · 준비 시간 5분</div>
+  </div>
+</section>
+
+<hr class="div" />
 
 <!-- 문의 -->
-<section id="contact">
+<section id="contact" style="padding:48px 5%">
   <div class="inner">
-    <div class="sec-label">Contact</div>
-    <div class="sec-title">문의하기</div>
-    <div class="contact-box">
+    <div class="contact-row">
       <div class="ct-text">
-        <div class="ct-title">24시간 내 답변드립니다</div>
+        <div class="ct-name">궁금한 점이 있으신가요?</div>
         <div class="ct-desc">
-          교회 적용 방법, 인원 조율, 세금계산서 등<br>
-          편하신 방법으로 연락주세요.<br><br>
-          온유스쿨 수강생이시라면 수업 중 바로 말씀해주세요.
+          인원 조율, 진행 방법, 워크숍 커스텀 등<br>
+          편하신 방법으로 연락주세요. 24시간 내 답변드립니다.<br>
+          온유스쿨 수강생이시라면 수업 중 말씀해 주세요.
         </div>
       </div>
       <div class="ct-btns">
         <a href="https://open.kakao.com/o/onyuschool" class="btn-kakao" target="_blank">
           💛 카카오톡으로 문의
         </a>
-        <a href="mailto:onyuschool@gmail.com?subject=목회자 문의" class="btn-email">
+        <a href="mailto:onyuschool@gmail.com?subject=교역자 팀빌딩 문의" class="btn-email">
           이메일로 문의하기
         </a>
       </div>
@@ -297,17 +510,17 @@
 <footer>
   <div class="f-inner">
     <div>
-      <div class="f-brand">온유스쿨 onyuschool.com</div>
-      <div>함께 지어져 가기 위해 서로를 관찰하고 배려합니다</div>
-      <div>by Shadowgram · 일반 성도: <a href="home2.html">→ 이동</a></div>
+      <div class="f-brand">온유스쿨 · 쉐도우그램</div>
+      <div>불을 다스리는 사람들의 학교</div>
     </div>
     <div class="f-links">
-      <a href="#how">활용 방법</a>
+      <a href="home.html">홈</a>
+      <a href="teambuilding.html">팀빌딩</a>
       <a href="pastor.html">목회자 검사</a>
       <a href="#contact">문의</a>
     </div>
   </div>
-  <div class="f-disclaimer">
+  <div class="f-copy">
     * MBTI®는 The Myers-Briggs Foundation의 등록상표입니다. 온유스쿨은 독자적 프레임워크로 동 재단과 무관합니다.<br>
     © 2026 온유스쿨 · Shadowgram. All rights reserved.
   </div>
