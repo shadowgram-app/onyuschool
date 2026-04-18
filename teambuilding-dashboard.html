@@ -279,16 +279,6 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
       <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px">리포트 생성</div>
       <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">쉐도우그램 철학 기반 AI 리포트 자동 생성</div>
 
-      <!-- 생성 진행 상태 -->
-      <div id="gen-progress" style="display:none;background:#F0F7F4;border:1px solid rgba(37,96,96,.25);
-        border-radius:10px;padding:16px;margin-bottom:16px">
-        <div style="font-size:.85rem;font-weight:700;color:var(--teal);margin-bottom:8px" id="gen-status-text">준비 중...</div>
-        <div style="height:6px;background:#E0EDE8;border-radius:3px;overflow:hidden">
-          <div id="gen-prog-bar" style="height:100%;background:var(--teal);border-radius:3px;
-            width:0%;transition:width .4s ease"></div>
-        </div>
-      </div>
-
       <!-- 전원 미완료 경고 배너 -->
       <div id="not-all-done-banner" style="display:none;background:#FFF3CD;border:1.5px solid #F0C040;
         border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:.83rem;color:#7A5000;line-height:1.7">
@@ -298,7 +288,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
         전원 완료 후 생성하는 것을 권장합니다.
       </div>
 
-      <!-- 생성 진행 상태 -->
+      <!-- 생성 진행 상태 (ID 중복 제거 — 단 하나만) -->
       <div id="gen-progress" style="display:none;background:#F0F7F4;border:1px solid rgba(37,96,96,.25);
         border-radius:10px;padding:16px;margin-bottom:16px">
         <div style="font-size:.85rem;font-weight:700;color:var(--teal);margin-bottom:8px" id="gen-status-text">준비 중...</div>
@@ -315,7 +305,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
             <div class="rpt-name">📊 팀 전체 인사이트 리포트</div>
             <div class="rpt-desc">유형 분포 · 팀 서사 · 강점·그림자 · 동역 구조 · 워크숍 오프닝 · 퍼실리테이션</div>
           </div>
-          <button class="btn-dl team" id="btn-team-report" onclick="openTeamReport()">리포트 보기 →</button>
+          <button class="btn-dl team" id="btn-team-report" onclick="openTeamReport()">리포트 생성 & 보기 →</button>
         </div>
         <div class="rpt-item">
           <div class="rpt-info">
@@ -751,7 +741,10 @@ function updateReportStatus() {
 /* ── 팀 리포트 HTML 뷰어 열기 ── */
 async function openTeamReport() {
   if (results.length === 0) { showToast('검사 완료된 팀원이 없습니다.'); return; }
-  setProgress('리포트 데이터 불러오는 중...', 20);
+
+  const btn = document.getElementById('btn-team-report');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ 생성 중...'; }
+  setProgress('AI 리포트 생성 중... (20~60초 소요)', 15);
 
   try {
     const res = await fetch(EDGE_URL, {
@@ -759,23 +752,27 @@ async function openTeamReport() {
       headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
       body: JSON.stringify({ code: CODE, mode: 'all' }),
     });
-    setProgress('리포트 렌더링 중...', 75);
+    setProgress('리포트 데이터 처리 중...', 70);
     if (!res.ok) { const e = await res.json(); throw new Error(e.error || '서버 오류'); }
     const data = await res.json();
-    setProgress('완료!', 100);
-    hideProgress();
+    setProgress('완료! 리포트 페이지로 이동합니다...', 100);
 
-    // 팀 리포트 HTML 뷰어 URL로 이동
-    const url = `teambuilding-report.html?code=${CODE}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`;
-    // 데이터를 sessionStorage에 캐시한 뒤 이동
+    // sessionStorage에 저장 후 같은 탭에서 이동 (팝업 차단 우회)
     sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify(data));
-    window.open(url, '_blank');
+    setTimeout(() => {
+      location.href = `teambuilding-report.html?code=${encodeURIComponent(CODE)}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`;
+    }, 600);
 
   } catch(e) {
     hideProgress();
-    // 폴백: rule-based로 리포트 뷰어 열기
-    sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify({ ok: true, results, typeDistribution: getTypeDistribution(), teamAI: null, individualAI: [], workshop: { church_name: wsData?.church_name||CHURCH } }));
-    window.open(`teambuilding-report.html?code=${CODE}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`, '_blank');
+    if (btn) { btn.disabled = false; btn.textContent = '리포트 생성 & 보기 →'; }
+    // 폴백: AI 없이 rule-based로 리포트 뷰어 열기
+    const fallback = { ok: true, results, typeDistribution: getTypeDistribution(), teamAI: null, individualAI: [], workshop: { church_name: wsData?.church_name||CHURCH } };
+    sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify(fallback));
+    showToast('⚠️ AI 생성 실패 — 기본 리포트로 보여드립니다');
+    setTimeout(() => {
+      location.href = `teambuilding-report.html?code=${encodeURIComponent(CODE)}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`;
+    }, 1500);
   }
 }
 
