@@ -649,11 +649,41 @@ async function downloadPDF() {
       }
 
       if (blockH_mm > CONTENT_H) {
-        // 한 페이지보다 큰 블록 → 비율 축소해서 한 페이지에 맞춤
-        const ratio = CONTENT_H / blockH_mm;
-        pdf.addImage(imgData, 'JPEG', MARGIN, MARGIN, blockW_mm * ratio, CONTENT_H, '', 'FAST');
-        pdf.addPage();
-        curY = MARGIN;
+        // 한 페이지보다 큰 블록 → 여러 페이지에 나눠서 출력 (축소 금지)
+        const pageH_px = Math.round(CONTENT_H * PX_PER_MM * SCALE);
+        const firstSliceH_px = Math.round((PAGE_H - MARGIN - curY) * PX_PER_MM * SCALE);
+        let srcY = 0;
+        let remainH_px = canvas.height;
+        let firstPage = true;
+
+        while (remainH_px > 0) {
+          const sliceH_px = firstPage
+            ? Math.min(firstSliceH_px, remainH_px)
+            : Math.min(pageH_px, remainH_px);
+
+          // 슬라이스 캔버스 생성
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width  = canvas.width;
+          sliceCanvas.height = sliceH_px;
+          const ctx = sliceCanvas.getContext('2d');
+          ctx.drawImage(canvas, 0, srcY, canvas.width, sliceH_px, 0, 0, canvas.width, sliceH_px);
+
+          const sliceImg = sliceCanvas.toDataURL('image/jpeg', 0.93);
+          const sliceH_mm = (sliceH_px / SCALE) / PX_PER_MM;
+
+          pdf.addImage(sliceImg, 'JPEG', MARGIN, curY, blockW_mm, sliceH_mm, '', 'FAST');
+
+          srcY       += sliceH_px;
+          remainH_px -= sliceH_px;
+          firstPage   = false;
+
+          if (remainH_px > 0) {
+            pdf.addPage();
+            curY = MARGIN;
+          } else {
+            curY += sliceH_mm + 3;
+          }
+        }
       } else {
         pdf.addImage(imgData, 'JPEG', MARGIN, curY, blockW_mm, blockH_mm, '', 'FAST');
         curY += blockH_mm + 3;
