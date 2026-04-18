@@ -541,6 +541,29 @@ body {
     <input class="form-input" type="text" id="inp-name"
            placeholder="예: 홍길동" maxlength="20" autocomplete="off">
 
+    <!-- 목회자 직분 -->
+    <label class="form-label" for="inp-position" style="margin-top:14px">직분</label>
+    <select class="form-select" id="inp-position">
+      <option value="">선택해 주세요</option>
+      <option value="담임목사">담임목사</option>
+      <option value="부목사">부목사</option>
+      <option value="전도사">전도사</option>
+      <option value="강도사">강도사</option>
+      <option value="장로">장로</option>
+      <option value="권사">권사</option>
+      <option value="집사">집사</option>
+      <option value="안수집사">안수집사</option>
+      <option value="청년">청년</option>
+      <option value="학생">학생</option>
+      <option value="성도">성도</option>
+      <option value="기타">기타</option>
+    </select>
+
+    <!-- 이메일 -->
+    <label class="form-label" for="inp-email" style="margin-top:14px">이메일</label>
+    <input class="form-input" type="email" id="inp-email"
+           placeholder="예: hong@church.com" maxlength="60" autocomplete="email">
+
     <hr class="form-divider">
 
     <!-- 역할 선택 -->
@@ -762,7 +785,7 @@ const TYPE_DATA = {
 // ── 상태 ──
 let cur = 0;
 const ans = Array(28).fill(null);
-let uName = '', uRole = '';
+let uName = '', uRole = '', uPosition = '', uEmail = '';
 
 // URL 파라미터
 const params = new URLSearchParams(location.search);
@@ -797,10 +820,14 @@ function resolveRole() {
 function startSurvey() {
   const name = document.getElementById('inp-name').value.trim();
   if (!name) { alert('이름을 입력해 주세요.'); return; }
+  const position = document.getElementById('inp-position').value;
+  if (!position) { alert('직분을 선택해 주세요.'); return; }
   const role = resolveRole();
   if (!role) { alert('역할을 선택(또는 입력)해 주세요.'); return; }
 
   uName = name;
+  uPosition = position;
+  uEmail = document.getElementById('inp-email').value.trim();
   uRole = role;
 
   showScreen('quiz');
@@ -941,6 +968,8 @@ function showResult() {
   submitToSupabase({
     workshop_code: workshopCode,
     name:          uName,
+    position:      uPosition,
+    email:         uEmail || null,
     role:          uRole,
     sg_type:       typeName,
     dim_scores:    scores,
@@ -982,6 +1011,8 @@ async function submitToSupabase(payload) {
         workshop_id:   workshopId,
         workshop_code: payload.workshop_code,
         name:          payload.name,
+        position:      payload.position || null,
+        email:         payload.email || null,
         role:          payload.role,
         sg_type:       payload.sg_type,
         dim_scores:    payload.dim_scores,
