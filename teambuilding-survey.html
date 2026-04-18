@@ -1039,6 +1039,7 @@ async function submitDirect() {
   const role = resolveRole();
   if (!role) { alert('직분을 선택(또는 입력)해 주세요.'); return; }
   if (!selectedSgType) { alert('유형을 선택해 주세요.'); return; }
+  if (!workshopCode) { alert('워크숍 코드가 없습니다. 담당자에게 받은 링크로 접속해 주세요.'); return; }
 
   uName  = name;
   uRole  = role;
@@ -1048,31 +1049,63 @@ async function submitDirect() {
   btn.disabled = true;
   btn.textContent = '저장 중...';
 
-  await submitToSupabase({
-    workshop_code: workshopCode,
-    name:          uName,
-    group_type:    uGroup,
-    role:          uRole,
-    sg_type:       selectedSgType,
-    dim_scores:    null,
-    answers:       null,
-  });
+  try {
+    // workshop_id 조회
+    const SUPABASE_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+    const wRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/workshops?code=eq.${encodeURIComponent(workshopCode)}&select=id`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
+    );
+    const wsArr = await wRes.json();
+    const workshopId = wsArr?.[0]?.id || null;
 
-  // 결과 화면으로 이동 (간소화)
-  const typeInfo = SG_LABEL[selectedSgType];
-  const fullType = TYPE_DATA[selectedSgType] || {};
-  document.getElementById('res-icon').textContent    = typeInfo.icon || fullType.icon || '🌿';
-  document.getElementById('res-type').textContent    = selectedSgType;
-  document.getElementById('res-kr').textContent      = typeInfo.kr;
-  document.getElementById('res-tagline').textContent = fullType.tagline ? fullType.tagline.split('\n')[0] : typeInfo.desc;
-  document.getElementById('kw-row').textContent      = '';
-  const badge = document.getElementById('res-type-badge');
-  if (badge) badge.style.background = fullType.color || '#8FC49A';
-  document.getElementById('res-bars').innerHTML = `
-    <div style="text-align:center;color:var(--mid);padding:20px 0;font-size:.92rem">
-      ✅ 직접 입력으로 등록 완료되었습니다.
-    </div>`;
-  showScreen('result');
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/survey_results`, {
+      method: 'POST',
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=minimal',
+      },
+      body: JSON.stringify({
+        workshop_id:   workshopId,
+        workshop_code: workshopCode,
+        name:          uName,
+        group_type:    uGroup,
+        role:          uRole,
+        sg_type:       selectedSgType,
+        dim_scores:    null,
+        answers:       null,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText);
+    }
+
+    // 결과 화면으로 이동
+    const typeInfo = SG_LABEL[selectedSgType];
+    const fullType = TYPE_DATA[selectedSgType] || {};
+    document.getElementById('res-icon').textContent    = typeInfo.icon || fullType.icon || '🌿';
+    document.getElementById('res-type').textContent    = selectedSgType;
+    document.getElementById('res-kr').textContent      = typeInfo.kr;
+    document.getElementById('res-tagline').textContent = fullType.tagline ? fullType.tagline.split('\n')[0] : typeInfo.desc;
+    document.getElementById('kw-row').textContent      = '';
+    const badge = document.getElementById('res-type-badge');
+    if (badge) badge.style.background = fullType.color || '#8FC49A';
+    document.getElementById('res-bars').innerHTML = `
+      <div style="text-align:center;color:var(--mid);padding:20px 0;font-size:.92rem">
+        ✅ 직접 입력으로 등록 완료되었습니다.
+      </div>`;
+    showScreen('result');
+
+  } catch(e) {
+    alert('저장 실패: ' + e.message + '\n\n담당자에게 문의하거나 새로고침 후 다시 시도해 주세요.');
+    btn.disabled = false;
+    btn.textContent = `${SG_LABEL[selectedSgType].icon} ${selectedSgType}으로 등록하기 →`;
+  }
 }
 
 // ── 페이지 진입 시 직분 폼 렌더링 ──

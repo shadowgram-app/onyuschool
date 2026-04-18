@@ -546,12 +546,16 @@ function openAddMember() {
   dashSelectedSg = null;
   document.getElementById('add-name').value    = '';
   document.getElementById('add-role').value    = '';
-  document.getElementById('add-mbti').value    = '';
+  const mbtiEl = document.getElementById('add-mbti');
+  if (mbtiEl) mbtiEl.value = '';
   document.getElementById('add-mbti-result').textContent = '';
   document.getElementById('add-error').style.display = 'none';
+  document.getElementById('add-submit-btn').textContent = '등록하기 →';
   renderDashSgChips(null);
   const modal = document.getElementById('add-member-modal');
   modal.style.display = 'flex';
+  // 이름 필드 자동 포커스
+  setTimeout(() => document.getElementById('add-name').focus(), 100);
 }
 function closeAddMember() {
   document.getElementById('add-member-modal').style.display = 'none';
