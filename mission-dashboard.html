@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단기선교팀 대시보드 — 온유스쿨</title>
+<style>
+:root{--navy:#1A3055;--teal:#256060;--gold:#8A6400;--bg:#F0F2F5;--white:#FFF;
+  --gray:#333;--mid:#666;--light:#999;--border:#DDD;--green:#8FC49A;--red:#C0392B}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:14px;line-height:1.7;background:var(--bg);color:var(--gray)}
+/* topbar */
+.topbar{background:var(--navy);padding:0 24px;height:52px;display:flex;
+  align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-logo{color:#fff;font-size:.88rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.tb-logo span{color:var(--green)}
+.tb-right{display:flex;align-items:center;gap:16px}
+.tb-church{font-size:.82rem;color:rgba(255,255,255,.65)}
+.tb-church strong{color:#FFE08A}
+/* layout */
+.layout{display:flex;min-height:calc(100vh - 52px)}
+.sidebar{width:200px;flex-shrink:0;background:var(--navy);padding:20px 0}
+.sb-sec{font-size:.6rem;font-weight:800;letter-spacing:2px;color:#4A5A7A;
+  padding:14px 18px 4px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:8px;padding:9px 18px;
+  color:#A8B8D0;font-size:.82rem;cursor:pointer;transition:all .14s;
+  border-left:3px solid transparent;text-decoration:none}
+.sb-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+.sb-item.active{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--green)}
+.main{flex:1;padding:24px;overflow-x:auto;min-width:0}
+.page{display:none}.page.active{display:block}
+/* 카드 */
+.row{display:grid;gap:14px}
+.row-3{grid-template-columns:repeat(3,1fr)}
+.row-2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:700px){.row-3,.row-2{grid-template-columns:1fr}.sidebar{display:none}.layout{display:block}}
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px}
+.card-title{font-size:.78rem;font-weight:800;color:var(--navy);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.stat-num{font-size:2.2rem;font-weight:800;color:var(--navy);line-height:1}
+.stat-lbl{font-size:.75rem;color:var(--light);margin-top:4px}
+/* 테이블 */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:.72rem;font-weight:800;color:var(--navy);text-align:left;
+  padding:8px 10px;border-bottom:2px solid var(--navy);white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid #F5F5F5;font-size:.82rem;color:var(--mid);vertical-align:middle}
+.tbl tr:hover td{background:#FAFAFA}
+.badge-done{background:rgba(37,96,96,.12);color:var(--teal);font-size:.68rem;
+  font-weight:800;padding:2px 8px;border-radius:8px}
+.type-badge{font-size:.68rem;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:4px}
+.T-SPARK{background:rgba(138,100,0,.1);color:#7A5500}
+.T-VISION{background:rgba(74,35,90,.1);color:#4A235A}
+.T-STEADY{background:rgba(37,96,96,.1);color:#256060}
+.T-PLAYER{background:rgba(61,77,28,.1);color:#3D4D1C}
+.T-HARMONY{background:rgba(123,26,26,.1);color:#7B1A1A}
+.T-SOUL{background:rgba(85,85,85,.1);color:#555}
+.T-LOGIC{background:rgba(44,62,80,.1);color:#2C3E50}
+.T-LEADER{background:rgba(26,48,85,.1);color:#1A3055}
+/* 바 차트 */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-lbl{font-size:.75rem;font-weight:700;min-width:72px;color:var(--mid)}
+.bar-bg{flex:1;height:12px;background:#EEE;border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;transition:width .8s ease}
+.bar-val{font-size:.72rem;color:var(--light);min-width:24px;text-align:right}
+/* 버튼 */
+.btn-dl{padding:8px 16px;border:none;border-radius:7px;font-size:.78rem;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:all .18s;white-space:nowrap}
+.btn-dl.team{background:var(--navy);color:#fff}
+.btn-dl.team:hover{background:#102540}
+.btn-dl.disabled{background:#EEE;color:var(--light);cursor:default}
+.btn-refresh{padding:7px 14px;background:var(--white);border:1px solid var(--border);
+  color:var(--navy);border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .18s}
+.btn-refresh:hover{border-color:var(--navy)}
+.empty{text-align:center;padding:40px 20px;color:var(--light);font-size:.85rem}
+.empty .e-ico{font-size:2.4rem;margin-bottom:10px}
+.loading{text-align:center;padding:30px;color:var(--light);font-size:.85rem}
+/* 토스트 */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#222;color:#fff;padding:9px 22px;border-radius:24px;font-size:.82rem;
+  opacity:0;transition:transform .3s,opacity .3s;z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* 로그인 */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);padding:20px}
+.login-card{background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:36px 32px;width:100%;max-width:480px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.login-title{font-size:1.2rem;font-weight:800;color:var(--navy);margin-bottom:6px}
+.login-sub{font-size:.83rem;color:var(--light);margin-bottom:24px;line-height:1.7}
+.login-label{display:block;font-size:.83rem;font-weight:700;color:var(--navy);margin-bottom:7px}
+.login-input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.95rem;font-family:inherit;outline:none;color:var(--gray);transition:border-color .2s}
+.login-input:focus{border-color:var(--navy)}
+.login-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;
+  border-radius:10px;font-size:.95rem;font-weight:800;cursor:pointer;
+  font-family:inherit;transition:background .2s;margin-top:8px}
+.login-btn:hover{background:#102540}
+.login-warn{background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
+  padding:10px 14px;font-size:.78rem;color:#7A6000;margin-bottom:16px;line-height:1.6}
+/* 복사 링크 */
+.link-box{font-size:.78rem;background:#F8F7F3;border:1px solid var(--border);border-radius:6px;
+  padding:9px 12px;word-break:break-all;font-weight:600;color:var(--navy);
+  display:flex;align-items:center;justify-content:space-between;gap:8px}
+.link-box button{background:var(--teal);color:#fff;border:none;border-radius:6px;
+  padding:6px 14px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+/* 모달 */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-card{background:#fff;border-radius:14px;padding:28px 24px;width:100%;max-width:520px;
+  max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.modal-close{float:right;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999}
+/* 셀렉트 */
+select.login-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23999' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SCREEN 0 — 생성 / 로그인 선택
+══════════════════════════════════ -->
+<div id="screen-login">
+  <div class="login-wrap">
+    <div class="login-card">
+
+      <!-- STEP: 새 선교팀 생성 -->
+      <div id="li-create">
+        <div style="font-size:1.5rem;margin-bottom:12px">✈️</div>
+        <div class="login-title">단기선교팀 쉐도우그램</div>
+        <div class="login-sub">
+          선교팀의 역할 배치 · 인솔 가이드 · 영적 성장 리포트를 자동 생성합니다.<br>
+          팀 정보를 입력하고 검사 링크를 팀원에게 공유하세요.
+        </div>
+
+        <label class="login-label">교회/단체 이름 *</label>
+        <input class="login-input" type="text" id="cr-church" placeholder="예: 온누리행복교회">
+
+        <label class="login-label" style="margin-top:14px">인솔자(리더) 이름 *</label>
+        <input class="login-input" type="text" id="cr-leader" placeholder="예: 홍길동 목사">
+
+        <label class="login-label" style="margin-top:14px">인솔자 이메일 *</label>
+        <input class="login-input" type="email" id="cr-email" placeholder="예: pastor@church.com">
+
+        <label class="login-label" style="margin-top:14px">선교 이름</label>
+        <input class="login-input" type="text" id="cr-trip" placeholder="예: 2026 여름 단기선교">
+
+        <label class="login-label" style="margin-top:14px">선교지</label>
+        <input class="login-input" type="text" id="cr-location" placeholder="예: 캄보디아 프놈펜">
+
+        <label class="login-label" style="margin-top:14px">기간</label>
+        <input class="login-input" type="text" id="cr-duration" placeholder="예: 7박 8일">
+
+        <div id="cr-error" class="login-warn" style="display:none;margin-top:14px;margin-bottom:0"></div>
+
+        <button class="login-btn" style="margin-top:18px" onclick="createMission()">
+          선교팀 생성하기 →
+        </button>
+
+        <div style="text-align:center;margin-top:18px;font-size:.82rem;color:var(--light)">
+          이미 생성한 선교팀이 있나요?
+          <span style="color:var(--teal);cursor:pointer;text-decoration:underline"
+            onclick="showExisting()">기존 선교팀 접속 →</span>
+        </div>
+      </div>
+
+      <!-- STEP: 기존 코드로 접속 -->
+      <div id="li-existing" style="display:none">
+        <div style="font-size:1.5rem;margin-bottom:12px">🔑</div>
+        <div class="login-title">기존 선교팀 접속</div>
+        <div class="login-sub">선교팀 생성 시 받은 코드를 입력하세요.</div>
+
+        <label class="login-label">선교팀 코드</label>
+        <input class="login-input" type="text" id="ex-code" placeholder="예: mission-xxxx-xxxx"
+          onkeydown="if(event.key==='Enter') accessExisting()">
+
+        <div id="ex-error" class="login-warn" style="display:none;margin-top:14px;margin-bottom:0"></div>
+
+        <button class="login-btn" style="margin-top:14px" onclick="accessExisting()">접속하기 →</button>
+        <div style="text-align:center;margin-top:14px;font-size:.82rem">
+          <span style="color:var(--teal);cursor:pointer;text-decoration:underline"
+            onclick="showCreate()">← 새 선교팀 만들기</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TOPBAR + LAYOUT (대시보드)
+══════════════════════════════════ -->
+<div class="topbar" id="topbar" style="display:none">
+  <a class="tb-logo" href="https://onyuschool.com">ONYUSCHOOL <span>쉐도우그램</span></a>
+  <div class="tb-right">
+    <div class="tb-church">단기선교 · <strong id="tb-church">로딩 중...</strong></div>
+    <span style="font-size:.78rem;color:rgba(255,255,255,.5);cursor:pointer"
+      onclick="location.href='mission-dashboard.html'">나가기</span>
+  </div>
+</div>
+
+<div class="layout" id="main-layout" style="display:none">
+  <div class="sidebar">
+    <div class="sb-sec">선교팀 관리</div>
+    <div class="sb-item active" onclick="navTo('status',this)">📊 검사 현황</div>
+    <div class="sb-item" onclick="navTo('types',this)">🌿 유형 분포</div>
+    <div class="sb-item" onclick="navTo('reports',this)">📄 리포트</div>
+    <div class="sb-sec" style="margin-top:12px">안내</div>
+    <div class="sb-item" onclick="navTo('info',this)">ℹ️ 선교팀 정보</div>
+    <div class="sb-item" onclick="navTo('link',this)">🔗 검사 링크</div>
+  </div>
+
+  <div class="main">
+
+    <!-- ── PAGE: 검사 현황 ── -->
+    <div id="page-status" class="page active">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--navy)" id="ws-title">선교팀 현황</div>
+          <div style="font-size:.78rem;color:var(--light)" id="ws-code-disp"></div>
+        </div>
+        <button class="btn-refresh" onclick="loadData()">↻ 새로고침</button>
+      </div>
+
+      <div class="row row-3" style="margin-bottom:16px">
+        <div class="card">
+          <div class="stat-num" id="stat-done" style="color:var(--teal)">—</div>
+          <div class="stat-lbl">검사 완료</div>
+        </div>
+        <div class="card">
+          <div class="stat-num" id="stat-types" style="color:var(--gold)">—</div>
+          <div class="stat-lbl">유형 종류</div>
+        </div>
+        <div class="card">
+          <div class="stat-num" id="stat-latest" style="color:var(--light);font-size:1rem">—</div>
+          <div class="stat-lbl">마지막 참여</div>
+        </div>
+      </div>
+
+      <!-- 멤버 테이블 -->
+      <div class="card">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span>참여자 현황</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="done-count-label" style="font-size:.75rem;font-weight:600;color:var(--teal)"></span>
+            <button onclick="openAddMember()"
+              style="background:var(--teal);color:#fff;border:none;border-radius:8px;
+                padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">
+              + 직접 추가
+            </button>
+          </div>
+        </div>
+        <div id="member-wrap"><div class="loading">⏳ 데이터 불러오는 중...</div></div>
+      </div>
+
+      <div style="background:#F0F8F5;border:1.5px solid rgba(37,96,96,.25);border-radius:10px;
+        padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-size:1.2rem">💡</span>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:.85rem;font-weight:700;color:var(--teal);margin-bottom:2px">
+            유형을 아는 팀원은 검사 없이 직접 추가할 수 있습니다
+          </div>
+          <div style="font-size:.75rem;color:var(--mid)">
+            이름·역할·유형 선택만으로 바로 등록 → 리포트에 반영됩니다
+          </div>
+        </div>
+        <button onclick="openAddMember()"
+          style="background:var(--teal);color:#fff;border:none;border-radius:8px;
+            padding:9px 18px;font-size:.85rem;font-weight:700;cursor:pointer;
+            font-family:inherit;white-space:nowrap">
+          + 직접 추가하기
+        </button>
+      </div>
+    </div>
+
+    <!-- ── PAGE: 유형 분포 ── -->
+    <div id="page-types" class="page">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:18px">유형 분포</div>
+      <div class="row row-2">
+        <div class="card">
+          <div class="card-title">유형 분포 차트</div>
+          <div id="type-chart"><div class="empty"><div class="e-ico">📊</div>완료된 검사가 없습니다</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">팀 인사이트</div>
+          <div id="team-insight">
+            <div class="empty"><div class="e-ico">🌿</div>검사 완료 후 인사이트가 생성됩니다</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: 리포트 ── -->
+    <div id="page-reports" class="page">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px">선교팀 리포트</div>
+      <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">역할 배치 · 인솔 가이드 · 영적 성장 — 자동 생성</div>
+
+      <div style="display:grid;gap:12px">
+        <div style="border:1px solid var(--border);border-radius:10px;padding:16px 18px;
+          display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff">
+          <div style="flex:1">
+            <div style="font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:2px">📋 선교팀 종합 리포트</div>
+            <div style="font-size:.75rem;color:var(--light)">역할 배치 · 인솔자 가이드 · 영적 성장 보고서</div>
+          </div>
+          <button class="btn-dl team" id="btn-report" onclick="openMissionReport()">리포트 보기 →</button>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
+        padding:12px 15px;font-size:.8rem;color:#7A6000;line-height:1.7" id="rpt-status-msg">
+        ⏳ 현황을 불러오는 중...
+      </div>
+    </div>
+
+    <!-- ── PAGE: 선교팀 정보 ── -->
+    <div id="page-info" class="page">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:18px">선교팀 정보</div>
+      <div class="card" id="ws-info-card">
+        <div class="loading">⏳ 불러오는 중...</div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: 검사 링크 ── -->
+    <div id="page-link" class="page">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:18px">검사 링크 공유</div>
+      <div class="card">
+        <div class="card-title">팀원 검사 링크</div>
+        <div style="font-size:.85rem;color:var(--mid);margin-bottom:14px;line-height:1.7">
+          아래 링크를 팀원들에게 공유하세요. 인원 제한 없이 누구나 검사할 수 있습니다.
+        </div>
+        <div class="link-box" id="survey-link-box">
+          <span id="survey-link-text">—</span>
+          <button onclick="copySurveyLink()">복사</button>
+        </div>
+        <div style="margin-top:16px;font-size:.82rem;color:var(--mid);line-height:1.7">
+          <strong style="color:var(--navy)">공유 방법:</strong><br>
+          • 카카오톡, 문자, 이메일 등으로 링크를 전달<br>
+          • 팀원이 검사 완료하면 대시보드에 자동 반영<br>
+          • 인원 제한 없음 — 몇 명이든 참여 가능
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- ── 팀원 직접 추가 모달 ── -->
+<div class="modal-overlay" id="add-member-modal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeAddMember()">✕</button>
+    <div style="font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:16px">팀원 직접 추가</div>
+
+    <label class="login-label">이름 *</label>
+    <input class="login-input" type="text" id="add-name" placeholder="이름">
+
+    <label class="login-label" style="margin-top:12px">역할</label>
+    <select class="login-input" id="add-role">
+      <option value="">선택</option>
+      <option value="인솔자">인솔자</option>
+      <option value="찬양인도">찬양인도</option>
+      <option value="통역">통역</option>
+      <option value="봉사">봉사</option>
+      <option value="중보기도">중보기도</option>
+      <option value="참여자">참여자</option>
+      <option value="기타">기타</option>
+    </select>
+
+    <label class="login-label" style="margin-top:12px">MBTI (알면 입력)</label>
+    <input class="login-input" type="text" id="add-mbti" maxlength="4" placeholder="예: ENFP"
+      oninput="dashMatchMbti(this.value)">
+    <div id="add-mbti-result" style="font-size:.78rem;margin-top:6px;min-height:18px"></div>
+
+    <label class="login-label" style="margin-top:12px">쉐도우그램 유형 *</label>
+    <div id="add-sg-chips" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px"></div>
+
+    <div id="add-error" class="login-warn" style="display:none"></div>
+
+    <button class="login-btn" id="add-submit-btn" onclick="submitAddMember()">등록하기 →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+
+const TYPE_DATA = {
+  SPARK:  {icon:'✨',kr:'스파크', color:'#8A6400', keywords:'열정·영감·비전·감화',
+    strengths:['영감을 주는 말 — 사람의 마음을 건드리고 새로운 가능성을 보게 함','창의적 아이디어 — 새로운 방식과 기획에 탁월함'],
+    shadows:['마무리의 어려움 — 시작은 강하지만 유지·마무리가 약함','감정 소진'], cowork:'STEADY, LOGIC'},
+  VISION: {icon:'🔭',kr:'비전',   color:'#4A235A', keywords:'통찰·미래·구조·개념',
+    strengths:['전략적 사고 — 중장기 방향과 구조를 설계','통찰력 — 문제의 본질을 꿰뚫어 핵심을 짚음'],
+    shadows:['관계적 거리감','피드백 수용의 어려움'], cowork:'HARMONY'},
+  STEADY: {icon:'🌿',kr:'스테디', color:'#256060', keywords:'안정·신뢰·꾸준함·성실',
+    strengths:['약속을 지키는 신뢰감','디테일한 돌봄 — 이름·생일·어려움을 오래 기억'],
+    shadows:['변화에 대한 저항','자기 의견 표현의 어려움'], cowork:'LOGIC, LEADER'},
+  PLAYER: {icon:'🎯',kr:'플레이어',color:'#3D4D1C', keywords:'실행·현장·즉흥·적응',
+    strengths:['현장 감각 — 실제 필요를 빠르게 파악하고 즉각 행동','위기 대응력'],
+    shadows:['장기 계획의 어려움','감정 표현의 불편함'], cowork:'VISION'},
+  HARMONY:{icon:'🕊️',kr:'하모니', color:'#7B1A1A', keywords:'공감·조화·돌봄·연결',
+    strengths:['공감 능력 — 상대 감정을 정확히 읽고 언어화','관계 회복 — 갈등 속 중재'],
+    shadows:['경계 설정의 어려움','갈등 직면 회피'], cowork:'LOGIC, LEADER'},
+  SOUL:   {icon:'🌊',kr:'소울',   color:'#555555', keywords:'깊이·의미·진정성·내면',
+    strengths:['내면 깊이 — 고통에 대한 깊은 공명','진정성 — 자신의 연약함을 솔직히 나눔'],
+    shadows:['공적 리더십의 불편함','실행력의 약점'], cowork:'LEADER, LOGIC'},
+  LOGIC:  {icon:'🔬',kr:'로직',   color:'#2C3E50', keywords:'분석·정확·원칙·체계',
+    strengths:['깊은 연구 능력','논리적 소통 — 체계적이고 설득력 있는 전달'],
+    shadows:['감정 연결의 어려움','완벽주의적 경향'], cowork:'HARMONY'},
+  LEADER: {icon:'⚡',kr:'리더',   color:'#1A3055', keywords:'추진·결단·영향력·목표',
+    strengths:['결단력 — 필요한 순간 빠르고 명확한 결정','조직화 능력'],
+    shadows:['권위주의적 경향','공감 부족'], cowork:'HARMONY'},
+};
+
+const sp = new URLSearchParams(location.search);
+const CODE = sp.get('code') || '';
+
+let wsData = null;
+let results = [];
+
+/* ═══════════════ 화면 전환 ═══════════════ */
+function showCreate() {
+  document.getElementById('li-create').style.display = 'block';
+  document.getElementById('li-existing').style.display = 'none';
+}
+function showExisting() {
+  document.getElementById('li-create').style.display = 'none';
+  document.getElementById('li-existing').style.display = 'block';
+}
+function navTo(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  el.classList.add('active');
+}
+
+function enterDashboard() {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('main-layout').style.display = 'flex';
+}
+
+/* ═══════════════ 선교팀 생성 ═══════════════ */
+async function createMission() {
+  const church   = document.getElementById('cr-church').value.trim();
+  const leader   = document.getElementById('cr-leader').value.trim();
+  const email    = document.getElementById('cr-email').value.trim();
+  const trip     = document.getElementById('cr-trip').value.trim();
+  const loc      = document.getElementById('cr-location').value.trim();
+  const dur      = document.getElementById('cr-duration').value.trim();
+  const errEl    = document.getElementById('cr-error');
+  errEl.style.display = 'none';
+
+  if (!church) { errEl.textContent = '교회/단체 이름을 입력해 주세요.'; errEl.style.display='block'; return; }
+  if (!leader) { errEl.textContent = '인솔자 이름을 입력해 주세요.'; errEl.style.display='block'; return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = '올바른 이메일을 입력해 주세요.'; errEl.style.display='block'; return;
+  }
+
+  // 고유 코드 생성
+  const code = 'mission-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6);
+
+  const btn = document.querySelector('#li-create .login-btn');
+  btn.disabled = true; btn.textContent = '생성 중...';
+
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/mission_workshops`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation',
+      },
+      body: JSON.stringify({
+        code,
+        church_name: church,
+        leader_name: leader,
+        leader_email: email,
+        trip_name: trip || null,
+        trip_location: loc || null,
+        trip_duration: dur || null,
+        max_count: 9999,
+        status: 'active',
+      }),
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    const created = await res.json();
+    wsData = created[0] || created;
+
+    // URL 업데이트 & 대시보드 진입
+    history.replaceState(null, '', `?code=${code}`);
+    window._mCode = code;
+    enterDashboard();
+    loadDataDyn(code);
+    showToast('✅ 선교팀이 생성되었습니다!');
+
+  } catch(e) {
+    errEl.textContent = '생성 실패: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '선교팀 생성하기 →';
+  }
+}
+
+/* ═══════════════ 기존 코드 접속 ═══════════════ */
+async function accessExisting() {
+  const code = document.getElementById('ex-code').value.trim();
+  const errEl = document.getElementById('ex-error');
+  errEl.style.display = 'none';
+
+  if (!code) { errEl.textContent = '코드를 입력해 주세요.'; errEl.style.display='block'; return; }
+
+  try {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/mission_workshops?code=eq.${encodeURIComponent(code)}&select=*`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    const rows = await res.json();
+    if (!rows?.length) {
+      errEl.textContent = '해당 코드의 선교팀을 찾을 수 없습니다.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    history.replaceState(null, '', `?code=${code}`);
+    window._mCode = code;
+    enterDashboard();
+    loadDataDyn(code);
+  } catch(e) {
+    errEl.textContent = '접속 실패: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+/* ═══════════════ 데이터 로드 ═══════════════ */
+async function loadData() {
+  await loadDataDyn(CODE || window._mCode || '');
+}
+
+async function loadDataDyn(code) {
+  if (!code) return;
+  try {
+    const wRes = await fetch(
+      `${SB_URL}/rest/v1/mission_workshops?code=eq.${code}&select=*`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    const ws = await wRes.json();
+    wsData = ws?.[0] || null;
+    if (wsData) document.getElementById('tb-church').textContent = wsData.church_name || code;
+
+    const rRes = await fetch(
+      `${SB_URL}/rest/v1/mission_results?workshop_code=eq.${code}&order=submitted_at.asc&select=*`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    results = await rRes.json() || [];
+
+    renderStatus();
+    renderTypeChart();
+    renderInfo();
+    renderSurveyLink(code);
+    updateReportStatus();
+    showToast('✅ 최신 현황으로 업데이트');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ 데이터 로드 실패: ' + e.message);
+  }
+}
+
+/* ═══════════════ 현황 렌더링 ═══════════════ */
+function renderStatus() {
+  const done = results.length;
+  const uniqueTypes = new Set(results.map(r => r.sg_type).filter(Boolean)).size;
+  const latest = results.length > 0 ? fmtDate(results[results.length-1].submitted_at) : '—';
+
+  document.getElementById('ws-title').textContent = wsData?.trip_name || wsData?.church_name + ' 선교팀' || '선교팀 현황';
+  document.getElementById('ws-code-disp').textContent = '코드: ' + (CODE || window._mCode || '');
+  document.getElementById('stat-done').textContent   = done;
+  document.getElementById('stat-types').textContent  = uniqueTypes;
+  document.getElementById('stat-latest').textContent = latest;
+  document.getElementById('done-count-label').textContent = `완료 ${done}명`;
+
+  if (done === 0) {
+    document.getElementById('member-wrap').innerHTML =
+      '<div class="empty"><div class="e-ico">📋</div>아직 검사를 완료한 팀원이 없습니다.<br>링크를 공유해 주세요.</div>';
+    return;
+  }
+
+  const rows = results.map(r => {
+    const td = TYPE_DATA[r.sg_type] || {};
+    return `<tr>
+      <td><strong style="color:var(--navy)">${r.name}</strong></td>
+      <td style="color:var(--mid)">${r.role || '—'}</td>
+      <td><span class="badge-done">완료</span>
+        ${r.sg_type ? `<span class="type-badge T-${r.sg_type}">${td.icon||''} ${r.sg_type}</span>` : ''}
+      </td>
+      <td style="color:var(--light);font-size:.72rem">${fmtDate(r.submitted_at)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('member-wrap').innerHTML = `
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>이름</th><th>역할</th><th>유형</th><th>완료일시</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+/* ═══════════════ 유형 분포 ═══════════════ */
+function renderTypeChart() {
+  if (results.length === 0) return;
+  const counts = {};
+  results.forEach(r => { if (r.sg_type) counts[r.sg_type] = (counts[r.sg_type]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+  const max = sorted[0]?.[1] || 1;
+
+  document.getElementById('type-chart').innerHTML = sorted.map(([t,n]) => {
+    const td = TYPE_DATA[t] || {};
+    const pct = Math.round(n / max * 100);
+    return `<div class="bar-row">
+      <span class="bar-lbl" style="color:${td.color||'#666'}">${td.icon||''} ${td.kr||t}</span>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${td.color||'#AAA'}"></div></div>
+      <span class="bar-val">${n}명</span>
+    </div>`;
+  }).join('');
+
+  genInsight(counts);
+}
+
+function genInsight(counts) {
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  if (sorted.length === 0) return;
+  const top = sorted.slice(0,2).map(([t])=>TYPE_DATA[t]?.kr||t);
+  const topTypes = sorted.slice(0,2).map(([t])=>t);
+  const strengths = topTypes.flatMap(t => (TYPE_DATA[t]?.strengths||[]).slice(0,1));
+  const shadows   = topTypes.flatMap(t => (TYPE_DATA[t]?.shadows||[]).slice(0,1));
+
+  document.getElementById('team-insight').innerHTML = `
+    <div style="margin-bottom:12px;font-size:.83rem;color:var(--mid);line-height:1.8">
+      <strong style="color:var(--navy)">✦ 팀 주요 유형</strong><br>
+      ${top.join(', ')} 중심의 선교팀입니다.
+    </div>
+    <div style="margin-bottom:12px;font-size:.83rem;color:var(--mid);line-height:1.8">
+      <strong style="color:var(--teal)">강점</strong><br>
+      ${strengths.map(s=>'• '+s).join('<br>')}
+    </div>
+    <div style="margin-bottom:12px;font-size:.83rem;color:var(--mid);line-height:1.8">
+      <strong style="color:#7B1A1A">주의 그림자</strong><br>
+      ${shadows.map(s=>'• '+s).join('<br>')}
+    </div>
+    <div style="font-size:.83rem;color:var(--mid);line-height:1.8">
+      <strong style="color:var(--navy)">동역 구조 제안</strong><br>
+      ${topTypes.map(t=>`• ${TYPE_DATA[t]?.kr}의 약점은 <strong>${TYPE_DATA[t]?.cowork}</strong>이 보완`).join('<br>')}
+    </div>`;
+}
+
+/* ═══════════════ 선교팀 정보 ═══════════════ */
+function renderInfo() {
+  if (!wsData) return;
+  document.getElementById('ws-info-card').innerHTML = `
+    <div class="card-title">선교팀 정보</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:.85rem">
+      <div><div style="color:var(--light);font-size:.75rem">교회/단체</div><strong>${wsData.church_name}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">인솔자</div><strong>${wsData.leader_name}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">이메일</div><strong>${wsData.leader_email}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">상태</div><strong>${wsData.status}</strong></div>
+      ${wsData.trip_name?`<div><div style="color:var(--light);font-size:.75rem">선교 이름</div><strong>${wsData.trip_name}</strong></div>`:''}
+      ${wsData.trip_location?`<div><div style="color:var(--light);font-size:.75rem">선교지</div><strong>${wsData.trip_location}</strong></div>`:''}
+      ${wsData.trip_duration?`<div><div style="color:var(--light);font-size:.75rem">기간</div><strong>${wsData.trip_duration}</strong></div>`:''}
+      <div><div style="color:var(--light);font-size:.75rem">생성일</div><strong>${wsData.created_at ? new Date(wsData.created_at).toLocaleDateString('ko-KR') : '—'}</strong></div>
+    </div>`;
+}
+
+/* ═══════════════ 검사 링크 ═══════════════ */
+function renderSurveyLink(code) {
+  const link = `https://onyuschool.com/mission-survey.html?code=${code}`;
+  document.getElementById('survey-link-text').textContent = link;
+}
+
+function copySurveyLink() {
+  const link = document.getElementById('survey-link-text').textContent;
+  navigator.clipboard.writeText(link).then(() => showToast('✅ 링크가 복사되었습니다'));
+}
+
+/* ═══════════════ 리포트 ═══════════════ */
+function updateReportStatus() {
+  const done = results.length;
+  const msg = done === 0
+    ? '⏳ 아직 완료된 검사가 없습니다. 팀원들과 링크를 공유해 주세요.'
+    : `🎉 ${done}명 검사 완료! 리포트를 생성할 수 있습니다.`;
+  document.getElementById('rpt-status-msg').innerHTML = msg;
+
+  const btn = document.getElementById('btn-report');
+  if (done === 0) {
+    btn.textContent = '검사 완료 후 생성';
+    btn.classList.add('disabled');
+    btn.onclick = null;
+  } else {
+    btn.textContent = '리포트 보기 →';
+    btn.classList.remove('disabled');
+    btn.onclick = openMissionReport;
+  }
+}
+
+function openMissionReport() {
+  const code = CODE || window._mCode || '';
+  if (!code) { showToast('❌ 코드 없음'); return; }
+  if (results.length === 0) { showToast('❌ 검사 완료된 팀원이 없습니다.'); return; }
+  location.href = `mission-report.html?code=${encodeURIComponent(code)}`;
+}
+
+/* ═══════════════ 팀원 직접 추가 ═══════════════ */
+const MBTI_TO_SG = {
+  ENTP:'SPARK', ENFP:'SPARK', INTJ:'VISION', INFJ:'VISION',
+  ISTJ:'STEADY', ISFJ:'STEADY', ESTP:'PLAYER', ESFP:'PLAYER',
+  ESFJ:'HARMONY', ENFJ:'HARMONY', INFP:'SOUL', ISFP:'SOUL',
+  INTP:'LOGIC', ISTP:'LOGIC', ENTJ:'LEADER', ESTJ:'LEADER',
+};
+const SG_ORDER = ['SPARK','VISION','STEADY','PLAYER','HARMONY','SOUL','LOGIC','LEADER'];
+const SG_MBTI = {
+  SPARK:'ENTP · ENFP', VISION:'INTJ · INFJ', STEADY:'ISTJ · ISFJ', PLAYER:'ESTP · ESFP',
+  HARMONY:'ESFJ · ENFJ', SOUL:'INFP · ISFP', LOGIC:'INTP · ISTP', LEADER:'ENTJ · ESTJ',
+};
+
+let selectedSg = null;
+
+function openAddMember() {
+  selectedSg = null;
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-role').value = '';
+  document.getElementById('add-mbti').value = '';
+  document.getElementById('add-mbti-result').textContent = '';
+  document.getElementById('add-error').style.display = 'none';
+  document.getElementById('add-submit-btn').textContent = '등록하기 →';
+  renderSgChips(null);
+  document.getElementById('add-member-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('add-name').focus(), 100);
+}
+function closeAddMember() {
+  document.getElementById('add-member-modal').style.display = 'none';
+}
+
+function renderSgChips(active) {
+  const wrap = document.getElementById('add-sg-chips');
+  if (!wrap) return;
+  wrap.innerHTML = SG_ORDER.map(t => {
+    const td = TYPE_DATA[t] || {};
+    const sel = t === active;
+    return `<button type="button" onclick="selectSg('${t}')"
+      style="padding:10px 12px;border-radius:8px;font-family:inherit;cursor:pointer;
+        border:1.5px solid ${sel ? '#256060' : '#D5D0C8'};
+        background:${sel ? '#E8F4F0' : '#fff'};
+        text-align:left;transition:all .15s;outline:none">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+        <span>${td.icon||''}</span>
+        <strong style="color:${sel ? '#1A3055':'#333'};font-size:.85rem">${t}</strong>
+        <span style="color:#888;font-size:.78rem">${td.kr||''}</span>
+      </div>
+      <div style="font-size:.68rem;color:#AAA">${SG_MBTI[t]||''}</div>
+    </button>`;
+  }).join('');
+}
+
+function selectSg(type) {
+  selectedSg = type;
+  renderSgChips(type);
+}
+
+function dashMatchMbti(val) {
+  const upper = val.toUpperCase().trim();
+  const sg = MBTI_TO_SG[upper];
+  const el = document.getElementById('add-mbti-result');
+  if (sg) {
+    selectSg(sg);
+    const td = TYPE_DATA[sg] || {};
+    el.innerHTML = `✅ ${upper} → ${td.icon||''} <strong>${sg}</strong> (${td.kr}) 자동 매칭`;
+    el.style.color = '#256060';
+  } else if (upper.length === 4) {
+    el.textContent = '인식되지 않는 MBTI. 아래에서 직접 선택해 주세요.';
+    el.style.color = '#999';
+  } else {
+    el.textContent = '';
+  }
+}
+
+async function submitAddMember() {
+  const name = document.getElementById('add-name').value.trim();
+  const role = document.getElementById('add-role').value;
+  const errEl = document.getElementById('add-error');
+  errEl.style.display = 'none';
+
+  if (!name) { errEl.textContent = '이름을 입력해 주세요.'; errEl.style.display='block'; return; }
+  if (!selectedSg) { errEl.textContent = '유형을 선택해 주세요.'; errEl.style.display='block'; return; }
+
+  const code = CODE || window._mCode || '';
+  const btn = document.getElementById('add-submit-btn');
+  btn.disabled = true; btn.textContent = '저장 중...';
+
+  try {
+    const wRes = await fetch(
+      `${SB_URL}/rest/v1/mission_workshops?code=eq.${encodeURIComponent(code)}&select=id`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    const ws = await wRes.json();
+    const workshopId = ws?.[0]?.id || null;
+
+    const res = await fetch(`${SB_URL}/rest/v1/mission_results`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({
+        workshop_id: workshopId,
+        workshop_code: code,
+        name,
+        role: role || null,
+        sg_type: selectedSg,
+        dim_scores: null,
+        answers: null,
+      }),
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+
+    closeAddMember();
+    showToast(`✅ ${name}님(${selectedSg}) 등록 완료`);
+    await loadData();
+  } catch(e) {
+    errEl.textContent = '저장 실패: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '등록하기 →';
+  }
+}
+
+/* ═══════════════ 유틸 ═══════════════ */
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function showToast(msg, dur=2800) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+/* ═══════════════ 초기화 ═══════════════ */
+(function init() {
+  if (CODE) {
+    enterDashboard();
+    loadData();
+  }
+  // 로그인 화면은 기본 표시
+})();
+</script>
+</body>
+</html>
