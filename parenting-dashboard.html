@@ -970,6 +970,16 @@ async function submitAddMember() {
     return;
   }
 
+  // URL에 이메일만 있으면 OTP 없이 세션 목록 표시 (신청 직후 바로가기)
+  if (directEmail && !directSession) {
+    verifiedEmail = directEmail;
+    sessionStorage.setItem('sg_auth_email', directEmail);
+    setAuthHeader(directEmail);
+    await loadSessions();
+    showScreen('sessions');
+    return;
+  }
+
   // 이전에 로그인한 이메일 있으면 세션 목록 표시
   if (savedEmail) {
     verifiedEmail = savedEmail;
