@@ -200,7 +200,36 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 
   /* 태그 */
   .tag{font-size:.68rem!important;padding:2px 6px!important}
+
+  /* 설문 — 인쇄 시 숨김 */
+  .survey-section{display:none!important}
 }
+
+/* ── 설문지 ── */
+.survey-section{background:linear-gradient(180deg,#F0F7F4 0%,var(--bg) 100%);
+  border-top:3px solid var(--teal);border-radius:14px;padding:28px 22px;margin-top:24px}
+.survey-title{font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px}
+.survey-sub{font-size:.82rem;color:var(--mid);margin-bottom:20px;line-height:1.7}
+.survey-q{margin-bottom:18px}
+.survey-q-label{font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:8px;line-height:1.5}
+.survey-q-label .q-num{display:inline-block;background:var(--teal);color:#fff;width:22px;height:22px;
+  border-radius:50%;text-align:center;line-height:22px;font-size:.72rem;font-weight:800;margin-right:6px}
+.survey-radio-group{display:flex;flex-wrap:wrap;gap:6px}
+.survey-radio{display:none}
+.survey-radio-label{padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.82rem;cursor:pointer;transition:all .15s;color:var(--mid);background:#fff;font-weight:600}
+.survey-radio:checked + .survey-radio-label{border-color:var(--teal);background:#E8F4F0;color:var(--teal)}
+.survey-textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.88rem;font-family:inherit;outline:none;resize:vertical;min-height:60px;
+  transition:border-color .15s;color:var(--gray)}
+.survey-textarea:focus{border-color:var(--teal)}
+.survey-price-group{display:flex;flex-wrap:wrap;gap:6px}
+.survey-submit{width:100%;padding:14px;background:var(--teal);color:#fff;border:none;
+  border-radius:10px;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;
+  transition:background .2s;margin-top:8px}
+.survey-submit:hover{background:#1A4848}
+.survey-submit:disabled{background:var(--border);color:var(--light);cursor:default}
+.survey-done{text-align:center;padding:24px;color:var(--teal);font-size:.95rem;font-weight:700}
 </style>
 </head>
 <body>
@@ -563,6 +592,161 @@ function renderReport(data) {
 
   // 퍼실리테이션 매뉴얼 + 주의사항 하드코딩으로 추가
   document.getElementById('report-wrap').insertAdjacentHTML('beforeend', WS_MANUAL_HTML);
+
+  // 설문지 추가
+  document.getElementById('report-wrap').insertAdjacentHTML('beforeend', SURVEY_HTML);
+}
+
+// ══════════════════════════════════
+//  사용자 설문지
+// ══════════════════════════════════
+const SURVEY_HTML = `
+<div class="survey-section" id="survey-section">
+  <div class="survey-title">📋 쉐도우그램 사용 후기 설문</div>
+  <div class="survey-sub">
+    리포트를 살펴보셨나요? 아래 간단한 설문에 응답해 주시면<br>
+    서비스 개선에 큰 도움이 됩니다. (소요시간: 약 1분)
+  </div>
+
+  <form id="survey-form" onsubmit="return submitSurvey(event)">
+
+    <!-- Q1: 활용도 -->
+    <div class="survey-q">
+      <div class="survey-q-label"><span class="q-num">1</span>쉐도우그램 팀 리포트가 팀 이해에 도움이 되었나요?</div>
+      <div class="survey-radio-group">
+        <input type="radio" name="q1_usefulness" value="5" id="q1_5" class="survey-radio" required>
+        <label for="q1_5" class="survey-radio-label">매우 도움됨</label>
+        <input type="radio" name="q1_usefulness" value="4" id="q1_4" class="survey-radio">
+        <label for="q1_4" class="survey-radio-label">도움됨</label>
+        <input type="radio" name="q1_usefulness" value="3" id="q1_3" class="survey-radio">
+        <label for="q1_3" class="survey-radio-label">보통</label>
+        <input type="radio" name="q1_usefulness" value="2" id="q1_2" class="survey-radio">
+        <label for="q1_2" class="survey-radio-label">부족</label>
+        <input type="radio" name="q1_usefulness" value="1" id="q1_1" class="survey-radio">
+        <label for="q1_1" class="survey-radio-label">도움 안됨</label>
+      </div>
+    </div>
+
+    <!-- Q2: 신뢰도 -->
+    <div class="survey-q">
+      <div class="survey-q-label"><span class="q-num">2</span>검사 결과가 실제 팀원의 성향과 일치한다고 느끼셨나요?</div>
+      <div class="survey-radio-group">
+        <input type="radio" name="q2_accuracy" value="5" id="q2_5" class="survey-radio" required>
+        <label for="q2_5" class="survey-radio-label">매우 일치</label>
+        <input type="radio" name="q2_accuracy" value="4" id="q2_4" class="survey-radio">
+        <label for="q2_4" class="survey-radio-label">대체로 일치</label>
+        <input type="radio" name="q2_accuracy" value="3" id="q2_3" class="survey-radio">
+        <label for="q2_3" class="survey-radio-label">보통</label>
+        <input type="radio" name="q2_accuracy" value="2" id="q2_2" class="survey-radio">
+        <label for="q2_2" class="survey-radio-label">잘 안 맞음</label>
+        <input type="radio" name="q2_accuracy" value="1" id="q2_1" class="survey-radio">
+        <label for="q2_1" class="survey-radio-label">전혀 안 맞음</label>
+      </div>
+    </div>
+
+    <!-- Q3: 관심 서비스 -->
+    <div class="survey-q">
+      <div class="survey-q-label"><span class="q-num">3</span>향후 어떤 리포트에 가장 관심이 있으신가요?</div>
+      <div class="survey-radio-group">
+        <input type="radio" name="q3_interest" value="team" id="q3_team" class="survey-radio" required>
+        <label for="q3_team" class="survey-radio-label">팀(그룹) 리포트</label>
+        <input type="radio" name="q3_interest" value="individual" id="q3_ind" class="survey-radio">
+        <label for="q3_ind" class="survey-radio-label">개인 리포트</label>
+        <input type="radio" name="q3_interest" value="couple" id="q3_couple" class="survey-radio">
+        <label for="q3_couple" class="survey-radio-label">부부 리포트</label>
+        <input type="radio" name="q3_interest" value="all" id="q3_all" class="survey-radio">
+        <label for="q3_all" class="survey-radio-label">전부 다</label>
+      </div>
+    </div>
+
+    <!-- Q4: 개인 리포트 내용 설명 후 가격 -->
+    <div class="survey-q">
+      <div class="survey-q-label"><span class="q-num">4</span>개인 리포트(나의 빛과 그림자 + 성장 로드맵)가 제공된다면, 적정 가격은?</div>
+      <div class="survey-price-group">
+        <input type="radio" name="q4_price_individual" value="free" id="q4_free" class="survey-radio" required>
+        <label for="q4_free" class="survey-radio-label">무료여야 함</label>
+        <input type="radio" name="q4_price_individual" value="3000" id="q4_3k" class="survey-radio">
+        <label for="q4_3k" class="survey-radio-label">3,000원</label>
+        <input type="radio" name="q4_price_individual" value="5000" id="q4_5k" class="survey-radio">
+        <label for="q4_5k" class="survey-radio-label">5,000원</label>
+        <input type="radio" name="q4_price_individual" value="10000" id="q4_10k" class="survey-radio">
+        <label for="q4_10k" class="survey-radio-label">10,000원</label>
+      </div>
+    </div>
+
+    <!-- Q5: 팀+부부 리포트 가격 -->
+    <div class="survey-q">
+      <div class="survey-q-label"><span class="q-num">5</span>팀 리포트(AI 분석 + 워크숍 가이드) 또는 부부 리포트(64유형 궁합 분석)의 적정 가격은?</div>
+      <div class="survey-price-group">
+        <input type="radio" name="q5_price_group" value="free" id="q5_free" class="survey-radio" required>
+        <label for="q5_free" class="survey-radio-label">무료여야 함</label>
+        <input type="radio" name="q5_price_group" value="10000" id="q5_10k" class="survey-radio">
+        <label for="q5_10k" class="survey-radio-label">10,000원</label>
+        <input type="radio" name="q5_price_group" value="20000" id="q5_20k" class="survey-radio">
+        <label for="q5_20k" class="survey-radio-label">20,000원</label>
+        <input type="radio" name="q5_price_group" value="30000" id="q5_30k" class="survey-radio">
+        <label for="q5_30k" class="survey-radio-label">30,000원 이상</label>
+      </div>
+    </div>
+
+    <!-- Q6: 자유 의견 -->
+    <div class="survey-q">
+      <div class="survey-q-label"><span class="q-num">6</span>기타 의견이나 개선 요청사항이 있으시면 자유롭게 적어주세요.</div>
+      <textarea class="survey-textarea" name="q6_feedback" placeholder="예: 이런 기능이 있으면 좋겠어요, 리포트에서 이 부분이 인상 깊었어요..."></textarea>
+    </div>
+
+    <button type="submit" class="survey-submit" id="survey-submit-btn">설문 제출하기</button>
+  </form>
+
+  <div class="survey-done" id="survey-done" style="display:none">
+    ✅ 설문에 응해주셔서 감사합니다!<br>
+    <span style="font-size:.82rem;color:var(--mid);font-weight:400">소중한 의견이 서비스 개선에 반영됩니다.</span>
+  </div>
+</div>
+`;
+
+async function submitSurvey(e) {
+  e.preventDefault();
+  const btn = document.getElementById('survey-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '제출 중...';
+
+  const form = document.getElementById('survey-form');
+  const fd = new FormData(form);
+
+  const payload = {
+    workshop_code: CODE,
+    church_name: CHURCH || null,
+    q1_usefulness: parseInt(fd.get('q1_usefulness')) || null,
+    q2_accuracy: parseInt(fd.get('q2_accuracy')) || null,
+    q3_interest: fd.get('q3_interest') || null,
+    q4_price_individual: fd.get('q4_price_individual') || null,
+    q5_price_group: fd.get('q5_price_group') || null,
+    q6_feedback: fd.get('q6_feedback')?.trim() || null,
+    submitted_at: new Date().toISOString(),
+  };
+
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/survey_feedback`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(await res.text());
+
+    form.style.display = 'none';
+    document.getElementById('survey-done').style.display = 'block';
+  } catch(err) {
+    console.error('Survey submit error:', err);
+    alert('설문 제출 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    btn.disabled = false;
+    btn.textContent = '설문 제출하기';
+  }
 }
 
 async function downloadPDF() {

@@ -17,10 +17,14 @@ CREATE TABLE IF NOT EXISTS workshops (
   leader_email TEXT NOT NULL,                 -- 담당자 이메일
   product_type TEXT DEFAULT 'teachers',       -- 'leadership' | 'teachers' | 'full'
   max_count    INT  DEFAULT 20,               -- 최대 참여 인원
-  status       TEXT DEFAULT 'active',         -- 'active' | 'closed' | 'completed'
+  status       TEXT DEFAULT 'active',         -- 'active' | 'closed' | 'completed' | 'reported'
+  report_data  JSONB,                          -- 생성된 AI 리포트 캐시 (1회 생성 후 재사용)
   created_at   TIMESTAMPTZ DEFAULT NOW(),
   expires_at   TIMESTAMPTZ DEFAULT NOW() + INTERVAL '30 days'
 );
+
+-- report_data 컬럼이 없는 기존 DB에 추가 (마이그레이션)
+ALTER TABLE workshops ADD COLUMN IF NOT EXISTS report_data JSONB;
 
 -- ─────────────────────────────────────────────────────────
 -- 2. 성도 검사 결과 테이블
@@ -68,7 +72,34 @@ CREATE POLICY "results_insert"
   WITH CHECK (true);
 
 -- ─────────────────────────────────────────────────────────
--- 5. 베타 샘플 데이터 (새빛교회)
+-- 5. 설문 피드백 테이블 (리포트 하단 설문)
+-- ─────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS survey_feedback (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workshop_code       TEXT,                      -- 워크숍 코드 (연결)
+  church_name         TEXT,                      -- 교회명
+  q1_usefulness       INT,                       -- 활용도 (1~5)
+  q2_accuracy         INT,                       -- 신뢰도 (1~5)
+  q3_interest         TEXT,                      -- 관심 서비스 (team/individual/couple/all)
+  q4_price_individual TEXT,                      -- 개인 리포트 적정 가격
+  q5_price_group      TEXT,                      -- 팀/부부 리포트 적정 가격
+  q6_feedback         TEXT,                      -- 자유 의견
+  submitted_at        TIMESTAMPTZ DEFAULT NOW(),
+  created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE survey_feedback ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "feedback_insert"
+  ON survey_feedback FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "feedback_select"
+  ON survey_feedback FOR SELECT
+  USING (true);
+
+-- ─────────────────────────────────────────────────────────
+-- 6. 베타 샘플 데이터 (새빛교회)
 --    실제 운영 시 삭제하거나 상태를 'closed'로 변경
 -- ─────────────────────────────────────────────────────────
 INSERT INTO workshops (code, church_name, leader_name, leader_email, product_type, max_count)

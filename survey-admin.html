@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>설문 관리자 — 온유스쿨</title>
+<style>
+:root{
+  --navy:#1A3055;--teal:#256060;--gold:#8A6400;
+  --bg:#F5F3EE;--white:#FFF;--gray:#333;
+  --mid:#666;--light:#999;--border:#DDD;--green:#8FC49A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:15px;line-height:1.7;background:var(--bg);color:var(--gray);min-height:100vh}
+.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo span{color:var(--green)}
+.container{max-width:900px;margin:0 auto;padding:30px 20px 60px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:28px 24px;margin-bottom:20px}
+.card-title{font-size:1.15rem;font-weight:800;color:var(--navy);margin-bottom:4px}
+.card-sub{font-size:.82rem;color:var(--light);margin-bottom:20px}
+
+/* 로그인 */
+.login-wrap{max-width:420px;margin:60px auto}
+.fi{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.95rem;font-family:inherit;outline:none;color:var(--gray);background:#fff;
+  transition:border-color .2s;margin-bottom:12px}
+.fi:focus{border-color:var(--navy)}
+.btn-p{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;
+  border-radius:10px;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit}
+.btn-p:hover{background:#102540}
+
+/* 통계 */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:16px;text-align:center}
+.stat-num{font-size:1.8rem;font-weight:800;color:var(--navy)}
+.stat-lbl{font-size:.72rem;color:var(--light);margin-top:2px}
+
+/* 차트 바 */
+.bar-chart{margin-bottom:16px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.bar-label{font-size:.8rem;font-weight:700;color:var(--navy);width:100px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:22px;background:#EEE;border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.bar-val{font-size:.72rem;font-weight:700;color:var(--mid);width:36px;text-align:left;flex-shrink:0}
+
+/* 테이블 */
+.resp-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.resp-table th{font-size:.72rem;font-weight:800;color:var(--navy);text-align:left;
+  padding:8px 10px;border-bottom:2px solid var(--navy);white-space:nowrap}
+.resp-table td{padding:8px 10px;border-bottom:1px solid #F5F5F5;color:var(--mid);vertical-align:top}
+.resp-table tr:last-child td{border-bottom:none}
+.feedback-text{max-width:220px;word-break:break-word;font-size:.78rem;color:var(--gray)}
+
+/* 로딩/토스트 */
+.loading{text-align:center;padding:40px;color:var(--light);font-size:.85rem}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#222;color:#fff;padding:9px 22px;border-radius:24px;font-size:.83rem;
+  opacity:0;transition:transform .3s,opacity .3s;z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+footer{background:#F0F4F8;border-top:1px solid var(--border);padding:20px;
+  text-align:center;font-size:.75rem;color:var(--light)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="https://onyuschool.com">ONYUSCHOOL <span>설문 관리</span></a>
+</div>
+
+<!-- 로그인 -->
+<div id="screen-login">
+  <div class="login-wrap">
+    <div class="card">
+      <div class="card-title">설문 관리자 접속</div>
+      <div class="card-sub">관리자 이메일을 입력해 주세요</div>
+      <input class="fi" type="email" id="inp-email" placeholder="admin@onyuschool.com"
+        onkeydown="if(event.key==='Enter') doLogin()">
+      <button class="btn-p" onclick="doLogin()">접속하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div id="screen-dash" style="display:none">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div style="font-size:1.15rem;font-weight:800;color:var(--navy)">설문 응답 현황</div>
+        <div style="font-size:.8rem;color:var(--light)" id="dash-sub"></div>
+      </div>
+      <button class="btn-p" style="width:auto;padding:10px 18px;font-size:.82rem" onclick="loadData()">↻ 새로고침</button>
+    </div>
+
+    <!-- 통계 카드 -->
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="s-total">—</div><div class="stat-lbl">총 응답</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--teal)" id="s-useful">—</div><div class="stat-lbl">활용도 평균</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--gold)" id="s-accuracy">—</div><div class="stat-lbl">신뢰도 평균</div></div>
+    </div>
+
+    <!-- 관심 서비스 분포 -->
+    <div class="card">
+      <div class="card-title">관심 서비스 분포</div>
+      <div class="card-sub">Q3: 향후 어떤 리포트에 가장 관심이 있으신가요?</div>
+      <div id="chart-interest" class="bar-chart"></div>
+    </div>
+
+    <!-- 가격 분포 -->
+    <div class="card">
+      <div class="card-title">적정 가격 응답</div>
+      <div class="card-sub">개인 리포트 (Q4) / 팀·부부 리포트 (Q5)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:8px">개인 리포트</div>
+          <div id="chart-price-ind" class="bar-chart"></div>
+        </div>
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:8px">팀/부부 리포트</div>
+          <div id="chart-price-grp" class="bar-chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전체 응답 테이블 -->
+    <div class="card">
+      <div class="card-title">전체 응답 목록</div>
+      <div class="card-sub" id="table-sub">—</div>
+      <div style="overflow-x:auto">
+        <table class="resp-table" id="resp-table">
+          <thead><tr>
+            <th>일시</th><th>교회</th><th>활용도</th><th>신뢰도</th><th>관심</th><th>개인가격</th><th>팀가격</th><th>의견</th>
+          </tr></thead>
+          <tbody id="resp-tbody">
+            <tr><td colspan="8" class="loading">불러오는 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>온유스쿨 · onyuschool.com</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+const ADMIN_EMAIL = 'joculsion@gmail.com';
+
+function toast(msg, dur=2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+async function doLogin() {
+  const email = document.getElementById('inp-email').value.trim().toLowerCase();
+  if (!email) { toast('이메일을 입력해 주세요'); return; }
+  if (email !== ADMIN_EMAIL) { toast('관리자 권한이 없는 이메일입니다'); return; }
+
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-dash').style.display = 'block';
+  document.getElementById('dash-sub').textContent = email + ' · 관리자';
+  await loadData();
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/survey_feedback?order=submitted_at.desc`,
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+    );
+    const rows = await res.json();
+    if (!Array.isArray(rows)) { toast('데이터 로드 실패'); return; }
+    renderStats(rows);
+    renderTable(rows);
+  } catch(e) {
+    toast('오류: ' + e.message);
+  }
+}
+
+function renderStats(rows) {
+  const n = rows.length;
+  document.getElementById('s-total').textContent = n;
+
+  const avgU = n ? (rows.reduce((s,r) => s + (r.q1_usefulness||0), 0) / rows.filter(r=>r.q1_usefulness).length).toFixed(1) : '—';
+  const avgA = n ? (rows.reduce((s,r) => s + (r.q2_accuracy||0), 0) / rows.filter(r=>r.q2_accuracy).length).toFixed(1) : '—';
+  document.getElementById('s-useful').textContent = avgU;
+  document.getElementById('s-accuracy').textContent = avgA;
+
+  // 관심 서비스 분포
+  const interestMap = { team: '팀 리포트', individual: '개인 리포트', couple: '부부 리포트', all: '전부 다' };
+  const interestCounts = {};
+  rows.forEach(r => { if(r.q3_interest) interestCounts[r.q3_interest] = (interestCounts[r.q3_interest]||0)+1; });
+  renderBarChart('chart-interest', interestCounts, interestMap, n, '#256060');
+
+  // 개인 리포트 가격 분포
+  const priceIndMap = { free: '무료', '3000': '3,000원', '5000': '5,000원', '10000': '10,000원' };
+  const priceIndCounts = {};
+  rows.forEach(r => { if(r.q4_price_individual) priceIndCounts[r.q4_price_individual] = (priceIndCounts[r.q4_price_individual]||0)+1; });
+  renderBarChart('chart-price-ind', priceIndCounts, priceIndMap, n, '#8A6400');
+
+  // 팀 리포트 가격 분포
+  const priceGrpMap = { free: '무료', '10000': '10,000원', '20000': '20,000원', '30000': '30,000원+' };
+  const priceGrpCounts = {};
+  rows.forEach(r => { if(r.q5_price_group) priceGrpCounts[r.q5_price_group] = (priceGrpCounts[r.q5_price_group]||0)+1; });
+  renderBarChart('chart-price-grp', priceGrpCounts, priceGrpMap, n, '#1A3055');
+}
+
+function renderBarChart(containerId, counts, labelMap, total, color) {
+  const el = document.getElementById(containerId);
+  const max = Math.max(...Object.values(counts), 1);
+  const order = Object.keys(labelMap);
+  el.innerHTML = order.map(key => {
+    const cnt = counts[key] || 0;
+    const pct = total ? Math.round(cnt/total*100) : 0;
+    const w = max ? Math.round(cnt/max*100) : 0;
+    return `<div class="bar-row">
+      <div class="bar-label">${labelMap[key]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${color}"></div></div>
+      <div class="bar-val">${cnt} (${pct}%)</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTable(rows) {
+  document.getElementById('table-sub').textContent = `총 ${rows.length}건`;
+  const interestKr = { team:'팀', individual:'개인', couple:'부부', all:'전부' };
+  const priceKr = { free:'무료', '3000':'3천', '5000':'5천', '10000':'1만', '20000':'2만', '30000':'3만+' };
+
+  document.getElementById('resp-tbody').innerHTML = rows.length === 0
+    ? '<tr><td colspan="8" class="loading">아직 응답이 없습니다</td></tr>'
+    : rows.map(r => `<tr>
+        <td style="white-space:nowrap;font-size:.75rem">${fmtDate(r.submitted_at)}</td>
+        <td>${r.church_name || '—'}</td>
+        <td style="text-align:center;font-weight:700;color:var(--teal)">${r.q1_usefulness || '—'}</td>
+        <td style="text-align:center;font-weight:700;color:var(--gold)">${r.q2_accuracy || '—'}</td>
+        <td>${interestKr[r.q3_interest] || '—'}</td>
+        <td>${priceKr[r.q4_price_individual] || '—'}</td>
+        <td>${priceKr[r.q5_price_group] || '—'}</td>
+        <td class="feedback-text">${r.q6_feedback || '—'}</td>
+      </tr>`).join('');
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+</script>
+</body>
+</html>
