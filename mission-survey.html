@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>쉐도우그램 단기선교팀 검사</title>
+<style>
+/* ══════════════════════════════════
+   기본 설정 — 고령층 가독성 우선
+   기본 글씨 18px, 줄간격 1.8
+══════════════════════════════════ */
+:root {
+  --navy:   #1A3055;
+  --teal:   #256060;
+  --gold:   #8A6400;
+  --bg:     #F5F3EE;
+  --white:  #FFFFFF;
+  --gray:   #333333;
+  --mid:    #666666;
+  --light:  #999999;
+  --border: #D5D0C8;
+  --green:  #8FC49A;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  font-size: 18px;
+  line-height: 1.8;
+  background: var(--bg);
+  color: var(--gray);
+  min-height: 100vh;
+}
+
+/* ── 화면 전환 ── */
+.screen { display: none; }
+.screen.active { display: block; animation: fadeUp .3s ease; }
+#screen-intro.active { display: flex; }
+#screen-result.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════
+   SCREEN 1 — 신상 입력 (인트로)
+══════════════════════════════════ */
+#screen-intro {
+  background: linear-gradient(160deg, var(--navy) 0%, #1E4070 50%, var(--teal) 100%);
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 48px 24px 72px;
+  text-align: center;
+}
+
+.intro-logo {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: var(--green);
+  margin-bottom: 28px;
+  opacity: .9;
+  text-transform: uppercase;
+}
+
+.intro-title {
+  font-size: clamp(1.7rem, 6vw, 2.2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+.intro-title em { color: var(--green); font-style: normal; }
+
+.intro-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,.72);
+  margin-bottom: 32px;
+  line-height: 1.75;
+}
+
+.intro-chips {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.intro-chip {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 8px;
+  padding: 10px 18px;
+  text-align: center;
+}
+.intro-chip .cn { font-size: 1.3rem; font-weight: 800; color: #fff; display: block; }
+.intro-chip .cl { font-size: .78rem; color: rgba(255,255,255,.55); }
+
+/* ── 폼 카드 ── */
+.form-card {
+  background: rgba(255,255,255,.11);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 18px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 440px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+.form-section-label {
+  font-size: .7rem;
+  font-weight: 800;
+  color: var(--green);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 14px;
+}
+.form-label {
+  display: block;
+  font-size: .92rem;
+  font-weight: 700;
+  color: rgba(255,255,255,.82);
+  margin-bottom: 7px;
+}
+.form-input {
+  width: 100%;
+  padding: 15px 16px;
+  background: rgba(255,255,255,.13);
+  border: 1.5px solid rgba(255,255,255,.28);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s;
+  margin-bottom: 14px;
+}
+.form-input::placeholder { color: rgba(255,255,255,.38); }
+.form-input:focus { border-color: var(--green); background: rgba(255,255,255,.18); }
+
+.form-select {
+  width: 100%;
+  padding: 15px 16px;
+  background: rgba(255,255,255,.13);
+  border: 1.5px solid rgba(255,255,255,.28);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  margin-bottom: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,.5)' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+.form-select option { color: #1A1A1A; background: #fff; }
+
+.etc-wrap { display: none; margin-top: -8px; margin-bottom: 14px; }
+.etc-wrap.show { display: block; }
+
+.form-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,.15);
+  margin: 18px 0 16px;
+}
+
+/* ── 시작 버튼 ── */
+.btn-start {
+  width: 100%;
+  max-width: 440px;
+  padding: 20px;
+  background: var(--green);
+  color: var(--navy);
+  font-size: 1.1rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s, transform .15s;
+  letter-spacing: .02em;
+}
+.btn-start:hover { background: #7AB88A; transform: translateY(-2px); }
+.intro-note {
+  margin-top: 14px;
+  font-size: .8rem;
+  color: rgba(255,255,255,.38);
+}
+
+/* ══════════════════════════════════
+   SCREEN 2 — 질문 (검사)
+══════════════════════════════════ */
+
+/* 고정 헤더 */
+.quiz-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--navy);
+}
+.quiz-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 10px;
+}
+.topbar-logo { color: #fff; font-size: .9rem; font-weight: 800; letter-spacing: .04em; }
+.topbar-logo span { color: var(--green); }
+.topbar-church { color: rgba(255,255,255,.5); font-size: .82rem; }
+
+.prog-wrap { padding: 0 20px 12px; }
+.prog-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+.prog-label { font-size: .88rem; color: rgba(255,255,255,.65); }
+.prog-num { font-size: 1rem; font-weight: 800; color: #fff; }
+.prog-bar { height: 6px; background: rgba(255,255,255,.15); border-radius: 3px; overflow: hidden; }
+.prog-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  transition: width .4s ease;
+}
+
+/* 알림 바 */
+.alert-bar {
+  background: #FFF8E6;
+  border-bottom: 2px solid #D4A017;
+  color: #8A6400;
+  text-align: center;
+  padding: 13px 20px;
+  font-size: .95rem;
+  font-weight: 600;
+  display: none;
+}
+.alert-bar.show { display: block; }
+
+/* 질문 카드 */
+.q-area { padding: 32px 20px 140px; max-width: 640px; margin: 0 auto; }
+
+.q-num-badge {
+  display: inline-block;
+  background: rgba(46,96,96,.12);
+  color: var(--teal);
+  font-size: .82rem;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: .04em;
+}
+
+.q-text {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--navy);
+  margin-bottom: 36px;
+  word-break: keep-all;
+}
+
+/* 5점 척도 — 세로 배치, 큰 탭 */
+.scale-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.scale-item input[type="radio"] { display: none; }
+.scale-item label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .18s;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mid);
+  -webkit-tap-highlight-color: transparent;
+}
+.scale-item label:active { transform: scale(.985); }
+.scale-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .88rem;
+  font-weight: 800;
+  color: var(--mid);
+  flex-shrink: 0;
+  transition: all .18s;
+}
+.scale-item input:checked + label {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.scale-item input:checked + label .scale-num {
+  background: rgba(255,255,255,.2);
+  border-color: rgba(255,255,255,.4);
+  color: #fff;
+}
+
+/* 하단 버튼 고정 */
+.nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 2px solid var(--border);
+  padding: 14px 20px 20px;
+  display: flex;
+  gap: 12px;
+  max-width: 640px;
+  margin: 0 auto;
+  left: 50%; transform: translateX(-50%);
+  width: 100%;
+  box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+  z-index: 40;
+}
+.btn-prev {
+  padding: 16px 20px;
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--mid);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+  min-width: 60px;
+}
+.btn-prev:hover:not(:disabled) { border-color: var(--navy); color: var(--navy); }
+.btn-prev:disabled { opacity: .3; cursor: default; }
+.btn-next {
+  flex: 1;
+  padding: 18px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s;
+  letter-spacing: .02em;
+}
+.btn-next:hover:not(:disabled) { background: #102540; }
+.btn-next:disabled { background: var(--border); color: var(--light); cursor: default; }
+
+/* ══════════════════════════════════
+   SCREEN 3 — 결과
+══════════════════════════════════ */
+.result-header {
+  padding: 52px 24px 40px;
+  text-align: center;
+  color: #fff;
+}
+.res-icon { font-size: 3.5rem; margin-bottom: 10px; line-height: 1; }
+.res-type { font-size: 2.2rem; font-weight: 800; letter-spacing: .06em; margin-bottom: 4px; }
+.res-kr { font-size: 1.1rem; color: rgba(255,255,255,.72); margin-bottom: 14px; }
+.res-tagline {
+  font-size: 1rem;
+  color: rgba(255,255,255,.82);
+  line-height: 1.7;
+  max-width: 420px;
+  margin: 0 auto 22px;
+  word-break: keep-all;
+}
+.kw-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.kw-chip {
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.28);
+  color: #fff;
+  font-size: .88rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.result-body { max-width: 580px; margin: 0 auto; padding: 28px 20px 60px; }
+
+.r-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.r-card-title {
+  font-size: .82rem;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.strength-li {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0EDE6;
+  font-size: .95rem;
+  color: var(--gray);
+  line-height: 1.6;
+  word-break: keep-all;
+}
+.strength-li:last-child { border-bottom: none; }
+.s-ico { color: var(--teal); font-weight: 800; flex-shrink: 0; padding-top: 1px; }
+
+/* 차트 */
+.bar-rows { display: grid; gap: 10px; }
+.bar-row { display: flex; align-items: center; gap: 12px; }
+.bar-lbl { font-size: .88rem; font-weight: 700; min-width: 76px; color: var(--mid); }
+.bar-bg { flex: 1; height: 14px; background: #ECEAE4; border-radius: 7px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 7px; background: var(--teal); transition: width .9s ease; }
+.bar-val { font-size: .8rem; color: var(--light); min-width: 26px; text-align: right; }
+
+/* 잠금 카드 */
+.lock-card {
+  background: var(--white);
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.lock-card .lk-ico { font-size: 2rem; margin-bottom: 10px; }
+.lock-card .lk-title { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.lock-card .lk-desc { font-size: .9rem; color: var(--mid); line-height: 1.7; word-break: keep-all; }
+
+/* 완료 박스 */
+.done-card {
+  background: linear-gradient(135deg, rgba(37,96,96,.07), rgba(26,48,85,.07));
+  border: 2px solid rgba(37,96,96,.28);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.done-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+.done-card p { font-size: .95rem; color: var(--gray); line-height: 1.8; word-break: keep-all; }
+
+.btn-share {
+  width: 100%;
+  padding: 18px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s;
+  margin-bottom: 16px;
+  letter-spacing: .02em;
+}
+.btn-share:hover { background: #1A4848; }
+
+.brand-foot {
+  text-align: center;
+  padding: 10px 0 24px;
+  font-size: .82rem;
+  color: var(--light);
+  line-height: 1.9;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+  SCREEN 1 — 신상 입력
+══════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+
+  <div class="intro-logo">ONYUSCHOOL · 쉐도우그램</div>
+
+  <h1 class="intro-title">단기선교팀,<br>우리 안의 <em>빛과 그림자</em></h1>
+  <p class="intro-sub">
+    28문항으로 알아보는 선교 중 나의 역할과 영적 성장 포인트<br>
+    "빛을 보고 끌렸는데, 그림자를 보고 갈등한다"
+  </p>
+
+  <div class="intro-chips">
+    <div class="intro-chip"><span class="cn">28</span><span class="cl">문항</span></div>
+    <div class="intro-chip"><span class="cn">5~7분</span><span class="cl">소요 시간</span></div>
+    <div class="intro-chip"><span class="cn">8가지</span><span class="cl">선교 역할</span></div>
+  </div>
+
+  <form class="form-card" onsubmit="return false;">
+
+    <!-- 이름 -->
+    <span class="form-section-label">내 정보</span>
+
+    <label class="form-label" for="inp-name">이름 (실명 또는 별명)</label>
+    <input class="form-input" type="text" id="inp-name"
+           placeholder="예: 홍길동" maxlength="20" autocomplete="off">
+
+    <hr class="form-divider">
+
+    <!-- 역할 선택 -->
+    <span class="form-section-label">선교 중 나의 역할</span>
+    <label class="form-label" for="role-select">역할을 선택해 주세요</label>
+    <select class="form-select" id="role-select" onchange="onRoleChange(this.value)">
+      <option value="">선택해 주세요</option>
+      <option value="인솔자">인솔자</option>
+      <option value="찬양인도">찬양인도</option>
+      <option value="통역">통역</option>
+      <option value="봉사">봉사</option>
+      <option value="중보기도">중보기도</option>
+      <option value="참여자">참여자</option>
+      <option value="기타">기타</option>
+    </select>
+    <div id="role-etc-wrap" class="etc-wrap">
+      <input class="form-input" type="text" id="role-etc-input"
+        placeholder="역할을 직접 입력해 주세요" maxlength="30">
+    </div>
+
+  </form>
+
+  <button class="btn-start" onclick="startSurvey()">검사 시작하기 →</button>
+
+  <p class="intro-note">입력하신 정보는 선교팀 구성 및 역할 배치 목적으로만 사용됩니다</p>
+
+</div><!-- /screen-intro -->
+
+
+<!-- ══════════════════════════════════
+  SCREEN 2 — 검사 (질문)
+══════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+
+  <!-- 고정 헤더 -->
+  <div class="quiz-header">
+    <div class="quiz-topbar">
+      <div class="topbar-logo">ONYUSCHOOL <span>쉐도우그램</span></div>
+      <div class="topbar-church" id="topbar-church">선교팀</div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-row">
+        <span class="prog-label">진행 중</span>
+        <span class="prog-num"><span id="q-num">1</span> / 28</span>
+      </div>
+      <div class="prog-bar">
+        <div class="prog-fill" id="prog-fill" style="width:3.6%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 알림 -->
+  <div class="alert-bar" id="alert-bar">✋ 답을 선택하신 후 다음으로 넘어갈 수 있어요</div>
+
+  <!-- 질문 -->
+  <div class="q-area">
+    <div class="q-num-badge" id="q-badge">Q1 · 가능성 탐색</div>
+    <div class="q-text" id="q-text">질문 내용이 여기 표시됩니다</div>
+
+    <ul class="scale-list" id="scale-list">
+      <!-- JS 렌더링 -->
+    </ul>
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div class="nav-bar">
+    <button class="btn-prev" id="btn-prev" onclick="prevQ()" disabled>←</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>다음 →</button>
+  </div>
+
+</div><!-- /screen-quiz -->
+
+
+<!-- ══════════════════════════════════
+  SCREEN 3 — 결과
+══════════════════════════════════ -->
+<div id="screen-result" class="screen">
+
+  <div class="result-header" id="result-header">
+    <div class="res-icon" id="res-icon">🌿</div>
+    <div class="res-type" id="res-type">STEADY</div>
+    <div class="res-kr"  id="res-kr">스테디</div>
+    <div class="res-tagline" id="res-tagline"></div>
+    <div class="kw-row" id="kw-row"></div>
+  </div>
+
+  <div class="result-body">
+
+    <!-- 강점 미리보기 -->
+    <div class="r-card">
+      <div class="r-card-title">✦ 나의 강점 (미리보기)</div>
+      <div id="res-strengths"></div>
+    </div>
+
+    <!-- 점수 바 -->
+    <div class="r-card">
+      <div class="r-card-title">📊 8가지 선교 역할 패턴 점수</div>
+      <div class="bar-rows" id="bar-rows"></div>
+    </div>
+
+    <!-- 잠금: 그림자 -->
+    <div class="lock-card">
+      <div class="lk-ico">🔒</div>
+      <div class="lk-title">그림자 &amp; 선교 역할 — 리포트에서 공개됩니다</div>
+      <div class="lk-desc">상세 리포트(그림자, 선교 역할 배치, 영적 성장 포인트)는<br>담당자를 통해 이메일로 발송됩니다.</div>
+    </div>
+
+    <!-- 잠금: 쉐도우그램 -->
+    <div class="lock-card">
+      <div class="lk-ico">🌑</div>
+      <div class="lk-title">쉐도우그램 — 선교지에서의 나의 빛과 그림자</div>
+      <div class="lk-desc">"처음엔 당신의 빛에 이끌렸지만..."<br>전체 내용은 선교팀 리포트에서 확인하세요.</div>
+    </div>
+
+    <!-- 완료 안내 -->
+    <div class="done-card">
+      <h3>✅ 검사가 완료되었습니다!</h3>
+      <p>
+        <strong id="res-name-done">홍길동</strong>님의 응답이<br>
+        담당자에게 전달되었습니다.<br><br>
+        담당자가 리포트를 생성하면<br>
+        선교 역할 배치, 인솔 가이드,<br>
+        영적 성장 포인트를 확인할 수 있습니다.
+      </p>
+    </div>
+
+    <button class="btn-share" onclick="shareResult()">이 검사 추천하기 🌿</button>
+
+    <div class="brand-foot">
+      온유스쿨 쉐도우그램 · onyuschool.com<br>
+      "소통을 회복하는 8가지 언어"
+    </div>
+
+  </div>
+</div><!-- /screen-result -->
+
+
+<script>
+// ══════════════════════════════════
+//  28문항 데이터
+// ══════════════════════════════════
+const QUESTIONS = [
+  { dim:'Ne', text:'새로운 아이디어가 떠오르면 바로 이야기하고 싶다' },
+  { dim:'Ne', text:'여러 가능성을 동시에 탐색하는 것이 즐겁다' },
+  { dim:'Ne', text:'대화할수록 새로운 연결고리가 보인다' },
+  { dim:'Ne', text:'뻔한 방법보다 새로운 접근을 시도하고 싶다' },
+  { dim:'Ni', text:'말하지 않아도 상황의 큰 그림이 보인다' },
+  { dim:'Ni', text:'어떤 일이 어떻게 될지 미리 느껴질 때가 많다' },
+  { dim:'Ni', text:'한 가지에 깊이 집중할 때 가장 명확하게 생각된다' },
+  { dim:'Ni', text:'미래의 패턴이나 방향이 직관적으로 느껴진다' },
+  { dim:'Si', text:'과거에 잘 됐던 방식을 신뢰하고 따르는 편이다' },
+  { dim:'Si', text:'예측 가능한 루틴이 있을 때 안정감을 느낀다' },
+  { dim:'Si', text:'세부 사항과 구체적인 사실을 잘 기억한다' },
+  { dim:'Si', text:'신중하게 확인하고 검증한 뒤에 결정한다' },
+  { dim:'Se', text:'지금 이 순간의 경험이 가장 중요하다' },
+  { dim:'Se', text:'현재 일어나는 일에 즉각 반응하고 행동한다' },
+  { dim:'Se', text:'몸으로 직접 경험해야 가장 잘 배운다' },
+  { dim:'Se', text:'보고 듣고 느끼는 감각 정보에 즉각 몰입된다' },
+  { dim:'Fe', text:'주변 분위기가 불편하면 나도 불편해진다' },
+  { dim:'Fe', text:'모두가 조화롭게 지내는 것이 중요하다' },
+  { dim:'Fe', text:'상대방의 감정 상태를 금방 알아챈다' },
+  { dim:'Fe', text:'그룹의 분위기를 좋게 만들기 위해 노력한다' },
+  { dim:'Fi', text:'내 가치관과 맞지 않으면 아무리 좋아도 거부감이 든다' },
+  { dim:'Fi', text:'감정을 혼자 처리하고 나서야 나눌 수 있다' },
+  { dim:'Fi', text:'진정성 없는 관계보다 혼자가 낫다' },
+  { dim:'Fi', text:'내가 중요하게 여기는 것에 대해서는 타협하지 않는다' },
+  { dim:'Ti', text:'어떤 주장이든 논리적 근거를 따진다' },
+  { dim:'Ti', text:'내 머릿속에 일관된 원리 체계가 있다' },
+  { dim:'Ti', text:'모순이나 오류를 발견하면 짚고 넘어가야 한다' },
+  { dim:'Ti', text:'감정보다 논리가 더 신뢰할 수 있는 판단 기준이다' },
+  { dim:'Te', text:'목표를 정하면 효율적인 실행 방법을 즉시 찾는다' },
+  { dim:'Te', text:'감정보다 결과가 더 중요하다' },
+  { dim:'Te', text:'체계와 기준이 있어야 팀이 제대로 돌아간다' },
+  { dim:'Te', text:'계획대로 진행되지 않으면 바로 수정하고 싶다' },
+];
+
+const DIM_LABEL = {
+  Ne:'가능성 탐색', Ni:'통찰·직관',
+  Si:'안정·기억',  Se:'현재 감각',
+  Fe:'조화·공감',  Fi:'진심·가치',
+  Ti:'논리·분석',  Te:'실행·결과',
+};
+const DIM_TYPE = {
+  Ne:'SPARK', Ni:'VISION', Si:'STEADY', Se:'PLAYER',
+  Fe:'HARMONY', Fi:'SOUL', Ti:'LOGIC', Te:'LEADER',
+};
+const SCALE_TEXT = ['전혀 그렇지 않다', '그렇지 않다', '보통이다', '그렇다', '매우 그렇다'];
+
+// ── 유형 데이터 ──
+const TYPE_DATA = {
+  SPARK:   { icon:'✨', kr:'스파크',  keywords:['열정','영감','비전','감화'],       color:'#8A6400',
+    tagline:'감동으로 사람을 움직이는 사람.\n한 마디로 분위기가 바뀌고, 가능성을 보게 합니다.',
+    strengths:['영감을 주는 말 — 사람의 마음을 건드리고 새로운 가능성을 보게 함','관계의 깊이 — 상대의 잠재력을 발견하고 진심으로 격려하는 능력','창의적 아이디어 — 새로운 방식과 기획에 탁월함','비전 제시 — 공동체가 나아갈 방향을 생생하게 그려줌'] },
+  VISION:  { icon:'🔭', kr:'비전',    keywords:['통찰','미래','구조','개념'],       color:'#4A235A',
+    tagline:'큰 그림을 그리는 사람.\n지금 보이지 않는 것을 보고, 10년 후를 설계합니다.',
+    strengths:['전략적 사고 — 중장기 방향과 구조를 설계하는 능력','통찰력 — 문제의 본질을 꿰뚫어 핵심을 짚는 능력','높은 기준 — 타협하지 않는 원칙으로 이끄는 리더십','독립적 판단 — 외부 압력에 흔들리지 않는 결단력'] },
+  STEADY:  { icon:'🌿', kr:'스테디',  keywords:['안정','신뢰','꾸준함','성실'],     color:'#256060',
+    tagline:'한결같은 신뢰로 공동체를 지키는 사람.\n말보다 행동으로, 선언보다 일관성으로.',
+    strengths:['"저 사람은 믿을 수 있다"는 신뢰감을 주는 능력','이름, 생일, 어려움을 오래 기억하는 디테일한 돌봄','단기 성과보다 장기 관계를 쌓는 오래 버티는 힘','공동체가 편안한 공간으로 느껴지게 하는 안정감'] },
+  PLAYER:  { icon:'🎯', kr:'플레이어', keywords:['실행','현장','즉흥','적응'],      color:'#3D4D1C',
+    tagline:'현장에서 빛나는 사람.\n이론보다 실제, 계획보다 지금 이 순간에 강합니다.',
+    strengths:['실제 필요를 빠르게 파악하고 즉각 행동하는 현장 감각','예상치 못한 상황에서도 당황하지 않는 위기 대응력','말보다 행동으로 섬기는 실용적 돌봄','상황에 맞게 방식을 빠르게 바꾸는 유연성'] },
+  HARMONY: { icon:'🕊️', kr:'하모니',  keywords:['공감','조화','돌봄','연결'],      color:'#7B1A1A',
+    tagline:'사람의 마음을 읽고 공동체를 하나로 잇는 사람.\n갈등 속에서 다리를 놓습니다.',
+    strengths:['상대의 감정을 정확하게 읽고 언어화하는 공감 능력','갈등하는 두 사람 사이에서 연결고리를 찾는 중재 능력','모임의 분위기를 따뜻하게 만드는 공동체 정서 관리','한 사람 한 사람에게 진심으로 집중하는 섬세한 돌봄'] },
+  SOUL:    { icon:'🌊', kr:'소울',     keywords:['깊이','의미','진정성','내면'],    color:'#555555',
+    tagline:'본질을 파고드는 사람.\n표면적인 신앙이 아닌 내면의 진정성을 추구합니다.',
+    strengths:['고통과 방황에 대한 깊은 이해와 공명 능력','자신의 연약함을 솔직히 나눌 수 있는 진정성','형식적 신앙을 넘어 본질적 물음으로 이끄는 능력','글, 이미지, 비유로 깊이를 전달하는 창의적 표현'] },
+  LOGIC:   { icon:'🔬', kr:'로직',     keywords:['분석','정확','원칙','체계'],      color:'#2C3E50',
+    tagline:'논리와 원칙으로 공동체를 세우는 사람.\n말씀을 치밀하게 연구하고 체계를 잡습니다.',
+    strengths:['원어·문맥·배경을 꼼꼼하게 파고드는 깊은 연구','체계적이고 설득력 있는 구조로 진리를 전달하는 능력','감정에 흔들리지 않고 일관된 기준을 유지하는 원칙','갈등 상황에서 감정을 배제하고 구조적으로 접근하는 능력'] },
+  LEADER:  { icon:'⚡', kr:'리더',     keywords:['추진','결단','영향력','목표'],    color:'#1F3864',
+    tagline:'방향을 정하고 이끄는 사람.\n결단이 필요한 순간 망설이지 않습니다.',
+    strengths:['필요한 순간 빠르고 명확한 결정을 내리는 결단력','사람과 자원을 효과적으로 배치하는 조직화 능력','실행에서 탁월한 결과를 만드는 목표 달성 능력','외부 압력에 흔들리지 않는 당당한 리더십'] },
+};
+
+// ── 상태 ──
+let cur = 0;
+const ans = Array(28).fill(null);
+let uName = '', uRole = '';
+
+// URL 파라미터
+const params = new URLSearchParams(location.search);
+const churchName = params.get('church') || '';
+const workshopCode = params.get('code') || '';
+
+if (churchName) document.getElementById('topbar-church').textContent = churchName;
+
+// ══════════════════════════════════
+//  역할 폼 관리
+// ══════════════════════════════════
+function onRoleChange(value) {
+  const etcWrap = document.getElementById('role-etc-wrap');
+  if (value === '기타') {
+    etcWrap.classList.add('show');
+  } else {
+    etcWrap.classList.remove('show');
+  }
+}
+
+function resolveRole() {
+  const roleSelect = document.getElementById('role-select');
+  const value = roleSelect.value;
+
+  if (!value) return null;
+  if (value === '기타') {
+    return document.getElementById('role-etc-input').value.trim() || null;
+  }
+  return value;
+}
+
+function startSurvey() {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) { alert('이름을 입력해 주세요.'); return; }
+  const role = resolveRole();
+  if (!role) { alert('역할을 선택(또는 입력)해 주세요.'); return; }
+
+  uName = name;
+  uRole = role;
+
+  showScreen('quiz');
+  renderQ();
+}
+
+// ══════════════════════════════════
+//  화면 전환
+// ══════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════
+//  검사 렌더링
+// ══════════════════════════════════
+function renderQ() {
+  const q = QUESTIONS[cur];
+
+  document.getElementById('q-num').textContent = cur + 1;
+  document.getElementById('q-badge').textContent = 'Q' + (cur + 1) + ' · ' + (DIM_LABEL[q.dim] || q.dim);
+  document.getElementById('prog-fill').style.width = ((cur + 1) / 28 * 100).toFixed(1) + '%';
+  document.getElementById('q-text').textContent = q.text;
+
+  const list = document.getElementById('scale-list');
+  list.innerHTML = '';
+
+  SCALE_TEXT.forEach((txt, i) => {
+    const v = i + 1;
+    const li = document.createElement('li');
+    li.className = 'scale-item';
+    const id = 'opt_' + cur + '_' + v;
+    li.innerHTML = `
+      <input type="radio" name="q_ans" id="${id}" value="${v}" ${ans[cur] === v ? 'checked' : ''}>
+      <label for="${id}">
+        <span class="scale-num">${v}</span>
+        ${txt}
+      </label>`;
+    li.querySelector('input').addEventListener('change', onAns);
+    list.appendChild(li);
+  });
+
+  document.getElementById('btn-prev').disabled = cur === 0;
+  syncNextBtn();
+}
+
+function onAns() {
+  const sel = document.querySelector('input[name="q_ans"]:checked');
+  if (sel) ans[cur] = parseInt(sel.value);
+  syncNextBtn();
+}
+
+function syncNextBtn() {
+  const btn = document.getElementById('btn-next');
+  btn.disabled = ans[cur] === null;
+  btn.textContent = cur === 27 ? '결과 보기 →' : '다음 →';
+}
+
+function nextQ() {
+  if (ans[cur] === null) {
+    const bar = document.getElementById('alert-bar');
+    bar.classList.add('show');
+    setTimeout(() => bar.classList.remove('show'), 2200);
+    return;
+  }
+  if (cur < 27) { cur++; renderQ(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  else showResult();
+}
+
+function prevQ() {
+  if (cur > 0) { cur--; renderQ(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
+
+// ══════════════════════════════════
+//  채점 & 결과
+// ══════════════════════════════════
+function showResult() {
+  const dims = ['Ne','Ni','Si','Se','Fe','Fi','Ti','Te'];
+  const scores = {};
+  dims.forEach(d => {
+    const idx = QUESTIONS.map((q,i) => q.dim === d ? i : -1).filter(i => i >= 0);
+    scores[d] = idx.reduce((s, i) => s + (ans[i] || 3), 0) / idx.length;
+  });
+
+  let bestDim = 'Si', bestScore = -1;
+  dims.forEach(d => { if (scores[d] > bestScore) { bestScore = scores[d]; bestDim = d; } });
+  const typeName = DIM_TYPE[bestDim];
+  const td = TYPE_DATA[typeName];
+
+  // 히어로 색상
+  document.getElementById('result-header').style.background =
+    `linear-gradient(140deg, ${td.color}EE 0%, ${td.color}BB 55%, #256060 100%)`;
+
+  document.getElementById('res-icon').textContent = td.icon;
+  document.getElementById('res-type').textContent = typeName;
+  document.getElementById('res-kr').textContent   = td.kr;
+  document.getElementById('res-tagline').textContent = td.tagline;
+  document.getElementById('res-name-done').textContent = uName;
+
+  document.getElementById('kw-row').innerHTML =
+    td.keywords.map(k => `<span class="kw-chip">${k}</span>`).join('');
+
+  // 강점
+  document.getElementById('res-strengths').innerHTML =
+    td.strengths.map(s => `
+      <div class="strength-li">
+        <span class="s-ico">✦</span>
+        <span>${s}</span>
+      </div>`).join('');
+
+  // 차트
+  const sorted = [...dims].sort((a,b) => scores[b] - scores[a]);
+  const colorMap = { Ne:'#8A6400',Ni:'#4A235A',Si:'#256060',Se:'#3D4D1C',
+                     Fe:'#7B1A1A',Fi:'#555555',Ti:'#2C3E50',Te:'#1F3864' };
+  document.getElementById('bar-rows').innerHTML = sorted.map(d => {
+    const tName = DIM_TYPE[d];
+    const tInfo = TYPE_DATA[tName];
+    const pct   = Math.round((scores[d] - 1) / 4 * 100);
+    const isTop = d === bestDim;
+    return `
+      <div class="bar-row">
+        <span class="bar-lbl" style="${isTop ? 'color:' + td.color + ';font-weight:800;' : ''}">
+          ${tInfo.icon} ${tInfo.kr}
+        </span>
+        <div class="bar-bg">
+          <div class="bar-fill" style="width:${pct}%; background:${isTop ? td.color : '#AABBC8'};"></div>
+        </div>
+        <span class="bar-val">${scores[d].toFixed(1)}</span>
+      </div>`;
+  }).join('');
+
+  // ── Supabase 제출 ──
+  submitToSupabase({
+    workshop_code: workshopCode,
+    name:          uName,
+    role:          uRole,
+    sg_type:       typeName,
+    dim_scores:    scores,
+    answers:       ans,
+  });
+
+  showScreen('result');
+}
+
+// ── Supabase 제출 함수 ──
+async function submitToSupabase(payload) {
+  const SUPABASE_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
+
+  if (!workshopCode) {
+    console.log('⚠️ 워크숍 코드 없음 (로컬 테스트 모드):', payload);
+    return;
+  }
+
+  try {
+    // workshop_id 조회
+    const wRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/mission_workshops?code=eq.${encodeURIComponent(payload.workshop_code)}&select=id`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
+    );
+    const workshops = await wRes.json();
+    const workshopId = workshops?.[0]?.id || null;
+
+    // 결과 저장
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/mission_results`, {
+      method: 'POST',
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=minimal',
+      },
+      body: JSON.stringify({
+        workshop_id:   workshopId,
+        workshop_code: payload.workshop_code,
+        name:          payload.name,
+        role:          payload.role,
+        sg_type:       payload.sg_type,
+        dim_scores:    payload.dim_scores,
+        answers:       payload.answers,
+      }),
+    });
+
+    if (res.ok) {
+      console.log('✅ 선교팀 검사 저장 완료:', payload.sg_type);
+    } else {
+      const err = await res.text();
+      console.error('❌ 저장 실패:', err);
+    }
+  } catch (e) {
+    console.error('❌ 네트워크 오류:', e.message);
+  }
+}
+
+// ── 공유 함수 ──
+function shareResult() {
+  const type    = document.getElementById('res-type').textContent;
+  const kr      = document.getElementById('res-kr').textContent;
+  const tagline = (TYPE_DATA[type]?.tagline || '').split('\n')[0];
+
+  const shareUrl  = 'https://onyuschool.com';
+  const shareText = `나의 선교 역할 유형은 ${type}(${kr})!\n"${tagline}"\n\n선교팀이 서로를 더 잘 이해할 수 있었어요 😊\n온유스쿨 쉐도우그램 — 소통을 회복하는 8가지 언어`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: `나는 ${type}(${kr}) 유형 — 온유스쿨 쉐도우그램`,
+      text:  shareText,
+      url:   shareUrl,
+    });
+  } else {
+    // 클립보드 복사 fallback
+    const copyText = `${shareText}\n👉 ${shareUrl}`;
+    navigator.clipboard.writeText(copyText).then(() => {
+      showShareToast();
+    }).catch(() => {
+      alert(copyText);
+    });
+  }
+}
+
+function showShareToast() {
+  const existing = document.getElementById('share-toast');
+  if (existing) { existing.classList.add('show'); setTimeout(() => existing.classList.remove('show'), 2800); return; }
+  const t = document.createElement('div');
+  t.id = 'share-toast';
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#222;color:#fff;padding:10px 22px;border-radius:24px;font-size:.85rem;opacity:0;transition:transform .3s,opacity .3s;z-index:999;white-space:nowrap';
+  t.textContent = '🔗 링크가 복사되었습니다! 친구에게 공유해 보세요';
+  document.body.appendChild(t);
+  requestAnimationFrame(() => {
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    t.style.opacity   = '1';
+  });
+  setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)'; t.style.opacity = '0'; }, 2800);
+}
+</script>
+</body>
+</html>
