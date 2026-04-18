@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>팀빌딩 워크숍 — 온유스쿨</title>
+<title>교역자 팀빌딩 워크숍 — 온유스쿨 쉐도우그램</title>
 <style>
 :root{
   --navy:#1A3055;--teal:#256060;--gold:#8A6400;
@@ -16,38 +16,22 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   font-size:15px;line-height:1.7;background:var(--bg);color:var(--gray)}
 .screen{display:none}.screen.active{display:block;animation:fadeUp .3s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.container{max-width:820px;margin:0 auto;padding:0 20px}
+.container{max-width:640px;margin:0 auto;padding:0 20px}
+
 /* topbar */
-.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;justify-content:space-between}
 .topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
 .topbar-logo span{color:var(--green)}
-/* step nav */
-.step-nav{background:#fff;border-bottom:1px solid var(--border);
-  padding:10px 20px;display:flex;align-items:center;gap:0;overflow-x:auto}
-.sn{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--light);
-  white-space:nowrap;padding:0 6px}
-.sn.done{color:var(--teal)}.sn.active{color:var(--navy);font-weight:700}
-.sn-dot{width:18px;height:18px;border-radius:50%;background:var(--border);
-  display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;
-  color:#fff;flex-shrink:0}
-.sn.done .sn-dot{background:var(--teal)}.sn.active .sn-dot{background:var(--navy)}
-.sn-arr{color:var(--border);font-size:.75rem;padding:0 2px}
-/* section */
-.sec{padding:40px 0 56px}
-.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:30px 26px}
-.card-title{font-size:1.25rem;font-weight:800;color:var(--navy);margin-bottom:5px}
-.card-sub{font-size:.83rem;color:var(--light);margin-bottom:26px}
+
 /* hero */
 .hero{background:linear-gradient(155deg,var(--navy) 0%,#1E4070 50%,var(--teal) 100%);
-  padding:60px 24px 52px;text-align:center;color:#fff}
+  padding:52px 24px 44px;text-align:center;color:#fff}
 .hero-badge{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
-  color:var(--green);font-size:.73rem;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:18px}
-.hero h1{font-size:clamp(1.5rem,5vw,2.1rem);font-weight:800;line-height:1.35;margin-bottom:12px}
+  color:var(--green);font-size:.73rem;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:800;line-height:1.35;margin-bottom:10px}
 .hero h1 em{color:var(--green);font-style:normal}
-.hero p{font-size:.92rem;color:rgba(255,255,255,.73);margin-bottom:28px;
-  line-height:1.75;max-width:460px;margin-inline:auto}
-.hero-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.hero p{font-size:.9rem;color:rgba(255,255,255,.75);margin-bottom:28px;line-height:1.8;max-width:440px;margin-inline:auto}
+.hero-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
 .hc{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
   border-radius:8px;padding:9px 16px;text-align:center}
 .hc .cn{font-size:1.1rem;font-weight:800;color:#fff;display:block}
@@ -56,42 +40,20 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   padding:15px 40px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;
   transition:background .2s,transform .15s}
 .btn-hero:hover{background:#7AB88A;transform:translateY(-2px)}
-/* class grid */
-.cls-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
-@media(max-width:500px){.cls-grid{grid-template-columns:1fr}}
-.cls-card{border:2px solid var(--border);border-radius:12px;padding:20px 18px;
-  cursor:pointer;transition:all .18s;position:relative}
-.cls-card:hover{border-color:var(--teal)}
-.cls-card.selected{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,48,85,.12)}
-.cls-card .hot{position:absolute;top:-9px;left:14px;background:var(--teal);color:#fff;
-  font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:6px}
-.cls-icon{font-size:1.6rem;margin-bottom:8px}
-.cls-name{font-size:.95rem;font-weight:800;color:var(--navy);margin-bottom:3px}
-.cls-desc{font-size:.76rem;color:var(--mid);line-height:1.55}
-.cls-card.selected::after{content:'✓';position:absolute;top:10px;right:12px;
-  color:var(--navy);font-weight:800}
-/* pricing */
-.price-box{background:#F8F7F3;border:1px solid var(--border);border-radius:10px;
-  padding:18px 20px;margin-bottom:18px}
-.price-main-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
-.p-main{font-size:1.7rem;font-weight:800;color:var(--navy)}
-.p-unit{font-size:.82rem;color:var(--mid)}
-.p-beta{display:inline-block;background:rgba(143,196,154,.2);border:1px solid var(--green);
-  color:var(--teal);font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:5px;margin-left:6px}
-.p-add{font-size:.78rem;color:var(--teal);margin-bottom:14px}
-.p-counter{display:flex;align-items:center;gap:14px}
-.p-btn{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);
-  background:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:border-color .2s}
-.p-btn:hover{border-color:var(--navy)}
-.p-num{font-size:1.2rem;font-weight:800;color:var(--navy);min-width:38px;text-align:center}
-.p-total-row{display:flex;justify-content:space-between;align-items:center;
-  padding:12px 0 0;border-top:1px solid var(--border);margin-top:12px}
-.p-total{font-size:1.3rem;font-weight:800;color:var(--navy)}
-.inc-list{list-style:none;margin-bottom:18px}
-.inc-list li{padding:6px 0;border-bottom:1px solid #F0EDE6;font-size:.83rem;color:var(--mid);
-  display:flex;gap:8px}.inc-list li:last-child{border-bottom:none}
-.inc-ico{color:var(--teal);font-weight:700;flex-shrink:0}
+.hero-reenter{margin-top:16px}
+.hero-reenter a{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.35);
+  color:#fff;padding:10px 22px;border-radius:9px;font-size:.85rem;font-weight:700;
+  text-decoration:none;transition:background .2s}
+.hero-reenter a:hover{background:rgba(255,255,255,.22)}
+.hero-reenter p{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:6px}
+
+/* section */
+.sec{padding:36px 0 52px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:30px 26px}
+.card-title{font-size:1.2rem;font-weight:800;color:var(--navy);margin-bottom:4px}
+.card-sub{font-size:.82rem;color:var(--light);margin-bottom:24px}
+
 /* form */
 .fg{margin-bottom:16px}
 .fl{display:block;font-size:.83rem;font-weight:700;color:var(--navy);margin-bottom:6px}
@@ -101,20 +63,30 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   transition:border-color .2s}
 .fi:focus{border-color:var(--navy)}
 .f-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
-.theme-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
-.tc{padding:6px 13px;border:1.5px solid var(--border);border-radius:20px;
-  font-size:.78rem;cursor:pointer;transition:all .16s;color:var(--mid);background:#fff}
-.tc.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+
+/* role chips */
+.role-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.rc{padding:8px 14px;border:1.5px solid var(--border);border-radius:20px;
+  font-size:.8rem;cursor:pointer;transition:all .16s;color:var(--mid);background:#fff;user-select:none}
+.rc:hover{border-color:var(--teal);color:var(--teal)}
+.rc.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+
+/* include list */
+.inc-list{list-style:none;margin:18px 0}
+.inc-list li{padding:6px 0;border-bottom:1px solid #F0EDE6;font-size:.82rem;color:var(--mid);
+  display:flex;gap:8px}.inc-list li:last-child{border-bottom:none}
+.inc-ico{color:var(--teal);font-weight:700;flex-shrink:0}
+
 /* link result */
-.lnk-box{border-radius:10px;padding:16px 18px;margin:16px 0}
+.lnk-box{border-radius:10px;padding:16px 18px;margin:14px 0}
 .lnk-box.survey{background:#F0F7F4;border:1.5px solid rgba(37,96,96,.28)}
 .lnk-box.admin{background:#EEF3FF;border:1.5px solid rgba(26,48,85,.22)}
 .lnk-label{font-size:.74rem;font-weight:800;letter-spacing:.04em;margin-bottom:7px}
 .lnk-box.survey .lnk-label{color:var(--teal)}
 .lnk-box.admin .lnk-label{color:var(--navy)}
-.lnk-url{font-size:.78rem;font-weight:600;word-break:break-all;
+.lnk-url{font-size:.76rem;font-weight:600;word-break:break-all;
   background:#fff;border:1px solid var(--border);border-radius:6px;padding:9px 11px;margin-bottom:9px}
-.lnk-acts{display:flex;gap:7px}
+.lnk-acts{display:flex;gap:7px;flex-wrap:wrap}
 .btn-cp{padding:8px 16px;background:var(--teal);color:#fff;border:none;border-radius:6px;
   font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
 .btn-cp:hover{background:#1A4848}
@@ -122,6 +94,12 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;
   text-decoration:none;display:inline-flex;align-items:center;transition:background .2s}
 .btn-open:hover{background:#102540}
+
+/* info grid */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  background:#F8F7F3;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.ig-item{font-size:.78rem}.ig-label{color:var(--light)}
+
 /* buttons */
 .btn-p{width:100%;padding:15px;background:var(--navy);color:#fff;border:none;
   border-radius:10px;font-size:.97rem;font-weight:800;cursor:pointer;font-family:inherit;
@@ -132,16 +110,17 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   padding:10px;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;
   font-family:inherit;transition:all .18s;margin-top:8px;width:100%;text-align:center}
 .btn-back:hover{border-color:var(--navy);color:var(--navy)}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;
-  background:#F8F7F3;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:18px}
-.ig-item{font-size:.78rem}.ig-label{color:var(--light)}
+
+/* tip box */
 .tip-box{background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
-  padding:12px 15px;font-size:.8rem;color:#7A6000;margin-top:18px;line-height:1.65}
+  padding:12px 15px;font-size:.8rem;color:#7A6000;margin-top:16px;line-height:1.65}
+
 /* toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
   background:#222;color:#fff;padding:9px 22px;border-radius:24px;font-size:.83rem;
   opacity:0;transition:transform .3s,opacity .3s;z-index:999;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
 footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
   text-align:center;font-size:.73rem;color:var(--light)}
 footer strong{color:var(--navy)}
@@ -153,235 +132,112 @@ footer strong{color:var(--navy)}
   <a class="topbar-logo" href="https://onyuschool.com">ONYUSCHOOL <span>쉐도우그램</span></a>
 </div>
 
-<div class="step-nav" id="step-nav">
-  <div class="sn active" id="sn-1"><div class="sn-dot">1</div>클래스 선택</div>
-  <div class="sn-arr">›</div>
-  <div class="sn" id="sn-2"><div class="sn-dot">2</div>인원·결제</div>
-  <div class="sn-arr">›</div>
-  <div class="sn" id="sn-3"><div class="sn-dot">3</div>워크숍 설정</div>
-  <div class="sn-arr">›</div>
-  <div class="sn" id="sn-4"><div class="sn-dot">4</div>링크 생성</div>
-</div>
-
 <!-- ── SCREEN: 랜딩 ── -->
 <div id="screen-landing" class="screen active">
   <div class="hero">
-    <div class="hero-badge">🌿 온유스쿨 팀빌딩 워크숍</div>
-    <h1>우리 팀이 왜 이렇게<br><em>소통이 안 될까요?</em></h1>
-    <p>쉐도우그램 8유형 분석으로 팀의 강점과 갈등 구조를 발견하고,<br>워크숍 한 번으로 관계를 회복합니다.</p>
+    <div class="hero-badge">🌿 온유스쿨 · 교역자 팀빌딩</div>
+    <h1>우리 교역자팀,<br><em>왜 이렇게 소통이 안 될까요?</em></h1>
+    <p>쉐도우그램 8유형으로 교역자 각자의<br>빛과 그림자를 발견하고<br>90분 워크숍으로 관계를 회복합니다.</p>
     <div class="hero-chips">
       <div class="hc"><span class="cn">28문항</span><span class="cl">유형 검사</span></div>
       <div class="hc"><span class="cn">90분</span><span class="cl">워크숍</span></div>
       <div class="hc"><span class="cn">8유형</span><span class="cl">소통 분석</span></div>
       <div class="hc"><span class="cn">베타</span><span class="cl">무료 체험</span></div>
     </div>
-    <button class="btn-hero" onclick="showScreen('select')">클래스 선택하기 →</button>
+    <button class="btn-hero" onclick="showScreen('setup')">워크숍 시작하기 →</button>
+    <div class="hero-reenter">
+      <a href="teambuilding-dashboard.html">📊 이미 만든 워크숍 대시보드 열기</a>
+      <p>코드를 알고 있으면 대시보드에서 바로 접속</p>
+    </div>
+  </div>
 
-    <!-- 재접속 버튼 -->
-    <div style="margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:8px">
-      <a href="teambuilding-dashboard.html"
-        style="display:inline-flex;align-items:center;gap:8px;
-          background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);
-          color:#fff;padding:11px 24px;border-radius:10px;font-size:.9rem;font-weight:700;
-          text-decoration:none;backdrop-filter:blur(4px);transition:background .2s"
-        onmouseover="this.style.background='rgba(255,255,255,.25)'"
-        onmouseout="this.style.background='rgba(255,255,255,.15)'">
-        📊 기존 워크숍 대시보드 재접속
-      </a>
-      <span style="font-size:.75rem;color:rgba(255,255,255,.45)">신청 시 이메일로 로그인</span>
+  <!-- 간단 소개 -->
+  <div class="container">
+    <div class="sec">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px">이런 분들께 추천합니다</div>
+        <ul class="inc-list">
+          <li><span class="inc-ico">🌿</span>새로운 교역자가 합류해 팀 호흡이 어색할 때</li>
+          <li><span class="inc-ico">🌿</span>담임목사와 부교역자 사이에 미묘한 긴장이 있을 때</li>
+          <li><span class="inc-ico">🌿</span>부서 간 협력이 안 되고 각자 따로 움직일 때</li>
+          <li><span class="inc-ico">🌿</span>같은 문제가 반복되는데 이유를 모를 때</li>
+          <li><span class="inc-ico">🌿</span>워크숍 하나로 팀 문화를 바꾸고 싶을 때</li>
+        </ul>
+        <button class="btn-p" onclick="showScreen('setup')">무료로 시작하기 →</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ── SCREEN: 조직 선택 ── -->
-<div id="screen-select" class="screen">
-  <div class="container"><div class="sec">
-    <div class="card">
-      <div class="card-title">팀빌딩 조직 선택</div>
-      <div class="card-sub">워크숍을 진행할 조직을 선택해 주세요</div>
-      <div class="cls-grid">
-        <div class="cls-card" id="cls-staff" onclick="selectClass('staff')">
-          <div class="cls-icon">🌿</div>
-          <div class="cls-name">교역자팀</div>
-          <div class="cls-desc">담임목사 · 부교역자<br>행정·교구·교육부서 등</div>
-        </div>
-        <div class="cls-card" id="cls-leadership" onclick="selectClass('leadership')">
-          <div class="cls-icon">⚡</div>
-          <div class="cls-name">리더십</div>
-          <div class="cls-desc">담임목사 · 부교역자<br>장로 · 안수집사 · 권사</div>
-        </div>
-        <div class="cls-card" id="cls-teachers" onclick="selectClass('teachers')">
-          <div class="hot">인기</div>
-          <div class="cls-icon">📚</div>
-          <div class="cls-name">교사팀</div>
-          <div class="cls-desc">담당교역자 · 부장<br>총무 · 회계 · 교사</div>
-        </div>
-        <div class="cls-card" id="cls-sunday" onclick="selectClass('sunday')">
-          <div class="cls-icon">✝️</div>
-          <div class="cls-name">주일학교</div>
-          <div class="cls-desc">초등부·중고등부·대학부·청년부<br>부서별 맞춤 검사 문항</div>
-        </div>
-        <div class="cls-card" id="cls-custom" onclick="selectClass('custom')">
-          <div class="cls-icon">✏️</div>
-          <div class="cls-name">기타 (직접 입력)</div>
-          <div class="cls-desc">사역팀·찬양팀·봉사팀 등<br>직접 조직명 입력</div>
-        </div>
-      </div>
-      <!-- 기타 직접 입력 -->
-      <div id="custom-input-wrap" style="display:none;margin-bottom:16px">
-        <input class="fi" type="text" id="inp-custom-cls"
-          placeholder="조직명을 입력해 주세요 (예: 찬양팀, 봉사팀)" maxlength="20">
-      </div>
-      <button class="btn-p" id="btn-to-pay" onclick="goToPayment()" disabled>선택 후 다음 →</button>
-    </div>
-  </div></div>
-</div>
-
-<!-- ── SCREEN: 인원·결제 ── -->
-<div id="screen-payment" class="screen">
-  <div class="container"><div class="sec">
-    <div class="card">
-      <div class="card-title">인원 설정 및 결제</div>
-      <div class="card-sub" id="pay-sub">교사팀 워크숍</div>
-      <div class="price-box">
-        <div class="price-main-row">
-          <span class="p-main">29,000</span>
-          <span class="p-unit">원</span>
-          <span class="p-beta">베타 무료</span>
-        </div>
-        <div class="p-add">10명 이내 기본가 · 1명 추가 시 +2,900원</div>
-        <div class="p-counter">
-          <button class="p-btn" onclick="chgCount(-1)">−</button>
-          <span class="p-num" id="cnt-disp">10</span>
-          <span style="font-size:.8rem;color:var(--mid)">명</span>
-          <button class="p-btn" onclick="chgCount(1)">+</button>
-        </div>
-        <div class="p-total-row">
-          <span style="font-size:.83rem;color:var(--mid)">최종 금액</span>
-          <span class="p-total"><span id="tot-disp">29,000</span>원 <span class="p-beta">베타 무료</span></span>
-        </div>
-      </div>
-      <ul class="inc-list">
-        <li><span class="inc-ico">✓</span>개인 쉐도우그램 리포트 (인원 수)</li>
-        <li><span class="inc-ico">✓</span>팀 전체 분포 인사이트 리포트</li>
-        <li><span class="inc-ico">✓</span>퍼실리테이션 매뉴얼 (90분)</li>
-        <li><span class="inc-ico">✓</span>실시간 현황 대시보드 (30일)</li>
-        <li><span class="inc-ico">✓</span>결과 리포트 PDF 다운로드</li>
-      </ul>
-      <button class="btn-p" onclick="goToSetup()">베타 무료로 시작하기 →</button>
-      <button class="btn-back" onclick="showScreen('select')">← 이전으로</button>
-    </div>
-  </div></div>
-</div>
-
-<!-- ── SCREEN: 워크숍 설정 (관리자) ── -->
+<!-- ── SCREEN: 워크숍 설정 ── -->
 <div id="screen-setup" class="screen">
   <div class="container"><div class="sec">
     <div class="card">
-      <div class="card-title">워크숍 설정</div>
-      <div class="card-sub">정보를 입력하면 교인 전용 검사 링크가 생성됩니다</div>
+      <div class="card-title">워크숍 만들기</div>
+      <div class="card-sub">정보를 입력하면 교역자 전용 검사 링크가 생성됩니다</div>
 
       <div class="fg">
         <label class="fl" for="inp-church">교회 이름</label>
-        <input class="fi" type="text" id="inp-church" placeholder="예: 새빛교회" maxlength="30">
+        <input class="fi" type="text" id="inp-church" placeholder="예: 새빛교회" maxlength="30"
+          oninput="autoTitle()">
       </div>
       <div class="fg">
-        <label class="fl" for="inp-leader">담당자 이름</label>
+        <label class="fl" for="inp-leader">담당자 이름 <small>(담임목사님 또는 간사)</small></label>
         <input class="fi" type="text" id="inp-leader" placeholder="예: 홍길동 목사" maxlength="20">
       </div>
       <div class="fg">
-        <label class="fl" for="inp-email">담당자 이메일 <small>(리포트 발송)</small></label>
+        <label class="fl" for="inp-email">담당자 이메일 <small>(대시보드 재접속용)</small></label>
         <input class="fi" type="email" id="inp-email" placeholder="example@church.com">
       </div>
 
       <hr class="f-divider">
 
-      <!-- 주일학교 부서 선택 -->
-      <div class="fg" id="dept-select-wrap" style="display:none">
-        <label class="fl" for="sel-dept">부서</label>
-        <select class="fi" id="sel-dept" onchange="changeDept()">
-          <option value="">선택해 주세요</option>
-          <option value="초등부">초등부</option>
-          <option value="중등부">중등부</option>
-          <option value="고등부">고등부</option>
-          <option value="대학부">대학부</option>
-          <option value="청년부">청년부</option>
-          <option value="기타">기타 (직접입력)</option>
-        </select>
-        <div id="dept-etc-wrap" style="display:none;margin-top:8px">
-          <input class="fi" type="text" id="inp-dept-etc"
-            placeholder="부서명을 직접 입력해 주세요" maxlength="20">
-        </div>
-      </div>
-
-      <!-- 주일학교 구성원 유형 (학생/교사/임원) -->
-      <div class="fg" id="member-type-wrap" style="display:none">
-        <label class="fl">구성원 유형 <small>(검사 링크를 받을 대상)</small></label>
-        <select class="fi" id="sel-member-type" onchange="changeMemberType()">
-          <option value="">선택해 주세요</option>
-          <option value="student">학생</option>
-          <option value="teacher">교사·간사</option>
-          <option value="leader">임원·리더</option>
-        </select>
-      </div>
-
-      <!-- 학생 학년 선택 -->
-      <div class="fg" id="grade-select-wrap" style="display:none">
-        <label class="fl" for="sel-grade">학년 <small>(학생인 경우)</small></label>
-        <select class="fi" id="sel-grade">
-          <option value="">학년을 선택해 주세요</option>
-          <optgroup label="── 초등부 ──">
-            <option value="초1">초등학교 1학년</option>
-            <option value="초2">초등학교 2학년</option>
-            <option value="초3">초등학교 3학년</option>
-            <option value="초4">초등학교 4학년</option>
-            <option value="초5">초등학교 5학년</option>
-            <option value="초6">초등학교 6학년</option>
-          </optgroup>
-          <optgroup label="── 중등부 ──">
-            <option value="중1">중학교 1학년</option>
-            <option value="중2">중학교 2학년</option>
-            <option value="중3">중학교 3학년</option>
-          </optgroup>
-          <optgroup label="── 고등부 ──">
-            <option value="고1">고등학교 1학년</option>
-            <option value="고2">고등학교 2학년</option>
-            <option value="고3">고등학교 3학년</option>
-          </optgroup>
-        </select>
-      </div>
-
-      <!-- 임원 역할 입력 (선택사항) -->
-      <div class="fg" id="officer-role-wrap" style="display:none">
-        <label class="fl" for="inp-officer-role">임원 역할 <small>(선택사항)</small></label>
-        <input class="fi" type="text" id="inp-officer-role"
-          placeholder="예: 회장, 부회장, 총무, 찬양팀장 등 (비워도 됩니다)" maxlength="20">
-      </div>
-
       <div class="fg">
-        <label class="fl">팀 구성원 직분 <small>(해당 직분을 모두 선택)</small></label>
-        <div id="role-chips" class="theme-chips">
-          <!-- JS로 조직에 맞게 렌더링 -->
+        <label class="fl">교역자 직분 <small>(해당 직분 모두 선택)</small></label>
+        <div class="role-chips">
+          <div class="rc" onclick="togRole(this,'담임목사')">담임목사</div>
+          <div class="rc" onclick="togRole(this,'부목사')">부목사</div>
+          <div class="rc" onclick="togRole(this,'전도사')">전도사</div>
+          <div class="rc" onclick="togRole(this,'교육부서')">교육부서</div>
+          <div class="rc" onclick="togRole(this,'행정부서')">행정부서</div>
+          <div class="rc" onclick="togRole(this,'교구부서')">교구부서</div>
+          <div class="rc" onclick="togRole(this,'간사')">간사</div>
+          <div class="rc" onclick="togRole(this,'기타')">기타</div>
         </div>
-        <!-- 기타 직접 입력 -->
         <div id="role-etc-wrap" style="display:none;margin-top:8px">
           <input class="fi" type="text" id="inp-role-etc"
-            placeholder="직분을 직접 입력해 주세요 (예: 순장, 셀리더)" maxlength="30">
+            placeholder="직분 직접 입력 (예: 순장, 셀리더)" maxlength="30">
         </div>
       </div>
 
       <div class="fg">
-        <label class="fl" for="inp-title">워크숍 제목 <small>(검사 페이지에 표시됨)</small></label>
+        <label class="fl" for="inp-count">예상 참여 인원</label>
+        <select class="fi" id="inp-count">
+          <option value="4">4명</option>
+          <option value="5">5명</option>
+          <option value="6">6명</option>
+          <option value="7">7명</option>
+          <option value="8">8명</option>
+          <option value="9">9명</option>
+          <option value="10" selected>10명</option>
+          <option value="12">12명</option>
+          <option value="15">15명</option>
+          <option value="20">20명</option>
+        </select>
+      </div>
+
+      <div class="fg">
+        <label class="fl" for="inp-title">워크숍 제목 <small>(검사 페이지에 표시, 선택)</small></label>
         <input class="fi" type="text" id="inp-title"
-          placeholder="예: 2025 새빛교회 교사팀 소통 워크숍" maxlength="50">
+          placeholder="예: 2026 새빛교회 교역자 소통 워크숍" maxlength="50">
       </div>
       <div class="fg">
         <label class="fl" for="inp-date">워크숍 예정일 <small>(선택)</small></label>
         <input class="fi" type="date" id="inp-date">
       </div>
 
-      <button class="btn-p" id="btn-create" onclick="createWorkshop()">🔗 전용 링크 생성하기</button>
-      <button class="btn-back" onclick="showScreen('payment')">← 이전으로</button>
+      <button class="btn-p" id="btn-create" onclick="createWorkshop()">🔗 검사 링크 생성하기</button>
+      <button class="btn-back" onclick="showScreen('landing')">← 이전으로</button>
     </div>
   </div></div>
 </div>
@@ -390,24 +246,24 @@ footer strong{color:var(--navy)}
 <div id="screen-done" class="screen">
   <div class="container"><div class="sec">
     <div class="card">
-      <div style="text-align:center;margin-bottom:26px">
+      <div style="text-align:center;margin-bottom:24px">
         <div style="font-size:2.6rem;margin-bottom:10px">🎉</div>
-        <div class="card-title">링크 생성 완료!</div>
-        <div style="font-size:.84rem;color:var(--mid);margin-top:4px">아래 링크를 교인들과 공유하세요</div>
+        <div class="card-title">워크숍 링크 생성 완료!</div>
+        <div style="font-size:.84rem;color:var(--mid);margin-top:4px">아래 링크를 교역자들과 공유하세요</div>
       </div>
 
       <div class="info-grid">
         <div class="ig-item"><div class="ig-label">교회</div><strong id="d-church"></strong></div>
-        <div class="ig-item"><div class="ig-label">클래스</div><strong id="d-class"></strong></div>
+        <div class="ig-item"><div class="ig-label">구분</div><strong>교역자팀</strong></div>
         <div class="ig-item"><div class="ig-label">참여 인원</div><strong id="d-count"></strong></div>
         <div class="ig-item"><div class="ig-label">담당자</div><strong id="d-leader"></strong></div>
       </div>
 
       <div class="lnk-box survey">
-        <div class="lnk-label">📋 성도 검사 링크 (교인에게 공유)</div>
+        <div class="lnk-label">📋 교역자 검사 링크 (교역자들에게 공유)</div>
         <div class="lnk-url" id="url-survey"></div>
         <div class="lnk-acts">
-          <button class="btn-cp" onclick="cpLink('survey')">복사</button>
+          <button class="btn-cp" onclick="cpLink('survey')">📋 복사</button>
           <a class="btn-open" id="a-survey" href="#" target="_blank">미리보기 ↗</a>
         </div>
       </div>
@@ -416,32 +272,20 @@ footer strong{color:var(--navy)}
         <div class="lnk-label">📊 관리자 대시보드 (담당자 전용)</div>
         <div class="lnk-url" id="url-dash"></div>
         <div class="lnk-acts">
-          <button class="btn-cp" onclick="cpLink('dash')">복사</button>
+          <button class="btn-cp" onclick="cpLink('dash')">📋 복사</button>
           <a class="btn-open" id="a-dash" href="#" target="_blank">대시보드 열기 ↗</a>
         </div>
       </div>
 
       <div class="tip-box">
-        💡 <strong>다음 단계:</strong> 성도 링크를 카카오톡·단체 채팅으로 공유하세요.<br>
-        검사 현황은 대시보드에서 실시간으로 확인하고, 완료 후 리포트를 다운로드할 수 있습니다.
+        💡 <strong>다음 단계:</strong> 검사 링크를 교역자 단체 채팅방에 공유하세요.<br>
+        모든 교역자가 검사를 마치면 대시보드에서 팀 리포트를 생성할 수 있습니다.<br>
+        <span style="color:var(--teal);font-weight:700">대시보드 링크는 북마크해 두세요.</span>
       </div>
 
-      <!-- 재접근 안내 -->
-      <div style="background:#EEF3FF;border:1.5px solid rgba(26,48,85,.2);border-radius:10px;
-        padding:16px 18px;margin-top:14px">
-        <div style="font-size:.8rem;font-weight:800;color:var(--navy);margin-bottom:6px">
-          📊 나중에 다시 돌아오려면
-        </div>
-        <div style="font-size:.8rem;color:var(--mid);margin-bottom:10px;line-height:1.7">
-          신청 시 입력한 이메일로 언제든 대시보드에 재접속할 수 있습니다.<br>
-          검사 현황 확인 · 링크 재공유 · 리포트 다운로드가 가능합니다.
-        </div>
-        <a href="teambuilding-dashboard.html" target="_blank"
-          style="display:inline-block;padding:9px 18px;background:var(--navy);color:#fff;
-            border-radius:7px;font-size:.82rem;font-weight:700;text-decoration:none">
-          대시보드 바로가기 →
-        </a>
-      </div>
+      <button class="btn-p" style="margin-top:16px" onclick="window.open(document.getElementById('a-dash').href,'_blank')">
+        📊 대시보드 바로 열기
+      </button>
     </div>
   </div></div>
 </div>
@@ -457,118 +301,14 @@ const SB_URL = 'https://rfmdshpsjelnnfucunjp.supabase.co';
 const SB_KEY = 'sb_publishable_hkVLFBXCGCGsZmCMWnwFkw_HxGL_2qJ';
 const SITE   = 'https://onyuschool.com';
 
-// ── 조직별 직분 정의 ──
-const ORG = {
-  staff: {
-    name: '교역자팀',
-    roles: ['담임목사', '부교역자', '행정부서', '교구부서', '교육부서', '기타'],
-  },
-  leadership: {
-    name: '리더십',
-    roles: ['담임목사', '부교역자', '장로', '안수집사', '권사', '기타'],
-  },
-  teachers: {
-    name: '교사팀',
-    roles: ['담당교역자', '부장', '총무', '회계', '교사', '기타'],
-  },
-  sunday: {
-    name: '주일학교',
-    roles: ['담당교역자', '부장', '교사', '기타'],
-  },
-  custom: {
-    name: '', // 직접 입력
-    roles: ['기타'],
-  },
-};
-
-let selCls = null, selDept = '', cnt = 10, wCode = '';
 const selRoles = new Set();
 
-/* ── 화면 전환 ── */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + id).classList.add('active');
   window.scrollTo({ top:0, behavior:'smooth' });
-  const m = { landing:0, select:1, payment:2, setup:3, done:4 };
-  const c = m[id] || 0;
-  [1,2,3,4].forEach(n => {
-    const el = document.getElementById('sn-' + n);
-    el.classList.remove('active','done');
-    if (n < c) el.classList.add('done');
-    else if (n === c) el.classList.add('active');
-  });
 }
 
-/* ── 조직 선택 ── */
-function selectClass(c) {
-  selCls = c;
-  document.querySelectorAll('.cls-card').forEach(el => el.classList.remove('selected'));
-  document.getElementById('cls-' + c).classList.add('selected');
-  document.getElementById('btn-to-pay').disabled = false;
-
-  // 기타 직접 입력 필드 토글
-  const customWrap = document.getElementById('custom-input-wrap');
-  customWrap.style.display = c === 'custom' ? 'block' : 'none';
-}
-
-function goToPayment() {
-  if (!selCls) return;
-  // 기타 조직명 처리
-  if (selCls === 'custom') {
-    const v = document.getElementById('inp-custom-cls').value.trim();
-    if (!v) { toast('조직명을 입력해 주세요.'); return; }
-    ORG.custom.name = v;
-  }
-  const orgName = ORG[selCls].name;
-  document.getElementById('pay-sub').textContent = orgName + ' 팀빌딩 워크숍';
-  calcPrice();
-  showScreen('payment');
-}
-
-/* ── 가격 계산 ── */
-function calcPrice() {
-  const t = cnt <= 10 ? 29000 : 29000 + (cnt - 10) * 2900;
-  document.getElementById('cnt-disp').textContent = cnt;
-  document.getElementById('tot-disp').textContent = t.toLocaleString();
-}
-function chgCount(d) { cnt = Math.max(1, cnt + d); calcPrice(); }
-
-function goToSetup() {
-  // 직분 칩 렌더링
-  renderRoleChips();
-  // 제목 placeholder 자동 설정
-  const orgName = ORG[selCls].name;
-  const y = new Date().getFullYear();
-  document.getElementById('inp-title').placeholder =
-    `예: ${y} 교회 ${orgName} 소통 워크숍`;
-
-  // 주일학교 부서 선택 토글
-  const deptWrap = document.getElementById('dept-select-wrap');
-  if (selCls === 'sunday') {
-    deptWrap.style.display = 'block';
-    selDept = '';
-    document.getElementById('sel-dept').value = '';
-  } else {
-    deptWrap.style.display = 'none';
-    selDept = '';
-  }
-
-  showScreen('setup');
-}
-
-/* ── 직분 칩 렌더링 ── */
-function renderRoleChips() {
-  selRoles.clear();
-  const roles = ORG[selCls]?.roles || ['기타'];
-  const wrap = document.getElementById('role-chips');
-  wrap.innerHTML = roles.map(r => `
-    <div class="tc" onclick="togRole(this,'${r}')">${r}</div>
-  `).join('');
-  // 기타 직접 입력 토글 — 기타 칩 클릭 시
-  document.getElementById('role-etc-wrap').style.display = 'none';
-}
-
-/* ── 직분 칩 토글 ── */
 function togRole(el, v) {
   el.classList.toggle('on');
   if (el.classList.contains('on')) {
@@ -580,124 +320,99 @@ function togRole(el, v) {
   }
 }
 
-/* ── 주일학교 부서 선택 ── */
-function changeDept() {
-  const val = document.getElementById('sel-dept').value;
-  selDept = val;
-  const etcWrap = document.getElementById('dept-etc-wrap');
-  etcWrap.style.display = val === '기타' ? 'block' : 'none';
-  if (val !== '기타') document.getElementById('inp-dept-etc').value = '';
-
-  // 구성원 유형 선택 표시
-  const memberTypeWrap = document.getElementById('member-type-wrap');
-  memberTypeWrap.style.display = val ? 'block' : 'none';
-  document.getElementById('sel-member-type').value = '';
-  document.getElementById('grade-select-wrap').style.display = 'none';
-  document.getElementById('officer-role-wrap').style.display = 'none';
+function autoTitle() {
+  const church = document.getElementById('inp-church').value.trim();
+  const y = new Date().getFullYear();
+  const ti = document.getElementById('inp-title');
+  if (!ti.dataset.touched) {
+    ti.placeholder = church
+      ? church + ' 교역자 소통 워크숍 ' + y
+      : '예: 2026 새빛교회 교역자 소통 워크숍';
+  }
 }
 
-function changeMemberType() {
-  const val = document.getElementById('sel-member-type').value;
-  const gradeWrap = document.getElementById('grade-select-wrap');
-  const officerWrap = document.getElementById('officer-role-wrap');
-
-  gradeWrap.style.display   = val === 'student' ? 'block' : 'none';
-  officerWrap.style.display = val === 'leader' ? 'block' : 'none';
-
-  if (val !== 'student') document.getElementById('sel-grade').value = '';
-  if (val !== 'leader') document.getElementById('inp-officer-role').value = '';
-}
-
-/* ── 코드 생성 ── */
 function genCode(church) {
   const s = church.replace(/\s+/g,'').slice(0,6);
   const r = Math.random().toString(36).slice(2,7);
   return s + '-' + r;
 }
 
-/* ── Supabase 워크숍 생성 ── */
 async function createWorkshop() {
   const church = document.getElementById('inp-church').value.trim();
   const leader = document.getElementById('inp-leader').value.trim();
   const email  = document.getElementById('inp-email').value.trim();
   const title  = document.getElementById('inp-title').value.trim();
   const date   = document.getElementById('inp-date').value;
+  const cnt    = parseInt(document.getElementById('inp-count').value) || 10;
 
   if (!church) { toast('교회 이름을 입력해 주세요.'); return; }
   if (!leader) { toast('담당자 이름을 입력해 주세요.'); return; }
   if (!email)  { toast('담당자 이메일을 입력해 주세요.'); return; }
 
-  // 주일학교 부서 검증
-  if (selCls === 'sunday') {
-    let dept = selDept;
-    if (dept === '기타') {
-      dept = document.getElementById('inp-dept-etc').value.trim();
-      if (!dept) { toast('부서명을 입력해 주세요.'); return; }
-    } else if (!dept) {
-      toast('부서를 선택해 주세요.'); return;
-    }
-    selDept = dept;
-  }
-
-  const btn = document.getElementById('btn-create');
-  btn.disabled = true; btn.textContent = '생성 중...';
-
-  wCode = genCode(church);
-  // 기타 직분 직접 입력 반영
   const etcRole = document.getElementById('inp-role-etc').value.trim();
   if (etcRole && selRoles.has('기타')) {
     selRoles.delete('기타');
     selRoles.add(etcRole);
   }
-  const orgName = ORG[selCls].name;
+
+  const btn = document.getElementById('btn-create');
+  btn.disabled = true; btn.textContent = '생성 중...';
+
+  const wCode = genCode(church);
   const body = {
-    code: wCode, church_name: church, leader_name: leader,
-    leader_email: email, product_type: selCls, max_count: cnt,
-    title: title || `${church} ${orgName} 워크숍`,
-    themes: [...selRoles].join(','), workshop_date: date || null,
+    code: wCode,
+    church_name: church,
+    leader_name: leader,
+    leader_email: email,
+    product_type: 'staff',
+    max_count: cnt,
+    title: title || (church + ' 교역자 소통 워크숍 ' + new Date().getFullYear()),
+    themes: [...selRoles].join(',') || '교역자팀',
+    workshop_date: date || null,
   };
 
   try {
-    const r = await fetch(`${SB_URL}/rest/v1/workshops`, {
-      method:'POST',
-      headers:{ 'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
-                'Content-Type':'application/json','Prefer':'return=minimal' },
+    const r = await fetch(SB_URL + '/rest/v1/workshops', {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
       body: JSON.stringify(body),
     });
     if (!r.ok && r.status !== 201) {
       const e = await r.text();
-      if (e.includes('duplicate')) {
-        wCode = genCode(church) + Math.random().toString(36).slice(2,4);
-        body.code = wCode;
-        await fetch(`${SB_URL}/rest/v1/workshops`,{method:'POST',
-          headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
-            'Content-Type':'application/json','Prefer':'return=minimal'},
-          body:JSON.stringify(body)});
+      // 중복 코드면 재시도
+      if (e.includes('duplicate') || e.includes('unique')) {
+        body.code = genCode(church) + Math.random().toString(36).slice(2,4);
+        await fetch(SB_URL + '/rest/v1/workshops', {
+          method: 'POST',
+          headers: {
+            'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+            'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(body),
+        });
+      } else {
+        console.error('Workshop 생성 오류:', e);
       }
     }
-  } catch(e) { console.error(e); }
-
-  btn.disabled = false; btn.textContent = '🔗 전용 링크 생성하기';
-
-  /* 결과 화면 */
-  let su = `${SITE}/teambuilding-survey.html?church=${encodeURIComponent(church)}&code=${wCode}&org_type=${selCls}&title=${encodeURIComponent(title||'')}`;
-  if (selCls === 'sunday' && selDept) {
-    su += `&dept=${encodeURIComponent(selDept)}`;
-    // 구성원 유형 (학생/교사/임원)
-    const memberType = document.getElementById('sel-member-type')?.value || '';
-    if (memberType) su += `&member_type=${encodeURIComponent(memberType)}`;
-    // 학생 학년
-    const grade = document.getElementById('sel-grade')?.value || '';
-    if (grade) su += `&grade=${encodeURIComponent(grade)}`;
-    // 임원 역할
-    const officerRole = document.getElementById('inp-officer-role')?.value.trim() || '';
-    if (officerRole) su += `&officer_role=${encodeURIComponent(officerRole)}`;
+  } catch(e) {
+    console.error(e);
   }
-  const du = `${SITE}/teambuilding-dashboard.html?code=${wCode}&church=${encodeURIComponent(church)}`;
-  document.getElementById('d-church').textContent  = church;
-  document.getElementById('d-class').textContent   = ORG[selCls].name;
-  document.getElementById('d-count').textContent   = cnt + '명';
-  document.getElementById('d-leader').textContent  = leader;
+
+  btn.disabled = false; btn.textContent = '🔗 검사 링크 생성하기';
+
+  const su = SITE + '/teambuilding-survey.html?church=' + encodeURIComponent(church) +
+    '&code=' + body.code + '&org_type=staff&title=' + encodeURIComponent(body.title);
+  const du = SITE + '/teambuilding-dashboard.html?code=' + body.code +
+    '&church=' + encodeURIComponent(church);
+
+  document.getElementById('d-church').textContent = church;
+  document.getElementById('d-count').textContent  = cnt + '명';
+  document.getElementById('d-leader').textContent = leader;
   document.getElementById('url-survey').textContent = su;
   document.getElementById('url-dash').textContent   = du;
   document.getElementById('a-survey').href = su;
@@ -705,13 +420,11 @@ async function createWorkshop() {
   showScreen('done');
 }
 
-/* ── 복사 ── */
 function cpLink(t) {
-  const u = document.getElementById(t==='survey'?'url-survey':'url-dash').textContent;
+  const u = document.getElementById(t === 'survey' ? 'url-survey' : 'url-dash').textContent;
   navigator.clipboard.writeText(u).then(() => toast('🔗 링크가 복사되었습니다!'));
 }
 
-/* ── 토스트 ── */
 function toast(msg, dur=2600) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');

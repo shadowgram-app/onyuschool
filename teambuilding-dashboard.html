@@ -134,52 +134,23 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 </head>
 <body>
 
-<!-- ── 로그인 화면 (CODE 없을 때) ── -->
+<!-- ── 코드 입력 화면 (CODE 없을 때) ── -->
 <div id="screen-login" style="display:none">
   <div class="login-wrap">
-    <!-- STEP 1: 이메일 입력 -->
-    <div id="login-step-email" class="login-card">
-      <div style="font-size:1.5rem;margin-bottom:12px">🔐</div>
+    <div class="login-card">
+      <div style="font-size:1.5rem;margin-bottom:12px">📊</div>
       <div class="login-title">팀빌딩 대시보드 접속</div>
-      <div class="login-sub">워크숍 신청 시 입력한 이메일로 인증합니다</div>
-      <div class="login-warn">
-        ⚠️ <strong>이메일을 정확히 입력해 주세요.</strong><br>
-        신청 시 등록한 이메일과 다르면 접속이 불가합니다.<br>
-        대소문자, 오탈자 없이 입력해 주세요.
+      <div class="login-sub">생성된 워크숍 코드를 입력하면 바로 접속됩니다</div>
+      <label class="login-label" for="li-code">워크숍 코드</label>
+      <input class="login-input" type="text" id="li-code"
+        placeholder="예: 새빛교회-88wjj"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') liEnterCode()">
+      <button class="login-btn" onclick="liEnterCode()">대시보드 접속 →</button>
+      <div style="text-align:center;margin-top:16px;font-size:.78rem;color:var(--light)">
+        코드를 잃어버리셨나요?
+        <a href="teambuilding.html" style="color:var(--teal);text-decoration:underline">새 워크숍 만들기</a>
       </div>
-      <label class="login-label" for="li-email">이메일</label>
-      <input class="login-input" type="email" id="li-email"
-        placeholder="신청 시 입력한 이메일 정확히 입력"
-        autocomplete="email"
-        onkeydown="if(event.key==='Enter') liSendOtp()">
-      <button class="login-btn" onclick="liSendOtp()">인증코드 받기</button>
-    </div>
-
-    <!-- STEP 2: OTP 입력 -->
-    <div id="login-step-otp" class="login-card" style="display:none">
-      <div style="font-size:1.5rem;margin-bottom:12px">📧</div>
-      <div class="login-title">인증코드 입력</div>
-      <div class="login-sub" id="li-otp-desc">입력한 이메일로 발송된 6자리 코드를 입력해 주세요</div>
-      <div class="otp-wrap">
-        <input class="otp-input" type="text" inputmode="numeric" maxlength="1" id="li-otp-0" oninput="liOtpInput(0)" onkeydown="liOtpKey(event,0)" onpaste="liOtpPaste(event,0)">
-        <input class="otp-input" type="text" maxlength="1" id="li-otp-1" oninput="liOtpInput(1)" onkeydown="liOtpKey(event,1)">
-        <input class="otp-input" type="text" maxlength="1" id="li-otp-2" oninput="liOtpInput(2)" onkeydown="liOtpKey(event,2)">
-        <input class="otp-input" type="text" maxlength="1" id="li-otp-3" oninput="liOtpInput(3)" onkeydown="liOtpKey(event,3)">
-        <input class="otp-input" type="text" maxlength="1" id="li-otp-4" oninput="liOtpInput(4)" onkeydown="liOtpKey(event,4)">
-        <input class="otp-input" type="text" maxlength="1" id="li-otp-5" oninput="liOtpInput(5)" onkeydown="liOtpKey(event,5)">
-      </div>
-      <button class="login-btn" id="li-btn-verify" onclick="liVerifyOtp()" disabled>확인</button>
-      <div style="text-align:center;margin-top:10px;font-size:.78rem;color:var(--light)">
-        코드를 받지 못했나요?
-        <a href="#" onclick="liSendOtp();return false"
-          style="color:var(--teal);text-decoration:underline">재발송</a>
-        &nbsp;|&nbsp; <span id="li-timer" style="font-weight:700;color:var(--navy)">3:00</span>
-      </div>
-      <button onclick="document.getElementById('login-step-otp').style.display='none';document.getElementById('login-step-email').style.display='block'"
-        style="width:100%;margin-top:10px;padding:10px;background:transparent;border:1.5px solid var(--border);
-          border-radius:8px;font-size:.83rem;color:var(--mid);cursor:pointer;font-family:inherit">
-        ← 이메일 다시 입력
-      </button>
     </div>
   </div>
 </div>
@@ -290,37 +261,53 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
         </div>
       </div>
 
+      <!-- 전원 미완료 경고 배너 -->
+      <div id="not-all-done-banner" style="display:none;background:#FFF3CD;border:1.5px solid #F0C040;
+        border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:.83rem;color:#7A5000;line-height:1.7">
+        ⚠️ <strong>전원 검사 완료 전 생성 주의:</strong> 아직 검사하지 않은 팀원이 있습니다.
+        <span id="not-done-names" style="font-weight:700"></span>
+        리포트 생성 후에는 <strong>이후 검사 결과가 반영되지 않습니다.</strong>
+        전원 완료 후 생성하는 것을 권장합니다.
+      </div>
+
+      <!-- 생성 진행 상태 -->
+      <div id="gen-progress" style="display:none;background:#F0F7F4;border:1px solid rgba(37,96,96,.25);
+        border-radius:10px;padding:16px;margin-bottom:16px">
+        <div style="font-size:.85rem;font-weight:700;color:var(--teal);margin-bottom:8px" id="gen-status-text">준비 중...</div>
+        <div style="height:6px;background:#E0EDE8;border-radius:3px;overflow:hidden">
+          <div id="gen-prog-bar" style="height:100%;background:var(--teal);border-radius:3px;
+            width:0%;transition:width .4s ease"></div>
+        </div>
+      </div>
+
       <!-- 리포트 목록 -->
       <div class="rpt-list">
         <div class="rpt-item">
           <div class="rpt-info">
             <div class="rpt-name">📊 팀 전체 인사이트 리포트</div>
-            <div class="rpt-desc">유형 분포 · 팀 서사 · 강점·그림자 · 동역 구조 제안 · 워크숍 오프닝</div>
+            <div class="rpt-desc">유형 분포 · 팀 서사 · 강점·그림자 · 동역 구조 · 워크숍 오프닝 · 퍼실리테이션</div>
           </div>
-          <button class="btn-dl team" onclick="generateAndDownload('team')">생성 & 다운로드</button>
+          <button class="btn-dl team" id="btn-team-report" onclick="openTeamReport()">리포트 보기 →</button>
         </div>
         <div class="rpt-item">
           <div class="rpt-info">
-            <div class="rpt-name">🌿 개인 리포트 일괄 생성</div>
-            <div class="rpt-desc">완료자 전원 · 역할 맥락 반영 개인 서술 · 쉐도우그램 캡션 포함</div>
+            <div class="rpt-name">🌿 개인 리포트 (팀원 공유용)</div>
+            <div class="rpt-desc">팀원별 고유기능 · 이 팀에서의 역할 · 그림자 보완 가이드 — 링크로 공유</div>
           </div>
-          <button class="btn-dl ind" onclick="generateAndDownload('individual')">생성 & 다운로드</button>
+          <button class="btn-dl ind" onclick="openSharePanel()">팀원 공유 링크 →</button>
         </div>
-        <div class="rpt-item">
-          <div class="rpt-info">
-            <div class="rpt-name">📦 전체 패키지 (팀 + 개인 전부)</div>
-            <div class="rpt-desc">팀 리포트 + 개인 리포트 전원 순차 다운로드</div>
-          </div>
-          <button class="btn-dl team" style="background:var(--gold);color:#fff" onclick="generateAndDownload('all')">전체 생성</button>
+      </div>
+
+      <!-- 팀원 공유 패널 -->
+      <div id="share-panel" style="display:none;background:#F5F9FF;border:1.5px solid #B8D4F0;
+        border-radius:10px;padding:16px;margin-top:12px">
+        <div style="font-size:.88rem;font-weight:800;color:var(--navy);margin-bottom:12px">
+          🔗 팀원 개인 리포트 링크
         </div>
-        <div class="rpt-item">
-          <div class="rpt-info">
-            <div class="rpt-name">📋 퍼실리테이션 매뉴얼</div>
-            <div class="rpt-desc">90분 워크숍 진행 가이드 · 상황별 스크립트</div>
-          </div>
-          <a class="btn-dl team" href="teambuilding-manual.html" target="_blank"
-            style="text-decoration:none;display:inline-block">열기 ↗</a>
+        <div style="font-size:.78rem;color:var(--mid);margin-bottom:12px;line-height:1.65">
+          각 팀원에게 개인 링크를 전달하세요. 링크를 열면 본인의 고유기능 분석·팀역할·그림자 보완 가이드를 볼 수 있습니다.
         </div>
+        <div id="member-links"></div>
       </div>
 
       <div style="margin-top:16px;background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
@@ -552,14 +539,111 @@ function renderInfo() {
 }
 
 function updateReportStatus() {
-  const done = results.length;
+  const done  = results.length;
   const total = wsData?.max_count || 0;
+  const isReported = wsData?.status === 'reported';
+
+  // 전원 미완료 경고 배너
+  const banner = document.getElementById('not-all-done-banner');
+  if (banner) {
+    if (done > 0 && done < total && !isReported) {
+      banner.style.display = 'block';
+      document.getElementById('not-done-names').textContent = '';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  // 리포트 버튼 상태
+  const btnTeam = document.getElementById('btn-team-report');
+  if (btnTeam) {
+    if (isReported) {
+      btnTeam.textContent = '✅ 저장된 리포트 보기 →';
+      btnTeam.style.background = 'var(--teal)';
+    } else if (done === 0) {
+      btnTeam.textContent = '검사 완료 후 생성';
+      btnTeam.classList.add('disabled');
+      btnTeam.onclick = null;
+    } else {
+      btnTeam.textContent = '리포트 생성 & 보기 →';
+    }
+  }
+
   const msg = done === 0
-    ? '⏳ 아직 완료된 검사가 없습니다. 교인들과 링크를 공유해 주세요.'
+    ? '⏳ 아직 완료된 검사가 없습니다. 팀원들과 링크를 공유해 주세요.'
+    : isReported
+    ? `✅ 리포트가 생성되어 있습니다. 팀 리포트 보기 또는 팀원 공유 링크를 사용하세요.`
     : done < total
-    ? `✅ 현재 ${done}명 완료 (${total}명 중). 전원 완료 전에도 다운로드 가능합니다.`
-    : `🎉 전원 검사 완료! 최종 리포트를 다운로드하세요.`;
+    ? `⚠️ 현재 ${done}명 완료 (${total}명 중). 전원 완료 후 리포트 생성을 권장합니다.`
+    : `🎉 전원 검사 완료! 팀 리포트를 생성하세요.`;
   document.getElementById('rpt-status-msg').innerHTML = msg;
+}
+
+/* ── 팀 리포트 HTML 뷰어 열기 ── */
+async function openTeamReport() {
+  if (results.length === 0) { showToast('검사 완료된 팀원이 없습니다.'); return; }
+  setProgress('리포트 데이터 불러오는 중...', 20);
+
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
+      body: JSON.stringify({ code: CODE, mode: 'all' }),
+    });
+    setProgress('리포트 렌더링 중...', 75);
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error || '서버 오류'); }
+    const data = await res.json();
+    setProgress('완료!', 100);
+    hideProgress();
+
+    // 팀 리포트 HTML 뷰어 URL로 이동
+    const url = `teambuilding-report.html?code=${CODE}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`;
+    // 데이터를 sessionStorage에 캐시한 뒤 이동
+    sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify(data));
+    window.open(url, '_blank');
+
+  } catch(e) {
+    hideProgress();
+    // 폴백: rule-based로 리포트 뷰어 열기
+    sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify({ ok: true, results, typeDistribution: getTypeDistribution(), teamAI: null, individualAI: [], workshop: { church_name: wsData?.church_name||CHURCH } }));
+    window.open(`teambuilding-report.html?code=${CODE}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`, '_blank');
+  }
+}
+
+function getTypeDistribution() {
+  const counts = {};
+  results.forEach(r => { if (r.sg_type) counts[r.sg_type] = (counts[r.sg_type]||0)+1; });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+}
+
+/* ── 팀원 공유 패널 ── */
+function openSharePanel() {
+  if (results.length === 0) { showToast('검사 완료된 팀원이 없습니다.'); return; }
+  const panel = document.getElementById('share-panel');
+  const linksDiv = document.getElementById('member-links');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'none') return;
+
+  const base = location.origin + location.pathname.replace('teambuilding-dashboard.html','teambuilding-member.html');
+  let html = '';
+  results.forEach(r => {
+    const link = `${base}?code=${CODE}&name=${encodeURIComponent(r.name)}`;
+    html += `
+      <div style="display:flex;align-items:center;justify-content:space-between;
+        padding:10px 12px;background:#fff;border:1px solid #DCE8F8;border-radius:8px;margin-bottom:8px">
+        <div>
+          <span style="font-size:.88rem;font-weight:700;color:var(--navy)">${r.name}</span>
+          <span style="font-size:.75rem;color:var(--mid);margin-left:8px">${window.ShadowgramEngine?.TYPE_MASTER?.[r.sg_type]?.kr||r.sg_type||'-'}</span>
+        </div>
+        <button onclick="copyLink('${link}','${r.name}')" style="background:var(--teal);color:#fff;border:none;
+          border-radius:6px;padding:6px 12px;font-size:.75rem;font-weight:700;cursor:pointer">링크 복사</button>
+      </div>`;
+  });
+  linksDiv.innerHTML = html;
+}
+
+function copyLink(url, name) {
+  navigator.clipboard.writeText(url).then(() => showToast(`✅ ${name}님 링크 복사됨`));
 }
 
 /* ── 구형 함수 (엔진으로 대체됨, 하위 호환용) ── */
@@ -733,180 +817,9 @@ function showToast(msg, dur=2800) {
   setTimeout(() => el.classList.remove('show'), dur);
 }
 
-/* ══════════════════════════════════════════════
-   이메일 OTP 로그인
-   ══════════════════════════════════════════════ */
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-3nT7SfFWU8uEp1l95X2Tn0uUmSRvLU5u-joUOq6MEFS7Qdmf1M9UEX41IQCRhsvVAw/exec';
-let liEmail = '', liOtp = '', liTimer = null;
-let _liOtpSending = false; // 중복 발송 방지 플래그
-
-async function liSendOtp() {
-  if (_liOtpSending) return; // 중복 발송 방지
-  _liOtpSending = true;
-  const sendBtn = document.querySelector('#login-step-email .login-btn');
-  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '발송 중...'; }
-
-  const email = document.getElementById('li-email').value.trim();
-  if (!email || !email.includes('@')) {
-    _liOtpSending = false;
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '인증코드 받기'; }
-    showToast('이메일을 정확히 입력해 주세요'); return;
-  }
-
-  // DB에서 해당 이메일의 워크숍 존재 여부 확인
-  const r = await fetch(
-    `${SB_URL}/rest/v1/workshops?leader_email=eq.${encodeURIComponent(email)}&select=code&limit=1`,
-    { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
-  );
-  const rows = await r.json();
-  if (!rows?.length) {
-    _liOtpSending = false;
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '인증코드 받기'; }
-    showToast('등록된 이메일이 없습니다. 신청 시 입력한 이메일을 확인해 주세요.'); return;
-  }
-
-  liEmail = email;
-  liOtp   = String(Math.floor(100000 + Math.random() * 900000));
-
-  // OTP 저장
-  try {
-    await fetch(`${SB_URL}/rest/v1/workshops?leader_email=eq.${encodeURIComponent(email)}`, {
-      method: 'PATCH',
-      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY,
-                 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-      body: JSON.stringify({ otp_code: liOtp, otp_expires: new Date(Date.now() + 180000).toISOString() })
-    });
-  } catch(e) { sessionStorage.setItem('tb_otp', liOtp); sessionStorage.setItem('tb_otp_email', liEmail); }
-
-  // 이메일 발송 (Apps Script)
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ type: 'send_otp', email: liEmail, otp: liOtp }),
-    });
-    showToast('📧 인증코드가 발송되었습니다');
-  } catch(e) { showToast('🔑 인증코드: ' + liOtp); }
-
-  // 버튼 재활성화 없음 — OTP 화면으로 전환됨
-
-  document.getElementById('li-otp-desc').textContent = liEmail + '로 발송된 6자리 코드를 입력해 주세요';
-  document.getElementById('login-step-email').style.display = 'none';
-  document.getElementById('login-step-otp').style.display   = 'block';
-  liStartTimer();
-  document.getElementById('li-otp-0').focus();
-}
-
-function liOtpInput(idx) {
-  const val = document.getElementById(`li-otp-${idx}`).value.replace(/\D/g,'');
-  document.getElementById(`li-otp-${idx}`).value = val;
-  if (val && idx < 5) document.getElementById(`li-otp-${idx+1}`).focus();
-  document.getElementById('li-btn-verify').disabled =
-    ![0,1,2,3,4,5].every(i => document.getElementById(`li-otp-${i}`).value);
-}
-function liOtpKey(e, idx) {
-  if (e.key === 'Backspace' && !document.getElementById(`li-otp-${idx}`).value && idx > 0)
-    document.getElementById(`li-otp-${idx-1}`).focus();
-}
-function liOtpPaste(e, startIdx) {
-  e.preventDefault();
-  const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
-  paste.split('').forEach((ch, i) => {
-    const el = document.getElementById(`li-otp-${startIdx + i}`);
-    if (el) el.value = ch;
-  });
-  const nextIdx = Math.min(startIdx + paste.length, 5);
-  document.getElementById(`li-otp-${nextIdx}`)?.focus();
-  document.getElementById('li-btn-verify').disabled =
-    ![0,1,2,3,4,5].every(i => document.getElementById(`li-otp-${i}`).value);
-}
-function liGetOtp() { return [0,1,2,3,4,5].map(i => document.getElementById(`li-otp-${i}`).value).join(''); }
-
-function liStartTimer() {
-  clearInterval(liTimer);
-  let sec = 180;
-  liTimer = setInterval(() => {
-    sec--;
-    const m = Math.floor(sec/60), s = sec%60;
-    document.getElementById('li-timer').textContent = `${m}:${String(s).padStart(2,'0')}`;
-    if (sec <= 0) { clearInterval(liTimer); document.getElementById('li-timer').textContent = '만료'; }
-  }, 1000);
-}
-
-async function liVerifyOtp() {
-  const entered = liGetOtp();
-  let stored = liOtp || sessionStorage.getItem('tb_otp') || '';
-
-  try {
-    const r = await fetch(
-      `${SB_URL}/rest/v1/workshops?leader_email=eq.${encodeURIComponent(liEmail)}&select=otp_code,otp_expires&limit=1`,
-      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
-    );
-    const rows = await r.json();
-    if (rows?.[0]?.otp_code) {
-      stored = rows[0].otp_code;
-      if (rows[0].otp_expires && new Date() > new Date(rows[0].otp_expires)) {
-        showToast('인증코드가 만료되었습니다. 재발송해 주세요.'); return;
-      }
-    }
-  } catch(e) {}
-
-  if (entered !== stored) {
-    showToast('인증코드가 올바르지 않습니다');
-    [0,1,2,3,4,5].forEach(i => { document.getElementById(`li-otp-${i}`).value = ''; });
-    document.getElementById('li-otp-0').focus();
-    return;
-  }
-
-  clearInterval(liTimer);
-  sessionStorage.setItem('tb_auth_email', liEmail);
-  document.getElementById('tb-logout').style.display = 'block';
-
-  // 이메일로 해당 워크숍 목록 로드
-  document.getElementById('screen-login').style.display = 'none';
-  document.getElementById('main-layout').style.display  = 'flex';
-  await liLoadFirstWorkshop();
-  showToast('✅ 인증 완료!');
-}
-
-async function liLoadFirstWorkshop() {
-  const r = await fetch(
-    `${SB_URL}/rest/v1/workshops?leader_email=eq.${encodeURIComponent(liEmail)}&order=created_at.desc&select=code,church_name&limit=10`,
-    { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
-  );
-  const rows = await r.json();
-  if (!rows?.length) { showToast('등록된 워크숍이 없습니다'); return; }
-
-  // 워크숍이 1개면 바로 로드, 여러 개면 첫 번째 로드 + 상단에 선택 UI 표시
-  if (rows.length === 1) {
-    window._tbCode = rows[0].code;
-    document.getElementById('tb-church').textContent = rows[0].church_name;
-    loadDataByCode(rows[0].code);
-  } else {
-    // 여러 워크숍 — 선택 드롭다운 표시
-    const sel = document.createElement('select');
-    sel.style.cssText = 'padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:.8rem;cursor:pointer;';
-    rows.forEach(w => {
-      const opt = document.createElement('option');
-      opt.value = w.code; opt.textContent = w.church_name + ' (' + w.code + ')';
-      sel.appendChild(opt);
-    });
-    sel.onchange = () => { window._tbCode = sel.value; loadDataByCode(sel.value); };
-    document.getElementById('tb-church').replaceWith(sel);
-    window._tbCode = rows[0].code;
-    loadDataByCode(rows[0].code);
-  }
-}
-
+/* ── 로그아웃 (코드 입력화면으로 돌아가기) ── */
 function liLogout() {
-  sessionStorage.removeItem('tb_auth_email');
-  liEmail = '';
-  document.getElementById('screen-login').style.display = 'block';
-  document.getElementById('main-layout').style.display  = 'none';
-  document.getElementById('login-step-email').style.display = 'block';
-  document.getElementById('login-step-otp').style.display   = 'none';
-  document.getElementById('li-email').value = '';
-  document.getElementById('tb-logout').style.display = 'none';
+  location.href = 'teambuilding-dashboard.html';
 }
 
 function loadDataByCode(code) {
@@ -919,26 +832,45 @@ function loadDataByCode(code) {
 
 /* ── 초기화 ── */
 (function init() {
-  const savedEmail = sessionStorage.getItem('tb_auth_email');
-
   if (CODE) {
     // URL에 코드 있으면 바로 대시보드
     document.getElementById('screen-login').style.display = 'none';
     document.getElementById('main-layout').style.display  = 'flex';
     loadData();
-  } else if (savedEmail) {
-    // 세션 저장된 이메일로 자동 로그인
-    liEmail = savedEmail;
-    document.getElementById('screen-login').style.display = 'none';
-    document.getElementById('main-layout').style.display  = 'flex';
-    document.getElementById('tb-logout').style.display    = 'block';
-    liLoadFirstWorkshop();
   } else {
-    // 로그인 화면
+    // 코드 입력 화면
     document.getElementById('screen-login').style.display = 'block';
     document.getElementById('main-layout').style.display  = 'none';
   }
 })();
+
+/* ── 코드 직접 입력 접속 ── */
+async function liEnterCode() {
+  const code = document.getElementById('li-code').value.trim();
+  if (!code) { showToast('워크숍 코드를 입력해 주세요'); return; }
+
+  const btn = document.querySelector('#screen-login .login-btn');
+  btn.disabled = true; btn.textContent = '확인 중...';
+
+  try {
+    const r = await fetch(
+      `${SB_URL}/rest/v1/workshops?code=eq.${encodeURIComponent(code)}&select=code,church_name&limit=1`,
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+    );
+    const rows = await r.json();
+    if (!rows?.length) {
+      showToast('❌ 코드를 찾을 수 없습니다. 다시 확인해 주세요.');
+      btn.disabled = false; btn.textContent = '대시보드 접속 →';
+      return;
+    }
+    // 코드 확인됨 — URL에 코드 추가 후 페이지 새로고침
+    const church = encodeURIComponent(rows[0].church_name || '');
+    location.href = `teambuilding-dashboard.html?code=${encodeURIComponent(code)}&church=${church}`;
+  } catch(e) {
+    showToast('오류가 발생했습니다: ' + e.message);
+    btn.disabled = false; btn.textContent = '대시보드 접속 →';
+  }
+}
 
 // ══════════════════════════════════════════════
 //  리포트 엔진 — Edge Function 호출
