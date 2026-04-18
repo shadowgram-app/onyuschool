@@ -639,10 +639,17 @@ const SURVEY_HTML = `
           </select>
         </div>
       </div>
-      <div>
-        <div style="font-size:.75rem;font-weight:700;color:var(--navy);margin-bottom:4px;">이메일</div>
-        <input class="survey-textarea" name="respondent_email" type="email"
-          placeholder="예: pastor@church.com" style="min-height:auto;padding:10px 12px;" required>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--navy);margin-bottom:4px;">교회명</div>
+          <input class="survey-textarea" name="respondent_church" type="text"
+            placeholder="예: 온누리행복교회" style="min-height:auto;padding:10px 12px;" required>
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:700;color:var(--navy);margin-bottom:4px;">이메일</div>
+          <input class="survey-textarea" name="respondent_email" type="email"
+            placeholder="예: pastor@church.com" style="min-height:auto;padding:10px 12px;" required>
+        </div>
       </div>
     </div>
 
@@ -836,6 +843,7 @@ async function submitSurvey(e) {
     respondent_name: fd.get('respondent_name')?.trim() || null,
     respondent_position: fd.get('respondent_position') || null,
     respondent_email: fd.get('respondent_email')?.trim() || null,
+    respondent_church: fd.get('respondent_church')?.trim() || null,
     q1_usefulness: parseInt(fd.get('q1_usefulness')) || null,
     q2_accuracy: parseInt(fd.get('q2_accuracy')) || null,
     q3_interest: fd.get('q3_interest') || null,
