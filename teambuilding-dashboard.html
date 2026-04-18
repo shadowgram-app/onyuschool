@@ -221,11 +221,62 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 
       <!-- 멤버 테이블 -->
       <div class="card">
-        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <span>참여자 현황</span>
-          <span id="done-count-label" style="font-size:.75rem;font-weight:600;color:var(--teal)"></span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="done-count-label" style="font-size:.75rem;font-weight:600;color:var(--teal)"></span>
+            <button onclick="openAddMember()"
+              style="background:var(--teal);color:#fff;border:none;border-radius:8px;
+                padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">
+              + 직접 추가
+            </button>
+          </div>
         </div>
         <div id="member-wrap"><div class="loading">⏳ 데이터 불러오는 중...</div></div>
+      </div>
+
+      <!-- 직접 추가 모달 -->
+      <div id="add-member-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+        z-index:1000;align-items:center;justify-content:center;padding:20px" class="modal-overlay">
+        <div style="background:#fff;border-radius:16px;padding:28px 24px;width:100%;max-width:420px;
+          box-shadow:0 20px 60px rgba(0,0,0,.2)">
+          <div style="font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:4px">팀원 직접 추가</div>
+          <div style="font-size:.78rem;color:var(--light);margin-bottom:20px">MBTI 또는 쉐도우그램 유형을 알고 있는 팀원을 직접 등록합니다</div>
+
+          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">이름 *</label>
+          <input id="add-name" placeholder="예: 홍길동"
+            style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
+              font-size:.95rem;font-family:inherit;margin-bottom:14px;outline:none">
+
+          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">직분 / 역할</label>
+          <input id="add-role" placeholder="예: 담임목사, 부목사, 전도사..."
+            style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
+              font-size:.95rem;font-family:inherit;margin-bottom:14px;outline:none">
+
+          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">MBTI 유형 (선택)</label>
+          <input id="add-mbti" maxlength="4" placeholder="예: INFJ, ENTP — 입력하면 자동 매칭"
+            oninput="dashMatchMbti(this.value)"
+            style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
+              font-size:.95rem;font-family:inherit;margin-bottom:6px;outline:none;text-transform:uppercase">
+          <div id="add-mbti-result" style="font-size:.8rem;color:var(--teal);margin-bottom:10px;min-height:18px"></div>
+
+          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:8px">쉐도우그램 유형 선택 *</label>
+          <div id="add-sg-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:18px"></div>
+
+          <div id="add-error" style="color:#c0392b;font-size:.8rem;margin-bottom:10px;display:none"></div>
+          <div style="display:flex;gap:10px">
+            <button onclick="closeAddMember()"
+              style="flex:1;padding:12px;border:1.5px solid var(--border);background:#fff;
+                color:var(--mid);border-radius:8px;font-size:.9rem;font-family:inherit;cursor:pointer">
+              취소
+            </button>
+            <button id="add-submit-btn" onclick="submitAddMember()"
+              style="flex:2;padding:12px;background:var(--teal);color:#fff;border:none;
+                border-radius:8px;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer">
+              등록하기 →
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -462,6 +513,133 @@ function renderStatus() {
       </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
+}
+
+/* ══════════════════════════════════
+   팀원 직접 추가 (대시보드)
+══════════════════════════════════ */
+const DASH_MBTI_TO_SG = {
+  ENTP:'SPARK', ENFP:'SPARK',
+  INTJ:'VISION', INFJ:'VISION',
+  ISTJ:'STEADY', ISFJ:'STEADY',
+  ESTP:'PLAYER', ESFP:'PLAYER',
+  ESFJ:'HARMONY', ENFJ:'HARMONY',
+  INFP:'SOUL', ISFP:'SOUL',
+  INTP:'LOGIC', ISTP:'LOGIC',
+  ENTJ:'LEADER', ESTJ:'LEADER',
+};
+const DASH_SG_ORDER = ['SPARK','VISION','STEADY','PLAYER','HARMONY','SOUL','LOGIC','LEADER'];
+
+let dashSelectedSg = null;
+
+function openAddMember() {
+  dashSelectedSg = null;
+  document.getElementById('add-name').value    = '';
+  document.getElementById('add-role').value    = '';
+  document.getElementById('add-mbti').value    = '';
+  document.getElementById('add-mbti-result').textContent = '';
+  document.getElementById('add-error').style.display = 'none';
+  renderDashSgChips(null);
+  const modal = document.getElementById('add-member-modal');
+  modal.style.display = 'flex';
+}
+function closeAddMember() {
+  document.getElementById('add-member-modal').style.display = 'none';
+}
+
+function renderDashSgChips(active) {
+  const wrap = document.getElementById('add-sg-chips');
+  if (!wrap) return;
+  wrap.innerHTML = DASH_SG_ORDER.map(t => {
+    const td  = TYPE_DATA[t] || {};
+    const sel = t === active;
+    return `<button type="button" onclick="dashSelectSg('${t}')"
+      style="padding:8px 10px;border-radius:8px;font-family:inherit;cursor:pointer;
+        border:1.5px solid ${sel ? '#256060' : '#D5D0C8'};
+        background:${sel ? '#E8F4F0' : '#fff'};
+        color:${sel ? '#1A3055' : '#666'};font-size:.8rem;font-weight:${sel ? '800':'600'};
+        text-align:left;transition:all .15s">
+      ${td.icon||''} <strong>${t}</strong> ${td.kr||''}
+    </button>`;
+  }).join('');
+}
+
+function dashSelectSg(type) {
+  dashSelectedSg = type;
+  renderDashSgChips(type);
+}
+
+function dashMatchMbti(val) {
+  const upper = val.toUpperCase().trim();
+  const sg    = DASH_MBTI_TO_SG[upper];
+  const el    = document.getElementById('add-mbti-result');
+  if (sg) {
+    dashSelectSg(sg);
+    const td = TYPE_DATA[sg] || {};
+    el.innerHTML = `✅ ${upper} → ${td.icon||''} <strong>${sg}</strong> (${td.kr||sg}) 자동 매칭`;
+    el.style.color = '#256060';
+  } else if (upper.length === 4) {
+    el.textContent = '인식되지 않는 MBTI 유형입니다. 아래에서 직접 선택해 주세요.';
+    el.style.color = '#999';
+  } else {
+    el.textContent = '';
+  }
+}
+
+async function submitAddMember() {
+  const name = document.getElementById('add-name').value.trim();
+  const role = document.getElementById('add-role').value.trim();
+  const errEl = document.getElementById('add-error');
+  errEl.style.display = 'none';
+
+  if (!name) { errEl.textContent = '이름을 입력해 주세요.'; errEl.style.display='block'; return; }
+  if (!dashSelectedSg) { errEl.textContent = '유형을 선택해 주세요.'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('add-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  try {
+    // workshop_id 조회
+    const wRes = await fetch(
+      `${SB_URL}/rest/v1/workshops?code=eq.${encodeURIComponent(CODE)}&select=id`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    const ws = await wRes.json();
+    const workshopId = ws?.[0]?.id || null;
+
+    const res = await fetch(`${SB_URL}/rest/v1/survey_results`, {
+      method: 'POST',
+      headers: {
+        'apikey':        SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=minimal',
+      },
+      body: JSON.stringify({
+        workshop_id:   workshopId,
+        workshop_code: CODE,
+        name:          name,
+        role:          role || null,
+        group_type:    'staff',
+        sg_type:       dashSelectedSg,
+        dim_scores:    null,
+        answers:       null,
+      }),
+    });
+
+    if (!res.ok) { throw new Error(await res.text()); }
+
+    closeAddMember();
+    showToast(`✅ ${name}님(${dashSelectedSg}) 등록 완료`);
+    await loadData(); // 현황 새로고침
+  } catch(e) {
+    errEl.textContent = '저장 실패: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '등록하기 →';
+  }
 }
 
 /* ── 유형 분포 차트 ── */
