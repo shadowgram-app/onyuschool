@@ -700,6 +700,81 @@ const SURVEY_HTML = `
       <textarea class="survey-textarea" name="q6_feedback" placeholder="예: 이런 기능이 있으면 좋겠어요, 리포트에서 이 부분이 인상 깊었어요..."></textarea>
     </div>
 
+    <!-- ── 교회 소통 현실 체크 ── -->
+    <div style="margin-top:24px;padding-top:20px;border-top:2px solid var(--navy);">
+      <div style="font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:4px;">📋 교회 소통 현실 체크</div>
+      <div style="font-size:.8rem;color:var(--mid);margin-bottom:18px;line-height:1.7;">
+        목회 현장의 소통 현실에 대해 솔직하게 답해 주세요.<br>
+        더 나은 교회 소통 솔루션을 만드는 데 활용됩니다.
+      </div>
+
+      <div class="survey-q">
+        <div class="survey-q-label"><span class="q-num">6</span>성도들이 교회를 떠나는 가장 큰 이유는 무엇이라고 생각하시나요?</div>
+        <div class="survey-radio-group">
+          <input type="radio" name="rc_q1" value="사람 간 갈등·오해" id="rc1_1" class="survey-radio">
+          <label for="rc1_1" class="survey-radio-label">사람 간 갈등·오해</label>
+          <input type="radio" name="rc_q1" value="리더십 소통 부재" id="rc1_2" class="survey-radio">
+          <label for="rc1_2" class="survey-radio-label">리더십 소통 부재</label>
+          <input type="radio" name="rc_q1" value="신앙 회의·영적 침체" id="rc1_3" class="survey-radio">
+          <label for="rc1_3" class="survey-radio-label">신앙 회의·침체</label>
+          <input type="radio" name="rc_q1" value="세대 간 문화 차이" id="rc1_4" class="survey-radio">
+          <label for="rc1_4" class="survey-radio-label">세대 간 차이</label>
+          <input type="radio" name="rc_q1" value="돌봄·관심 부족" id="rc1_5" class="survey-radio">
+          <label for="rc1_5" class="survey-radio-label">돌봄·관심 부족</label>
+          <input type="radio" name="rc_q1" value="개인 사정" id="rc1_6" class="survey-radio">
+          <label for="rc1_6" class="survey-radio-label">개인 사정</label>
+        </div>
+      </div>
+
+      <div class="survey-q">
+        <div class="survey-q-label"><span class="q-num">7</span>최근 1년 이내, 교회를 떠난(또는 발걸음이 뜸해진) 성도가 있었나요?</div>
+        <div class="survey-radio-group">
+          <input type="radio" name="rc_q2" value="예, 있었다" id="rc2_1" class="survey-radio">
+          <label for="rc2_1" class="survey-radio-label">예, 있었다</label>
+          <input type="radio" name="rc_q2" value="없었다" id="rc2_2" class="survey-radio">
+          <label for="rc2_2" class="survey-radio-label">없었다</label>
+        </div>
+      </div>
+
+      <div class="survey-q">
+        <div class="survey-q-label"><span class="q-num">8</span>현재 이탈 조짐이 보이는 성도가 있나요?</div>
+        <div class="survey-radio-group">
+          <input type="radio" name="rc_q3" value="예, 걱정된다" id="rc3_1" class="survey-radio">
+          <label for="rc3_1" class="survey-radio-label">예, 걱정된다</label>
+          <input type="radio" name="rc_q3" value="아직은 아니다" id="rc3_2" class="survey-radio">
+          <label for="rc3_2" class="survey-radio-label">아직은 아니다</label>
+        </div>
+      </div>
+
+      <div class="survey-q">
+        <div class="survey-q-label"><span class="q-num">9</span>서로의 성격 유형을 이해하는 워크숍이 있었다면,<br>갈등을 예방하거나 해결하는 데 도움이 됐을까요?</div>
+        <div class="survey-radio-group">
+          <input type="radio" name="rc_q4" value="매우 그렇다" id="rc4_1" class="survey-radio">
+          <label for="rc4_1" class="survey-radio-label">매우 그렇다</label>
+          <input type="radio" name="rc_q4" value="그렇다" id="rc4_2" class="survey-radio">
+          <label for="rc4_2" class="survey-radio-label">그렇다</label>
+          <input type="radio" name="rc_q4" value="잘 모르겠다" id="rc4_3" class="survey-radio">
+          <label for="rc4_3" class="survey-radio-label">잘 모르겠다</label>
+          <input type="radio" name="rc_q4" value="그렇지 않다" id="rc4_4" class="survey-radio">
+          <label for="rc4_4" class="survey-radio-label">그렇지 않다</label>
+        </div>
+      </div>
+
+      <div class="survey-q">
+        <div class="survey-q-label"><span class="q-num">10</span>평소 교회 안에서 소통이 어렵다고 느끼는 순간이 있나요?</div>
+        <div class="survey-radio-group">
+          <input type="radio" name="rc_q5" value="자주 있다" id="rc5_1" class="survey-radio">
+          <label for="rc5_1" class="survey-radio-label">자주 있다</label>
+          <input type="radio" name="rc_q5" value="가끔 있다" id="rc5_2" class="survey-radio">
+          <label for="rc5_2" class="survey-radio-label">가끔 있다</label>
+          <input type="radio" name="rc_q5" value="거의 없다" id="rc5_3" class="survey-radio">
+          <label for="rc5_3" class="survey-radio-label">거의 없다</label>
+          <input type="radio" name="rc_q5" value="전혀 없다" id="rc5_4" class="survey-radio">
+          <label for="rc5_4" class="survey-radio-label">전혀 없다</label>
+        </div>
+      </div>
+    </div>
+
     <button type="submit" class="survey-submit" id="survey-submit-btn">설문 제출하기</button>
   </form>
 
@@ -730,6 +805,11 @@ async function submitSurvey(e) {
     q4_price_parenting: fd.get('q4_price_parenting')?.trim() || null,
     q4_price_team: fd.get('q4_price_team')?.trim() || null,
     q6_feedback: fd.get('q6_feedback')?.trim() || null,
+    rc_q1_leave_reason: fd.get('rc_q1') || null,
+    rc_q2_recent_leave: fd.get('rc_q2') || null,
+    rc_q3_leave_signs: fd.get('rc_q3') || null,
+    rc_q4_workshop_help: fd.get('rc_q4') || null,
+    rc_q5_comm_difficulty: fd.get('rc_q5') || null,
     submitted_at: new Date().toISOString(),
   };
 
