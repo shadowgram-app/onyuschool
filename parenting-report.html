@@ -1321,7 +1321,7 @@ function getParentCoupleSynergy(t1, t2, n1, n2) {
   const key = st1 + '-' + st2;
   const td1 = TYPE_DATA[t1]||{}, td2 = TYPE_DATA[t2]||{};
 
-  const synergies: Record<string,string[]> = {
+  const synergies = {
     'HARMONY-LOGIC': [
       `${n1||''}님의 따뜻한 공감력과 ${n2||''}님의 논리적 설명이 합쳐져 자녀가 감정과 이성을 동시에 배웁니다`,
       `${n1||''}님이 분위기를 부드럽게 만들면 ${n2||''}님이 명확한 원칙을 전달하는 최적의 협력이 됩니다`
@@ -1357,7 +1357,7 @@ function getParentCoupleWarning(t1, t2, n1, n2) {
   const key = sorted[0][0] + '-' + sorted[1][0];
   const td1 = TYPE_DATA[t1]||{}, td2 = TYPE_DATA[t2]||{};
 
-  const warnings: Record<string,string[]> = {
+  const warnings = {
     'HARMONY-LOGIC': [
       `${n1||''}님은 "감정을 무시한다"고, ${n2||''}님은 "너무 감정적이다"고 느낄 때 자녀가 혼란을 경험합니다`,
       `${n1||''}님의 갈등 회피와 ${n2||''}님의 직선적 피드백이 충돌하면 자녀가 어떤 기준을 따를지 몰라 불안해집니다`
