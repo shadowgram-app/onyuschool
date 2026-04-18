@@ -253,14 +253,18 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
             style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
               font-size:.95rem;font-family:inherit;margin-bottom:14px;outline:none">
 
-          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">MBTI 유형 (선택)</label>
-          <input id="add-mbti" maxlength="4" placeholder="예: INFJ, ENTP — 입력하면 자동 매칭"
+          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:6px">
+            MBTI 입력 <span style="font-weight:400;color:var(--light)">(선택 — 입력하면 유형 자동 선택)</span>
+          </label>
+          <input id="add-mbti" maxlength="4" placeholder="예: INFJ, ENTP ..."
             oninput="dashMatchMbti(this.value)"
             style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:8px;
-              font-size:.95rem;font-family:inherit;margin-bottom:6px;outline:none;text-transform:uppercase">
-          <div id="add-mbti-result" style="font-size:.8rem;color:var(--teal);margin-bottom:10px;min-height:18px"></div>
+              font-size:.95rem;font-family:inherit;margin-bottom:4px;outline:none;text-transform:uppercase">
+          <div id="add-mbti-result" style="font-size:.78rem;color:var(--teal);margin-bottom:12px;min-height:16px"></div>
 
-          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:8px">쉐도우그램 유형 선택 *</label>
+          <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:8px">
+            쉐도우그램 유형 선택 * <span style="font-weight:400;color:var(--light)">(MBTI가 작게 표시됩니다)</span>
+          </label>
           <div id="add-sg-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:18px"></div>
 
           <div id="add-error" style="color:#c0392b;font-size:.8rem;margin-bottom:10px;display:none"></div>
@@ -528,7 +532,13 @@ const DASH_MBTI_TO_SG = {
   INTP:'LOGIC', ISTP:'LOGIC',
   ENTJ:'LEADER', ESTJ:'LEADER',
 };
-const DASH_SG_ORDER = ['SPARK','VISION','STEADY','PLAYER','HARMONY','SOUL','LOGIC','LEADER'];
+const DASH_SG_ORDER  = ['SPARK','VISION','STEADY','PLAYER','HARMONY','SOUL','LOGIC','LEADER'];
+const DASH_SG_MBTI   = {
+  SPARK:'ENTP · ENFP', VISION:'INTJ · INFJ',
+  STEADY:'ISTJ · ISFJ', PLAYER:'ESTP · ESFP',
+  HARMONY:'ESFJ · ENFJ', SOUL:'INFP · ISFP',
+  LOGIC:'INTP · ISTP', LEADER:'ENTJ · ESTJ',
+};
 
 let dashSelectedSg = null;
 
@@ -554,12 +564,16 @@ function renderDashSgChips(active) {
     const td  = TYPE_DATA[t] || {};
     const sel = t === active;
     return `<button type="button" onclick="dashSelectSg('${t}')"
-      style="padding:8px 10px;border-radius:8px;font-family:inherit;cursor:pointer;
+      style="padding:10px 12px;border-radius:8px;font-family:inherit;cursor:pointer;
         border:1.5px solid ${sel ? '#256060' : '#D5D0C8'};
         background:${sel ? '#E8F4F0' : '#fff'};
-        color:${sel ? '#1A3055' : '#666'};font-size:.8rem;font-weight:${sel ? '800':'600'};
-        text-align:left;transition:all .15s">
-      ${td.icon||''} <strong>${t}</strong> ${td.kr||''}
+        text-align:left;transition:all .15s;outline:none">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+        <span>${td.icon||''}</span>
+        <strong style="color:${sel ? '#1A3055':'#333'};font-size:.85rem">${t}</strong>
+        <span style="color:#888;font-size:.78rem">${td.kr||''}</span>
+      </div>
+      <div style="font-size:.68rem;color:#AAA;letter-spacing:.01em">${DASH_SG_MBTI[t]||''}</div>
     </button>`;
   }).join('');
 }

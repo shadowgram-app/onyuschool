@@ -567,28 +567,17 @@ body {
   </div>
 
   <!-- 직접 입력 패널 -->
-  <div id="direct-panel" style="display:none;margin-top:12px">
+  <div id="direct-panel" style="display:none;margin-top:12px;width:100%;max-width:440px">
     <div style="background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);
       border-radius:14px;padding:22px 20px">
-      <div style="font-size:.85rem;font-weight:800;color:var(--green);letter-spacing:.04em;margin-bottom:14px">
-        ✦ 유형 직접 입력
+      <div style="font-size:.85rem;font-weight:800;color:var(--green);letter-spacing:.04em;margin-bottom:4px">
+        ✦ 쉐도우그램 유형 선택
+      </div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:16px">
+        해당하는 MBTI가 표시되어 있습니다. 유형을 탭하세요.
       </div>
 
-      <!-- MBTI 입력 -->
-      <label style="display:block;font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:6px">
-        MBTI 유형 입력 <span style="opacity:.55">(자동으로 쉐도우그램 유형으로 변환)</span>
-      </label>
-      <input id="inp-mbti" type="text" maxlength="4"
-        placeholder="예: INFJ, ENTP, ISFJ ..."
-        oninput="matchMbti(this.value)"
-        style="width:100%;padding:12px 14px;border:1.5px solid rgba(255,255,255,.3);
-          border-radius:8px;background:rgba(255,255,255,.12);color:#fff;font-size:1rem;
-          font-family:inherit;outline:none;text-transform:uppercase;margin-bottom:8px">
-      <div id="mbti-result" style="font-size:.83rem;min-height:22px;margin-bottom:14px;color:var(--green)"></div>
-
-      <!-- 8유형 직접 선택 -->
-      <div style="font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:8px">또는 쉐도우그램 8유형 직접 선택</div>
-      <div id="sg-type-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+      <div id="sg-type-chips" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">
         <!-- JS로 렌더링 -->
       </div>
 
@@ -989,27 +978,16 @@ function startSurvey() {
 //  직접 유형 입력 (MBTI → 쉐도우그램)
 // ══════════════════════════════════
 
-const MBTI_TO_SG = {
-  ENTP:'SPARK', ENFP:'SPARK',
-  INTJ:'VISION', INFJ:'VISION',
-  ISTJ:'STEADY', ISFJ:'STEADY',
-  ESTP:'PLAYER', ESFP:'PLAYER',
-  ESFJ:'HARMONY', ENFJ:'HARMONY',
-  INFP:'SOUL', ISFP:'SOUL',
-  INTP:'LOGIC', ISTP:'LOGIC',
-  ENTJ:'LEADER', ESTJ:'LEADER',
-};
-
 const SG_TYPES_ORDER = ['SPARK','VISION','STEADY','PLAYER','HARMONY','SOUL','LOGIC','LEADER'];
 const SG_LABEL = {
-  SPARK:   { kr:'스파크',   icon:'🔥', desc:'영감과 열정' },
-  VISION:  { kr:'비전',     icon:'🔭', desc:'통찰과 전략' },
-  STEADY:  { kr:'스테디',   icon:'🌿', desc:'신뢰와 일관성' },
-  PLAYER:  { kr:'플레이어', icon:'⚡', desc:'실행력과 현장감' },
-  HARMONY: { kr:'하모니',   icon:'🤝', desc:'공감과 연결' },
-  SOUL:    { kr:'소울',     icon:'🌙', desc:'깊이와 진정성' },
-  LOGIC:   { kr:'로직',     icon:'🔬', desc:'논리와 정확성' },
-  LEADER:  { kr:'리더',     icon:'🏔️', desc:'추진력과 결단' },
+  SPARK:   { kr:'스파크',   icon:'🔥', desc:'영감과 열정',    mbti:'ENTP · ENFP' },
+  VISION:  { kr:'비전',     icon:'🔭', desc:'통찰과 전략',    mbti:'INTJ · INFJ' },
+  STEADY:  { kr:'스테디',   icon:'🌿', desc:'신뢰와 일관성',  mbti:'ISTJ · ISFJ' },
+  PLAYER:  { kr:'플레이어', icon:'⚡', desc:'실행력과 현장감', mbti:'ESTP · ESFP' },
+  HARMONY: { kr:'하모니',   icon:'🤝', desc:'공감과 연결',    mbti:'ESFJ · ENFJ' },
+  SOUL:    { kr:'소울',     icon:'🌙', desc:'깊이와 진정성',  mbti:'INFP · ISFP' },
+  LOGIC:   { kr:'로직',     icon:'🔬', desc:'논리와 정확성',  mbti:'INTP · ISTP' },
+  LEADER:  { kr:'리더',     icon:'🏔️', desc:'추진력과 결단',  mbti:'ENTJ · ESTJ' },
 };
 
 let selectedSgType = null;
@@ -1020,9 +998,9 @@ function toggleDirect() {
   const open  = panel.style.display === 'none' || !panel.style.display;
   panel.style.display = open ? 'block' : 'none';
   btn.textContent = open
-    ? '▲ 직접 입력 닫기'
-    : '유형을 이미 알고 계신가요? 직접 입력하기 →';
-  if (open) renderSgChips();
+    ? '▲ 닫기'
+    : '유형을 이미 알고 계신가요? 직접 선택하기 →';
+  if (open) renderSgChips(null);
 }
 
 function renderSgChips(active) {
@@ -1032,13 +1010,16 @@ function renderSgChips(active) {
     const info = SG_LABEL[t];
     const sel  = t === active;
     return `<button type="button" onclick="selectSgType('${t}')"
-      style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;
-        border:1.5px solid ${sel ? '#8FC49A' : 'rgba(255,255,255,.3)'};
-        background:${sel ? 'rgba(143,196,154,.25)' : 'rgba(255,255,255,.1)'};
-        color:#fff;font-size:.88rem;font-family:inherit;cursor:pointer;
-        transition:all .15s;width:100%;text-align:left">
-      <span style="font-size:1.1rem">${info.icon}</span>
-      <span><strong>${t}</strong> ${info.kr} — <span style="color:rgba(255,255,255,.6);font-size:.8rem">${info.desc}</span></span>
+      style="padding:11px 12px;border-radius:10px;text-align:left;font-family:inherit;cursor:pointer;
+        border:1.5px solid ${sel ? '#8FC49A' : 'rgba(255,255,255,.28)'};
+        background:${sel ? 'rgba(143,196,154,.22)' : 'rgba(255,255,255,.08)'};
+        transition:all .15s;outline:none">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <span style="font-size:1rem">${info.icon}</span>
+        <strong style="color:#fff;font-size:.9rem">${t}</strong>
+        <span style="color:rgba(255,255,255,.65);font-size:.82rem">${info.kr}</span>
+      </div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);letter-spacing:.02em">${info.mbti}</div>
     </button>`;
   }).join('');
 }
@@ -1046,36 +1027,10 @@ function renderSgChips(active) {
 function selectSgType(type) {
   selectedSgType = type;
   renderSgChips(type);
-  // MBTI 매칭 결과 업데이트
-  const meta = SG_LABEL[type];
-  document.getElementById('mbti-result').innerHTML =
-    `<div style="color:var(--green);font-size:.9rem;font-weight:700;margin:6px 0">
-      ${meta.icon} ${type} (${meta.kr}) — ${meta.desc}
-    </div>`;
-  document.getElementById('btn-direct-submit').disabled = false;
-  document.getElementById('btn-direct-submit').style.background = 'rgba(143,196,154,.35)';
-}
-
-function matchMbti(val) {
-  const upper = val.toUpperCase().trim();
-  const sg    = MBTI_TO_SG[upper];
-  const resEl = document.getElementById('mbti-result');
-
-  if (sg) {
-    selectSgType(sg);
-    resEl.innerHTML = `
-      <div style="color:var(--green);font-size:.9rem;font-weight:700;margin:6px 0">
-        ✅ ${upper} → ${SG_LABEL[sg].icon} <strong>${sg}</strong> (${SG_LABEL[sg].kr}) 유형으로 매칭되었습니다
-      </div>`;
-  } else if (upper.length === 4) {
-    resEl.innerHTML = `<div style="color:rgba(255,255,255,.5);font-size:.85rem;margin:4px 0">
-      인식되지 않는 유형이에요. 아래에서 직접 선택해 주세요.</div>`;
-    selectedSgType = null;
-    renderSgChips(null);
-    document.getElementById('btn-direct-submit').disabled = true;
-  } else {
-    resEl.innerHTML = '';
-  }
+  const btn = document.getElementById('btn-direct-submit');
+  btn.disabled = false;
+  btn.style.background = 'rgba(143,196,154,.35)';
+  btn.textContent = `${SG_LABEL[type].icon} ${type}(${SG_LABEL[type].kr})으로 등록하기 →`;
 }
 
 async function submitDirect() {
