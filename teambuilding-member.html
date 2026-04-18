@@ -408,7 +408,7 @@ const TYPE_DETAIL = {
       '타인의 자율성을 존중하는 것이 의식적인 노력이 필요합니다',
     ],
     light:'추진력과 결단력으로 팀을 움직이고 목표를 현실로 만들어냅니다',
-    shadow:'통제와 약함 혐오 — 성과만 아닌 사람을 보는 시선이 필요합니다',
+    shadow:'통제 경향과 약함에 대한 불편함 — 성과만 아닌 사람을 보는 시선이 필요합니다',
     teamRoles: [
       { icon:'🚩', title:'목표 드라이버', desc:'팀을 목표 방향으로 명확하게 이끌어갑니다' },
       { icon:'🏗️', title:'구조 설계자', desc:'팀의 역할·프로세스·체계를 만들고 최적화합니다' },
@@ -491,7 +491,7 @@ function renderReport(member, ws) {
 
     ${aiNarrative ? `
     <div class="ai-caption">
-      <div class="ai-label">✨ AI 맞춤 서술 — ${member.role || '팀원'} 역할 기반</div>
+      <div class="ai-label">✨ 쉐도우그램 맞춤 서술 — ${member.role || '팀원'} 역할 기반</div>
       <p>${aiNarrative}</p>
     </div>` : ''}
 

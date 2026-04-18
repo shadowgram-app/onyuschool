@@ -244,7 +244,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   <div id="loading-wrap" class="loading-wrap">
     <div class="spin">🌿</div>
     <div style="font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:8px">팀 리포트 불러오는 중...</div>
-    <div style="font-size:.85rem;color:var(--mid)">첫 생성 시 AI 서술 작성에 30~60초가 소요됩니다</div>
+    <div style="font-size:.85rem;color:var(--mid)">첫 생성 시 맞춤 서술 작성에 30~60초가 소요됩니다</div>
   </div>
   <div id="report-wrap" style="display:none"></div>
 </div>
@@ -501,7 +501,7 @@ function renderReport(data) {
     <div class="sec">
       <h2>🌿 우리 팀 이야기</h2>
       <div class="ai-box">
-        <div class="ai-lbl">✨ AI 팀 서사</div>
+        <div class="ai-lbl">✨ 쉐도우그램 팀 서사</div>
         <p>${teamAI.teamNarrative}</p>
       </div>
       ${teamAI.teamShadow ? `

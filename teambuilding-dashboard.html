@@ -314,7 +314,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
     <!-- ── PAGE: 리포트 다운로드 ── -->
     <div id="page-reports" class="page">
       <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px">리포트 생성</div>
-      <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">쉐도우그램 철학 기반 AI 리포트 자동 생성</div>
+      <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">쉐도우그램 철학 기반 맞춤 리포트 자동 생성</div>
 
       <!-- 전원 미완료 경고 배너 -->
       <div id="not-all-done-banner" style="display:none;background:#FFF3CD;border:1.5px solid #F0C040;
@@ -1249,7 +1249,7 @@ async function generateAndDownload(mode) {
       body: JSON.stringify({ code: CODE, mode }),
     });
 
-    setProgress('AI 서술 생성 중...', 55);
+    setProgress('맞춤 서술 생성 중...', 55);
 
     if (!res.ok) {
       const err = await res.json();
@@ -1279,7 +1279,7 @@ async function generateAndDownload(mode) {
 
     setProgress('완료!', 100);
     hideProgress();
-    showToast('✅ AI 리포트 생성 완료!');
+    showToast('✅ 쉐도우그램 리포트 생성 완료!');
 
   } catch(e) {
     hideProgress();

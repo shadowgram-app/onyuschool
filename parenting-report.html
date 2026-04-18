@@ -147,7 +147,7 @@ footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
   <div class="container" style="padding-top:60px;padding-bottom:80px">
     <!-- 상단 대기 시간 안내 박스 -->
     <div id="loading-time-notice" style="background:#FFF8E7;border:1.5px solid #F0C040;border-radius:12px;padding:14px 20px;text-align:center;max-width:340px;margin:0 auto 28px;display:none">
-      <p style="font-size:.95rem;font-weight:700;color:#7A5000;margin:0 0 4px">⏳ AI 리포트 생성 중</p>
+      <p style="font-size:.95rem;font-weight:700;color:#7A5000;margin:0 0 4px">⏳ 쉐도우그램 리포트 생성 중</p>
       <p style="font-size:.85rem;color:#9A6500;margin:0;line-height:1.6">최소 <strong>30초</strong> ~ 최장 <strong>3분</strong> 소요됩니다<br><span style="font-size:.78rem;color:#B07800">화면을 닫지 말고 잠시만 기다려 주세요 🙏</span></p>
     </div>
     <div style="text-align:center;margin-bottom:24px">
@@ -365,7 +365,7 @@ async function init() {
     if (loadingSub)   loadingSub.textContent = '';
   } else {
     if (loadingTitle) loadingTitle.textContent = '쉐도우그램 가족 리포트 생성 중';
-    if (loadingSub)   loadingSub.innerHTML = '쉐도우그램 연구개발자의 공식 알고리즘으로<br>가족 맞춤형 AI 리포트를 생성하고 있어요 🌿';
+    if (loadingSub)   loadingSub.innerHTML = '쉐도우그램 연구개발자의 공식 알고리즘으로<br>가족 맞춤형 리포트를 생성하고 있어요 🌿';
     // 대기 시간 안내 박스 표시 (AI 생성 모드)
     const noticeEl = document.getElementById('loading-time-notice');
     if (noticeEl) noticeEl.style.display = 'block';
@@ -2277,7 +2277,7 @@ function buildViralCard(members) {
       hookEl.innerHTML = `💡 <strong>${parents[0].name}(${pt.en||''} ${pt.kr||''})</strong>와 <strong>${children[0].name}(${ct.en||''} ${ct.kr||''})</strong>의 양육 매칭 분석 포함<br>
         <span style="opacity:.8">→ 자녀 유형별 칭찬법·갈등 해결법이 리포트에 담겨 있어요</span>`;
     } else {
-      hookEl.innerHTML = `💡 각 유형별 양육 스타일·자녀 이해법·가족 미션이 담긴 AI 리포트`;
+      hookEl.innerHTML = `💡 각 유형별 양육 스타일·자녀 이해법·가족 미션이 담긴 쉐도우그램 리포트`;
     }
   }
 }
