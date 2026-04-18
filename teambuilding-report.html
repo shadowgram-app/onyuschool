@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>팀 리포트 — 온유스쿨 쉐도우그램</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --navy:#1A3055;--teal:#256060;--gold:#8A6400;
@@ -125,10 +126,80 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .spin{font-size:2.5rem;animation:spin 1.2s linear infinite;display:inline-block;margin-bottom:16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media print{
+  /* 기본 */
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   .topbar,.btn-print,.btn-pdf{display:none!important}
-  body{background:#fff!important;margin:0!important;padding:0!important}
-  .container{padding:0!important;max-width:100%!important}
-  .sec{page-break-inside:avoid}
+  body{background:#fff!important;margin:0!important;padding:0!important;font-size:13px!important}
+  .container{padding:4px 10px!important;max-width:100%!important}
+
+  /* 섹션 — 페이지 경계에서 잘리지 않게 */
+  .sec{page-break-inside:avoid;break-inside:avoid;padding:16px 0!important;border-bottom:1px solid #DDD!important}
+  .sec h2{font-size:1.1rem!important;margin-bottom:10px!important;padding-bottom:6px!important}
+
+  /* 카드·박스 — 중첩/잘림 방지 */
+  .card,.ai-box,.ai-shadow-box,.ws-step,.ws-body,
+  .ws-script,.ws-activity,.ws-checklist,.ws-purpose{
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+    overflow:visible!important;
+  }
+
+  /* 커버 — 첫 페이지 전용 */
+  .cover{
+    page-break-after:avoid!important;
+    break-after:avoid!important;
+    padding:20px!important;
+    margin-bottom:12px!important;
+  }
+
+  /* 유형 카드 그리드 — 행 단위로 묶음 */
+  .type-grid{
+    grid-template-columns:repeat(4,1fr)!important;
+    gap:8px!important;
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+  }
+  .type-card{
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+    padding:10px 8px!important;
+  }
+
+  /* 팀원 행 */
+  .member-row{
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+  }
+
+  /* 동역 테이블 */
+  .cowork-table tr{
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+  }
+
+  /* 워크숍 스텝 — 각 스텝은 가능하면 한 페이지에 */
+  .ws-step{
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+    margin-bottom:10px!important;
+  }
+  .ws-header{padding:10px 14px!important}
+  .ws-body{padding:0 14px 10px!important}
+
+  /* AI 서술 박스 크기 줄임 */
+  .ai-box{padding:14px 16px!important;margin-bottom:10px!important}
+  .ai-box p{font-size:.82rem!important;line-height:1.7!important}
+
+  /* 강점·취약 리스트 */
+  .strength-list li,.vuln-list li{
+    page-break-inside:avoid!important;
+    break-inside:avoid!important;
+    font-size:.82rem!important;
+    padding:6px 0!important;
+  }
+
+  /* 태그 */
+  .tag{font-size:.68rem!important;padding:2px 6px!important}
 }
 </style>
 </head>
@@ -494,53 +565,115 @@ function renderReport(data) {
   document.getElementById('report-wrap').insertAdjacentHTML('beforeend', WS_MANUAL_HTML);
 }
 
-function downloadPDF() {
+async function downloadPDF() {
   const btn = document.getElementById('btn-pdf');
   if (!btn) return;
   btn.disabled = true;
   btn.textContent = '⏳ 생성 중...';
 
-  // 스크롤 최상단으로 이동 (공백 페이지 방지 핵심)
-  window.scrollTo(0, 0);
-
-  const el = document.getElementById('report-wrap');
   const church = CHURCH || CODE || '팀리포트';
   const filename = `쉐도우그램_팀리포트_${church}.pdf`;
 
-  // topbar 임시 숨김 (캡처 영역 오프셋 문제 방지)
-  const topbar = document.querySelector('.topbar');
-  const origTopbarDisplay = topbar ? topbar.style.display : '';
-  if (topbar) topbar.style.display = 'none';
+  try {
+    const { jsPDF } = window.jspdf;
 
-  const opt = {
-    margin: [8, 8, 8, 8],
-    filename,
-    image: { type: 'jpeg', quality: 0.92 },
-    html2canvas: {
-      scale: 2,
+    // A4: 210 x 297mm, 여백 10mm
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const PAGE_W = 210;
+    const PAGE_H = 297;
+    const MARGIN = 10;
+    const CONTENT_W = PAGE_W - MARGIN * 2;   // 190mm
+    const CONTENT_H = PAGE_H - MARGIN * 2;   // 277mm
+    const SCALE = 2;
+
+    // ── 캡처용 wrapper 생성 (190mm = 약 719px @96dpi) ──
+    const PX_PER_MM = 96 / 25.4;
+    const captureW = Math.round(CONTENT_W * PX_PER_MM); // ~719px
+
+    const source = document.getElementById('report-wrap');
+    if (!source) throw new Error('report-wrap 없음');
+
+    // ── wrapper: position:absolute (fixed는 뷰포트 높이로 잘림) ──
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = [
+      'position:absolute',
+      'top:0', 'left:-9999px',   // 화면 밖 배치 (보이지 않게)
+      `width:${captureW}px`,
+      'background:#F5F3EE',
+      'pointer-events:none',
+      'font-family:Apple SD Gothic Neo,Noto Sans KR,Malgun Gothic,sans-serif',
+      'font-size:14px', 'line-height:1.7', 'color:#333',
+      'overflow:visible', 'padding:12px',
+    ].join(';');
+
+    // source 내용을 직접 innerHTML 복사 (cloneNode는 스타일 미반영 가능)
+    wrapper.innerHTML = source.innerHTML;
+    document.body.appendChild(wrapper);
+
+    // 레이아웃·폰트 완전 렌더링 대기
+    await new Promise(r => setTimeout(r, 500));
+
+    // ── 섹션별 캔버스 캡처 → 페이지 경계 직접 계산 ──
+    const blocks = Array.from(wrapper.querySelectorAll('.cover, .sec'));
+    if (blocks.length === 0) throw new Error('렌더링된 섹션이 없습니다. 잠시 후 다시 시도하세요.');
+
+    const canvasOpt = {
+      scale: SCALE,
       useCORS: true,
       logging: false,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: document.documentElement.scrollWidth,
-    },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: 'css', before: '.pdf-page-break' },
-  };
+      windowWidth: captureW,
+      backgroundColor: '#F5F3EE',
+      allowTaint: true,
+    };
 
-  html2pdf().set(opt).from(el).save()
-    .then(() => {
-      if (topbar) topbar.style.display = origTopbarDisplay;
-      btn.disabled = false;
-      btn.textContent = '📄 PDF 저장';
-    })
-    .catch(e => {
-      if (topbar) topbar.style.display = origTopbarDisplay;
-      console.error('PDF error:', e);
-      btn.disabled = false;
-      btn.textContent = '📄 PDF 저장';
-      alert('PDF 생성 중 오류가 발생했습니다. 인쇄 버튼을 이용해주세요.');
-    });
+    let curY = MARGIN;
+
+    for (let i = 0; i < blocks.length; i++) {
+      btn.textContent = `⏳ ${Math.round((i / blocks.length) * 85 + 10)}%`;
+
+      const canvas = await html2canvas(blocks[i], canvasOpt);
+      const imgData = canvas.toDataURL('image/jpeg', 0.93);
+
+      // px → mm 변환 (SCALE 배 찍었으므로 나눠줌)
+      const blockH_mm = (canvas.height / SCALE) / PX_PER_MM;
+      const blockW_mm = CONTENT_W;
+
+      if (blockH_mm <= 0) continue; // 빈 섹션 skip
+
+      // 현재 페이지에 안 들어가면 새 페이지
+      if (curY + blockH_mm > PAGE_H - MARGIN && curY > MARGIN + 5) {
+        pdf.addPage();
+        curY = MARGIN;
+      }
+
+      if (blockH_mm > CONTENT_H) {
+        // 한 페이지보다 큰 블록 → 비율 축소해서 한 페이지에 맞춤
+        const ratio = CONTENT_H / blockH_mm;
+        pdf.addImage(imgData, 'JPEG', MARGIN, MARGIN, blockW_mm * ratio, CONTENT_H, '', 'FAST');
+        pdf.addPage();
+        curY = MARGIN;
+      } else {
+        pdf.addImage(imgData, 'JPEG', MARGIN, curY, blockW_mm, blockH_mm, '', 'FAST');
+        curY += blockH_mm + 3;
+      }
+    }
+
+    document.body.removeChild(wrapper);
+    btn.textContent = '⏳ 저장 중...';
+    pdf.save(filename);
+    btn.disabled = false;
+    btn.textContent = '📄 PDF 저장';
+
+  } catch(e) {
+    const w = document.getElementById('__pdf-capture__') || document.querySelector('[style*="z-index:-9999"]');
+    if (w) document.body.removeChild(w);
+    console.error('PDF error:', e);
+    btn.disabled = false;
+    btn.textContent = '📄 PDF 저장';
+    alert('PDF 생성 오류: ' + e.message + '\n인쇄 버튼을 이용해주세요.');
+  }
 }
 
 init();

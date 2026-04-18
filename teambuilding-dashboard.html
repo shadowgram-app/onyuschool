@@ -134,23 +134,52 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 </head>
 <body>
 
-<!-- ── 코드 입력 화면 (CODE 없을 때) ── -->
+<!-- ── 로그인 화면 (3단계: 코드 → 이메일OTP → 인증) ── -->
 <div id="screen-login" style="display:none">
   <div class="login-wrap">
     <div class="login-card">
-      <div style="font-size:1.5rem;margin-bottom:12px">📊</div>
-      <div class="login-title">팀빌딩 대시보드 접속</div>
-      <div class="login-sub">생성된 워크숍 코드를 입력하면 바로 접속됩니다</div>
-      <label class="login-label" for="li-code">워크숍 코드</label>
-      <input class="login-input" type="text" id="li-code"
-        placeholder="예: 새빛교회-88wjj"
-        autocomplete="off"
-        onkeydown="if(event.key==='Enter') liEnterCode()">
-      <button class="login-btn" onclick="liEnterCode()">대시보드 접속 →</button>
-      <div style="text-align:center;margin-top:16px;font-size:.78rem;color:var(--light)">
-        코드를 잃어버리셨나요?
-        <a href="teambuilding.html" style="color:var(--teal);text-decoration:underline">새 워크숍 만들기</a>
+
+      <!-- STEP 1: 워크숍 코드 입력 -->
+      <div id="li-step1">
+        <div style="font-size:1.5rem;margin-bottom:12px">📊</div>
+        <div class="login-title">팀빌딩 대시보드 접속</div>
+        <div class="login-sub">워크숍 코드를 입력하면 등록된 이메일로 인증번호를 보내드립니다</div>
+        <label class="login-label" for="li-code">워크숍 코드</label>
+        <input class="login-input" type="text" id="li-code"
+          placeholder="예: 새빛교회-88wjj"
+          autocomplete="off"
+          onkeydown="if(event.key==='Enter') liStep1()">
+        <div id="li-step1-err" class="login-warn" style="display:none;margin-bottom:14px"></div>
+        <button class="login-btn" id="li-btn1" onclick="liStep1()">인증번호 받기 →</button>
+        <div style="text-align:center;margin-top:16px;font-size:.78rem;color:var(--light)">
+          코드를 잃어버리셨나요?
+          <a href="teambuilding.html" style="color:var(--teal);text-decoration:underline">새 워크숍 만들기</a>
+        </div>
       </div>
+
+      <!-- STEP 2: OTP 입력 -->
+      <div id="li-step2" style="display:none">
+        <div style="font-size:1.5rem;margin-bottom:12px">✉️</div>
+        <div class="login-title">이메일 인증</div>
+        <div class="login-sub" id="li-email-hint">등록된 이메일로 6자리 인증번호를 보냈습니다.<br>이메일을 확인해 주세요.</div>
+        <div class="otp-wrap" id="li-otp-wrap">
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-input" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        </div>
+        <div id="li-step2-err" class="login-warn" style="display:none;margin-bottom:14px"></div>
+        <button class="login-btn" id="li-btn2" onclick="liStep2()">인증 확인 →</button>
+        <div style="text-align:center;margin-top:14px;font-size:.78rem;color:var(--light)">
+          인증번호가 없나요?
+          <span style="color:var(--teal);cursor:pointer;text-decoration:underline" onclick="liResend()">재발송</span>
+          &nbsp;·&nbsp;
+          <span style="color:var(--light);cursor:pointer;text-decoration:underline" onclick="liBack()">코드 다시 입력</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -447,7 +476,7 @@ function renderStatus() {
   const pct    = total > 0 ? Math.round(done / total * 100) : 0;
 
   document.getElementById('ws-title').textContent = wsData?.title || '워크숍 현황';
-  document.getElementById('ws-code-disp').textContent = '코드: ' + CODE;
+  document.getElementById('ws-code-disp').textContent = '코드: ' + (CODE || window._tbCode || '');
   document.getElementById('stat-total').textContent   = total;
   document.getElementById('stat-done').textContent    = done;
   document.getElementById('stat-remain').textContent  = remain;
@@ -739,41 +768,15 @@ function updateReportStatus() {
 }
 
 /* ── 팀 리포트 HTML 뷰어 열기 ── */
-async function openTeamReport() {
-  if (results.length === 0) { showToast('검사 완료된 팀원이 없습니다.'); return; }
+function openTeamReport() {
+  const activeCode   = CODE || window._tbCode || '';
+  const activeChurch = wsData?.church_name || CHURCH || activeCode;
 
-  const btn = document.getElementById('btn-team-report');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ 생성 중...'; }
-  setProgress('AI 리포트 생성 중... (20~60초 소요)', 15);
+  if (!activeCode) { showToast('❌ 워크숍 코드가 없습니다. 페이지를 새로고침 해주세요.'); return; }
+  if (results.length === 0) { showToast('❌ 검사 완료된 팀원이 없습니다.'); return; }
 
-  try {
-    const res = await fetch(EDGE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
-      body: JSON.stringify({ code: CODE, mode: 'all' }),
-    });
-    setProgress('리포트 데이터 처리 중...', 70);
-    if (!res.ok) { const e = await res.json(); throw new Error(e.error || '서버 오류'); }
-    const data = await res.json();
-    setProgress('완료! 리포트 페이지로 이동합니다...', 100);
-
-    // sessionStorage에 저장 후 같은 탭에서 이동 (팝업 차단 우회)
-    sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify(data));
-    setTimeout(() => {
-      location.href = `teambuilding-report.html?code=${encodeURIComponent(CODE)}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`;
-    }, 600);
-
-  } catch(e) {
-    hideProgress();
-    if (btn) { btn.disabled = false; btn.textContent = '리포트 생성 & 보기 →'; }
-    // 폴백: AI 없이 rule-based로 리포트 뷰어 열기
-    const fallback = { ok: true, results, typeDistribution: getTypeDistribution(), teamAI: null, individualAI: [], workshop: { church_name: wsData?.church_name||CHURCH } };
-    sessionStorage.setItem('tb_report_data_' + CODE, JSON.stringify(fallback));
-    showToast('⚠️ AI 생성 실패 — 기본 리포트로 보여드립니다');
-    setTimeout(() => {
-      location.href = `teambuilding-report.html?code=${encodeURIComponent(CODE)}&church=${encodeURIComponent(wsData?.church_name||CHURCH)}`;
-    }, 1500);
-  }
+  // report.html이 직접 Edge Function(DB 캐시) 호출 → 대시보드는 이동만
+  location.href = `teambuilding-report.html?code=${encodeURIComponent(activeCode)}&church=${encodeURIComponent(activeChurch)}`;
 }
 
 function getTypeDistribution() {
@@ -999,43 +1002,176 @@ function loadDataByCode(code) {
 /* ── 초기화 ── */
 (function init() {
   if (CODE) {
-    // URL에 코드 있으면 바로 대시보드
+    // URL에 코드 있으면 바로 대시보드 (워크숍 생성 직후 진입 등)
     document.getElementById('screen-login').style.display = 'none';
     document.getElementById('main-layout').style.display  = 'flex';
     loadData();
   } else {
-    // 코드 입력 화면
+    // 재접속: 코드+이메일 OTP 인증 화면
     document.getElementById('screen-login').style.display = 'block';
     document.getElementById('main-layout').style.display  = 'none';
+    // OTP 자동이동 이벤트 연결
+    _bindOtpInputs();
   }
 })();
 
-/* ── 코드 직접 입력 접속 ── */
-async function liEnterCode() {
-  const code = document.getElementById('li-code').value.trim();
-  if (!code) { showToast('워크숍 코드를 입력해 주세요'); return; }
+/* ── OTP 입력칸 자동이동 ── */
+function _bindOtpInputs() {
+  const inputs = document.querySelectorAll('.otp-input');
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('input', e => {
+      const v = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = v ? v[v.length - 1] : '';
+      if (v && i < inputs.length - 1) inputs[i + 1].focus();
+      // 마지막 칸 채우면 자동 검증
+      if (i === inputs.length - 1 && v) liStep2();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus();
+    });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g,'');
+      inputs.forEach((box, j) => { box.value = paste[j] || ''; });
+      const last = Math.min(paste.length, inputs.length) - 1;
+      if (last >= 0) inputs[last].focus();
+      if (paste.length >= inputs.length) liStep2();
+    });
+  });
+}
 
-  const btn = document.querySelector('#screen-login .login-btn');
-  btn.disabled = true; btn.textContent = '확인 중...';
+// 임시 보관: 인증 중인 코드 & 이메일
+let _liCode = '';
+let _liEmail = '';
+let _liChurch = '';
+
+/* ── STEP 1: 코드 확인 → OTP 발송 ── */
+async function liStep1() {
+  const code = document.getElementById('li-code').value.trim();
+  const err1 = document.getElementById('li-step1-err');
+  const btn1 = document.getElementById('li-btn1');
+
+  err1.style.display = 'none';
+  if (!code) { err1.textContent = '워크숍 코드를 입력해 주세요.'; err1.style.display = 'block'; return; }
+
+  btn1.disabled = true; btn1.textContent = '확인 중...';
 
   try {
+    // 코드로 workshops 조회 → leader_email 가져오기
     const r = await fetch(
-      `${SB_URL}/rest/v1/workshops?code=eq.${encodeURIComponent(code)}&select=code,church_name&limit=1`,
+      `${SB_URL}/rest/v1/workshops?code=eq.${encodeURIComponent(code)}&select=code,church_name,leader_email&limit=1`,
       { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
     );
     const rows = await r.json();
     if (!rows?.length) {
-      showToast('❌ 코드를 찾을 수 없습니다. 다시 확인해 주세요.');
-      btn.disabled = false; btn.textContent = '대시보드 접속 →';
+      err1.textContent = '❌ 코드를 찾을 수 없습니다. 다시 확인해 주세요.';
+      err1.style.display = 'block';
+      btn1.disabled = false; btn1.textContent = '인증번호 받기 →';
       return;
     }
-    // 코드 확인됨 — URL에 코드 추가 후 페이지 새로고침
-    const church = encodeURIComponent(rows[0].church_name || '');
-    location.href = `teambuilding-dashboard.html?code=${encodeURIComponent(code)}&church=${church}`;
+
+    const ws = rows[0];
+    _liCode   = code;
+    _liChurch = ws.church_name || '';
+
+    // send-otp Edge Function 호출 (발송 + DB저장)
+    const OTP_URL = `${SB_URL}/functions/v1/send-otp`;
+    const otpRes = await fetch(OTP_URL, {
+      method: 'POST',
+      headers: { apikey: SB_KEY, 'Content-Type': 'application/json',
+                 'Authorization': 'Bearer ' + SB_KEY },
+      body: JSON.stringify({ action: 'send', code }),
+    });
+    const otpData = await otpRes.json();
+
+    if (!otpRes.ok) throw new Error(otpData.error || 'OTP 발송 실패');
+
+    if (otpData.noEmail) {
+      // 이메일 없는 구버전 워크숍 → 바로 진입
+      location.href = `teambuilding-dashboard.html?code=${encodeURIComponent(code)}&church=${encodeURIComponent(_liChurch)}`;
+      return;
+    }
+
+    // STEP 2로 전환
+    document.getElementById('li-email-hint').innerHTML =
+      `<strong>${otpData.maskedEmail}</strong>으로<br>6자리 인증번호를 보냈습니다. 이메일을 확인해 주세요.`;
+    document.getElementById('li-step1').style.display = 'none';
+    document.getElementById('li-step2').style.display = 'block';
+    setTimeout(() => { const f = document.querySelector('.otp-input'); if(f) f.focus(); }, 100);
+
   } catch(e) {
-    showToast('오류가 발생했습니다: ' + e.message);
-    btn.disabled = false; btn.textContent = '대시보드 접속 →';
+    err1.textContent = '오류: ' + e.message;
+    err1.style.display = 'block';
+    btn1.disabled = false; btn1.textContent = '인증번호 받기 →';
   }
+}
+
+/* ── STEP 2: OTP 검증 → 대시보드 진입 ── */
+async function liStep2() {
+  const inputs = document.querySelectorAll('.otp-input');
+  const token  = Array.from(inputs).map(i => i.value).join('');
+  const err2   = document.getElementById('li-step2-err');
+  const btn2   = document.getElementById('li-btn2');
+
+  err2.style.display = 'none';
+  if (token.length < 6) return;
+
+  btn2.disabled = true; btn2.textContent = '인증 중...';
+
+  try {
+    const OTP_URL = `${SB_URL}/functions/v1/send-otp`;
+    const res = await fetch(OTP_URL, {
+      method: 'POST',
+      headers: { apikey: SB_KEY, 'Content-Type': 'application/json',
+                 'Authorization': 'Bearer ' + SB_KEY },
+      body: JSON.stringify({ action: 'verify', code: _liCode, token }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      err2.textContent = '❌ ' + (data.error || '인증 실패');
+      err2.style.display = 'block';
+      inputs.forEach(i => i.value = '');
+      inputs[0].focus();
+      btn2.disabled = false; btn2.textContent = '인증 확인 →';
+      return;
+    }
+
+    // 인증 성공 → 대시보드 진입
+    location.href = `teambuilding-dashboard.html?code=${encodeURIComponent(_liCode)}&church=${encodeURIComponent(_liChurch)}`;
+
+  } catch(e) {
+    err2.textContent = '오류: ' + e.message;
+    err2.style.display = 'block';
+    btn2.disabled = false; btn2.textContent = '인증 확인 →';
+  }
+}
+
+/* ── OTP 재발송 ── */
+async function liResend() {
+  if (!_liCode) return;
+  try {
+    const OTP_URL = `${SB_URL}/functions/v1/send-otp`;
+    await fetch(OTP_URL, {
+      method: 'POST',
+      headers: { apikey: SB_KEY, 'Content-Type': 'application/json',
+                 'Authorization': 'Bearer ' + SB_KEY },
+      body: JSON.stringify({ action: 'send', code: _liCode }),
+    });
+    showToast('✉️ 인증번호를 재발송했습니다');
+    document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+    document.querySelector('.otp-input').focus();
+  } catch(e) { showToast('재발송 실패: ' + e.message); }
+}
+
+/* ── 코드 입력으로 돌아가기 ── */
+function liBack() {
+  document.getElementById('li-step2').style.display = 'none';
+  document.getElementById('li-step1').style.display = 'block';
+  document.getElementById('li-step1-err').style.display = 'none';
+  document.getElementById('li-btn1').disabled = false;
+  document.getElementById('li-btn1').textContent = '인증번호 받기 →';
+  _liCode = ''; _liEmail = ''; _liChurch = '';
 }
 
 // ══════════════════════════════════════════════
