@@ -34,7 +34,30 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .row{display:grid;gap:14px}
 .row-3{grid-template-columns:repeat(3,1fr)}
 .row-2{grid-template-columns:repeat(2,1fr)}
-@media(max-width:700px){.row-3,.row-2{grid-template-columns:1fr}.sidebar{display:none}.layout{display:block}}
+/* ── 모바일 탭 내비게이션 ── */
+.mob-tabs{display:none;position:sticky;top:52px;z-index:40;background:var(--navy);
+  overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;
+  border-bottom:2px solid rgba(255,255,255,.1);padding:0 8px}
+.mob-tabs::-webkit-scrollbar{display:none}
+.mob-tab{display:inline-flex;align-items:center;gap:5px;padding:11px 14px;
+  color:#A8B8D0;font-size:.8rem;font-weight:600;cursor:pointer;
+  border-bottom:2.5px solid transparent;transition:all .15s;white-space:nowrap;
+  background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.mob-tab.active{color:#fff;border-bottom-color:var(--green)}
+.mob-tab:hover{color:#fff}
+@media(max-width:700px){
+  .row-3,.row-2{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .mob-tabs{display:flex}
+  .layout{display:block}
+  .main{padding:16px 12px}
+  .topbar{padding:0 12px}
+  .tb-church{font-size:.72rem}
+  .card{padding:14px}
+  .stat-num{font-size:1.6rem}
+  .rpt-item{flex-direction:column;align-items:stretch;gap:8px}
+  .btn-dl{text-align:center}
+}
 .card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px}
 .card-title{font-size:.78rem;font-weight:800;color:var(--navy);letter-spacing:.06em;
   text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
@@ -164,19 +187,24 @@ select.login-input{appearance:none;background-image:url("data:image/svg+xml,%3Cs
         </div>
       </div>
 
-      <!-- STEP: 기존 코드로 접속 -->
+      <!-- STEP: 이메일로 기존 선교팀 접속 -->
       <div id="li-existing" style="display:none">
-        <div style="font-size:1.5rem;margin-bottom:12px">🔑</div>
+        <div style="font-size:1.5rem;margin-bottom:12px">📧</div>
         <div class="login-title">기존 선교팀 접속</div>
-        <div class="login-sub">선교팀 생성 시 받은 코드를 입력하세요.</div>
+        <div class="login-sub">선교팀 등록 시 사용한 이메일을 입력해 주세요.</div>
 
-        <label class="login-label">선교팀 코드</label>
-        <input class="login-input" type="text" id="ex-code" placeholder="예: mission-xxxx-xxxx"
+        <label class="login-label">이메일</label>
+        <input class="login-input" type="email" id="ex-email" placeholder="예: pastor@church.com"
+          autocomplete="email"
           onkeydown="if(event.key==='Enter') accessExisting()">
 
         <div id="ex-error" class="login-warn" style="display:none;margin-top:14px;margin-bottom:0"></div>
 
         <button class="login-btn" style="margin-top:14px" onclick="accessExisting()">접속하기 →</button>
+
+        <!-- 선교팀 선택 (여러 개일 때) -->
+        <div id="ex-ws-list" style="display:none;margin-top:18px;display:flex;flex-direction:column;gap:10px"></div>
+
         <div style="text-align:center;margin-top:14px;font-size:.82rem">
           <span style="color:var(--teal);cursor:pointer;text-decoration:underline"
             onclick="showCreate()">← 새 선교팀 만들기</span>
@@ -197,6 +225,15 @@ select.login-input{appearance:none;background-image:url("data:image/svg+xml,%3Cs
     <span style="font-size:.78rem;color:rgba(255,255,255,.5);cursor:pointer"
       onclick="location.href='mission-dashboard.html'">나가기</span>
   </div>
+</div>
+
+<!-- 모바일 상단 탭 -->
+<div class="mob-tabs" id="mob-tabs">
+  <button class="mob-tab active" onclick="navTo('status',this)">📊 현황</button>
+  <button class="mob-tab" onclick="navTo('types',this)">🌿 유형</button>
+  <button class="mob-tab" onclick="navTo('reports',this)">📄 리포트</button>
+  <button class="mob-tab" onclick="navTo('info',this)">ℹ️ 정보</button>
+  <button class="mob-tab" onclick="navTo('link',this)">🔗 링크</button>
 </div>
 
 <div class="layout" id="main-layout" style="display:none">
@@ -430,8 +467,16 @@ function showExisting() {
 function navTo(page, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.mob-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   el.classList.add('active');
+  // 사이드바·모바일탭 동기화
+  const pages = ['status','types','reports','info','link'];
+  const idx = pages.indexOf(page);
+  if (idx >= 0) {
+    document.querySelectorAll('.sb-item')[idx]?.classList.add('active');
+    document.querySelectorAll('.mob-tab')[idx]?.classList.add('active');
+  }
 }
 
 function enterDashboard() {
@@ -506,32 +551,60 @@ async function createMission() {
 
 /* ═══════════════ 기존 코드 접속 ═══════════════ */
 async function accessExisting() {
-  const code = document.getElementById('ex-code').value.trim();
+  const email = document.getElementById('ex-email').value.trim();
   const errEl = document.getElementById('ex-error');
   errEl.style.display = 'none';
 
-  if (!code) { errEl.textContent = '코드를 입력해 주세요.'; errEl.style.display='block'; return; }
+  if (!email) { errEl.textContent = '이메일을 입력해 주세요.'; errEl.style.display='block'; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = '올바른 이메일 형식을 입력해 주세요.'; errEl.style.display='block'; return;
+  }
 
   try {
     const res = await fetch(
-      `${SB_URL}/rest/v1/mission_workshops?code=eq.${encodeURIComponent(code)}&select=*`,
+      `${SB_URL}/rest/v1/mission_workshops?leader_email=eq.${encodeURIComponent(email)}&select=*&order=created_at.desc`,
       { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
     );
     const rows = await res.json();
     if (!rows?.length) {
-      errEl.textContent = '해당 코드의 선교팀을 찾을 수 없습니다.';
+      errEl.textContent = '❌ 해당 이메일로 등록된 선교팀이 없습니다.';
       errEl.style.display = 'block';
       return;
     }
 
-    history.replaceState(null, '', `?code=${code}`);
-    window._mCode = code;
-    enterDashboard();
-    loadDataDyn(code);
+    if (rows.length === 1) {
+      const ws = rows[0];
+      history.replaceState(null, '', `?code=${ws.code}`);
+      window._mCode = ws.code;
+      enterDashboard();
+      loadDataDyn(ws.code);
+      return;
+    }
+
+    // 여러 개면 선택 화면
+    const listEl = document.getElementById('ex-ws-list');
+    listEl.style.display = 'flex';
+    listEl.innerHTML = rows.map(ws => `
+      <div onclick="selectMission('${ws.code}')"
+        style="border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;
+          transition:border-color .2s,background .2s"
+        onmouseover="this.style.borderColor='var(--navy)';this.style.background='#F8FAFE'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.background=''">
+        <div style="font-weight:800;color:var(--navy);margin-bottom:3px">${ws.church_name}</div>
+        <div style="font-size:.75rem;color:var(--light)">${ws.trip_name || ''} · ${ws.code}</div>
+      </div>`).join('');
+
   } catch(e) {
     errEl.textContent = '접속 실패: ' + e.message;
     errEl.style.display = 'block';
   }
+}
+
+function selectMission(code) {
+  history.replaceState(null, '', `?code=${code}`);
+  window._mCode = code;
+  enterDashboard();
+  loadDataDyn(code);
 }
 
 /* ═══════════════ 데이터 로드 ═══════════════ */
