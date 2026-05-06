@@ -183,7 +183,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 </div>
 
 <div class="topbar">
-  <a class="tb-logo" href="https://onyuschool.com">ONYUSCHOOL <span>쉐도우그램</span></a>
+  <a class="tb-logo" href="https://onyuschool.com">ONYUSCHOOL <span>팀빌딩</span></a>
   <div class="tb-right">
     <div class="tb-church">대시보드 · <strong id="tb-church">로딩 중...</strong></div>
     <span id="tb-logout" style="font-size:.78rem;color:rgba(255,255,255,.5);cursor:pointer;display:none"
@@ -312,7 +312,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
     <!-- ── PAGE: 리포트 다운로드 ── -->
     <div id="page-reports" class="page">
       <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px">리포트 생성</div>
-      <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">쉐도우그램 철학 기반 맞춤 리포트 자동 생성</div>
+      <div style="font-size:.8rem;color:var(--light);margin-bottom:20px">8유형 기반 맞춤 리포트 자동 생성</div>
 
       <!-- 전원 미완료 경고 배너 -->
       <div id="not-all-done-banner" style="display:none;background:#FFF3CD;border:1.5px solid #F0C040;
@@ -891,7 +891,7 @@ h2{font-size:1rem;color:#256060;border-bottom:2px solid #256060;padding-bottom:6
 @media print{body{padding:0}}
 </style></head><body>
 <h1>${title}</h1>
-<div class="meta">온유스쿨 쉐도우그램 팀빌딩 워크숍 · 생성일: ${new Date().toLocaleDateString('ko-KR')}</div>
+<div class="meta">온유스쿨 팀빌딩 워크숍 · 생성일: ${new Date().toLocaleDateString('ko-KR')}</div>
 <h2>📊 팀 유형 분포 (${results.length}명 완료)</h2>
 ${typeRows}
 <h2>👥 참여자 전체 목록</h2>
@@ -928,7 +928,7 @@ function _downloadOneReport_legacy(r) {
   const td = TYPE_DATA[r.sg_type] || {};
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${r.name} 쉐도우그램 리포트</title>
+<title>${r.name} 팀빌딩 리포트</title>
 <style>
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:680px;
   margin:0 auto;padding:24px 20px;color:#333;line-height:1.75}
@@ -968,19 +968,19 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:680p
   워크숍 당일 전체 리포트에서 공개됩니다
 </div>
 <div class="lock">
-  🌑 <strong>쉐도우그램 서사</strong><br>
-  "처음엔 당신의 빛에 이끌렸지만..." — 워크숍 리포트에서 확인하세요
+  🤝 <strong>잘 쓰는 손과 덜 쓰는 손 서사</strong><br>
+  "잘 쓰는 손에 이끌렸지만, 덜 쓰는 손에서 어긋난다" — 워크숍 리포트에서 확인하세요
 </div>
 <div style="margin-top:24px;padding:12px;background:#F5F3EE;border-radius:8px;
   font-size:.75rem;color:#999;text-align:center">
-  온유스쿨 쉐도우그램 · onyuschool.com
+  온유스쿨 · onyuschool.com
 </div>
 </body></html>`;
 
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `${r.name}_쉐도우그램_${r.sg_type}.html`;
+  a.download = `${r.name}_팀빌딩_${r.sg_type}.html`;
   a.click();
 }
 
@@ -1175,7 +1175,7 @@ async function generateAndDownload(mode) {
 
     setProgress('완료!', 100);
     hideProgress();
-    showToast('✅ 쉐도우그램 리포트 생성 완료!');
+    showToast('✅ 팀빌딩 리포트 생성 완료!');
 
   } catch(e) {
     hideProgress();
@@ -1375,7 +1375,7 @@ function downloadTeamReportV2(report) {
 
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${team.churchName} 팀 리포트 — 온유스쿨 쉐도우그램</title>
+<title>${team.churchName} 팀 리포트 — 온유스쿨 팀빌딩</title>
 <style>
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:800px;
   margin:0 auto;padding:28px 20px;color:#333;line-height:1.75}
@@ -1403,8 +1403,8 @@ footer{margin-top:40px;padding:14px;background:#F5F3EE;border-radius:8px;
 @media print{body{padding:0}}
 </style></head><body>
 
-<h1>🌿 ${team.churchName} — 쉐도우그램 팀 리포트</h1>
-<div class="meta">온유스쿨 쉐도우그램 팀빌딩 워크숍 · 생성일: ${new Date().toLocaleDateString('ko-KR')} · 참여 ${results.length}명</div>
+<h1>🌿 ${team.churchName} — 팀빌딩 리포트</h1>
+<div class="meta">온유스쿨 팀빌딩 워크숍 · 생성일: ${new Date().toLocaleDateString('ko-KR')} · 참여 ${results.length}명</div>
 
 ${team.workshopOpening ? `
 <h2>📣 워크숍 오프닝</h2>
@@ -1441,7 +1441,7 @@ ${team.coworkStructure?.length ? `
 <h2>📋 워크숍 준비 가이드</h2>
 <div class="workshop-guide">
   <strong>워크숍 오프닝 멘트</strong>
-  <p style="margin-top:8px;margin-bottom:0">"오늘 우리는 함께 우리 팀을 더 깊이 이해하는 시간을 갖겠습니다. 쉐도우그램 8유형을 통해 각자의 강점을 발견하고, 함께 소통하는 방법을 배웁니다. 서로 다른 관점이 모여 더 나은 팀을 만든다는 것을 함께 경험해보겠습니다."</p>
+  <p style="margin-top:8px;margin-bottom:0">"오늘 우리는 함께 우리 팀을 더 깊이 이해하는 시간을 갖겠습니다. 8가지 소통 유형을 통해 각자가 잘 쓰는 손과 덜 쓰는 손을 발견하고, 함께 소통하는 방법을 배웁니다. 서로 다른 관점이 모여 더 나은 팀을 만든다는 것을 함께 경험해보겠습니다."</p>
 </div>
 
 <div style="background:#F0F7F4;border:1px solid #B8E6D8;border-radius:10px;padding:16px 18px;margin-bottom:16px;font-size:.83rem;color:#256060;line-height:1.8">
@@ -1487,7 +1487,7 @@ ${team.coworkStructure?.length ? `
   </tbody>
 </table>
 
-<footer>온유스쿨 쉐도우그램 · onyuschool.com · "소통을 회복하는 8가지 언어"</footer>
+<footer>온유스쿨 · onyuschool.com · "소통을 회복하는 8가지 언어"</footer>
 </body></html>`;
 
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -1503,7 +1503,7 @@ function downloadIndReportV2(ind) {
 
   const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${ind.name} 쉐도우그램 리포트 — 온유스쿨</title>
+<title>${ind.name} 소통 유형 리포트 — 온유스쿨</title>
 <style>
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:680px;
   margin:0 auto;padding:28px 20px;color:#333;line-height:1.75}
@@ -1562,7 +1562,7 @@ ${ind.personalNarrative ? `<div class="narrative">${ind.personalNarrative}</div>
 ${ind.shadowCaption ? `
 <div class="shadow-cap">
   <div style="font-size:.72rem;font-weight:800;color:rgba(255,255,255,.5);
-    letter-spacing:.08em;margin-bottom:8px">🌑 쉐도우그램</div>
+    letter-spacing:.08em;margin-bottom:8px">🤝 양손 서사</div>
   ${ind.shadowCaption}
 </div>` : ''}
 
@@ -1584,7 +1584,7 @@ ${ind.shadowCaption ? `
   워크숍 당일 팀 전체 리포트에서 공개됩니다
 </div>
 
-<footer>온유스쿨 쉐도우그램 · onyuschool.com · "소통을 회복하는 8가지 언어"</footer>
+<footer>온유스쿨 · onyuschool.com · "소통을 회복하는 8가지 언어"</footer>
 </body></html>`;
 
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -1653,7 +1653,7 @@ if (CODE) loadData();
 
     <!-- 유형 칩 -->
     <label style="font-size:.82rem;font-weight:700;color:var(--navy);display:block;margin-bottom:8px">
-      쉐도우그램 유형 *
+      소통 유형 *
       <span style="font-weight:400;color:var(--light)">— 해당 MBTI가 표시됩니다</span>
     </label>
     <div id="add-sg-chips"

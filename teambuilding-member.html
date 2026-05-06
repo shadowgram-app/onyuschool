@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>내 쉐도우그램 — 팀빌딩</title>
+<title>내 소통 유형 리포트 — 팀빌딩</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{
@@ -71,7 +71,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 </head>
 <body>
 <div class="topbar">
-  <a class="topbar-logo" href="#">온유스쿨 <span>쉐도우그램</span></a>
+  <a class="topbar-logo" href="#">온유스쿨 <span>팀빌딩</span></a>
   <div style="display:flex;align-items:center;gap:10px">
     <span style="font-size:.8rem;color:rgba(255,255,255,.6)" id="top-church"></span>
     <button class="btn-pdf" id="btn-pdf" onclick="downloadPDF()" style="display:none">📄 PDF 저장</button>
@@ -491,13 +491,13 @@ function renderReport(member, ws) {
 
     ${aiNarrative ? `
     <div class="ai-caption">
-      <div class="ai-label">✨ 쉐도우그램 맞춤 서술 — ${member.role || '팀원'} 역할 기반</div>
+      <div class="ai-label">✨ 유형 맞춤 서술 — ${member.role || '팀원'} 역할 기반</div>
       <p>${aiNarrative}</p>
     </div>` : ''}
 
     ${aiCaption ? `
     <div class="ai-caption" style="background:linear-gradient(135deg,#3A1060,#5A2090)">
-      <div class="ai-label">🌗 쉐도우그램 캡션</div>
+      <div class="ai-label">🤝 유형 캡션</div>
       <p>${aiCaption}</p>
     </div>` : ''}
 
@@ -547,13 +547,13 @@ function renderReport(member, ws) {
 
     <!-- 유형 태그 -->
     <div class="card" style="text-align:center;padding:16px">
-      <div style="font-size:.8rem;color:var(--mid);margin-bottom:8px">쉐도우그램 유형</div>
+      <div style="font-size:.8rem;color:var(--mid);margin-bottom:8px">소통 유형</div>
       <span class="tag">${member.sg_type}</span>
       <span class="tag">${d.fn}</span>
       <span class="tag">${d.kr}형</span>
       ${member.role ? `<span class="tag">${member.role}</span>` : ''}
       <div style="margin-top:14px;font-size:.78rem;color:var(--light)">
-        온유스쿨 쉐도우그램 · ${ws?.church_name || ''} 팀빌딩
+        온유스쿨 · ${ws?.church_name || ''} 팀빌딩
       </div>
     </div>
   `;
@@ -580,7 +580,7 @@ function downloadPDF() {
   btn.textContent = '⏳ 생성 중...';
 
   const el = document.getElementById('report-wrap');
-  const filename = `쉐도우그램_개인리포트_${memberName}(${typeName}).pdf`;
+  const filename = `팀빌딩_개인리포트_${memberName}(${typeName}).pdf`;
 
   const opt = {
     margin: [10, 10, 10, 10],

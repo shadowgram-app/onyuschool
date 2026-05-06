@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>쉐도우그램 유형 검사 — 온유스쿨</title>
+<title>8가지 소통 유형 검사 — 온유스쿨</title>
 <style>
 /* ══════════════════════════════════
    기본 설정 — 고령층 가독성 우선
@@ -522,12 +522,12 @@ body {
 ══════════════════════════════════ -->
 <div id="screen-intro" class="screen active">
 
-  <div class="intro-logo">ONYUSCHOOL · 쉐도우그램</div>
+  <div class="intro-logo">ONYUSCHOOL · 팀빌딩</div>
 
-  <h1 class="intro-title">나는 어떤 <em>빛</em>을<br>가진 사람일까?</h1>
+  <h1 class="intro-title">내가 잘 쓰는 손은<br><em>어느 쪽</em>일까?</h1>
   <p class="intro-sub">
     28문항으로 알아보는 나의 소통 유형<br>
-    "빛을 보고 끌렸는데, 그림자를 보고 갈등한다"
+    "잘 쓰는 손은 강점, 덜 쓰는 손은 사각지대"
   </p>
 
   <div class="intro-chips">
@@ -571,7 +571,7 @@ body {
     <div style="background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);
       border-radius:14px;padding:22px 20px">
       <div style="font-size:.85rem;font-weight:800;color:var(--green);letter-spacing:.04em;margin-bottom:4px">
-        ✦ 쉐도우그램 유형 선택
+        ✦ 소통 유형 선택
       </div>
       <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:16px">
         해당하는 MBTI가 표시되어 있습니다. 유형을 탭하세요.
@@ -603,7 +603,7 @@ body {
   <!-- 고정 헤더 -->
   <div class="quiz-header">
     <div class="quiz-topbar">
-      <div class="topbar-logo">ONYUSCHOOL <span>쉐도우그램</span></div>
+      <div class="topbar-logo">ONYUSCHOOL <span>팀빌딩</span></div>
       <div class="topbar-church" id="topbar-church">새빛교회</div>
     </div>
     <div class="prog-wrap">
@@ -669,15 +669,15 @@ body {
     <!-- 잠금: 그림자 -->
     <div class="lock-card">
       <div class="lk-ico">🔒</div>
-      <div class="lk-title">그림자 &amp; 소통 팁 — 워크숍에서 공개됩니다</div>
-      <div class="lk-desc">상세 리포트(그림자, 소통 팁, 마이크로 미션)는<br>담당자를 통해 이메일로 발송됩니다.</div>
+      <div class="lk-title">사각지대 &amp; 소통 팁 — 워크숍에서 공개됩니다</div>
+      <div class="lk-desc">상세 리포트(사각지대, 소통 팁, 마이크로 미션)는<br>담당자를 통해 이메일로 발송됩니다.</div>
     </div>
 
-    <!-- 잠금: 쉐도우그램 -->
+    <!-- 잠금: 양손 서사 -->
     <div class="lock-card">
-      <div class="lk-ico">🌑</div>
-      <div class="lk-title">쉐도우그램 — 빛과 그림자 서사</div>
-      <div class="lk-desc">"처음엔 당신의 빛에 이끌렸지만..."<br>전체 내용은 워크숍 리포트에서 확인하세요.</div>
+      <div class="lk-ico">🤝</div>
+      <div class="lk-title">잘 쓰는 손과 덜 쓰는 손 서사</div>
+      <div class="lk-desc">"잘 쓰는 손에 이끌렸지만, 덜 쓰는 손에서 어긋난다"<br>전체 내용은 워크숍 리포트에서 확인하세요.</div>
     </div>
 
     <!-- 완료 안내 -->
@@ -694,7 +694,7 @@ body {
     <button class="btn-share" onclick="shareResult()">이 검사 추천하기 🌿</button>
 
     <div class="brand-foot">
-      온유스쿨 쉐도우그램 · onyuschool.com<br>
+      온유스쿨 · onyuschool.com<br>
       "소통을 회복하는 8가지 언어"
     </div>
 
@@ -1339,11 +1339,11 @@ function shareResult() {
   const tagline = (TYPE_DATA[type]?.tagline || '').split('\n')[0];
 
   const shareUrl  = 'https://onyuschool.com';
-  const shareText = `나의 소통 유형은 ${type}(${kr})!\n"${tagline}"\n\n우리 교회 팀이 서로를 더 잘 이해할 수 있었어요 😊\n온유스쿨 쉐도우그램 — 소통을 회복하는 8가지 언어`;
+  const shareText = `나의 소통 유형은 ${type}(${kr})!\n"${tagline}"\n\n우리 교회 팀이 서로를 더 잘 이해할 수 있었어요 😊\n온유스쿨 — 소통을 회복하는 8가지 언어`;
 
   if (navigator.share) {
     navigator.share({
-      title: `나는 ${type}(${kr}) 유형 — 온유스쿨 쉐도우그램`,
+      title: `나는 ${type}(${kr}) 유형 — 온유스쿨`,
       text:  shareText,
       url:   shareUrl,
     });
