@@ -155,25 +155,25 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
       <!-- STEP 1: 이메일 입력 → 바로 접속 -->
       <div id="li-step1">
         <div style="font-size:1.5rem;margin-bottom:12px">📊</div>
-        <div class="login-title">팀빌딩 대시보드 접속</div>
-        <div class="login-sub">워크숍 등록 시 사용한 이메일을 입력해 주세요</div>
+        <div class="login-title">결과 페이지 들어가기</div>
+        <div class="login-sub">우리 셀을 만들 때 적은 이메일을 입력해 주세요</div>
         <label class="login-label" for="li-email">이메일</label>
         <input class="login-input" type="email" id="li-email"
-          placeholder="예: pastor@church.com"
+          placeholder="예: example@gmail.com"
           autocomplete="email"
           onkeydown="if(event.key==='Enter') liStep1()">
         <div id="li-step1-err" class="login-warn" style="display:none;margin-top:12px;margin-bottom:0"></div>
-        <button class="login-btn" id="li-btn1" onclick="liStep1()">접속하기 →</button>
+        <button class="login-btn" id="li-btn1" onclick="liStep1()">결과 보러 가기 →</button>
         <div style="text-align:center;margin-top:16px;font-size:.78rem;color:var(--light)">
-          <a href="teambuilding.html" style="color:var(--teal);text-decoration:underline">새 워크숍 만들기</a>
+          <a href="teambuilding.html" style="color:var(--teal);text-decoration:underline">처음 만드는 거예요 →</a>
         </div>
       </div>
 
       <!-- STEP 3: 워크숍 선택 -->
       <div id="li-step3" style="display:none">
         <div style="font-size:1.5rem;margin-bottom:12px">🏫</div>
-        <div class="login-title">워크숍 선택</div>
-        <div class="login-sub" id="li-ws-hint">인증된 이메일로 등록된 워크숍을 선택해 주세요.</div>
+        <div class="login-title">우리 셀 선택하기</div>
+        <div class="login-sub" id="li-ws-hint">이 이메일로 만든 셀이 여러 개 있어요. 선택해 주세요.</div>
         <div id="li-ws-list" style="display:grid;gap:10px;margin-bottom:16px"></div>
         <div id="li-step3-err" class="login-warn" style="display:none;margin-bottom:14px"></div>
       </div>
@@ -1040,9 +1040,9 @@ async function liStep1() {
   const btn1  = document.getElementById('li-btn1');
 
   err1.style.display = 'none';
-  if (!email) { err1.textContent = '이메일을 입력해 주세요.'; err1.style.display = 'block'; return; }
+  if (!email) { err1.textContent = '이메일을 적어 주세요.'; err1.style.display = 'block'; return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    err1.textContent = '올바른 이메일 형식을 입력해 주세요.';
+    err1.textContent = '이메일 형식이 맞지 않아요. 예: example@gmail.com';
     err1.style.display = 'block'; return;
   }
 
@@ -1056,9 +1056,9 @@ async function liStep1() {
     );
     const rows = await r.json();
     if (!rows?.length) {
-      err1.textContent = '❌ 해당 이메일로 등록된 워크숍이 없습니다.';
+      err1.innerHTML = '❌ 이 이메일로 만든 셀이 없어요.<br><span style="font-size:.78rem">셀을 만들 때 적은 이메일이 맞는지 다시 확인해 주세요.</span>';
       err1.style.display = 'block';
-      btn1.disabled = false; btn1.textContent = '접속하기 →';
+      btn1.disabled = false; btn1.textContent = '결과 보러 가기 →';
       return;
     }
 
@@ -1087,9 +1087,9 @@ async function liStep1() {
     document.getElementById('li-step3').style.display = 'block';
 
   } catch(e) {
-    err1.textContent = '오류: ' + e.message;
+    err1.innerHTML = '❌ 잠시 연결이 안 되네요.<br><span style="font-size:.78rem">잠시 후 다시 시도해 주세요. 계속 안 되면 셀리더에게 알려주세요.</span>';
     err1.style.display = 'block';
-    btn1.disabled = false; btn1.textContent = '접속하기 →';
+    btn1.disabled = false; btn1.textContent = '결과 보러 가기 →';
   }
 }
 
@@ -1104,7 +1104,7 @@ function liBack() {
   document.getElementById('li-step1').style.display = 'block';
   document.getElementById('li-step1-err').style.display = 'none';
   document.getElementById('li-btn1').disabled = false;
-  document.getElementById('li-btn1').textContent = '접속하기 →';
+  document.getElementById('li-btn1').textContent = '결과 보러 가기 →';
   _liEmail = '';
 }
 
