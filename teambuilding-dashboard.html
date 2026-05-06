@@ -14,7 +14,12 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .topbar{background:var(--navy);padding:0 24px;height:52px;display:flex;
   align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
 .tb-logo{color:#fff;font-size:.88rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.tb-logo:hover{opacity:.85}
 .tb-logo span{color:var(--green)}
+.tb-home{color:rgba(255,255,255,.78);font-size:.76rem;font-weight:600;text-decoration:none;
+  padding:5px 10px;border-radius:7px;border:1px solid rgba(255,255,255,.22);
+  margin-right:10px;transition:background .2s;white-space:nowrap}
+.tb-home:hover{background:rgba(255,255,255,.12);color:#fff}
 .tb-right{display:flex;align-items:center;gap:16px}
 .tb-church{font-size:.82rem;color:rgba(255,255,255,.65)}
 .tb-church strong{color:#FFE08A}
@@ -185,6 +190,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 <div class="topbar">
   <a class="tb-logo" href="https://onyuschool.com">ONYUSCHOOL <span>팀빌딩</span></a>
   <div class="tb-right">
+    <a class="tb-home" href="https://onyuschool.com">← 홈</a>
     <div class="tb-church">대시보드 · <strong id="tb-church">로딩 중...</strong></div>
     <span id="tb-logout" style="font-size:.78rem;color:rgba(255,255,255,.5);cursor:pointer;display:none"
       onclick="liLogout()">로그아웃</span>

@@ -18,7 +18,13 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 .topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:50}
 .topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo:hover{opacity:.85}
 .topbar-logo span{color:var(--green)}
+.topbar-home{color:rgba(255,255,255,.78);font-size:.76rem;font-weight:600;text-decoration:none;
+  padding:5px 10px;border-radius:7px;border:1px solid rgba(255,255,255,.22);
+  margin-right:8px;transition:background .2s;white-space:nowrap}
+.topbar-home:hover{background:rgba(255,255,255,.12);color:#fff}
+@media print{.topbar-home{display:none}}
 .btn-print{background:var(--green);color:var(--navy);padding:8px 16px;border-radius:6px;
   border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-pdf{background:#C05000;color:#fff;padding:8px 16px;border-radius:6px;
@@ -234,8 +240,9 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 </head>
 <body>
 <div class="topbar">
-  <a class="topbar-logo" href="#">온유스쿨 <span>팀빌딩</span></a>
+  <a class="topbar-logo" href="https://onyuschool.com">온유스쿨 <span>팀빌딩</span></a>
   <div style="display:flex;align-items:center;gap:0">
+    <a class="topbar-home" href="https://onyuschool.com">← 홈</a>
     <button class="btn-print" onclick="window.print()">🖨️ 인쇄</button>
     <button class="btn-pdf" id="btn-pdf" onclick="downloadPDF()">📄 PDF 저장</button>
   </div>

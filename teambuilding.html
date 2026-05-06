@@ -21,7 +21,11 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 /* topbar */
 .topbar{background:var(--navy);padding:13px 24px;display:flex;align-items:center;justify-content:space-between}
 .topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo:hover{opacity:.85}
 .topbar-logo span{color:var(--green)}
+.topbar-home{color:rgba(255,255,255,.78);font-size:.78rem;font-weight:600;text-decoration:none;
+  padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.22);transition:background .2s}
+.topbar-home:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* hero */
 .hero{background:linear-gradient(155deg,var(--navy) 0%,#1E4070 50%,var(--teal) 100%);
@@ -180,6 +184,7 @@ footer strong{color:var(--navy)}
 
 <div class="topbar">
   <a class="topbar-logo" href="https://onyuschool.com">ONYUSCHOOL <span>팀빌딩</span></a>
+  <a class="topbar-home" href="https://onyuschool.com">← 온유스쿨 홈</a>
 </div>
 
 <!-- ── SCREEN: 랜딩 ── -->

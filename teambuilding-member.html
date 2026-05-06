@@ -19,7 +19,12 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   border:none;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-pdf:disabled{opacity:.6;cursor:not-allowed}
 .topbar-logo{color:#fff;font-size:.9rem;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.topbar-logo:hover{opacity:.85}
 .topbar-logo span{color:var(--green)}
+.topbar-home{color:rgba(255,255,255,.78);font-size:.76rem;font-weight:600;text-decoration:none;
+  padding:5px 10px;border-radius:7px;border:1px solid rgba(255,255,255,.22);
+  margin-right:8px;transition:background .2s;white-space:nowrap}
+.topbar-home:hover{background:rgba(255,255,255,.12);color:#fff}
 .container{max-width:680px;margin:0 auto;padding:20px}
 .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--teal) 100%);
   border-radius:16px;padding:28px 24px;color:#fff;margin-bottom:24px;text-align:center}
@@ -71,8 +76,9 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 </head>
 <body>
 <div class="topbar">
-  <a class="topbar-logo" href="#">온유스쿨 <span>팀빌딩</span></a>
-  <div style="display:flex;align-items:center;gap:10px">
+  <a class="topbar-logo" href="https://onyuschool.com">온유스쿨 <span>팀빌딩</span></a>
+  <div style="display:flex;align-items:center;gap:8px">
+    <a class="topbar-home" href="https://onyuschool.com">← 홈</a>
     <span style="font-size:.8rem;color:rgba(255,255,255,.6)" id="top-church"></span>
     <button class="btn-pdf" id="btn-pdf" onclick="downloadPDF()" style="display:none">📄 PDF 저장</button>
   </div>
