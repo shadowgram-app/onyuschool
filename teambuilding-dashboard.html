@@ -431,6 +431,10 @@ const CHURCH = decodeURIComponent(sp.get('church') || '');
 document.getElementById('tb-church').textContent = CHURCH || CODE;
 
 let wsData = null;
+const PT_LABEL = {
+  staff:'교역자팀', cell:'소그룹', leadership:'리더십',
+  teachers:'교사팀', sunday:'주일학교', custom:'팀'
+};
 let results = [];
 
 /* ── 사이드바 네비 ── */
@@ -717,11 +721,12 @@ function genInsight(counts) {
 /* ── 워크숍 정보 ── */
 function renderInfo() {
   if (!wsData) return;
+  const ptLabel = PT_LABEL[wsData.product_type] || wsData.product_type;
   document.getElementById('ws-info-card').innerHTML = `
     <div class="card-title">워크숍 정보</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:.85rem">
       <div><div style="color:var(--light);font-size:.75rem">교회</div><strong>${wsData.church_name}</strong></div>
-      <div><div style="color:var(--light);font-size:.75rem">클래스</div><strong>${wsData.product_type}</strong></div>
+      <div><div style="color:var(--light);font-size:.75rem">클래스</div><strong>${ptLabel}</strong></div>
       <div><div style="color:var(--light);font-size:.75rem">담당자</div><strong>${wsData.leader_name}</strong></div>
       <div><div style="color:var(--light);font-size:.75rem">이메일</div><strong>${wsData.leader_email}</strong></div>
       <div><div style="color:var(--light);font-size:.75rem">최대 인원</div><strong>${wsData.max_count}명</strong></div>
@@ -1075,7 +1080,7 @@ async function liStep1() {
         onmouseover="this.style.borderColor='var(--navy)';this.style.background='#F8FAFE'"
         onmouseout="this.style.borderColor='var(--border)';this.style.background=''">
         <div style="font-weight:800;color:var(--navy);margin-bottom:3px">${ws.church_name}</div>
-        <div style="font-size:.75rem;color:var(--light)">${ws.product_type || ''} · ${ws.code}</div>
+        <div style="font-size:.75rem;color:var(--light)">${(typeof PT_LABEL !== 'undefined' && PT_LABEL[ws.product_type]) || ws.product_type || ''} · ${ws.code}</div>
       </div>`).join('');
 
     document.getElementById('li-step1').style.display = 'none';

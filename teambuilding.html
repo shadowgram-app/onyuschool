@@ -200,8 +200,8 @@ footer strong{color:var(--navy)}
           <div class="cls-desc">담당교역자 · 부장 · 총무<br>교사 · 간사</div>
         </div>
 
-        <div class="cls-card locked">
-          <div class="cls-badge soon">준비 중</div>
+        <div class="cls-card" id="cls-cell" onclick="selectCls('cell')">
+          <div class="cls-badge beta">베타 무료</div>
           <div class="cls-icon">🔗</div>
           <div class="cls-name">소그룹</div>
           <div class="cls-desc">셀 · 구역 · 목장<br>소그룹 리더 & 멤버</div>
@@ -253,7 +253,7 @@ footer strong{color:var(--navy)}
       <hr class="f-divider">
 
       <div class="fg">
-        <label class="fl">교역자 직분 <small>(해당 직분 모두 선택)</small></label>
+        <label class="fl" role-label-target>교역자 직분 <small>(해당 직분 모두 선택)</small></label>
         <div class="role-chips">
           <div class="rc" onclick="togRole(this,'담임목사')">담임목사</div>
           <div class="rc" onclick="togRole(this,'부목사')">부목사</div>
@@ -314,13 +314,13 @@ footer strong{color:var(--navy)}
 
       <div class="info-grid">
         <div class="ig-item"><div class="ig-label">교회</div><strong id="d-church"></strong></div>
-        <div class="ig-item"><div class="ig-label">구분</div><strong>교역자팀</strong></div>
+        <div class="ig-item"><div class="ig-label">구분</div><strong id="d-type">교역자팀</strong></div>
         <div class="ig-item"><div class="ig-label">참여 인원</div><strong id="d-count"></strong></div>
         <div class="ig-item"><div class="ig-label">담당자</div><strong id="d-leader"></strong></div>
       </div>
 
       <div class="lnk-box survey">
-        <div class="lnk-label">📋 교역자 검사 링크 (교역자들에게 공유)</div>
+        <div class="lnk-label" id="survey-label">📋 교역자 검사 링크 (교역자들에게 공유)</div>
         <div class="lnk-url" id="url-survey"></div>
         <div class="lnk-acts">
           <button class="btn-cp" onclick="cpLink('survey')">📋 복사</button>
@@ -337,7 +337,7 @@ footer strong{color:var(--navy)}
         </div>
       </div>
 
-      <div class="tip-box">
+      <div class="tip-box" id="tip-share">
         💡 <strong>다음 단계:</strong> 검사 링크를 교역자 단체 채팅방에 공유하세요.<br>
         모든 교역자가 검사를 마치면 대시보드에서 팀 리포트를 생성할 수 있습니다.<br>
         <span style="color:var(--teal);font-weight:700">대시보드 링크는 북마크해 두세요.</span>
@@ -371,7 +371,24 @@ const selRoles = new Set();
 let selCls = 'staff'; // 기본값
 
 const CLS_INFO = {
-  staff: { name: '교역자팀', desc: '교역자팀 전용 검사 링크가 생성됩니다' },
+  staff: {
+    name: '교역자팀',
+    desc: '교역자팀 전용 검사 링크가 생성됩니다',
+    member: '교역자',
+    titleSuffix: '교역자 소통 워크숍',
+    roleLabel: '교역자 직분',
+    roles: ['담임목사','부목사','전도사','교육부서','행정부서','교구부서','간사','기타'],
+    roleEtcPlaceholder: '직분 직접 입력 (예: 사역자)'
+  },
+  cell: {
+    name: '소그룹',
+    desc: '셀 · 구역 · 목장 등 소그룹 전용 검사 링크가 생성됩니다',
+    member: '소그룹 멤버',
+    titleSuffix: '소그룹 소통 워크숍',
+    roleLabel: '소그룹 구성',
+    roles: ['셀리더','목자','구역장','순장','부리더','멤버','새가족','기타'],
+    roleEtcPlaceholder: '직분 직접 입력 (예: 청년부 셀리더)'
+  },
 };
 
 function showScreen(id) {
@@ -391,6 +408,40 @@ function goToSetup() {
   const info = CLS_INFO[selCls];
   if (info) {
     document.getElementById('setup-sub').textContent = info.name + ' — ' + info.desc;
+
+    // 직분 라벨 갈아입히기
+    const roleLabelEl = document.querySelector('label.fl[role-label-target]')
+      || document.querySelectorAll('.fg label.fl')[3]; // 4번째 라벨 (직분)
+    if (roleLabelEl) {
+      roleLabelEl.innerHTML = info.roleLabel +
+        ' <small>(해당 ' + (selCls === 'staff' ? '직분' : '역할') + ' 모두 선택)</small>';
+    }
+
+    // 직분 칩 다시 그리기
+    const chipsBox = document.querySelector('.role-chips');
+    if (chipsBox) {
+      selRoles.clear();
+      chipsBox.innerHTML = info.roles
+        .map(r => '<div class="rc" onclick="togRole(this,\'' + r + '\')">' + r + '</div>')
+        .join('');
+    }
+    // '기타' 입력란 placeholder 갈아입히기
+    const etcInp = document.getElementById('inp-role-etc');
+    if (etcInp) {
+      etcInp.placeholder = info.roleEtcPlaceholder;
+      etcInp.value = '';
+    }
+    document.getElementById('role-etc-wrap').style.display = 'none';
+
+    // 워크숍 제목 placeholder 갈아입히기
+    const ti = document.getElementById('inp-title');
+    if (ti && !ti.dataset.touched) {
+      const church = document.getElementById('inp-church').value.trim();
+      const y = new Date().getFullYear();
+      ti.placeholder = church
+        ? church + ' ' + info.titleSuffix + ' ' + y
+        : '예: ' + y + ' 새빛교회 ' + info.titleSuffix;
+    }
   }
   showScreen('setup');
 }
@@ -410,10 +461,11 @@ function autoTitle() {
   const church = document.getElementById('inp-church').value.trim();
   const y = new Date().getFullYear();
   const ti = document.getElementById('inp-title');
+  const info = CLS_INFO[selCls] || CLS_INFO.staff;
   if (!ti.dataset.touched) {
     ti.placeholder = church
-      ? church + ' 교역자 소통 워크숍 ' + y
-      : '예: 2026 새빛교회 교역자 소통 워크숍';
+      ? church + ' ' + info.titleSuffix + ' ' + y
+      : '예: ' + y + ' 새빛교회 ' + info.titleSuffix;
   }
 }
 
@@ -445,15 +497,16 @@ async function createWorkshop() {
   btn.disabled = true; btn.textContent = '생성 중...';
 
   const wCode = genCode(church);
+  const info = CLS_INFO[selCls] || CLS_INFO.staff;
   const body = {
     code: wCode,
     church_name: church,
     leader_name: leader,
     leader_email: email,
-    product_type: 'staff',
+    product_type: selCls,
     max_count: cnt,
-    title: title || (church + ' 교역자 소통 워크숍 ' + new Date().getFullYear()),
-    themes: [...selRoles].join(',') || '교역자팀',
+    title: title || (church + ' ' + info.titleSuffix + ' ' + new Date().getFullYear()),
+    themes: [...selRoles].join(',') || info.name,
     workshop_date: date || null,
   };
 
@@ -492,9 +545,24 @@ async function createWorkshop() {
   btn.disabled = false; btn.textContent = '🔗 검사 링크 생성하기';
 
   const su = SITE + '/teambuilding-survey.html?church=' + encodeURIComponent(church) +
-    '&code=' + body.code + '&org_type=staff&title=' + encodeURIComponent(body.title);
+    '&code=' + body.code + '&org_type=' + selCls + '&title=' + encodeURIComponent(body.title);
   const du = SITE + '/teambuilding-dashboard.html?code=' + body.code +
     '&church=' + encodeURIComponent(church);
+
+  // 완료 화면 동적 용어 갈아입히기
+  const dTypeEl = document.getElementById('d-type');
+  if (dTypeEl) dTypeEl.textContent = info.name;
+  const surveyLabel = document.getElementById('survey-label');
+  if (surveyLabel) {
+    surveyLabel.textContent = '📋 ' + info.member + ' 검사 링크 (' + info.member + '들에게 공유)';
+  }
+  const tipBox = document.getElementById('tip-share');
+  if (tipBox) {
+    tipBox.innerHTML =
+      '💡 <strong>다음 단계:</strong> 검사 링크를 ' + info.member + ' 단체 채팅방에 공유하세요.<br>' +
+      '모든 ' + info.member + '가 검사를 마치면 대시보드에서 팀 리포트를 생성할 수 있습니다.<br>' +
+      '<span style="color:var(--teal);font-weight:700">대시보드 링크는 북마크해 두세요.</span>';
+  }
 
   document.getElementById('d-church').textContent = church;
   document.getElementById('d-count').textContent  = cnt + '명';
