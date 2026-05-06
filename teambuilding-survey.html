@@ -506,6 +506,38 @@ body {
 }
 .btn-share:hover { background: #1A4848; }
 
+/* 홈으로 돌아가기 버튼 */
+.btn-home {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: 12px;
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  text-align: center;
+  margin-bottom: 12px;
+  transition: background .2s;
+}
+.btn-home:hover { background: rgba(255,255,255,.22); }
+
+.next-step-hint {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  font-size: .82rem;
+  color: rgba(255,255,255,.85);
+  line-height: 1.75;
+}
+.next-step-hint strong { color: #fff; }
+
 .brand-foot {
   text-align: center;
   padding: 10px 0 24px;
@@ -692,6 +724,14 @@ body {
     </div>
 
     <button class="btn-share" onclick="shareResult()">이 검사 추천하기 🌿</button>
+
+    <div class="next-step-hint">
+      💡 <strong>이제 끝났어요!</strong><br>
+      셀 모임 때 셀리더님과 함께 결과를 나눕니다.<br>
+      아래 버튼으로 온유스쿨 홈에서 다른 도구도 살펴보실 수 있어요.
+    </div>
+
+    <a class="btn-home" href="https://onyuschool.com">🏠 온유스쿨 홈으로 가기</a>
 
     <div class="brand-foot">
       온유스쿨 · onyuschool.com<br>
