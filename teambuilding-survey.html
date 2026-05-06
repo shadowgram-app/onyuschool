@@ -526,7 +526,7 @@ body {
 
   <h1 class="intro-title">나에게 가장 익숙한<br><em>소통 코드</em>는 무엇일까?</h1>
   <p class="intro-sub">
-    28문항으로 알아보는 나의 소통 유형<br>
+    32문항으로 알아보는 나의 소통 유형<br>
     같은 셀원이라도 소통하는 방식이 다 다릅니다
   </p>
 
@@ -609,7 +609,7 @@ body {
     <div class="prog-wrap">
       <div class="prog-row">
         <span class="prog-label">진행 중</span>
-        <span class="prog-num"><span id="q-num">1</span> / 28</span>
+        <span class="prog-num"><span id="q-num">1</span> / <span id="q-total">32</span></span>
       </div>
       <div class="prog-bar">
         <div class="prog-fill" id="prog-fill" style="width:3.6%"></div>
@@ -739,6 +739,42 @@ const QUESTIONS = [
   { dim:'Te', text:'감정보다 결과가 더 중요하다' },
   { dim:'Te', text:'체계와 기준이 있어야 팀이 제대로 돌아간다' },
   { dim:'Te', text:'계획대로 진행되지 않으면 바로 수정하고 싶다' },
+];
+
+// 어른용 A/B 32문항 (척도형 → 양자택일 재포장)
+const QUESTIONS_AB = [
+  { dim:'Ne', a:'검증된 방식을 따르는 게 더 안전하다',                 b:'새로운 아이디어가 떠오르면 바로 이야기하고 싶다' },
+  { dim:'Ne', a:'한 가지에 집중하는 편이다',                          b:'여러 가능성을 동시에 탐색하는 것이 즐겁다' },
+  { dim:'Ne', a:'대화는 한 주제로 마무리하는 게 좋다',                 b:'대화할수록 새로운 연결고리가 보인다' },
+  { dim:'Ne', a:'익숙한 방식이 효율적이다',                            b:'뻔한 방법보다 새로운 접근을 시도하고 싶다' },
+  { dim:'Ni', a:'눈에 보이는 사실을 더 신뢰한다',                      b:'말하지 않아도 상황의 큰 그림이 보인다' },
+  { dim:'Ni', a:'미래는 일어나봐야 알 수 있다',                        b:'어떤 일이 어떻게 될지 미리 느껴질 때가 많다' },
+  { dim:'Ni', a:'여러 가지를 동시에 보는 편이 좋다',                   b:'한 가지에 깊이 집중할 때 가장 명확하게 생각된다' },
+  { dim:'Ni', a:'상황을 있는 그대로 받아들인다',                       b:'미래의 패턴이나 방향이 직관적으로 느껴진다' },
+  { dim:'Si', a:'새로운 방식을 시도해보고 싶다',                       b:'과거에 잘 됐던 방식을 신뢰하고 따르는 편이다' },
+  { dim:'Si', a:'변화가 있을 때 활력이 생긴다',                        b:'예측 가능한 루틴이 있을 때 안정감을 느낀다' },
+  { dim:'Si', a:'큰 흐름만 기억하면 된다',                             b:'세부 사항과 구체적인 사실을 잘 기억한다' },
+  { dim:'Si', a:'일단 시작하고 가면서 조정한다',                       b:'신중하게 확인하고 검증한 뒤에 결정한다' },
+  { dim:'Se', a:'미래를 위해 현재를 절제하는 편이다',                  b:'지금 이 순간의 경험이 가장 중요하다' },
+  { dim:'Se', a:'생각을 정리한 후에 행동하는 편이다',                  b:'현재 일어나는 일에 즉각 반응하고 행동한다' },
+  { dim:'Se', a:'책이나 설명으로 배우는 게 잘 맞는다',                 b:'몸으로 직접 경험해야 가장 잘 배운다' },
+  { dim:'Se', a:'머릿속 생각에 더 몰입하는 편이다',                    b:'보고 듣고 느끼는 감각 정보에 즉각 몰입된다' },
+  { dim:'Fe', a:'주변 분위기에 별로 영향받지 않는 편이다',             b:'주변 분위기가 불편하면 나도 불편해진다' },
+  { dim:'Fe', a:'각자 자기 일에 충실하면 된다',                        b:'모두가 조화롭게 지내는 것이 중요하다' },
+  { dim:'Fe', a:'상대방 감정은 본인이 직접 말해줘야 안다',             b:'상대방의 감정 상태를 금방 알아챈다' },
+  { dim:'Fe', a:'분위기는 각자가 알아서 만드는 것이다',                b:'그룹의 분위기를 좋게 만들기 위해 노력한다' },
+  { dim:'Fi', a:'조건이 맞으면 가치관과 달라도 받아들인다',            b:'내 가치관과 맞지 않으면 아무리 좋아도 거부감이 든다' },
+  { dim:'Fi', a:'감정은 그때그때 바로 표현하는 편이다',                b:'감정을 혼자 처리하고 나서야 나눌 수 있다' },
+  { dim:'Fi', a:'얕은 관계라도 유지하는 것이 도움이 된다',             b:'진정성 없는 관계보다 혼자가 낫다' },
+  { dim:'Fi', a:'상황에 따라 입장을 조정할 수 있다',                   b:'내가 중요하게 여기는 것에 대해서는 타협하지 않는다' },
+  { dim:'Ti', a:'직감으로 판단해도 충분할 때가 많다',                  b:'어떤 주장이든 논리적 근거를 따진다' },
+  { dim:'Ti', a:'상황별로 다르게 판단하는 편이다',                     b:'내 머릿속에 일관된 원리 체계가 있다' },
+  { dim:'Ti', a:'사소한 오류는 그냥 넘긴다',                           b:'모순이나 오류를 발견하면 짚고 넘어가야 한다' },
+  { dim:'Ti', a:'마음이 시키는 쪽을 따르는 편이다',                    b:'감정보다 논리가 더 신뢰할 수 있는 판단 기준이다' },
+  { dim:'Te', a:'목표보다 과정과 의미가 더 중요하다',                  b:'목표를 정하면 효율적인 실행 방법을 즉시 찾는다' },
+  { dim:'Te', a:'결과보다 사람의 마음이 더 중요하다',                  b:'감정보다 결과가 더 중요하다' },
+  { dim:'Te', a:'팀은 자율과 신뢰로 굴러간다',                          b:'체계와 기준이 있어야 팀이 제대로 돌아간다' },
+  { dim:'Te', a:'상황이 바뀌면 흐름에 맡기는 편이다',                  b:'계획대로 진행되지 않으면 바로 수정하고 싶다' },
 ];
 
 // 주일학교 초등부용 A/B 28문항
@@ -885,8 +921,8 @@ const ORG_NAME = {
 };
 
 // ── 부서별 문항 선택 로직 ──
-let questionsData = QUESTIONS; // 기본값
-let useAbMode = false; // A/B 모드 여부
+let questionsData = QUESTIONS_AB; // 기본값: 어른용 A/B 32문항
+let useAbMode = true;             // 기본 A/B 모드
 
 if (orgType === 'sunday' && deptParam) {
   useAbMode = true;
@@ -895,9 +931,9 @@ if (orgType === 'sunday' && deptParam) {
   } else if (deptParam === '중등부' || deptParam === '고등부') {
     questionsData = SUNDAY_Q_TEEN;
   } else {
-    // 기타 부서는 성인용 유지
-    questionsData = QUESTIONS;
-    useAbMode = false;
+    // 주일학교 기타 부서는 어른용 A/B 사용
+    questionsData = QUESTIONS_AB;
+    useAbMode = true;
   }
 }
 
@@ -1129,8 +1165,10 @@ function renderQ() {
   const q = questionsData[cur];
 
   document.getElementById('q-num').textContent = cur + 1;
+  const qTotalEl = document.getElementById('q-total');
+  if (qTotalEl) qTotalEl.textContent = questionsData.length;
   document.getElementById('q-badge').textContent = 'Q' + (cur + 1) + ' · ' + (DIM_LABEL[q.dim] || q.dim);
-  document.getElementById('prog-fill').style.width = ((cur + 1) / 28 * 100).toFixed(1) + '%';
+  document.getElementById('prog-fill').style.width = ((cur + 1) / questionsData.length * 100).toFixed(1) + '%';
 
   const list = document.getElementById('scale-list');
   list.innerHTML = '';
