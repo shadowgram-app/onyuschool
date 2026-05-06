@@ -142,6 +142,38 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
 footer{background:#F0F4F8;border-top:1px solid var(--border);padding:22px 20px;
   text-align:center;font-size:.73rem;color:var(--light)}
 footer strong{color:var(--navy)}
+
+/* ── 카톡 메시지 통째 복사 (가장 강조) ── */
+.kakao-box{background:linear-gradient(135deg,#FEE500 0%,#FFD800 100%);
+  border:2.5px solid #C8A800;border-radius:14px;
+  padding:20px 22px;margin:14px 0 18px}
+.kakao-title{font-size:.95rem;font-weight:800;color:#3B1F00;margin-bottom:6px}
+.kakao-sub{font-size:.78rem;color:#5A3500;margin-bottom:14px;line-height:1.6}
+.kakao-preview{background:#fff;border-radius:10px;padding:14px 16px;
+  font-size:.78rem;color:#444;line-height:1.7;white-space:pre-wrap;
+  max-height:160px;overflow-y:auto;margin-bottom:12px;
+  border:1px solid #E0E0E0}
+.btn-kakao{width:100%;padding:14px;background:#3B1F00;color:#FEE500;
+  border:none;border-radius:10px;font-size:.97rem;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:background .2s}
+.btn-kakao:hover{background:#1F0F00}
+
+/* ── 진행 안내 3단계 (50대+ 친화) ── */
+.howto{background:#fff;padding:32px 20px;border-bottom:1px solid var(--border)}
+.howto-inner{max-width:640px;margin:0 auto}
+.howto-title{font-size:1.05rem;font-weight:800;color:var(--navy);
+  text-align:center;margin-bottom:6px}
+.howto-sub{font-size:.85rem;color:var(--mid);text-align:center;margin-bottom:22px;line-height:1.65}
+.howto-steps{display:grid;gap:12px}
+.howto-step{display:flex;gap:14px;align-items:flex-start;
+  background:#F8F7F3;border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.howto-num{flex-shrink:0;width:34px;height:34px;border-radius:50%;
+  background:var(--navy);color:#fff;font-size:1rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center}
+.howto-body{flex:1;min-width:0}
+.howto-name{font-size:.97rem;font-weight:800;color:var(--navy);margin-bottom:4px}
+.howto-desc{font-size:.85rem;color:var(--gray);line-height:1.65}
+.howto-time{font-size:.74rem;color:var(--teal);font-weight:700;margin-top:4px}
 </style>
 </head>
 <body>
@@ -155,7 +187,7 @@ footer strong{color:var(--navy)}
   <div class="hero">
     <div class="hero-badge">🌿 온유스쿨 · 셀·소그룹 모임 도구</div>
     <h1>셀원들과<br><em>더 잘 통하고 싶으세요?</em></h1>
-    <p>8가지 소통 유형으로 잘 쓰는 손과 덜 쓰는 손을 발견하고<br>90분 모임으로 셀 관계를 따뜻하게 만듭니다.</p>
+    <p>셀원 한 명 한 명의 소통 코드를 발견하고<br>90분 모임으로 셀 관계를 따뜻하게 만듭니다.</p>
     <div class="hero-chips">
       <div class="hc"><span class="cn">28문항</span><span class="cl">소통 유형</span></div>
       <div class="hc"><span class="cn">90분</span><span class="cl">셀 모임</span></div>
@@ -168,6 +200,44 @@ footer strong{color:var(--navy)}
       <p>이메일을 입력하면 다시 들어갈 수 있습니다</p>
     </div>
   </div>
+
+  <!-- ── 진행 안내 3단계 ── -->
+  <section class="howto">
+    <div class="howto-inner">
+      <div class="howto-title">🌿 이렇게 진행됩니다</div>
+      <div class="howto-sub">셀리더님이 휴대폰으로 직접 만들 수 있어요</div>
+      <div class="howto-steps">
+
+        <div class="howto-step">
+          <div class="howto-num">1</div>
+          <div class="howto-body">
+            <div class="howto-name">우리 셀 등록하기</div>
+            <div class="howto-desc">교회 이름·내 이름·이메일만 적으면 셀 모임 페이지가 만들어집니다.</div>
+            <div class="howto-time">⏱ 약 2분</div>
+          </div>
+        </div>
+
+        <div class="howto-step">
+          <div class="howto-num">2</div>
+          <div class="howto-body">
+            <div class="howto-name">셀원에게 카톡으로 링크 보내기</div>
+            <div class="howto-desc">"이 메시지 복사" 버튼을 누르고 셀 단톡방에 붙여넣기만 하면 됩니다.<br>셀원은 5~7분 동안 28문항 검사를 받습니다.</div>
+            <div class="howto-time">⏱ 약 1분 (셀원 검사는 5~7분)</div>
+          </div>
+        </div>
+
+        <div class="howto-step">
+          <div class="howto-num">3</div>
+          <div class="howto-body">
+            <div class="howto-name">셀 모임에서 결과 함께 보기</div>
+            <div class="howto-desc">셀리더만 보는 결과 페이지에 셀원의 응답이 모입니다.<br>모임 시간에 다 같이 보면서 나누세요.</div>
+            <div class="howto-time">⏱ 모임 90분 권장</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
 </div>
 
 <!-- ── SCREEN: 팀 유형 선택 ── -->
@@ -319,11 +389,19 @@ footer strong{color:var(--navy)}
         <div class="ig-item"><div class="ig-label">셀리더</div><strong id="d-leader"></strong></div>
       </div>
 
+      <!-- ★ 가장 강조: 카톡 메시지 통째 복사 ★ -->
+      <div class="kakao-box">
+        <div class="kakao-title">💬 셀 단톡방에 보낼 메시지</div>
+        <div class="kakao-sub">아래 메시지가 통째로 복사됩니다.<br>셀 단톡방에 붙여넣기만 하세요.</div>
+        <div class="kakao-preview" id="kakao-preview"></div>
+        <button class="btn-kakao" onclick="cpKakaoMessage()">📋 이 메시지 통째로 복사하기</button>
+      </div>
+
       <div class="lnk-box survey">
-        <div class="lnk-label" id="survey-label">① 📋 셀원에게 보낼 링크 (카톡으로 공유)</div>
+        <div class="lnk-label" id="survey-label">① 📋 셀원에게 보낼 링크 (링크만)</div>
         <div class="lnk-url" id="url-survey"></div>
         <div class="lnk-acts">
-          <button class="btn-cp" onclick="cpLink('survey')">📋 링크 복사하기</button>
+          <button class="btn-cp" onclick="cpLink('survey')">📋 링크만 복사</button>
           <a class="btn-open" id="a-survey" href="#" target="_blank">먼저 보기 ↗</a>
         </div>
       </div>
@@ -573,7 +651,46 @@ async function createWorkshop() {
   document.getElementById('url-dash').textContent   = du;
   document.getElementById('a-survey').href = su;
   document.getElementById('a-dash').href   = du;
+
+  // 카톡 메시지 미리보기 생성 (셀원 단톡 붙여넣기용)
+  const memberWord = info.member || '셀원';
+  const kakaoMsg = buildKakaoMessage(memberWord, church, su);
+  const previewEl = document.getElementById('kakao-preview');
+  if (previewEl) previewEl.textContent = kakaoMsg;
+
   showScreen('done');
+}
+
+function buildKakaoMessage(memberWord, church, surveyUrl) {
+  return `[${memberWord} 여러분께]
+
+이번 셀 모임에서 함께 해볼 짧은 검사가 있어 보내드립니다 🌿
+
+🙋 무엇인가요?
+나에게 가장 익숙한 소통 코드를 알아보는 8가지 유형 검사예요.
+같은 셀원이라도 소통하는 방식이 다 다릅니다.
+
+⏰ 얼마나 걸리나요?
+28문항 / 5~7분
+
+📋 어떻게 하나요?
+아래 링크를 누르고 이름·역할만 입력하시면 시작됩니다.
+
+🔗 검사 링크
+${surveyUrl}
+
+모임 전에 미리 해두시면 함께 나눌 시간이 더 풍성해집니다 :)
+감사합니다.`;
+}
+
+function cpKakaoMessage() {
+  const msg = document.getElementById('kakao-preview').textContent;
+  if (!msg) { toast('⚠️ 메시지가 아직 준비되지 않았어요.'); return; }
+  navigator.clipboard.writeText(msg).then(() => {
+    toast('💬 메시지가 복사되었어요! 셀 단톡방에 붙여넣기 하세요.', 3500);
+  }).catch(() => {
+    toast('⚠️ 복사가 안 되네요. 메시지를 길게 눌러서 직접 복사해 주세요.');
+  });
 }
 
 function cpLink(t) {
