@@ -596,12 +596,12 @@ body {
 
   <h1 class="intro-title">나에게 가장 익숙한<br><em>소통 코드</em>는 무엇일까?</h1>
   <p class="intro-sub">
-    32문항으로 알아보는 나의 소통 유형<br>
+    36문항으로 알아보는 나의 소통 유형<br>
     같은 셀원이라도 소통하는 방식이 다 다릅니다
   </p>
 
   <div class="intro-chips">
-    <div class="intro-chip"><span class="cn">32</span><span class="cl">문항</span></div>
+    <div class="intro-chip"><span class="cn">36</span><span class="cl">문항</span></div>
     <div class="intro-chip"><span class="cn">5~7분</span><span class="cl">소요 시간</span></div>
     <div class="intro-chip"><span class="cn">8가지</span><span class="cl">소통 유형</span></div>
   </div>
@@ -819,7 +819,60 @@ const QUESTIONS = [
   { dim:'Te', text:'계획대로 진행되지 않으면 바로 수정하고 싶다' },
 ];
 
-// 어른용 A/B 32문항 (척도형 → 양자택일 재포장)
+// ══════════════════════════════════
+//  어른용 4축 A/B 36문항 (정석 방식)
+//  EI/SN/TF/JP 9문항씩
+//  B 선택 = E·N·F·P 방향 (양극 +1점)
+//  A 선택 = I·S·T·J 방향
+//  Big5 IPIP 공개 문항 기반, 한국어 일상어 번역
+// ══════════════════════════════════
+const QUESTIONS_AB_4AXIS = [
+  // ───────── E/I (외향-내향) 9문항 ─────────
+  { axis:'EI', a:'혼자 있을 때 에너지가 채워진다',                       b:'사람들과 함께 있을 때 에너지가 채워진다' },
+  { axis:'EI', a:'먼저 깊이 생각하고 나서 말한다',                       b:'말하면서 생각이 정리된다' },
+  { axis:'EI', a:'조용한 환경에서 가장 집중이 잘 된다',                  b:'활기찬 분위기에서 더 잘 움직인다' },
+  { axis:'EI', a:'소수의 사람과 깊게 만나는 게 좋다',                    b:'여러 사람과 폭넓게 어울리는 게 좋다' },
+  { axis:'EI', a:'주말에는 혼자 쉬어야 다음 주가 가능하다',              b:'주말에 사람을 만나야 다음 주가 가능하다' },
+  { axis:'EI', a:'대화 후에 집에 오면 기운이 빠진다',                    b:'대화 후에 집에 오면 기운이 더 난다' },
+  { axis:'EI', a:'말수가 적은 편이라는 소리를 듣는다',                   b:'말이 많고 활발하다는 소리를 듣는다' },
+  { axis:'EI', a:'관심을 받는 것보다 지켜보는 게 편하다',                b:'사람들의 관심을 받는 게 즐겁다' },
+  { axis:'EI', a:'생각을 충분히 정리한 후에 표현한다',                   b:'떠오르는 대로 바로 이야기한다' },
+
+  // ───────── S/N (감각-직관) 9문항 ─────────
+  { axis:'SN', a:'눈에 보이는 사실과 경험을 더 신뢰한다',                b:'눈에 안 보이는 가능성과 의미를 더 본다' },
+  { axis:'SN', a:'구체적이고 실용적인 이야기가 좋다',                    b:'추상적이고 상상력 있는 이야기가 좋다' },
+  { axis:'SN', a:'지금 여기, 현재가 가장 중요하다',                      b:'아직 오지 않은 미래가 더 흥미롭다' },
+  { axis:'SN', a:'세부 사항을 정확히 기억하는 편이다',                   b:'전체 흐름과 큰 그림을 기억하는 편이다' },
+  { axis:'SN', a:'증명된 방법이 가장 안전하다',                          b:'시도해보지 않은 방법이 더 흥미롭다' },
+  { axis:'SN', a:'일은 단계대로 차근차근 진행되어야 한다',               b:'일은 영감이 떠오를 때 한 번에 풀린다' },
+  { axis:'SN', a:'사실을 있는 그대로 받아들인다',                        b:'사실 뒤에 숨은 의미를 찾고 싶다' },
+  { axis:'SN', a:'설명서를 보고 그대로 따라 하는 게 편하다',             b:'직접 만져보며 패턴을 읽는 게 편하다' },
+  { axis:'SN', a:'전통과 검증된 방식을 존중한다',                        b:'새로운 시각과 변화를 환영한다' },
+
+  // ───────── T/F (사고-감정) 9문항 ─────────
+  { axis:'TF', a:'결정할 때 논리와 객관적 기준이 우선이다',              b:'결정할 때 사람의 감정과 관계가 우선이다' },
+  { axis:'TF', a:'옳고 그름이 분명한 게 좋다',                           b:'좋고 따뜻한 게 더 중요하다' },
+  { axis:'TF', a:'사실을 직설적으로 말하는 편이다',                      b:'상대 마음을 살피며 부드럽게 말한다' },
+  { axis:'TF', a:'갈등은 명확히 짚어야 풀린다',                          b:'갈등은 분위기를 살리며 풀어야 한다' },
+  { axis:'TF', a:'성과가 우선, 감정은 나중에',                           b:'사람이 우선, 성과는 그 다음' },
+  { axis:'TF', a:'논리적 설득에 더 마음이 움직인다',                     b:'진심 어린 호소에 더 마음이 움직인다' },
+  { axis:'TF', a:'비판도 정확하면 도움이 된다',                          b:'비판은 마음에 상처가 된다' },
+  { axis:'TF', a:'공정함이 가장 중요한 가치다',                          b:'배려가 가장 중요한 가치다' },
+  { axis:'TF', a:'분석하고 판단하는 일이 자연스럽다',                    b:'공감하고 위로하는 일이 자연스럽다' },
+
+  // ───────── J/P (판단-인식) 9문항 ─────────
+  { axis:'JP', a:'계획을 세우고 그대로 진행하는 게 편하다',              b:'상황을 보며 그때그때 정하는 게 편하다' },
+  { axis:'JP', a:'결정을 빨리 내리고 마무리하고 싶다',                   b:'결정은 가능한 한 미루고 열어두고 싶다' },
+  { axis:'JP', a:'정해진 일정을 지키는 게 중요하다',                     b:'일정은 유연하게 바뀌어도 괜찮다' },
+  { axis:'JP', a:'마감 전에 미리 끝내야 마음이 편하다',                  b:'마감 직전에 집중하는 게 잘 풀린다' },
+  { axis:'JP', a:'정돈된 환경에서 일이 잘 된다',                         b:'어수선해도 내 방식으로 흘러간다' },
+  { axis:'JP', a:'하나를 끝내고 다음을 시작하는 편이다',                 b:'여러 가지를 동시에 진행하는 편이다' },
+  { axis:'JP', a:'규칙과 약속은 지켜져야 한다',                          b:'상황에 따라 융통성 있게 조정한다' },
+  { axis:'JP', a:'예측 가능한 일상이 안정감을 준다',                     b:'예상 못한 변화가 활력을 준다' },
+  { axis:'JP', a:'시작했으면 끝까지 마무리해야 한다',                    b:'중간에 더 좋은 게 보이면 옮겨가도 된다' },
+];
+
+// 어른용 A/B 32문항 (척도형 → 양자택일 재포장 — 구버전, 호환용 보존)
 const QUESTIONS_AB = [
   { dim:'Ne', a:'검증된 방식을 따르는 게 더 안전하다',                 b:'새로운 아이디어가 떠오르면 바로 이야기하고 싶다' },
   { dim:'Ne', a:'한 가지에 집중하는 편이다',                          b:'여러 가능성을 동시에 탐색하는 것이 즐겁다' },
@@ -999,19 +1052,22 @@ const ORG_NAME = {
 };
 
 // ── 부서별 문항 선택 로직 ──
-let questionsData = QUESTIONS_AB; // 기본값: 어른용 A/B 32문항
-let useAbMode = true;             // 기본 A/B 모드
+let questionsData = QUESTIONS_AB_4AXIS; // 기본값: 어른용 4축 36문항
+let useAbMode = true;                   // 기본 A/B 모드
+let scoringMode = '4axis';              // '4axis' (4축→16유형→8유형) | '8func' (8주기능 직접)
 
 if (orgType === 'sunday' && deptParam) {
   useAbMode = true;
+  scoringMode = '8func'; // 주일학교는 기존 8주기능 방식 유지
   if (deptParam === '초등부') {
     questionsData = SUNDAY_Q_ELEM;
   } else if (deptParam === '중등부' || deptParam === '고등부') {
     questionsData = SUNDAY_Q_TEEN;
   } else {
-    // 주일학교 기타 부서는 어른용 A/B 사용
-    questionsData = QUESTIONS_AB;
+    // 주일학교 기타 부서는 어른용 4축 사용
+    questionsData = QUESTIONS_AB_4AXIS;
     useAbMode = true;
+    scoringMode = '4axis';
   }
 }
 
@@ -1245,7 +1301,11 @@ function renderQ() {
   document.getElementById('q-num').textContent = cur + 1;
   const qTotalEl = document.getElementById('q-total');
   if (qTotalEl) qTotalEl.textContent = questionsData.length;
-  document.getElementById('q-badge').textContent = 'Q' + (cur + 1) + ' · ' + (DIM_LABEL[q.dim] || q.dim);
+  // 4축 문항은 axis, 8주기능 문항은 dim 키 사용
+  const AXIS_LABEL = { EI:'에너지 방향', SN:'정보 인식', TF:'판단 방식', JP:'생활 양식' };
+  const labelKey = q.axis || q.dim;
+  const labelText = AXIS_LABEL[q.axis] || DIM_LABEL[q.dim] || labelKey;
+  document.getElementById('q-badge').textContent = 'Q' + (cur + 1) + ' · ' + labelText;
   document.getElementById('prog-fill').style.width = ((cur + 1) / questionsData.length * 100).toFixed(1) + '%';
 
   const list = document.getElementById('scale-list');
@@ -1315,7 +1375,7 @@ function nextQ() {
     setTimeout(() => bar.classList.remove('show'), 2200);
     return;
   }
-  if (cur < 27) { cur++; renderQ(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (cur < questionsData.length - 1) { cur++; renderQ(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   else showResult();
 }
 
@@ -1324,20 +1384,79 @@ function prevQ() {
 }
 
 // ══════════════════════════════════
+//  4축 → 16 MBTI → 8유형 매핑
+// ══════════════════════════════════
+const MBTI_TO_SG = {
+  ENTP:'SPARK', ENFP:'SPARK', INTJ:'VISION', INFJ:'VISION',
+  ISTJ:'STEADY', ISFJ:'STEADY', ESTP:'PLAYER', ESFP:'PLAYER',
+  ESFJ:'HARMONY', ENFJ:'HARMONY', INFP:'SOUL', ISFP:'SOUL',
+  INTP:'LOGIC', ISTP:'LOGIC', ENTJ:'LEADER', ESTJ:'LEADER',
+};
+
+// 4축 채점: A=1(I/S/T/J), B=5(E/N/F/P) → 축별 합계 → 다수결
+function score4Axis() {
+  const axes = ['EI','SN','TF','JP'];
+  const cnt = { EI:{e:0,i:0}, SN:{e:0,i:0}, TF:{e:0,i:0}, JP:{e:0,i:0} };
+  questionsData.forEach((q, i) => {
+    if (!q.axis) return;
+    const v = ans[i];
+    if (v === 5) cnt[q.axis].e++;       // B 선택 = 양극(E/N/F/P)
+    else if (v === 1) cnt[q.axis].i++;  // A 선택 = 기본극(I/S/T/J)
+    // 미응답은 어느 쪽에도 안 셈
+  });
+  // 4글자 도출 (동점 시 양극(E/N/F/P) 우선 — 통상 더 보수적인 I/S/T/J에 가중치 안 줌)
+  const letter = {
+    EI: cnt.EI.e >= cnt.EI.i ? 'E' : 'I',
+    SN: cnt.SN.e >= cnt.SN.i ? 'N' : 'S',
+    TF: cnt.TF.e >= cnt.TF.i ? 'F' : 'T',
+    JP: cnt.JP.e >= cnt.JP.i ? 'P' : 'J',
+  };
+  const mbti = letter.EI + letter.SN + letter.TF + letter.JP;
+  // ※ 표준 MBTI 4글자 순서: E/I, S/N, T/F, J/P
+  // letter.EI = E or I, letter.SN = S or N, letter.TF = T or F, letter.JP = J or P
+  const mbtiStandard =
+    (cnt.EI.e >= cnt.EI.i ? 'E' : 'I') +
+    (cnt.SN.e >= cnt.SN.i ? 'N' : 'S') +
+    (cnt.TF.e >= cnt.TF.i ? 'F' : 'T') +
+    (cnt.JP.e >= cnt.JP.i ? 'P' : 'J');
+  return {
+    mbti: mbtiStandard,
+    sg: MBTI_TO_SG[mbtiStandard] || 'STEADY',
+    counts: cnt,
+  };
+}
+
+// ══════════════════════════════════
 //  채점 & 결과
 // ══════════════════════════════════
 function showResult() {
   const dims = ['Ne','Ni','Si','Se','Fe','Fi','Ti','Te'];
   const scores = {};
-  dims.forEach(d => {
-    const idx = questionsData.map((q,i) => q.dim === d ? i : -1).filter(i => i >= 0);
-    scores[d] = idx.reduce((s, i) => s + (ans[i] || 3), 0) / idx.length;
-  });
 
-  let bestDim = 'Si', bestScore = -1;
-  dims.forEach(d => { if (scores[d] > bestScore) { bestScore = scores[d]; bestDim = d; } });
-  const typeName = DIM_TYPE[bestDim];
-  const td = TYPE_DATA[typeName];
+  let typeName, td, bestDim, mbtiResult = null;
+
+  if (scoringMode === '4axis') {
+    // ── 4축 → 16 MBTI → 8유형 ──
+    mbtiResult = score4Axis();
+    typeName = mbtiResult.sg;
+    td = TYPE_DATA[typeName];
+    // 차트 표시용으로 8dim 모두 0 초기화 후 typeName에 해당하는 dim에 가중
+    dims.forEach(d => { scores[d] = 1; });
+    const typeDim = Object.keys(DIM_TYPE).find(k => DIM_TYPE[k] === typeName);
+    if (typeDim) scores[typeDim] = 5;
+    bestDim = typeDim || 'Si';
+  } else {
+    // ── 8주기능 직접 측정 (구버전) ──
+    dims.forEach(d => {
+      const idx = questionsData.map((q,i) => q.dim === d ? i : -1).filter(i => i >= 0);
+      scores[d] = idx.length ? idx.reduce((s, i) => s + (ans[i] || 3), 0) / idx.length : 1;
+    });
+    let bestScore = -1;
+    bestDim = 'Si';
+    dims.forEach(d => { if (scores[d] > bestScore) { bestScore = scores[d]; bestDim = d; } });
+    typeName = DIM_TYPE[bestDim];
+    td = TYPE_DATA[typeName];
+  }
 
   // 히어로 색상
   document.getElementById('result-header').style.background =
@@ -1388,8 +1507,10 @@ function showResult() {
     group_type:    uGroup,
     role:          uRole,
     sg_type:       typeName,
+    mbti:          mbtiResult ? mbtiResult.mbti : null,
     dim_scores:    scores,
     answers:       ans,
+    scoring_mode:  scoringMode,
   });
 
   showScreen('result');

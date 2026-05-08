@@ -296,6 +296,29 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
         </button>
       </div>
 
+      <!-- 종이 검사 점수 입력 배너 -->
+      <div style="background:#FFF8E6;border:1.5px solid #E8D8A0;border-radius:10px;
+        padding:14px 16px;margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-size:1.2rem">📝</span>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:.85rem;font-weight:700;color:#7A6000;margin-bottom:2px">
+            종이로 검사한 셀원은 점수만 입력하면 됩니다
+          </div>
+          <div style="font-size:.75rem;color:var(--mid)">
+            EI·SN·TF·JP 4축 점수 입력 → 8유형 자동 도출 → 결과 링크 발송
+          </div>
+        </div>
+        <a href="teambuilding-paper.html" target="_blank"
+          style="font-size:.74rem;color:var(--teal);text-decoration:underline;
+            white-space:nowrap;margin-right:8px">📄 종이 검사지 받기</a>
+        <button onclick="openPaperScore()"
+          style="background:#7A6000;color:#fff;border:none;border-radius:8px;
+            padding:9px 18px;font-size:.85rem;font-weight:700;cursor:pointer;
+            font-family:inherit;white-space:nowrap">
+          📝 점수 입력하기
+        </button>
+      </div>
+
     </div>
 
     <!-- ── PAGE: 유형 분포 ── -->
@@ -1686,6 +1709,313 @@ if (CODE) loadData();
 
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════
+   종이 검사 점수 입력 모달
+══════════════════════════════════════════════════ -->
+<div id="paper-score-modal"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:1000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;max-width:480px;width:100%;
+    padding:24px 22px;max-height:90vh;overflow-y:auto">
+    <div style="font-size:1.05rem;font-weight:800;color:var(--navy);margin-bottom:4px">
+      📝 종이 검사 점수 입력
+    </div>
+    <div style="font-size:.78rem;color:var(--mid);margin-bottom:16px;line-height:1.6">
+      종이 검사지에서 받은 4축별 점수를 입력하세요.<br>
+      각 축은 0~9점 (B 선택 횟수). 자동으로 8유형이 결정됩니다.
+    </div>
+
+    <label style="font-size:.78rem;font-weight:700;color:var(--navy);display:block;margin-bottom:4px">
+      이름 *
+    </label>
+    <input id="ps-name" type="text" maxlength="20" placeholder="예: 홍길동"
+      style="width:100%;padding:11px 13px;border:1.5px solid var(--border);
+        border-radius:8px;font-size:.9rem;margin-bottom:12px;font-family:inherit">
+
+    <label style="font-size:.78rem;font-weight:700;color:var(--navy);display:block;margin-bottom:4px">
+      직분 / 역할
+    </label>
+    <input id="ps-role" type="text" maxlength="30" placeholder="예: 셀리더"
+      style="width:100%;padding:11px 13px;border:1.5px solid var(--border);
+        border-radius:8px;font-size:.9rem;margin-bottom:16px;font-family:inherit">
+
+    <div style="background:#F8F7F3;border:1px solid var(--border);border-radius:10px;
+      padding:14px 16px;margin-bottom:14px">
+      <div style="font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:10px">
+        4축 점수 (B 선택 횟수, 0~9)
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
+            EI축 (E 점수)
+          </label>
+          <input id="ps-ei" type="number" min="0" max="9" value="0"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
+              border-radius:7px;font-size:.88rem;font-family:inherit">
+          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 외향(E)</div>
+        </div>
+        <div>
+          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
+            SN축 (N 점수)
+          </label>
+          <input id="ps-sn" type="number" min="0" max="9" value="0"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
+              border-radius:7px;font-size:.88rem;font-family:inherit">
+          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 직관(N)</div>
+        </div>
+        <div>
+          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
+            TF축 (F 점수)
+          </label>
+          <input id="ps-tf" type="number" min="0" max="9" value="0"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
+              border-radius:7px;font-size:.88rem;font-family:inherit">
+          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 감정(F)</div>
+        </div>
+        <div>
+          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
+            JP축 (P 점수)
+          </label>
+          <input id="ps-jp" type="number" min="0" max="9" value="0"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
+              border-radius:7px;font-size:.88rem;font-family:inherit">
+          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 인식(P)</div>
+        </div>
+      </div>
+
+      <div id="ps-preview" style="margin-top:14px;padding:10px 12px;
+        background:#fff;border-radius:8px;border:1px dashed var(--border);
+        font-size:.82rem;color:var(--mid);text-align:center">
+        점수를 입력하면 결과가 미리 보입니다
+      </div>
+    </div>
+
+    <div id="ps-error" style="color:#c0392b;font-size:.78rem;margin-bottom:10px;
+      display:none;background:#FFF0EE;border-radius:6px;padding:8px 12px"></div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="closePaperScore()"
+        style="flex:1;padding:11px;background:#fff;border:1px solid var(--border);
+          color:var(--mid);border-radius:8px;font-size:.85rem;font-family:inherit;cursor:pointer">
+        취소
+      </button>
+      <button id="ps-submit" onclick="submitPaperScore()"
+        style="flex:2;padding:11px;background:#7A6000;color:#fff;border:none;
+          border-radius:8px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer">
+        등록 + 결과 링크 받기 →
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- 종이 점수 → 8유형 결정 결과 표시 모달 -->
+<div id="paper-result-modal"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:1001;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;max-width:440px;width:100%;
+    padding:24px 22px;max-height:90vh;overflow-y:auto">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="font-size:2rem;margin-bottom:6px">🎉</div>
+      <div style="font-size:1.05rem;font-weight:800;color:var(--navy)">등록 완료!</div>
+      <div id="pr-summary" style="font-size:.85rem;color:var(--mid);margin-top:6px;line-height:1.6"></div>
+    </div>
+
+    <div style="background:#F0F7F4;border:1.5px solid rgba(37,96,96,.28);
+      border-radius:10px;padding:14px 16px;margin-bottom:14px">
+      <div style="font-size:.74rem;font-weight:800;color:var(--teal);margin-bottom:6px">
+        🔗 결과 페이지 링크 (셀원에게 카톡으로 공유)
+      </div>
+      <div id="pr-link" style="font-size:.74rem;font-weight:600;word-break:break-all;
+        background:#fff;border:1px solid var(--border);border-radius:6px;
+        padding:9px 11px;margin-bottom:9px"></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button onclick="cpPaperLink()"
+          style="padding:8px 14px;background:var(--teal);color:#fff;border:none;
+            border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">
+          📋 링크 복사
+        </button>
+        <a id="pr-open" href="#" target="_blank"
+          style="padding:8px 14px;background:var(--navy);color:#fff;border:none;
+            border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none">
+          결과 보기 ↗
+        </a>
+      </div>
+    </div>
+
+    <button onclick="closePaperResult()"
+      style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;
+        border-radius:8px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer">
+      닫기
+    </button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  종이 검사 점수 입력 → 8유형 결정 → DB 저장
+// ══════════════════════════════════════════════════
+const PAPER_MBTI_TO_SG = {
+  ENTP:'SPARK', ENFP:'SPARK', INTJ:'VISION', INFJ:'VISION',
+  ISTJ:'STEADY', ISFJ:'STEADY', ESTP:'PLAYER', ESFP:'PLAYER',
+  ESFJ:'HARMONY', ENFJ:'HARMONY', INFP:'SOUL', ISFP:'SOUL',
+  INTP:'LOGIC', ISTP:'LOGIC', ENTJ:'LEADER', ESTJ:'LEADER',
+};
+const PAPER_SG_KR = {
+  SPARK:'스파크', VISION:'비전', STEADY:'스테디', PLAYER:'플레이어',
+  HARMONY:'하모니', SOUL:'소울', LOGIC:'로직', LEADER:'리더',
+};
+
+let _lastPaperLink = '';
+
+function openPaperScore() {
+  document.getElementById('ps-name').value = '';
+  document.getElementById('ps-role').value = '';
+  ['ps-ei','ps-sn','ps-tf','ps-jp'].forEach(id => {
+    document.getElementById(id).value = 0;
+  });
+  document.getElementById('ps-error').style.display = 'none';
+  updatePaperPreview();
+  const modal = document.getElementById('paper-score-modal');
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('ps-name').focus(), 100);
+}
+function closePaperScore() {
+  document.getElementById('paper-score-modal').style.display = 'none';
+}
+
+function calcPaperType(ei, sn, tf, jp) {
+  const letter =
+    (ei >= 5 ? 'E' : 'I') +
+    (sn >= 5 ? 'N' : 'S') +
+    (tf >= 5 ? 'F' : 'T') +
+    (jp >= 5 ? 'P' : 'J');
+  return { mbti: letter, sg: PAPER_MBTI_TO_SG[letter] || 'STEADY' };
+}
+
+function readPaperScores() {
+  const ei = Math.max(0, Math.min(9, parseInt(document.getElementById('ps-ei').value) || 0));
+  const sn = Math.max(0, Math.min(9, parseInt(document.getElementById('ps-sn').value) || 0));
+  const tf = Math.max(0, Math.min(9, parseInt(document.getElementById('ps-tf').value) || 0));
+  const jp = Math.max(0, Math.min(9, parseInt(document.getElementById('ps-jp').value) || 0));
+  return { ei, sn, tf, jp };
+}
+
+function updatePaperPreview() {
+  const s = readPaperScores();
+  const r = calcPaperType(s.ei, s.sn, s.tf, s.jp);
+  const kr = PAPER_SG_KR[r.sg] || r.sg;
+  document.getElementById('ps-preview').innerHTML =
+    `예상 결과: <strong style="color:var(--navy)">${r.mbti}</strong> → ` +
+    `<strong style="color:#7A6000">${r.sg} (${kr})</strong>`;
+}
+
+['ps-ei','ps-sn','ps-tf','ps-jp'].forEach(id => {
+  document.addEventListener('input', function(e) {
+    if (e.target.id === id) updatePaperPreview();
+  });
+});
+
+async function submitPaperScore() {
+  const err = document.getElementById('ps-error');
+  err.style.display = 'none';
+
+  const name = document.getElementById('ps-name').value.trim();
+  const role = document.getElementById('ps-role').value.trim();
+  if (!name) {
+    err.textContent = '이름을 입력해 주세요.'; err.style.display = 'block'; return;
+  }
+
+  const s = readPaperScores();
+  const r = calcPaperType(s.ei, s.sn, s.tf, s.jp);
+
+  // 8dim 점수 시뮬레이션 (차트 표시용)
+  const TYPE_TO_DIM = {
+    SPARK:'Ne', VISION:'Ni', STEADY:'Si', PLAYER:'Se',
+    HARMONY:'Fe', SOUL:'Fi', LOGIC:'Ti', LEADER:'Te',
+  };
+  const dimScores = { Ne:1,Ni:1,Si:1,Se:1,Fe:1,Fi:1,Ti:1,Te:1 };
+  dimScores[TYPE_TO_DIM[r.sg]] = 5;
+
+  const btn = document.getElementById('ps-submit');
+  btn.disabled = true; btn.textContent = '등록 중...';
+
+  try {
+    // workshop_id 조회
+    const wsRes = await fetch(
+      `${SB_URL}/rest/v1/workshops?code=eq.${encodeURIComponent(CODE)}&select=id`,
+      { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } }
+    );
+    const ws = await wsRes.json();
+    const workshopId = ws?.[0]?.id || null;
+
+    const res = await fetch(`${SB_URL}/rest/v1/survey_results`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SB_KEY,
+        Authorization: 'Bearer ' + SB_KEY,
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({
+        workshop_id:   workshopId,
+        workshop_code: CODE,
+        name:          name,
+        role:          role || null,
+        sg_type:       r.sg,
+        mbti:          r.mbti,
+        dim_scores:    dimScores,
+        scoring_mode:  'paper_4axis',
+        answers:       { paper_scores: s },
+      }),
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || '저장 실패');
+    }
+
+    // 결과 페이지 링크 생성 (member 페이지)
+    const memberUrl = `${SITE}/teambuilding-member.html?code=${encodeURIComponent(CODE)}` +
+      `&name=${encodeURIComponent(name)}`;
+
+    const krName = PAPER_SG_KR[r.sg] || r.sg;
+    document.getElementById('pr-summary').innerHTML =
+      `<strong>${name}</strong>님 등록됨<br>` +
+      `<span style="color:#7A6000;font-weight:700">${r.sg} (${krName})</span> · ${r.mbti}`;
+    document.getElementById('pr-link').textContent = memberUrl;
+    document.getElementById('pr-open').href = memberUrl;
+    _lastPaperLink = memberUrl;
+
+    closePaperScore();
+    document.getElementById('paper-result-modal').style.display = 'flex';
+
+    // 데이터 새로고침
+    if (typeof loadResults === 'function') loadResults();
+
+  } catch(e) {
+    console.error(e);
+    err.textContent = '등록 중 문제가 생겼어요. 잠시 후 다시 시도해 주세요.';
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '등록 + 결과 링크 받기 →';
+  }
+}
+
+function closePaperResult() {
+  document.getElementById('paper-result-modal').style.display = 'none';
+}
+
+function cpPaperLink() {
+  if (!_lastPaperLink) return;
+  navigator.clipboard.writeText(_lastPaperLink).then(() => {
+    showToast('🔗 링크가 복사되었습니다! 셀원 카톡으로 보내세요.');
+  });
+}
+</script>
 
 </body>
 </html>
