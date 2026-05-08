@@ -1973,7 +1973,8 @@ async function submitPaperScore() {
     }
 
     // 결과 페이지 링크 생성 (member 페이지)
-    const memberUrl = `${SITE}/teambuilding-member.html?code=${encodeURIComponent(CODE)}` +
+    const SITE_URL = window.location.origin; // https://onyuschool.com
+    const memberUrl = `${SITE_URL}/teambuilding-member.html?code=${encodeURIComponent(CODE)}` +
       `&name=${encodeURIComponent(name)}`;
 
     const krName = PAPER_SG_KR[r.sg] || r.sg;
