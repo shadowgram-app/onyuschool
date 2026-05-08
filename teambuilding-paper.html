@@ -7,17 +7,19 @@
 <style>
 :root{
   --navy:#1A3055;--teal:#256060;--gold:#8A6400;
-  --bg:#F5F3EE;--white:#FFF;--gray:#333;
-  --mid:#666;--light:#999;--border:#DDD;--green:#8FC49A;
+  --bg:#F5F3EE;--white:#FFF;--gray:#222;
+  --mid:#666;--light:#999;--border:#CCC;--green:#8FC49A;
+  --grpA:#7A4F00; /* 갈색 */
+  --grpB:#1F3864; /* 진청 */
+  --grpC:#7B1A1A; /* 진적 */
+  --grpD:#256060; /* 청록 */
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',serif;
-  font-size:13px;line-height:1.55;background:var(--bg);color:var(--gray);padding:0}
-.container{max-width:760px;margin:0 auto;padding:24px 22px;background:#fff;
-  box-shadow:0 1px 4px rgba(0,0,0,.05)}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  font-size:12px;line-height:1.45;background:var(--bg);color:var(--gray);padding:0}
 
-/* 화면용 상단 (인쇄 시 숨김) */
-.screen-bar{background:var(--navy);color:#fff;padding:12px 20px;
+/* 화면용 상단바 (인쇄 시 숨김) */
+.screen-bar{background:var(--navy);color:#fff;padding:10px 20px;
   display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .screen-bar a{color:rgba(255,255,255,.85);font-size:.78rem;text-decoration:none;
   padding:6px 12px;border:1px solid rgba(255,255,255,.22);border-radius:7px}
@@ -26,98 +28,115 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',serif;
 .btn-print{background:var(--green);color:var(--navy);border:none;padding:8px 16px;
   border-radius:7px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.82rem}
 
-/* 헤더 */
-.head{text-align:center;border-bottom:2px solid var(--navy);
-  padding-bottom:16px;margin-bottom:20px}
-.head .brand{font-size:.78rem;font-weight:700;color:var(--teal);
-  letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-.head h1{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:6px}
-.head .sub{font-size:.84rem;color:var(--mid)}
-.info-box{background:#FAF8F2;border:1px solid var(--border);border-radius:8px;
-  padding:12px 14px;margin-bottom:20px;font-size:.82rem;line-height:1.7}
-.info-box strong{color:var(--navy)}
+/* 컨테이너 (A4 가로 비율) */
+.sheet{max-width:1180px;margin:14px auto;padding:18px 20px 16px;
+  background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 
-/* 응답자 정보 입력란 */
-.who{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
-.who-cell{border:1px solid var(--border);border-radius:6px;padding:10px 12px}
-.who-lbl{font-size:.72rem;color:var(--mid);font-weight:700;margin-bottom:4px}
-.who-line{border-bottom:1px solid #555;height:18px}
+/* 헤더 */
+.head{display:flex;justify-content:space-between;align-items:flex-end;
+  border-bottom:2px solid var(--navy);padding-bottom:8px;margin-bottom:12px;gap:12px;flex-wrap:wrap}
+.head .title-block{flex:1;min-width:280px}
+.head .brand{font-size:.7rem;font-weight:700;color:var(--teal);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.head h1{font-size:1.15rem;font-weight:800;color:var(--navy)}
+.head .sub{font-size:.74rem;color:var(--mid);margin-top:2px}
+
+/* 응답자 정보 (인쇄용) */
+.who{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+.who-cell{display:flex;align-items:flex-end;gap:6px}
+.who-lbl{font-size:.72rem;color:var(--mid);font-weight:700;white-space:nowrap}
+.who-line{display:inline-block;width:120px;border-bottom:1px solid #444;height:18px}
 
 /* 안내 박스 */
-.guide{background:#F0F7F4;border-left:4px solid var(--teal);
-  padding:12px 14px;margin-bottom:18px;font-size:.82rem;line-height:1.75}
-.guide strong{color:var(--teal)}
+.guide{background:#FAF8F2;border:1px solid var(--border);border-radius:6px;
+  padding:8px 12px;margin-bottom:12px;font-size:.74rem;line-height:1.6;color:var(--gray)}
+.guide strong{color:var(--navy)}
 
-/* 문항 표 */
-table.q-tbl{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:20px}
-table.q-tbl thead th{background:var(--navy);color:#fff;
-  padding:7px 6px;font-weight:700;font-size:.75rem;border:1px solid var(--navy)}
-table.q-tbl tbody td{border:1px solid var(--border);padding:7px 8px;vertical-align:top}
-table.q-tbl tbody td.num{text-align:center;background:#F8F7F3;
-  font-weight:700;color:var(--navy);width:32px}
-table.q-tbl tbody td.opt{font-size:.8rem;line-height:1.45;width:42%}
-table.q-tbl tbody td.check{text-align:center;width:50px}
-table.q-tbl tbody td.check input{transform:scale(1.2);cursor:pointer}
-table.q-tbl tbody td.axis{text-align:center;font-size:.7rem;font-weight:700;
-  color:var(--mid);background:#FAFAFA;width:42px}
-.axis-EI{color:#7A6000 !important;background:#FFF8E6 !important}
-.axis-SN{color:#1F3864 !important;background:#EEF3FF !important}
-.axis-TF{color:#7B1A1A !important;background:#FDF0F0 !important}
-.axis-JP{color:#256060 !important;background:#F0F7F4 !important}
+/* 4단 컬럼 그룹 */
+.groups{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.col{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;
+  display:flex;flex-direction:column}
+.col-head{padding:7px 10px;color:#fff;font-weight:800;
+  display:flex;justify-content:space-between;align-items:center;font-size:.78rem}
+.col-A .col-head{background:var(--grpA)}
+.col-B .col-head{background:var(--grpB)}
+.col-C .col-head{background:var(--grpC)}
+.col-D .col-head{background:var(--grpD)}
+.col-head .grp-label{font-size:.92rem;font-weight:900;letter-spacing:.05em}
+.col-head .grp-hint{font-size:.66rem;font-weight:600;opacity:.85}
 
-/* 채점표 */
-.score-section{background:#F8F7F3;border:2px solid var(--navy);
-  border-radius:10px;padding:18px 20px;margin-top:24px;page-break-inside:avoid}
-.score-title{font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:6px}
-.score-sub{font-size:.78rem;color:var(--mid);margin-bottom:14px;line-height:1.6}
-.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.score-cell{background:#fff;border:1.5px solid var(--border);border-radius:8px;
-  padding:10px 12px;text-align:center}
-.score-cell .lbl{font-size:.7rem;font-weight:700;color:var(--mid);margin-bottom:4px}
-.score-cell .ax{font-size:.95rem;font-weight:800;color:var(--navy);margin-bottom:5px}
-.score-cell .box{border:1.5px solid #555;border-radius:6px;padding:8px 0;
-  font-size:1rem;font-weight:800;background:#FAF8F2;min-height:32px}
-.score-cell .hint{font-size:.66rem;color:var(--light);margin-top:3px;line-height:1.35}
+table.q{width:100%;border-collapse:collapse}
+table.q th{padding:4px 4px;background:#F4F2EC;font-weight:700;font-size:.66rem;
+  color:var(--mid);border-bottom:1px solid var(--border)}
+table.q td{padding:5px 4px;font-size:.7rem;line-height:1.4;
+  border-bottom:1px solid #EEE;vertical-align:top}
+table.q td.num{text-align:center;width:18px;color:var(--mid);font-weight:700}
+table.q td.opt{font-size:.7rem}
+table.q td.chk{text-align:center;width:24px;font-weight:700;color:var(--gray)}
+table.q td.chk-letter{font-size:.78rem;font-weight:800;color:var(--mid)}
+table.q tbody tr:last-child td{border-bottom:none}
 
-.result-formula{background:#fff;border:1px dashed var(--border);
-  border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:.78rem;
-  line-height:1.7;color:var(--gray)}
-.result-formula strong{color:var(--navy)}
+/* 컬럼 합계 박스 */
+.col-sum{padding:8px 10px;background:#FAF8F2;border-top:2px solid var(--border)}
+.col-sum-row{display:flex;justify-content:space-between;align-items:center;
+  font-size:.72rem;color:var(--gray);margin-bottom:3px}
+.col-sum-row strong{color:var(--navy)}
+.col-sum-row .box{display:inline-block;border:1.5px solid #444;border-radius:5px;
+  width:32px;height:22px;background:#fff;text-align:center;font-weight:800;line-height:20px}
 
-.type-box{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
-.type-cell{background:#fff;border:1.5px solid var(--border);border-radius:6px;
-  padding:8px;text-align:center}
-.type-cell .ttl{font-size:.7rem;color:var(--mid);font-weight:700;margin-bottom:4px}
-.type-cell .ans{border-bottom:1px solid #555;height:22px;font-size:.95rem;
-  font-weight:800;color:var(--navy);display:flex;align-items:center;justify-content:center}
+/* 채점 안내 */
+.score-area{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.score-block{border:1.5px solid var(--navy);border-radius:8px;padding:10px 14px;
+  background:#FAF8F2}
+.score-title{font-size:.84rem;font-weight:800;color:var(--navy);margin-bottom:4px}
+.score-sub{font-size:.7rem;color:var(--mid);margin-bottom:8px;line-height:1.55}
+.score-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+.score-cell{background:#fff;border:1.5px solid var(--border);border-radius:6px;
+  padding:6px 6px;text-align:center}
+.score-cell .lbl{font-size:.65rem;color:var(--mid);font-weight:700;margin-bottom:2px}
+.score-cell .grp{font-size:.78rem;font-weight:900;margin-bottom:3px}
+.score-cell.A .grp{color:var(--grpA)}
+.score-cell.B .grp{color:var(--grpB)}
+.score-cell.C .grp{color:var(--grpC)}
+.score-cell.D .grp{color:var(--grpD)}
+.score-cell .vals{display:flex;gap:3px;justify-content:center}
+.score-cell .vals .v{flex:1;border:1px solid #555;height:20px;
+  background:#fff;font-weight:800;font-size:.74rem}
+.score-cell .vals .v small{font-size:.58rem;color:var(--light);font-weight:600;display:block}
+.score-cell .winner{margin-top:3px;font-size:.66rem;color:var(--mid);line-height:1.4}
 
-.next-step{background:#FFF8E6;border:1px solid #E8D8A0;border-radius:8px;
-  padding:11px 14px;font-size:.78rem;color:#7A6000;line-height:1.7;margin-top:10px}
-.next-step strong{color:var(--navy)}
+/* 결과 입력 */
+.result-row{display:flex;gap:6px;align-items:center;margin-top:6px}
+.result-row .lab{font-size:.72rem;color:var(--mid);font-weight:700;white-space:nowrap}
+.result-row .ans{flex:1;border-bottom:1.5px solid #444;height:24px;
+  font-size:.95rem;font-weight:800;color:var(--navy);text-align:center}
 
-/* 매핑 표 */
-.mbti-map{margin-top:14px;font-size:.72rem}
-.mbti-map h4{font-size:.82rem;font-weight:800;color:var(--navy);margin-bottom:6px}
-.mbti-map table{width:100%;border-collapse:collapse}
-.mbti-map td{border:1px solid var(--border);padding:5px 7px}
-.mbti-map td.k{background:#F8F7F3;font-weight:700;color:var(--navy);width:80px}
+/* 셀리더 안내 (응답자에겐 보이지 않게 작게) */
+.leader-note{background:#FFF8E6;border:1px solid #E8D8A0;border-radius:6px;
+  padding:8px 12px;margin-top:8px;font-size:.7rem;color:#7A6000;line-height:1.55}
+.leader-note strong{color:var(--navy)}
 
-footer{margin-top:24px;padding-top:14px;border-top:1px solid var(--border);
-  text-align:center;font-size:.72rem;color:var(--light)}
+footer{margin-top:8px;padding-top:6px;border-top:1px solid var(--border);
+  text-align:center;font-size:.64rem;color:var(--light)}
 
-/* 인쇄 최적화 */
+/* 인쇄 최적화 — A4 가로 한 페이지 안에 맞추기 */
 @media print {
-  body{background:#fff;font-size:11pt}
+  @page{size:A4 landscape;margin:8mm 9mm}
+  body{background:#fff;font-size:10pt}
   .screen-bar{display:none}
-  .container{box-shadow:none;padding:14mm 12mm;max-width:none}
-  table.q-tbl{font-size:9pt}
-  table.q-tbl tbody td.opt{font-size:9pt}
-  .score-section{page-break-before:auto;page-break-inside:avoid}
-  table.q-tbl tbody tr{page-break-inside:avoid}
-  .head h1{font-size:18pt}
+  .sheet{box-shadow:none;padding:0;max-width:none;margin:0}
+  table.q td{padding:3px 3px;font-size:8.5pt;line-height:1.3}
+  table.q td.opt{font-size:8.5pt}
+  table.q th{padding:3px 3px;font-size:7.5pt}
+  .col-head{padding:5px 8px;font-size:9pt}
+  .col-head .grp-label{font-size:10pt}
+  .head h1{font-size:13pt}
+  .guide{font-size:8.5pt;padding:6px 9px;margin-bottom:6px}
+  .score-block{padding:7px 10px}
+  .score-title{font-size:9pt}
+  .leader-note{font-size:8pt;padding:5px 9px}
   a[href]:after{content:""}
 }
-@page { margin: 12mm; }
 </style>
 </head>
 <body>
@@ -125,205 +144,227 @@ footer{margin-top:24px;padding-top:14px;border-top:1px solid var(--border);
 <!-- 화면용 상단바 (인쇄 시 숨김) -->
 <div class="screen-bar">
   <a href="https://onyuschool.com">← 온유스쿨 홈</a>
-  <span class="tt">📄 종이 검사지 (인쇄해서 사용)</span>
-  <button class="btn-print" onclick="window.print()">🖨️ 인쇄하기</button>
+  <span class="tt">📄 종이 검사지 (A4 가로 인쇄)</span>
+  <button class="btn-print" onclick="window.print()">🖨️ 인쇄하기 (A4 가로)</button>
 </div>
 
-<div class="container">
+<div class="sheet">
 
   <div class="head">
-    <div class="brand">ONYUSCHOOL · 팀빌딩</div>
-    <h1>나에게 가장 익숙한 소통 코드는?</h1>
-    <div class="sub">36문항 종이 검사지 · 약 7~10분 소요</div>
-  </div>
-
-  <div class="info-box">
-    📌 <strong>안내</strong> · 36개 문항 각각에 두 가지 보기(A/B)가 있습니다.
-    <strong>나에게 더 가까운 쪽 한 가지</strong>에 ✓ 표시 해주세요.
-    옳고 그름이 없으니 솔직하게 답하시면 됩니다.
-  </div>
-
-  <!-- 응답자 정보 -->
-  <div class="who">
-    <div class="who-cell">
-      <div class="who-lbl">이름</div>
-      <div class="who-line"></div>
+    <div class="title-block">
+      <div class="brand">ONYUSCHOOL · 팀빌딩</div>
+      <h1>나에게 가장 익숙한 소통 코드는?</h1>
+      <div class="sub">36문항 · 약 7~10분 · 솔직하게 가까운 쪽 한 가지에 ✓</div>
     </div>
-    <div class="who-cell">
-      <div class="who-lbl">직분 / 역할</div>
-      <div class="who-line"></div>
+    <div class="who">
+      <div class="who-cell">
+        <span class="who-lbl">이름</span>
+        <span class="who-line"></span>
+      </div>
+      <div class="who-cell">
+        <span class="who-lbl">직분</span>
+        <span class="who-line"></span>
+      </div>
     </div>
   </div>
 
   <div class="guide">
-    💡 <strong>응답 방법</strong> · 한 문항당 A 또는 B 둘 중 하나에만 ✓ 표시.
-    <strong>B에 ✓ 표시한 개수</strong>를 마지막 채점표에서 4축별로 세어 적습니다.
+    💡 <strong>응답 방법</strong> · 4개의 그룹(A·B·C·D)에 각 9문항이 있습니다.
+    각 문항에서 <strong>나에게 더 가까운 쪽(a 또는 b)</strong>에 ✓ 표시하세요.
+    옳고 그름은 없습니다.
   </div>
 
-  <!-- 문항 표 -->
-  <table class="q-tbl">
-    <thead>
-      <tr>
-        <th style="width:32px">#</th>
-        <th>A</th>
-        <th style="width:50px">A ✓</th>
-        <th>B</th>
-        <th style="width:50px">B ✓</th>
-        <th style="width:42px">축</th>
-      </tr>
-    </thead>
-    <tbody id="q-body"></tbody>
-  </table>
+  <!-- 4단 컬럼 -->
+  <div class="groups" id="groups"></div>
 
-  <!-- 채점표 -->
-  <div class="score-section">
-    <div class="score-title">📊 채점표 — 점수를 세어 적으세요</div>
-    <div class="score-sub">
-      각 축별로 <strong>B에 ✓ 표시한 개수</strong>를 세어 아래 칸에 적습니다 (각 축 9문항 중 0~9).
-    </div>
+  <!-- 채점 영역 -->
+  <div class="score-area">
+    <div class="score-block">
+      <div class="score-title">📊 채점 — 그룹별 b 표시 개수를 세세요</div>
+      <div class="score-sub">
+        각 그룹의 9문항 중 <strong>b에 ✓ 표시한 개수</strong>를 아래 칸에 적습니다 (0~9).
+      </div>
 
-    <div class="score-grid">
-      <div class="score-cell">
-        <div class="lbl">EI축 (B개수)</div>
-        <div class="ax">E vs I</div>
-        <div class="box">　</div>
-        <div class="hint">5 이상 = E (외향)<br>4 이하 = I (내향)</div>
+      <div class="score-grid4">
+        <div class="score-cell A">
+          <div class="lbl">A 그룹</div>
+          <div class="grp">A</div>
+          <div class="vals">
+            <div class="v">　<small>a</small></div>
+            <div class="v">　<small>b</small></div>
+          </div>
+          <div class="winner">a/b 중 많은 쪽</div>
+        </div>
+        <div class="score-cell B">
+          <div class="lbl">B 그룹</div>
+          <div class="grp">B</div>
+          <div class="vals">
+            <div class="v">　<small>a</small></div>
+            <div class="v">　<small>b</small></div>
+          </div>
+          <div class="winner">a/b 중 많은 쪽</div>
+        </div>
+        <div class="score-cell C">
+          <div class="lbl">C 그룹</div>
+          <div class="grp">C</div>
+          <div class="vals">
+            <div class="v">　<small>a</small></div>
+            <div class="v">　<small>b</small></div>
+          </div>
+          <div class="winner">a/b 중 많은 쪽</div>
+        </div>
+        <div class="score-cell D">
+          <div class="lbl">D 그룹</div>
+          <div class="grp">D</div>
+          <div class="vals">
+            <div class="v">　<small>a</small></div>
+            <div class="v">　<small>b</small></div>
+          </div>
+          <div class="winner">a/b 중 많은 쪽</div>
+        </div>
       </div>
-      <div class="score-cell">
-        <div class="lbl">SN축 (B개수)</div>
-        <div class="ax">S vs N</div>
-        <div class="box">　</div>
-        <div class="hint">5 이상 = N (직관)<br>4 이하 = S (감각)</div>
-      </div>
-      <div class="score-cell">
-        <div class="lbl">TF축 (B개수)</div>
-        <div class="ax">T vs F</div>
-        <div class="box">　</div>
-        <div class="hint">5 이상 = F (감정)<br>4 이하 = T (사고)</div>
-      </div>
-      <div class="score-cell">
-        <div class="lbl">JP축 (B개수)</div>
-        <div class="ax">J vs P</div>
-        <div class="box">　</div>
-        <div class="hint">5 이상 = P (인식)<br>4 이하 = J (판단)</div>
-      </div>
-    </div>
 
-    <div class="result-formula">
-      <strong>나의 4글자 결과:</strong> 위 4개 점수에서 결정된 글자를 순서대로 적습니다.<br>
-      <strong>예시:</strong> EI=6 → E / SN=4 → S / TF=7 → F / JP=3 → J → 결과 <strong>ESFJ</strong>
-    </div>
-
-    <div class="type-box">
-      <div class="type-cell">
-        <div class="ttl">EI</div>
-        <div class="ans">　</div>
-      </div>
-      <div class="type-cell">
-        <div class="ttl">SN</div>
-        <div class="ans">　</div>
-      </div>
-      <div class="type-cell">
-        <div class="ttl">TF</div>
-        <div class="ans">　</div>
-      </div>
-      <div class="type-cell">
-        <div class="ttl">JP</div>
-        <div class="ans">　</div>
+      <div style="font-size:.7rem;color:var(--mid);line-height:1.55">
+        💡 a · b 둘 다 셀 필요는 없어요. <strong>b만 세도 a는 자동 결정</strong>됩니다.
+        (b가 5 이상이면 b 우세, 4 이하면 a 우세)
       </div>
     </div>
 
-    <!-- 16유형 → 8유형 매핑 표 -->
-    <div class="mbti-map">
-      <h4>📌 16유형 → 8유형 변환표</h4>
-      <table>
-        <tr><td class="k">SPARK 🔥</td><td>ENTP · ENFP</td>
-            <td class="k">VISION 🔮</td><td>INTJ · INFJ</td></tr>
-        <tr><td class="k">STEADY 🌿</td><td>ISTJ · ISFJ</td>
-            <td class="k">PLAYER ⚡</td><td>ESTP · ESFP</td></tr>
-        <tr><td class="k">HARMONY 🎵</td><td>ESFJ · ENFJ</td>
-            <td class="k">SOUL 🕯️</td><td>INFP · ISFP</td></tr>
-        <tr><td class="k">LOGIC 🔬</td><td>INTP · ISTP</td>
-            <td class="k">LEADER 👑</td><td>ENTJ · ESTJ</td></tr>
-      </table>
-    </div>
+    <div class="score-block">
+      <div class="score-title">🎯 결과 만들기 (셀리더에게 전달)</div>
+      <div class="score-sub">
+        4개 그룹의 b 점수를 <strong>대시보드 "📝 점수 입력하기"</strong>에 그대로 입력하세요.
+        시스템이 자동으로 8유형을 결정해줍니다.
+      </div>
 
-    <div class="next-step">
-      ✅ <strong>다음 단계 (셀리더용)</strong><br>
-      ① 셀원에게 위 검사지 작성 요청<br>
-      ② 결과 받으면 대시보드에서 <strong>"📝 점수 입력하기"</strong> 버튼 클릭<br>
-      ③ 4축 점수 입력 → 8유형 자동 결정 + 결과 페이지 링크 생성<br>
-      ④ 링크를 셀원에게 카톡으로 보내기
+      <div class="result-row">
+        <span class="lab">A 그룹 b 점수</span>
+        <span class="ans">　</span>
+      </div>
+      <div class="result-row">
+        <span class="lab">B 그룹 b 점수</span>
+        <span class="ans">　</span>
+      </div>
+      <div class="result-row">
+        <span class="lab">C 그룹 b 점수</span>
+        <span class="ans">　</span>
+      </div>
+      <div class="result-row">
+        <span class="lab">D 그룹 b 점수</span>
+        <span class="ans">　</span>
+      </div>
     </div>
+  </div>
+
+  <!-- 셀리더용 가이드 (작은 글자) -->
+  <div class="leader-note">
+    📌 <strong>셀리더 가이드</strong> · 위 4개 b 점수만 받으시면 됩니다.
+    온유스쿨 팀빌딩 대시보드 → "📝 점수 입력하기" 버튼 → 그룹 A·B·C·D 점수 입력 →
+    8유형 자동 도출 + 결과 페이지 링크 자동 생성 → 셀원에게 카톡 전달.
   </div>
 
   <footer>
-    온유스쿨 (ONYUSCHOOL) · 인생나무코칭연구소 · onyuschool.com<br>
-    "소통을 회복하는 8가지 언어"
+    온유스쿨 (ONYUSCHOOL) · 인생나무코칭연구소 · onyuschool.com · "소통을 회복하는 8가지 언어"
   </footer>
 
 </div>
 
 <script>
-// 36문항 데이터 — teambuilding-survey.html의 QUESTIONS_AB_4AXIS와 동일
-const Q = [
-  // EI 9문항
-  { axis:'EI', a:'혼자 있을 때 에너지가 채워진다',                       b:'사람들과 함께 있을 때 에너지가 채워진다' },
-  { axis:'EI', a:'먼저 깊이 생각하고 나서 말한다',                       b:'말하면서 생각이 정리된다' },
-  { axis:'EI', a:'조용한 환경에서 가장 집중이 잘 된다',                  b:'활기찬 분위기에서 더 잘 움직인다' },
-  { axis:'EI', a:'소수의 사람과 깊게 만나는 게 좋다',                    b:'여러 사람과 폭넓게 어울리는 게 좋다' },
-  { axis:'EI', a:'주말에는 혼자 쉬어야 다음 주가 가능하다',              b:'주말에 사람을 만나야 다음 주가 가능하다' },
-  { axis:'EI', a:'대화 후에 집에 오면 기운이 빠진다',                    b:'대화 후에 집에 오면 기운이 더 난다' },
-  { axis:'EI', a:'말수가 적은 편이라는 소리를 듣는다',                   b:'말이 많고 활발하다는 소리를 듣는다' },
-  { axis:'EI', a:'관심을 받는 것보다 지켜보는 게 편하다',                b:'사람들의 관심을 받는 게 즐겁다' },
-  { axis:'EI', a:'생각을 충분히 정리한 후에 표현한다',                   b:'떠오르는 대로 바로 이야기한다' },
+// 36문항 — 그룹 라벨로 변환
+// (내부 axis 매핑은 채점 시스템에서만 사용, 응답자에게는 A·B·C·D 그룹만 노출)
+const QUESTIONS = [
+  // A 그룹 (내부: EI)
+  { g:'A', a:'혼자 있을 때 에너지가 채워진다',                       b:'사람들과 함께 있을 때 에너지가 채워진다' },
+  { g:'A', a:'먼저 깊이 생각하고 나서 말한다',                       b:'말하면서 생각이 정리된다' },
+  { g:'A', a:'조용한 환경에서 가장 집중이 잘 된다',                  b:'활기찬 분위기에서 더 잘 움직인다' },
+  { g:'A', a:'소수의 사람과 깊게 만나는 게 좋다',                    b:'여러 사람과 폭넓게 어울리는 게 좋다' },
+  { g:'A', a:'주말에는 혼자 쉬어야 다음 주가 가능하다',              b:'주말에 사람을 만나야 다음 주가 가능하다' },
+  { g:'A', a:'대화 후에 집에 오면 기운이 빠진다',                    b:'대화 후에 집에 오면 기운이 더 난다' },
+  { g:'A', a:'말수가 적은 편이라는 소리를 듣는다',                   b:'말이 많고 활발하다는 소리를 듣는다' },
+  { g:'A', a:'관심을 받는 것보다 지켜보는 게 편하다',                b:'사람들의 관심을 받는 게 즐겁다' },
+  { g:'A', a:'생각을 충분히 정리한 후에 표현한다',                   b:'떠오르는 대로 바로 이야기한다' },
 
-  // SN 9문항
-  { axis:'SN', a:'눈에 보이는 사실과 경험을 더 신뢰한다',                b:'눈에 안 보이는 가능성과 의미를 더 본다' },
-  { axis:'SN', a:'구체적이고 실용적인 이야기가 좋다',                    b:'추상적이고 상상력 있는 이야기가 좋다' },
-  { axis:'SN', a:'지금 여기, 현재가 가장 중요하다',                      b:'아직 오지 않은 미래가 더 흥미롭다' },
-  { axis:'SN', a:'세부 사항을 정확히 기억하는 편이다',                   b:'전체 흐름과 큰 그림을 기억하는 편이다' },
-  { axis:'SN', a:'증명된 방법이 가장 안전하다',                          b:'시도해보지 않은 방법이 더 흥미롭다' },
-  { axis:'SN', a:'일은 단계대로 차근차근 진행되어야 한다',               b:'일은 영감이 떠오를 때 한 번에 풀린다' },
-  { axis:'SN', a:'사실을 있는 그대로 받아들인다',                        b:'사실 뒤에 숨은 의미를 찾고 싶다' },
-  { axis:'SN', a:'설명서를 보고 그대로 따라 하는 게 편하다',             b:'직접 만져보며 패턴을 읽는 게 편하다' },
-  { axis:'SN', a:'전통과 검증된 방식을 존중한다',                        b:'새로운 시각과 변화를 환영한다' },
+  // B 그룹 (내부: SN)
+  { g:'B', a:'눈에 보이는 사실과 경험을 더 신뢰한다',                b:'눈에 안 보이는 가능성과 의미를 더 본다' },
+  { g:'B', a:'구체적이고 실용적인 이야기가 좋다',                    b:'추상적이고 상상력 있는 이야기가 좋다' },
+  { g:'B', a:'지금 여기, 현재가 가장 중요하다',                      b:'아직 오지 않은 미래가 더 흥미롭다' },
+  { g:'B', a:'세부 사항을 정확히 기억하는 편이다',                   b:'전체 흐름과 큰 그림을 기억하는 편이다' },
+  { g:'B', a:'증명된 방법이 가장 안전하다',                          b:'시도해보지 않은 방법이 더 흥미롭다' },
+  { g:'B', a:'일은 단계대로 차근차근 진행되어야 한다',               b:'일은 영감이 떠오를 때 한 번에 풀린다' },
+  { g:'B', a:'사실을 있는 그대로 받아들인다',                        b:'사실 뒤에 숨은 의미를 찾고 싶다' },
+  { g:'B', a:'설명서를 보고 그대로 따라 하는 게 편하다',             b:'직접 만져보며 패턴을 읽는 게 편하다' },
+  { g:'B', a:'전통과 검증된 방식을 존중한다',                        b:'새로운 시각과 변화를 환영한다' },
 
-  // TF 9문항
-  { axis:'TF', a:'결정할 때 논리와 객관적 기준이 우선이다',              b:'결정할 때 사람의 감정과 관계가 우선이다' },
-  { axis:'TF', a:'옳고 그름이 분명한 게 좋다',                           b:'좋고 따뜻한 게 더 중요하다' },
-  { axis:'TF', a:'사실을 직설적으로 말하는 편이다',                      b:'상대 마음을 살피며 부드럽게 말한다' },
-  { axis:'TF', a:'갈등은 명확히 짚어야 풀린다',                          b:'갈등은 분위기를 살리며 풀어야 한다' },
-  { axis:'TF', a:'성과가 우선, 감정은 나중에',                           b:'사람이 우선, 성과는 그 다음' },
-  { axis:'TF', a:'논리적 설득에 더 마음이 움직인다',                     b:'진심 어린 호소에 더 마음이 움직인다' },
-  { axis:'TF', a:'비판도 정확하면 도움이 된다',                          b:'비판은 마음에 상처가 된다' },
-  { axis:'TF', a:'공정함이 가장 중요한 가치다',                          b:'배려가 가장 중요한 가치다' },
-  { axis:'TF', a:'분석하고 판단하는 일이 자연스럽다',                    b:'공감하고 위로하는 일이 자연스럽다' },
+  // C 그룹 (내부: TF)
+  { g:'C', a:'결정할 때 논리와 객관적 기준이 우선이다',              b:'결정할 때 사람의 감정과 관계가 우선이다' },
+  { g:'C', a:'옳고 그름이 분명한 게 좋다',                           b:'좋고 따뜻한 게 더 중요하다' },
+  { g:'C', a:'사실을 직설적으로 말하는 편이다',                      b:'상대 마음을 살피며 부드럽게 말한다' },
+  { g:'C', a:'갈등은 명확히 짚어야 풀린다',                          b:'갈등은 분위기를 살리며 풀어야 한다' },
+  { g:'C', a:'성과가 우선, 감정은 나중에',                           b:'사람이 우선, 성과는 그 다음' },
+  { g:'C', a:'논리적 설득에 더 마음이 움직인다',                     b:'진심 어린 호소에 더 마음이 움직인다' },
+  { g:'C', a:'비판도 정확하면 도움이 된다',                          b:'비판은 마음에 상처가 된다' },
+  { g:'C', a:'공정함이 가장 중요한 가치다',                          b:'배려가 가장 중요한 가치다' },
+  { g:'C', a:'분석하고 판단하는 일이 자연스럽다',                    b:'공감하고 위로하는 일이 자연스럽다' },
 
-  // JP 9문항
-  { axis:'JP', a:'계획을 세우고 그대로 진행하는 게 편하다',              b:'상황을 보며 그때그때 정하는 게 편하다' },
-  { axis:'JP', a:'결정을 빨리 내리고 마무리하고 싶다',                   b:'결정은 가능한 한 미루고 열어두고 싶다' },
-  { axis:'JP', a:'정해진 일정을 지키는 게 중요하다',                     b:'일정은 유연하게 바뀌어도 괜찮다' },
-  { axis:'JP', a:'마감 전에 미리 끝내야 마음이 편하다',                  b:'마감 직전에 집중하는 게 잘 풀린다' },
-  { axis:'JP', a:'정돈된 환경에서 일이 잘 된다',                         b:'어수선해도 내 방식으로 흘러간다' },
-  { axis:'JP', a:'하나를 끝내고 다음을 시작하는 편이다',                 b:'여러 가지를 동시에 진행하는 편이다' },
-  { axis:'JP', a:'규칙과 약속은 지켜져야 한다',                          b:'상황에 따라 융통성 있게 조정한다' },
-  { axis:'JP', a:'예측 가능한 일상이 안정감을 준다',                     b:'예상 못한 변화가 활력을 준다' },
-  { axis:'JP', a:'시작했으면 끝까지 마무리해야 한다',                    b:'중간에 더 좋은 게 보이면 옮겨가도 된다' },
+  // D 그룹 (내부: JP)
+  { g:'D', a:'계획을 세우고 그대로 진행하는 게 편하다',              b:'상황을 보며 그때그때 정하는 게 편하다' },
+  { g:'D', a:'결정을 빨리 내리고 마무리하고 싶다',                   b:'결정은 가능한 한 미루고 열어두고 싶다' },
+  { g:'D', a:'정해진 일정을 지키는 게 중요하다',                     b:'일정은 유연하게 바뀌어도 괜찮다' },
+  { g:'D', a:'마감 전에 미리 끝내야 마음이 편하다',                  b:'마감 직전에 집중하는 게 잘 풀린다' },
+  { g:'D', a:'정돈된 환경에서 일이 잘 된다',                         b:'어수선해도 내 방식으로 흘러간다' },
+  { g:'D', a:'하나를 끝내고 다음을 시작하는 편이다',                 b:'여러 가지를 동시에 진행하는 편이다' },
+  { g:'D', a:'규칙과 약속은 지켜져야 한다',                          b:'상황에 따라 융통성 있게 조정한다' },
+  { g:'D', a:'예측 가능한 일상이 안정감을 준다',                     b:'예상 못한 변화가 활력을 준다' },
+  { g:'D', a:'시작했으면 끝까지 마무리해야 한다',                    b:'중간에 더 좋은 게 보이면 옮겨가도 된다' },
 ];
 
-const tbody = document.getElementById('q-body');
-Q.forEach((q, i) => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td class="num">${i + 1}</td>
-    <td class="opt">${q.a}</td>
-    <td class="check">☐</td>
-    <td class="opt">${q.b}</td>
-    <td class="check">☐</td>
-    <td class="axis axis-${q.axis}">${q.axis}</td>
+// 그룹별로 분리
+const groups = ['A','B','C','D'];
+const grpQs  = { A:[], B:[], C:[], D:[] };
+QUESTIONS.forEach((q, i) => {
+  grpQs[q.g].push({ ...q, num: i + 1 }); // 전체 번호 보존
+});
+
+const groupsEl = document.getElementById('groups');
+groups.forEach(g => {
+  const col = document.createElement('div');
+  col.className = `col col-${g}`;
+  let rows = '';
+  grpQs[g].forEach((q, idx) => {
+    rows += `
+      <tr>
+        <td class="num">${idx + 1}</td>
+        <td class="opt">${q.a}</td>
+        <td class="chk chk-letter">a ☐</td>
+        <td class="opt">${q.b}</td>
+        <td class="chk chk-letter">b ☐</td>
+      </tr>`;
+  });
+  col.innerHTML = `
+    <div class="col-head">
+      <span class="grp-label">${g}</span>
+      <span class="grp-hint">9문항</span>
+    </div>
+    <table class="q">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>a</th>
+          <th></th>
+          <th>b</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="col-sum">
+      <div class="col-sum-row">
+        <span><strong>${g} 그룹</strong> b 표시 개수</span>
+        <span class="box">　</span>
+      </div>
+    </div>
   `;
-  tbody.appendChild(tr);
+  groupsEl.appendChild(col);
 });
 </script>
 

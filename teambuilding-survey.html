@@ -1501,16 +1501,19 @@ function showResult() {
   }).join('');
 
   // ── Supabase 제출 ──
+  // mbti·scoring_mode는 별도 컬럼이 없을 수 있어 answers JSON 안에 보관
   submitToSupabase({
     workshop_code: workshopCode,
     name:          uName,
     group_type:    uGroup,
     role:          uRole,
     sg_type:       typeName,
-    mbti:          mbtiResult ? mbtiResult.mbti : null,
     dim_scores:    scores,
-    answers:       ans,
-    scoring_mode:  scoringMode,
+    answers: {
+      raw: ans,
+      mbti: mbtiResult ? mbtiResult.mbti : null,
+      scoring_mode: scoringMode,
+    },
   });
 
   showScreen('result');

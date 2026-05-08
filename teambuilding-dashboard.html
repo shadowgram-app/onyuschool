@@ -1722,8 +1722,8 @@ if (CODE) loadData();
       📝 종이 검사 점수 입력
     </div>
     <div style="font-size:.78rem;color:var(--mid);margin-bottom:16px;line-height:1.6">
-      종이 검사지에서 받은 4축별 점수를 입력하세요.<br>
-      각 축은 0~9점 (B 선택 횟수). 자동으로 8유형이 결정됩니다.
+      종이 검사지의 <strong>그룹별 b 표시 개수</strong>를 입력하세요.<br>
+      각 그룹 0~9점. 자동으로 8유형이 결정됩니다.
     </div>
 
     <label style="font-size:.78rem;font-weight:700;color:var(--navy);display:block;margin-bottom:4px">
@@ -1743,45 +1743,41 @@ if (CODE) loadData();
     <div style="background:#F8F7F3;border:1px solid var(--border);border-radius:10px;
       padding:14px 16px;margin-bottom:14px">
       <div style="font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:10px">
-        4축 점수 (B 선택 횟수, 0~9)
+        그룹별 b 점수 (b 표시 개수, 0~9)
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div>
-          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
-            EI축 (E 점수)
+          <label style="font-size:.74rem;color:#7A4F00;font-weight:700;display:block;margin-bottom:3px">
+            A 그룹 (b 개수)
           </label>
           <input id="ps-ei" type="number" min="0" max="9" value="0"
             style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
               border-radius:7px;font-size:.88rem;font-family:inherit">
-          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 외향(E)</div>
         </div>
         <div>
-          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
-            SN축 (N 점수)
+          <label style="font-size:.74rem;color:#1F3864;font-weight:700;display:block;margin-bottom:3px">
+            B 그룹 (b 개수)
           </label>
           <input id="ps-sn" type="number" min="0" max="9" value="0"
             style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
               border-radius:7px;font-size:.88rem;font-family:inherit">
-          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 직관(N)</div>
         </div>
         <div>
-          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
-            TF축 (F 점수)
+          <label style="font-size:.74rem;color:#7B1A1A;font-weight:700;display:block;margin-bottom:3px">
+            C 그룹 (b 개수)
           </label>
           <input id="ps-tf" type="number" min="0" max="9" value="0"
             style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
               border-radius:7px;font-size:.88rem;font-family:inherit">
-          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 감정(F)</div>
         </div>
         <div>
-          <label style="font-size:.74rem;color:var(--mid);font-weight:700;display:block;margin-bottom:3px">
-            JP축 (P 점수)
+          <label style="font-size:.74rem;color:#256060;font-weight:700;display:block;margin-bottom:3px">
+            D 그룹 (b 개수)
           </label>
           <input id="ps-jp" type="number" min="0" max="9" value="0"
             style="width:100%;padding:9px 11px;border:1.5px solid var(--border);
               border-radius:7px;font-size:.88rem;font-family:inherit">
-          <div style="font-size:.7rem;color:var(--light);margin-top:2px">높을수록 인식(P)</div>
         </div>
       </div>
 
@@ -1908,8 +1904,8 @@ function updatePaperPreview() {
   const r = calcPaperType(s.ei, s.sn, s.tf, s.jp);
   const kr = PAPER_SG_KR[r.sg] || r.sg;
   document.getElementById('ps-preview').innerHTML =
-    `예상 결과: <strong style="color:var(--navy)">${r.mbti}</strong> → ` +
-    `<strong style="color:#7A6000">${r.sg} (${kr})</strong>`;
+    `예상 결과: <strong style="color:#7A6000;font-size:1.05rem">${r.sg}</strong> ` +
+    `<span style="color:var(--mid)">(${kr})</span>`;
 }
 
 ['ps-ei','ps-sn','ps-tf','ps-jp'].forEach(id => {
@@ -1965,10 +1961,9 @@ async function submitPaperScore() {
         name:          name,
         role:          role || null,
         sg_type:       r.sg,
-        mbti:          r.mbti,
         dim_scores:    dimScores,
-        scoring_mode:  'paper_4axis',
-        answers:       { paper_scores: s },
+        // mbti·scoring_mode는 컬럼이 없을 수 있어 answers 내에 보관
+        answers:       { paper_scores: s, mbti: r.mbti, scoring_mode: 'paper_4axis' },
       }),
     });
 
@@ -1984,7 +1979,7 @@ async function submitPaperScore() {
     const krName = PAPER_SG_KR[r.sg] || r.sg;
     document.getElementById('pr-summary').innerHTML =
       `<strong>${name}</strong>님 등록됨<br>` +
-      `<span style="color:#7A6000;font-weight:700">${r.sg} (${krName})</span> · ${r.mbti}`;
+      `<span style="color:#7A6000;font-weight:700;font-size:1.05rem">${r.sg} (${krName})</span>`;
     document.getElementById('pr-link').textContent = memberUrl;
     document.getElementById('pr-open').href = memberUrl;
     _lastPaperLink = memberUrl;
