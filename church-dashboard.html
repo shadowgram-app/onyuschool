@@ -210,15 +210,32 @@
     .btn-copy:hover { background: #1a1228; }
     .btn-copy.copied { background: var(--mid); }
 
+    /* ── 모바일 탭 내비게이션 ── */
+    .mob-tabs{display:none;position:sticky;top:56px;z-index:40;background:var(--pastor);
+      overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;
+      border-bottom:2px solid rgba(255,255,255,.1);padding:0 8px}
+    .mob-tabs::-webkit-scrollbar{display:none}
+    .mob-tab{display:inline-flex;align-items:center;gap:4px;padding:11px 12px;
+      color:#B8A8D8;font-size:.78rem;font-weight:600;cursor:pointer;
+      border-bottom:2.5px solid transparent;transition:all .15s;white-space:nowrap;
+      background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+    .mob-tab.active{color:#FFE08A;border-bottom-color:var(--gold)}
+    .mob-tab:hover{color:#fff}
+
     /* ── 반응형 ── */
     @media (max-width: 1024px) {
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
       .two-col, .three-col { grid-template-columns: 1fr; }
       .sidebar { display: none; }
+      .mob-tabs { display: flex; }
+      .layout { display: block; }
     }
     @media (max-width: 640px) {
-      .main { padding: 16px; }
+      .main { padding: 16px 12px; }
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .top-bar { padding: 0 12px; }
+      .top-church { font-size: 0.72rem; }
+      .top-brand span { display: none; }
     }
   </style>
 </head>
@@ -234,6 +251,17 @@
     <div class="top-church">교회: <strong id="church-name">은혜교회</strong></div>
     <a class="top-logout" onclick="confirmLogout()">로그아웃</a>
   </div>
+</div>
+
+<!-- 모바일 상단 탭 -->
+<div class="mob-tabs" id="mob-tabs">
+  <button class="mob-tab active" onclick="showSectionMob('overview',this)">📊 현황</button>
+  <button class="mob-tab" onclick="showSectionMob('types',this)">🔍 유형</button>
+  <button class="mob-tab" onclick="showSectionMob('comm',this)">💬 소통</button>
+  <button class="mob-tab" onclick="showSectionMob('members',this)">👥 상담</button>
+  <button class="mob-tab" onclick="showSectionMob('groups',this)">🏘️ 소그룹</button>
+  <button class="mob-tab" onclick="showSectionMob('upsell',this)">💑 클래스</button>
+  <button class="mob-tab" onclick="showSectionMob('notice',this)">📢 공지</button>
 </div>
 
 <div class="layout">
@@ -750,7 +778,29 @@ function showSection(id) {
     document.getElementById('sec-' + s).style.display = s === id ? 'block' : 'none';
   });
   document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.mob-tab').forEach(t => t.classList.remove('active'));
   event.currentTarget.classList.add('active');
+  // 사이드바·모바일탭 동기화
+  const idx = sections.indexOf(id);
+  if (idx >= 0) {
+    document.querySelectorAll('.sb-item')[idx]?.classList.add('active');
+    document.querySelectorAll('.mob-tab')[idx]?.classList.add('active');
+  }
+  if (id === 'types') renderTypeBars();
+  if (id === 'comm')  renderCommCards();
+  if (id === 'members') renderMembers();
+  if (id === 'groups') renderGroups();
+  if (id === 'upsell') renderUpsell();
+}
+function showSectionMob(id, el) {
+  sections.forEach(s => {
+    document.getElementById('sec-' + s).style.display = s === id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.sb-item').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.mob-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const idx = sections.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.sb-item')[idx]?.classList.add('active');
   if (id === 'types') renderTypeBars();
   if (id === 'comm')  renderCommCards();
   if (id === 'members') renderMembers();

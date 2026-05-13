@@ -559,7 +559,7 @@ body {
   <div class="dl-section">
     <div class="dl-title">📋 부부 리포트 받기</div>
     <div class="dl-sub">두 분의 유형 조합에 맞는 깊이 있는 리포트를<br>무료로 다운받으세요</div>
-    <button class="dl-btn" id="dl-report-btn" onclick="downloadCoupleReport()">부부 리포트 다운로드</button>
+    <a class="dl-btn" id="dl-report-btn" href="#" target="_blank">부부 리포트 다운로드</a>
     <div style="font-size:12px;color:var(--silver);margin-top:4px;">
       온유스쿨 퍼스트클래스에서 더 깊은 분석을 받아보세요
     </div>
@@ -1063,12 +1063,11 @@ function showResult(typeA, typeB){
   document.getElementById('type-card-a').innerHTML = makeTypeCard(typeA, nameA, 'a');
   document.getElementById('type-card-b').innerHTML = makeTypeCard(typeB, nameB, 'b');
 
-  // 다운로드 링크 — 파일명: 온유스쿨_부부클래스_A×B.pdf (알파벳 정렬)
+  // 다운로드 링크
+  const BASE = 'https://raw.githubusercontent.com/shadowgram-app/onyuschool/main/reports/couple/';
   const types = [typeA, typeB].sort();
-  window._coupleReportUrl = `온유스쿨_부부클래스_리포트/온유스쿨_부부클래스_${types[0]}×${types[1]}.pdf`;
-  window._coupleReportName = `온유스쿨_부부클래스_${types[0]}×${types[1]}.pdf`;
-  const dlBtn = document.getElementById('dl-report-btn');
-  if (dlBtn) dlBtn.textContent = `📄 ${types[0]}×${types[1]} 부부 리포트 다운로드`;
+  const fname = encodeURIComponent(`온유스쿨_부부클래스_${types[0]}_${types[1]}_리포트.pdf`);
+  document.getElementById('dl-report-btn').href = BASE + fname;
 
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -1254,34 +1253,6 @@ function showToast(msg){
   t.textContent=msg;
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2500);
-}
-
-
-async function downloadCoupleReport(){
-  const url = window._coupleReportUrl;
-  const name = window._coupleReportName || 'onyu_couple_report.pdf';
-  if (!url) { alert('결과 확인 후 이용 가능합니다.'); return; }
-  const btn = document.getElementById('dl-report-btn');
-  const orig = btn.textContent;
-  btn.textContent = '⏳ 다운로드 중...';
-  btn.disabled = true;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('fail');
-    const blob = await res.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl; a.download = name;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(blobUrl); a.remove(); }, 2000);
-    btn.textContent = '✅ 다운로드 완료';
-  } catch(e) {
-    window.open(url, '_blank');
-    btn.textContent = orig;
-  }
-  btn.disabled = false;
 }
 </script>
 </body>

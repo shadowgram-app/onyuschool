@@ -396,6 +396,12 @@
       .sample-grid { grid-template-columns: repeat(2, 1fr); }
       .dm-content { grid-template-columns: 1fr; }
       .dm-sidebar { display: none; }
+      .dm-mob-tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;
+        background:var(--pastor);padding:6px 8px;gap:4px;border-bottom:1px solid rgba(255,255,255,.1)}
+      .dm-mob-tabs::-webkit-scrollbar{display:none}
+      .dm-mob-tab{padding:6px 10px;font-size:.68rem;color:rgba(255,255,255,.55);
+        white-space:nowrap;border:none;background:none;font-family:inherit}
+      .dm-mob-tab.active{color:#fff;background:rgba(255,255,255,.12);font-weight:700}
       .demo-cta, .sample-cta { flex-direction: column; align-items: flex-start; }
       .apply-steps { gap: 4px; }
       .astep-text { font-size: 0.7rem; }
@@ -655,6 +661,14 @@
         <div class="dm-url">onyuschool.com/church-dashboard?token=demo</div>
       </div>
       <div class="dm-content">
+        <!-- 모바일 탭 (데모용) -->
+        <div class="dm-mob-tabs" style="display:none">
+          <span class="dm-mob-tab active">📊 유형</span>
+          <span class="dm-mob-tab">💬 소통</span>
+          <span class="dm-mob-tab">📢 공지</span>
+          <span class="dm-mob-tab">👥 상담</span>
+          <span class="dm-mob-tab">🎟 코드</span>
+        </div>
         <div class="dm-sidebar">
           <div class="dm-church-name">
             은혜중앙교회

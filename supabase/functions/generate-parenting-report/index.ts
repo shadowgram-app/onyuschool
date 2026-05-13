@@ -52,9 +52,9 @@ const TYPE_META: Record<string, any> = {
     caption:'처음엔 치밀한 논리에 신뢰를 보냈지만, 마음을 논리로만 다루는 그림자를 보면서 아픔을 꺼낼 수 없다고 느낍니다.' },
   LEADER:  { kr:'리더',     fn:'Te', icon:'⚡',
     oneLiner:'방향을 정하고 이끄는 결단의 사람',
-    light:'추진력·결단·조직화', shadow:'통제욕·약함 혐오·관계 수단화',
+    light:'추진력·결단·조직화', shadow:'통제 경향·약함에 대한 불편함·관계 수단화',
     parentingColor:'목표 추진형 양육자',
-    caption:'처음엔 확신과 결단력을 믿고 따랐지만, 연약함을 혐오하는 그림자를 보면서 도구로 전락했다고 느끼며 마음을 닫습니다.' },
+    caption:'처음엔 확신과 결단력을 믿고 따랐지만, 연약함을 불편해하는 그림자를 보면서 도구로 전락했다고 느끼며 마음을 닫습니다.' },
 }
 
 function getAge(birthYear: number): number {
@@ -68,8 +68,8 @@ function getDevStage(age: number): string {
   return '성인 자녀 — 동반자적 관계를 재정립하는 시기. 부모 역할에서 멘토 역할로 전환이 필요합니다.'
 }
 
-// ── Claude API 호출 ──
-async function callClaude(systemPrompt: string, userPrompt: string, apiKey: string): Promise<string> {
+// ── Claude API 호출 (retry 포함) ──
+async function callClaude(systemPrompt: string, userPrompt: string, apiKey: string, _retry = 0): Promise<string> {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -78,18 +78,37 @@ async function callClaude(systemPrompt: string, userPrompt: string, apiKey: stri
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 900,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
     }),
   })
+  if (res.status === 429) {
+    if (_retry < 4) {
+      // 지수 백오프: 8s → 16s → 24s → 32s
+      await new Promise(r => setTimeout(r, (_retry + 1) * 8000))
+      return callClaude(systemPrompt, userPrompt, apiKey, _retry + 1)
+    }
+    throw new Error('Claude API 429: rate limit exceeded after retries')
+  }
   if (!res.ok) {
     const err = await res.text()
     throw new Error(`Claude API ${res.status}: ${err}`)
   }
   const data = await res.json()
   return data.content?.[0]?.text?.trim() || ''
+}
+
+// ── 배치 병렬 실행 (한 번에 최대 n개씩) ──
+async function runBatch<T>(tasks: (() => Promise<T>)[], batchSize = 4): Promise<T[]> {
+  const results: T[] = []
+  for (let i = 0; i < tasks.length; i += batchSize) {
+    const batch = tasks.slice(i, i + batchSize)
+    const batchResults = await Promise.all(batch.map(fn => fn()))
+    results.push(...batchResults)
+  }
+  return results
 }
 
 function parseJSON(raw: string): any {
@@ -373,17 +392,17 @@ JSON: {
   "monthlyChange": "이름 포함 1개월 후 변화 장면 2~3문장"
 }`, apiKey)
 
-  // ── 병렬 실행: 부모양육 + 자녀분석 + 가족성장 + 개인캡션 (4인 가족 최대 8개)
+  // ── 배치 병렬 실행: 한 번에 최대 4개씩 → Tier1 RPM 초과 방지
   // 부모-자녀 가이드는 HTML 섹션 삭제됨 → API 호출 제거
-  const [
-    parentRaw,
-    ...parallelResults
-  ] = await Promise.all([
-    parents.length > 0 ? buildParentPrompt(parents, children, SYSTEM, apiKey) : Promise.resolve('{}'),
-    ...children.map(c => buildChildPrompt(c, parents, SYSTEM, apiKey)),
-    growthPromise,
-    ...members.map(m => buildMemberPrompt(m, members, SYSTEM, apiKey)),
-  ])
+  const allTasks: (() => Promise<string>)[] = [
+    () => parents.length > 0 ? buildParentPrompt(parents, children, SYSTEM, apiKey) as Promise<string> : Promise.resolve('{}'),
+    ...children.map(c => () => buildChildPrompt(c, parents, SYSTEM, apiKey)),
+    () => growthPromise,
+    ...members.map(m => () => buildMemberPrompt(m, members, SYSTEM, apiKey)),
+  ]
+
+  const allResults = await runBatch(allTasks, 4)
+  const [parentRaw, ...parallelResults] = allResults
 
   // 결과 분배
   const parentParsed = parseJSON(typeof parentRaw === 'string' ? parentRaw : JSON.stringify(parentRaw))
