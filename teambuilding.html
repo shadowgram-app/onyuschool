@@ -136,6 +136,12 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif
   padding:2px 8px;border-radius:6px}
 .cls-badge.beta{background:var(--teal);color:#fff}
 .cls-badge.soon{background:#DDD;color:#888}
+/* 외부 트랙(자녀양육 등): 다른 페이지로 이동 */
+.cls-card.cls-external{border-style:dashed;border-color:var(--gold)}
+.cls-card.cls-external:hover{border-color:var(--gold);background:#FBF9F1}
+.cls-card.cls-external .cls-name{color:var(--gold)}
+.cls-card.cls-external::after{content:'↗';position:absolute;top:10px;right:12px;
+  color:var(--gold);font-weight:800;font-size:1rem}
 
 /* toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
@@ -294,6 +300,13 @@ footer strong{color:var(--navy)}
           <div class="cls-icon">✏️</div>
           <div class="cls-name">기타 사역팀</div>
           <div class="cls-desc">찬양팀 · 봉사팀<br>기타 사역 조직</div>
+        </div>
+
+        <div class="cls-card cls-external" onclick="goParenting()">
+          <div class="cls-badge beta">베타 무료</div>
+          <div class="cls-icon">👨‍👩‍👧</div>
+          <div class="cls-name">자녀양육 클래스</div>
+          <div class="cls-desc">부모-자녀 소통 코드<br>가족 단위 검사 · 양육 가이드</div>
         </div>
 
       </div>
@@ -483,9 +496,14 @@ function showScreen(id) {
 
 function selectCls(cls) {
   selCls = cls;
-  document.querySelectorAll('.cls-card:not(.locked)').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.cls-card:not(.locked):not(.cls-external)').forEach(el => el.classList.remove('selected'));
   document.getElementById('cls-' + cls).classList.add('selected');
   document.getElementById('btn-to-setup').disabled = false;
+}
+
+// 자녀양육: teambuilding 트랙(가족 단위 모델)이 다르므로 전용 페이지로 이동
+function goParenting() {
+  window.location.href = 'parenting.html';
 }
 
 function goToSetup() {
